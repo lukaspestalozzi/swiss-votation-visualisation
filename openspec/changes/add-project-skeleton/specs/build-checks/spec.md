@@ -51,11 +51,12 @@ module MAY import the calculation module, by its package name.
 
 ### Requirement: One set of checks, locally and in CI
 
-`./scripts/verify-local.sh` and CI SHALL run the same checks in the same order: the OpenSpec
-validation, the formatting check, the lint, the static analysis, the unit tests, the build, and
-the browser test against the built site. The local script SHALL run every check even after one
-has failed, name each failed check, and exit with a status other than zero when at least one
-failed.
+`./scripts/verify-local.sh` and CI SHALL run the same checks: the OpenSpec validation and, in
+this order, the formatting check, the lint, the static analysis, the unit tests, the build and
+the browser test against the built site. In CI the OpenSpec validation is a job of its own,
+independent of the job that runs the other six. The local script SHALL run every check even
+after one has failed, name each failed check, and exit with a status other than zero when at
+least one failed.
 
 #### Scenario: All checks pass
 
@@ -110,3 +111,9 @@ and SHALL report a failure when any check fails.
 
 - **WHEN** a pull request that targets `main` contains a change that fails a unit test
 - **THEN** the CI run of that pull request fails
+
+#### Scenario: The OpenSpec validation fails in CI
+
+- **WHEN** a pull request that targets `main` fails the OpenSpec validation
+- **THEN** the job with the OpenSpec validation fails, and the job with the other six checks
+  still runs and reports its own result

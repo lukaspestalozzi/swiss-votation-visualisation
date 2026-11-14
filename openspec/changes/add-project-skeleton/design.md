@@ -253,6 +253,12 @@ sources are known); Python now (a second toolchain in CI before any pipeline cod
   out, set up Node 24, install pnpm in the version of `packageManager` with npm, `pnpm install
   --frozen-lockfile`, then `pnpm run format:check`, `lint`, `check`, `test`, `build`, install
   Chromium, `test:e2e`.
+- The two jobs are independent: `build` does not wait for `specs` (user decision, 2026-11-14,
+  after a review comment on the proposal). Both always run, so one CI run shows every failure,
+  as the local script does. The order of the requirement applies to the six steps of the
+  `build` job. Alternative considered: `needs: specs` on `build` (the OpenSpec validation would
+  come first in CI too, but a failing validation would skip the `build` job and hide its
+  failures).
 - `scripts/verify-local.sh` gets the six `pnpm run` steps after the OpenSpec validation, in that
   order, 7 steps in all. It installs nothing: the dependencies and the browser are requirements,
   named in its header.
