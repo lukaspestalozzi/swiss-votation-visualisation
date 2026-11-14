@@ -29,6 +29,8 @@ test('a canton whose entries have no vote counts against', () => {
   const result = calculateResult([entry('UR', 0, 0)], 'voters-and-cantons');
   expect(result.cantonalVotesInFavour).toBe(0);
   expect(result.cantonalVotesAgainst).toBe(1);
+  // An entry remains, but no valid vote: there is no yes share either.
+  expect(result.yesShare).toBeUndefined();
 });
 
 test('as many yes as no votes: no majority of voters', () => {
