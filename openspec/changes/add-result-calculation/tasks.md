@@ -84,32 +84,32 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts`, with made-u
 In `calculation/src/reference-votes.test.ts`. The expected figures are written in the tests,
 taken from `investigations/data-sources.md`.
 
-- [ ] 4.1 Write the helper that turns a vote of `reference-votes.json` into entries, and the test
+- [x] 4.1 Write the helper that turns a vote of `reference-votes.json` into entries, and the test
   for number 596 with all its entries: yes 1,609,152, no 1,664,224, valid 3,273,376, yes share
   49.1588% within 0.00005 percentage points, cantonal votes 16.5 : 6.5, majority of cantons
   reached, majority of voters not reached, failed. Verify: `pnpm run test` reports 24 passed.
-- [ ] 4.2 Write the tests for numbers 567, 568, 595, 614, 636 and 679, one after the other, with
+- [x] 4.2 Write the tests for numbers 567, 568, 595, 614, 636 and 679, one after the other, with
   the figures and the verdicts of the spec's "Reference votes" scenarios; for 595 and 614 also
   whether the majority of voters is reached, for 636 that the majority of cantons is not, for
   679 that it passes with the majority of cantons not reached. Verify: `pnpm run test` reports
   30 passed.
-- [ ] 4.3 Write, one after the other, the tests "only the canton of Zürich" (number 596: 253,697
+- [x] 4.3 Write, one after the other, the tests "only the canton of Zürich" (number 596: 253,697
   yes, 329,992 no), "without the canton of Zürich" (1,355,455 yes, 1,334,232 no, yes share
   50.3945% within 0.00005 percentage points, cantonal votes 16.5 : 5.5, passed) and "the order
   of the entries does not matter" (number 596 reversed). Verify: `pnpm run test` reports 33
   passed.
-- [ ] 4.4 Check that the tests catch the predecessor's failure mode 1. Verify: with
+- [x] 4.4 Check that the tests catch the predecessor's failure mode 1. Verify: with
   `calculateResult` temporarily changed to keep only the last entry of each canton for the
   cantonal votes, `pnpm run test` reports failed tests among the reference votes; restored, 33
   passed.
 
 ## 5. Integration
 
-- [ ] 5.1 Export the two functions and their types from `calculation/src/index.ts`. Verify:
+- [x] 5.1 Export the two functions and their types from `calculation/src/index.ts`. Verify:
   `pnpm run format:check`, `pnpm run lint` and `pnpm run check` each exit 0; after `pnpm run
   build`, `grep -rl "Abzockerei" app/build | wc -l` prints `0`; `pnpm run test:e2e` reports 4
   passed.
-- [ ] 5.2 Run all checks. Verify: `./scripts/verify-local.sh` ends with `All 7 steps passed`.
+- [x] 5.2 Run all checks. Verify: `./scripts/verify-local.sh` ends with `All 7 steps passed`.
 
 ## 6. Documentation
 
