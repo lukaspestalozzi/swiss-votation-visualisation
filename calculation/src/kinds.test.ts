@@ -1,5 +1,6 @@
-import { expect, test } from 'vitest';
+import { expect, expectTypeOf, test } from 'vitest';
 import { majoritiesNeeded } from './kinds.ts';
+import type { calculateResult } from './result.ts';
 
 test('a popular initiative needs both majorities', () => {
   expect(majoritiesNeeded('popular-initiative')).toBe('voters-and-cantons');
@@ -23,4 +24,10 @@ test('an optional referendum needs the majority of voters only', () => {
 
 test('a tie-break question is not calculated', () => {
   expect(majoritiesNeeded('tie-break-question')).toBe('not-calculated');
+});
+
+test('the answer of a tie-break question cannot be passed to the calculation', () => {
+  // Checked by the compiler, not at run time: `pnpm run check` fails on this line as soon as
+  // "not-calculated" is accepted where calculateResult takes the majorities a vote needs.
+  expectTypeOf<'not-calculated'>().not.toExtend<Parameters<typeof calculateResult>[1]>();
 });
