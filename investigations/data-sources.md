@@ -24,6 +24,7 @@ python3 check_feed.py /path/outside/the/repository
 python3 check_chancellery.py /path/outside/the/repository
 python3 check_municipality_lists.py /path/outside/the/repository
 python3 reference_votes.py /path/outside/the/repository
+python3 write_reference_votes.py /path/outside/the/repository ../../calculation/src/reference-votes.json
 ```
 
 | File | What |
@@ -36,6 +37,7 @@ python3 reference_votes.py /path/outside/the/repository
 | `check_chancellery.py` | The Chancellery's results against the feed, and its notes. |
 | `check_municipality_lists.py` | Which list of municipalities each source uses. |
 | `reference_votes.py` | The votes in which the rules matter, with their figures. |
+| `write_reference_votes.py` | Writes the reference data of the calculation; see "Reference data for the calculation". It downloads the six vote days it needs by itself. |
 
 "Output" at the end of this file is what these scripts printed on 2026-11-14. The sources
 change (see "The list of municipalities"), so a later run can differ; the reference values
@@ -181,6 +183,7 @@ every figure except where a row says otherwise.
 | 2025-09-28 Bundesgesetz über den elektronischen Identitätsnachweis | 679 / 6790 | optional | 5,641,040 | 2,796,897 | 2,747,948 | 1,384,586 | 1,363,362 | 50.3862% | 7.5 : 15.5 (feed only) | passed: only the voters count | 2026 1165 |
 | 2017-09-24 Zusatzfinanzierung der AHV durch eine Erhöhung der Mehrwertsteuer | 614 / 6140 | mandatory | 5,372,748 | 2,546,386 | 2,511,951 | 1,254,795 | 1,257,156 | 49.9530% | 9.5 : 13.5 | failed, by 2,361 votes | 2017 7829 |
 | 2015-06-14 Bundesgesetz über Radio und Fernsehen | 595 / 5950 | optional | 5,265,120 | 2,297,963 | 2,253,395 | 1,128,522 | 1,124,873 | 50.0810% | none given | passed, by 3,649 votes | 2015 6313 |
+| 2013-03-03 Volksinitiative «gegen die Abzockerei» | 568 / 5680 | initiative | 5,174,961 | 2,418,825 | 2,378,159 | 1,616,184 | 761,975 | 67.9595% | 23 : 0 | passed: both majorities, plainly | 2013 3129 |
 | 2024-03-03 Für ein besseres Leben im Alter | 665 / 6650 | initiative | 5,591,446 | 3,263,379 | Chancellery: not given; BFS: 3,234,621 | 1,884,096 | Chancellery: 1,350,325; BFS: 1,350,525 | Chancellery: 58.2514%; BFS: 58.2478% | 15 : 8 | passed | 2024 996 |
 
 The vote of 2016-02-28 is the one of failure mode 3: the predecessor's municipal yes votes
@@ -188,6 +191,56 @@ summed to 1,622,968; the sources sum to 1,609,152.
 
 Not validated yet, so not a reference value: 2026-03-08, Bundesgesetz über die
 Individualbesteuerung (id 6850, optional), yes 1,662,477, no 1,401,322, cantons 10 : 13, passed.
+
+## Reference data for the calculation
+
+Added with the change `add-result-calculation`. The calculation is tested with all entries of
+seven of the votes above, every one except number 665:
+`calculation/src/reference-votes.json`.
+
+- **What it holds.** Per vote its number, date, German title and kind, and per canton a list of
+  `[BFS number, yes, no]`, one canton per line. An entry is a municipality, or the Swiss abroad
+  of a canton that counts them apart (BFS numbers from 9010).
+- **Where it comes from.** `write_reference_votes.py` downloads the feed's files of the six
+  vote days and writes the file. It stops if the entries of a vote do not add up to what the
+  feed gives for Switzerland.
+- **The list of municipalities** is the one of 2026-01-01, as in every file of the feed
+  (answer 3).
+- **What a later run changes.** The BFS rewrites its files after a merger of municipalities.
+  The entries and their count then change; the sums per canton and for Switzerland do not.
+- **It is test data.** Its shape decides nothing about the data files of the app (#3), and the
+  kinds' names in it are the calculation's, not the BFS's codes (1 mandatory referendum, 2
+  optional referendum, 3 popular initiative).
+- **The expected figures** of the tests are the reference values above, not the file.
+
+What the script printed on 2026-11-14:
+
+```
+567 2013-03-03 mandatory-referendum entries 2114 | yes 1,283,951 no 1,078,531 | cantonal votes 10 : 13 | Bundesbeschluss über die Familienpolitik
+568 2013-03-03 popular-initiative   entries 2114 | yes 1,616,184 no 761,975 | cantonal votes 23 : 0 | Volksinitiative «gegen die Abzockerei»
+595 2015-06-14 optional-referendum  entries 2115 | yes 1,128,522 no 1,124,873 | cantonal votes 6.5 : 16.5 | Bundesgesetz über Radio und Fernsehen
+596 2016-02-28 popular-initiative   entries 2115 | yes 1,609,152 no 1,664,224 | cantonal votes 16.5 : 6.5 | Volksinitiative «Für Ehe und Familie - gegen die H
+614 2017-09-24 mandatory-referendum entries 2115 | yes 1,254,795 no 1,257,156 | cantonal votes 9.5 : 13.5 | Bundesbeschluss über die Zusatzfinanzierung der AH
+636 2020-11-29 popular-initiative   entries 2116 | yes 1,299,129 no 1,261,680 | cantonal votes 8.5 : 14.5 | Volksinitiative «Für verantwortungsvolle Unternehm
+679 2025-09-28 optional-referendum  entries 2117 | yes 1,384,586 no 1,363,362 | cantonal votes 7.5 : 15.5 | Bundesgesetz über den elektronischen Identitätsnac
+```
+
+The cantonal votes it prints are calculated from the entries. For the five votes that need the
+double majority they equal the official ones. For the two optional referendums the Federal
+Chancellery gives none: for number 679 the feed gives the same 7.5 : 15.5; for number 595 no
+source gives a figure, and 6.5 : 16.5 is a calculated value only.
+
+Figures that the specs of the calculation use and that are parts of these votes, not official
+results of Switzerland:
+
+| What | Entries | Yes | No | Cantonal votes | Verdict with both majorities |
+|------|--------:|----:|---:|----------------|------------------------------|
+| Number 596, only the canton of Zürich (160 municipalities and its Swiss abroad, who have 3,596 yes and 4,939 no votes) | 161 | 253,697 | 329,992 | 0 : 1 | failed |
+| Number 596, without the canton of Zürich | 1,954 | 1,355,455 | 1,334,232 | 16.5 : 5.5 | passed |
+| Number 596, all entries | 2,115 | 1,609,152 | 1,664,224 | 16.5 : 6.5 | failed |
+
+The yes share of number 596 without the canton of Zürich is 50.3945%. The figures of the canton
+of Zürich are the feed's result for that canton.
 
 ## Characteristics
 
