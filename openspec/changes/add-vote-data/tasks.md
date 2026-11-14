@@ -129,21 +129,22 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
 `pipeline/known-differences.json` and `pipeline/canton-changes.json` (design, decisions 1 and
 5). In the tests the two lists are given as arguments; the files hold the real lines.
 
-- [ ] 4.1 The entries and the list (spec `municipalities`: "Every entry is known and counted
+- [x] 4.1 The entries and the list (spec `municipalities`: "Every entry is known and counted
   once", "The Swiss abroad are entries of their own", "Municipalities without a result", "One
   list of municipalities for all votes"). Tests, one after the other: an entry with the number
   7999 stops with the vote and the number; a number twice in a vote stops; the entry 9010 under
   ZH is accepted and marked as Swiss abroad; the entry 9010 under BE stops; the municipalities
   of the list without an entry are named for the vote; vote-day files with two reference dates
   stop with the file and both dates. Verify: `$UV pytest -q tests/test_checks.py` reports 6
-  passed.
-- [ ] 4.2 The canton an entry counts for (spec `vote-data`, "An entry counts for the canton it
+  passed. (As built: three tests passed when written, as the first one's code covered
+  them; each was seen to fail against a mutant.)
+- [x] 4.2 The canton an entry counts for (spec `vote-data`, "An entry counts for the canton it
   voted in"). Write `pipeline/canton-changes.json` with the line for Moutier. Tests, one after
   the other: an entry on the list of changes is grouped under its earlier canton up to the last
   day and under its own canton after it; entries that do not sum to the canton's figures stop
   with the vote, the canton, the count and both figures. Verify: `$UV pytest -q
   tests/test_checks.py` reports 8 passed.
-- [ ] 4.3 The sums and the official result (spec `vote-data`: "The entries add up to the figures
+- [x] 4.3 The sums and the official result (spec `vote-data`: "The entries add up to the figures
   of the BFS", "The entries agree with the official result", "The two sources agree on the
   verdict and the cantonal votes", "The votes covered"). Write
   `pipeline/known-differences.json` with the line for id 6650. Tests, one after the other:
@@ -154,6 +155,10 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   verdicts that differ stop; cantonal votes that differ stop; a validated vote without a
   complete result stops; a BFS vote without a row of the Chancellery stops. Verify: `$UV pytest
   -q tests/test_checks.py` reports 17 passed, and `$UV mypy` and `$UV ruff check .` pass.
+  (As built: 18, with the test moved from 3.4: a validated vote without a verdict stops, except
+  a tie-break question. Two tests passed when written and were seen to fail against mutants.
+  Run over the downloads of the investigation, all checks pass for the 125 votes; without
+  Moutier's line they stop at vote 5670 for BE, without the known difference at vote 6650.)
 
 ## 5. Writing the data files
 

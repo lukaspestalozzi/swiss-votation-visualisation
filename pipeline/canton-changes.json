@@ -1,0 +1,9 @@
+[
+  {
+    "municipality": 6831,
+    "name": "Moutier",
+    "canton": "BE",
+    "until": "2025-12-31",
+    "why": "Moutier moved from the canton of Bern to the canton of Jura on 2026-01-01 (BFS number 700 until then). The BFS files list it under JU for every vote, and their canton figures count it for BE in the votes until 2025. See investigations/data-sources.md, 'Found while proposing add-vote-data'."
+  }
+]
