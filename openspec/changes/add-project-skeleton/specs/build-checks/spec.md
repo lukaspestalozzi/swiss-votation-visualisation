@@ -88,13 +88,25 @@ for a line or a file only together with a written justification at that place.
 
 `./scripts/verify-local.sh` SHALL refuse to run, with a message that names the installed and the
 expected version, when the installed major version of Node or the installed version of the
-OpenSpec CLI differs from the one `.github/workflows/ci.yml` uses. Installing the project's
-dependencies SHALL fail on an older major version of Node.
+OpenSpec CLI differs from the one `.github/workflows/ci.yml` uses. An install of the project's
+dependencies SHALL fail on an older major version of Node whenever it installs anything, and
+always when it runs with the frozen lockfile, as it does in CI and in web sessions.
 
 #### Scenario: Node is older than the version CI uses
 
 - **WHEN** `./scripts/verify-local.sh` runs with Node 22 while CI uses Node 24
 - **THEN** it runs no check, prints both versions and exits with a status other than zero
+
+#### Scenario: An install with the frozen lockfile on an older Node
+
+- **WHEN** the dependencies are installed with the frozen lockfile on Node 22
+- **THEN** the install fails, names Node 24 as wanted and Node 22 as found, and installs nothing
+
+#### Scenario: A repeated install with nothing to do
+
+- **GIVEN** the dependencies are installed and nothing has changed since
+- **WHEN** a plain install runs again on Node 22
+- **THEN** it installs nothing and does not fail; `./scripts/verify-local.sh` still refuses Node 22
 
 #### Scenario: The OpenSpec CLI differs from the version CI pins
 
