@@ -64,3 +64,28 @@ jobs:
 
       - name: Browser tests
         run: pnpm run test:e2e
+
+  # The pipeline's checks, steps 8 to 11 of scripts/verify-local.sh. Independent of the other two
+  # jobs. uv installs the Python of pipeline/.python-version and the packages of pipeline/uv.lock.
+  pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        # setup-uv publishes no tag per major version; this is the newest release on 2026-11-14.
+        uses: astral-sh/setup-uv@v10.3.3
+
+      - name: Check formatting of the pipeline
+        run: uv run --directory pipeline --locked ruff format --check .
+
+      - name: Lint the pipeline
+        run: uv run --directory pipeline --locked ruff check .
+
+      - name: Static analysis of the pipeline
+        run: uv run --directory pipeline --locked mypy
+
+      - name: Unit tests of the pipeline
+        run: uv run --directory pipeline --locked pytest

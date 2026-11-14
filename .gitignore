@@ -2,3 +2,11 @@ node_modules
 app/build
 app/.svelte-kit
 app/test-results
+
+# The pipeline: its environment, its downloads, and the caches of Python and its tools.
+pipeline/.venv
+pipeline/downloads
+__pycache__
+.mypy_cache
+.pytest_cache
+.ruff_cache
