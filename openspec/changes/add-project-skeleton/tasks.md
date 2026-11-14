@@ -30,22 +30,22 @@ the `PATH`, and start every command with `export PATH=/opt/node24/bin:$PATH &&`.
 
 ## 2. Calculation module
 
-- [ ] 2.1 Create `calculation/package.json` (no `dependencies`; `typescript` and `vitest` as
+- [x] 2.1 Create `calculation/package.json` (no `dependencies`; `typescript` and `vitest` as
   `devDependencies`; `exports` pointing at `./src/index.ts`; scripts `check` as `tsc --noEmit -p
   tsconfig.json` and `test` as `vitest run`), `calculation/tsconfig.json` (design, decisions 4
   and 6) and the root scripts `check` (`pnpm -r run check`) and `test` (`pnpm -r run test`).
   Write the test "the 26 cantons in the order of the constitution" in
   `calculation/src/cantons.test.ts`, then the list of cantons in `cantons.ts`, exported through
   `index.ts`. Verify: `pnpm run test` reports `1 passed`; `pnpm run check` exits 0.
-- [ ] 2.2 Write the test "six cantons have half a vote" (OW, NW, BS, BL, AR, AI are exactly 0.5),
+- [x] 2.2 Write the test "six cantons have half a vote" (OW, NW, BS, BL, AR, AI are exactly 0.5),
   see it fail, then add the cantonal votes to the cantons. Verify: `pnpm run test` reports `2
   passed`.
-- [ ] 2.3 Write the tests "every other canton has one vote" (the other 20 are exactly 1) and
+- [x] 2.3 Write the tests "every other canton has one vote" (the other 20 are exactly 1) and
   "Schaffhausen and Appenzell Ausserrhoden are not swapped" (SH 1, AR 0.5), one after the other.
   Verify: `pnpm run test` reports `4 passed`.
-- [ ] 2.4 Write the test "all cantons together have 23 cantonal votes" (exactly 23), see it fail,
+- [x] 2.4 Write the test "all cantons together have 23 cantonal votes" (exactly 23), see it fail,
   then add the total of a list of cantons. Verify: `pnpm run test` reports `5 passed`.
-- [ ] 2.5 Run the root tools over the package. Verify: `pnpm run format:check`, `pnpm run lint`
+- [x] 2.5 Run the root tools over the package. Verify: `pnpm run format:check`, `pnpm run lint`
   and `pnpm run check` each exit 0; with a temporary `calculation/src/violation.ts` that calls
   an `async` function without awaiting it, `pnpm run lint` exits 1 and reports
   `@typescript-eslint/no-floating-promises` for that file.
