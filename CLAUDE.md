@@ -7,8 +7,10 @@ a working title: the name is not decided.
 
 **Status:** the skeleton. One page shows the 26 cantons and their cantonal votes; the build, the
 checks, the module boundaries and CI are in place. Change #1 of `docs/roadmap.md`,
-`add-project-skeleton`, is archived, and `openspec/specs/` holds its three specs. Next: the
-first investigation (data sources), before #2 and #3. `README.md` is the human-facing overview.
+`add-project-skeleton`, is archived, and `openspec/specs/` holds its three specs. The first
+investigation (data sources) is done: `investigations/data-sources.md`. It lists nine points
+that changes #2 and #3 have to decide. Next: change #2. `README.md` is the human-facing
+overview.
 
 ## Where things are
 
@@ -18,7 +20,7 @@ first investigation (data sources), before #2 and #3. `README.md` is the human-f
 | `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `result-calculation`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
-| `investigations/` | Spikes and verified reference values (test oracles). It does not exist yet: the first investigation creates it. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
+| `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first; its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
 | `calculation/`, `app/`, `pipeline/` | The three modules. The code map below lists their files. |
 | `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml` | The root of the pnpm workspace: the scripts of every check, pnpm pinned in `packageManager`, Node 24 required (`engineStrict`). |
 | `eslint.config.js`, `prettier.config.js`, `.prettierignore` | The linter and the formatter, one configuration for both packages. Prettier leaves Markdown, `openspec/`, `docs/`, `.agents/`, `.claude/` and `.github/` alone. |
