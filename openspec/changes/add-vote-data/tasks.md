@@ -162,15 +162,16 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
 
 ## 5. Writing the data files
 
-- [ ] 5.1 `pipeline/src/pipeline/write.py` and `tests/test_write.py` (design, decisions 11 and
+- [x] 5.1 `pipeline/src/pipeline/write.py` and `tests/test_write.py` (design, decisions 11 and
   12; spec `vote-data`, "The record of the sources"). Tests, one after the other: `votes.json`
   of the fixture has every key of decision 12, `null` where the spec says none, and the votes
   ordered by date and id; a vote file has the 26 cantons in the order of the constitution, the
   rows ordered by number, and `withoutResult`; `municipalities.json` has the reference date,
   the municipalities per canton and the Swiss abroad per canton; `sources.json` has address,
   bytes, SHA-256 and the stated time of each source file; writing twice gives the same bytes.
-  Verify: `$UV pytest -q tests/test_write.py` reports 5 passed.
-- [ ] 5.2 `pipeline/src/pipeline/download.py`, `update.py` and `__main__.py`, with
+  Verify: `$UV pytest -q tests/test_write.py` reports 5 passed. (As built: the last test passed
+  when written; it was seen to fail against a writer that records the time of the run.)
+- [x] 5.2 `pipeline/src/pipeline/download.py`, `update.py` and `__main__.py`, with
   `tests/test_update.py` (design, decision 13; spec `vote-data`, "Adding a vote day"). The
   tests run the update on fixture downloads with a download function that is passed in. Tests,
   one after the other: a run writes the four kinds of data files; a failing check leaves the
@@ -179,8 +180,13 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   added and named in the output; a vote that the Chancellery now validates becomes validated;
   a vote without a complete result is named as left out. Verify: `$UV pytest -q
   tests/test_update.py` reports 6 passed; `$UV pytest -q` reports 58 passed; `$UV python -m
-  pipeline --help` names `update` and `--reuse-downloads`.
-- [ ] 5.3 Rewrite `pipeline/README.md`: what the pipeline is, its three sources with their
+  pipeline --help` names `update` and `--reuse-downloads`. (As built: `test_update.py` has 13: also a
+  vote day in the past without a file stops, and six malformed lines of the two hand-kept lists
+  stop. `tests/test_download.py` (2) runs `fetch_url` against a local server: a missing file
+  is none, a closed port stops after six attempts and names the address. All 78 pass; the
+  tests of the report passed when written and were seen to fail against mutants.
+  `--reuse-downloads` is named by `python -m pipeline update --help`.)
+- [x] 5.3 Rewrite `pipeline/README.md`: what the pipeline is, its three sources with their
   addresses, the files of decision 16, the procedure that adds a vote day (the command, what it
   prints, reviewing the diff, the pull request), what to do when it stops (the two hand-kept
   lists, a new reference date), and the boundary to the other modules. Verify: the command in
