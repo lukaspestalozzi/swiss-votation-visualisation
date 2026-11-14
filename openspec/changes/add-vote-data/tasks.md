@@ -39,7 +39,7 @@ says so in a note "As built".
 
 ## 2. The pipeline as a Python project, and its checks
 
-- [ ] 2.1 Create the project (design, decisions 9 and 16): `pipeline/pyproject.toml` (name
+- [x] 2.1 Create the project (design, decisions 9 and 16): `pipeline/pyproject.toml` (name
   `pipeline`, `requires-python = ">=3.13"`, the dependency polars, the development dependencies
   ruff, mypy and pytest, ruff with line length 100, mypy strict over `src` and `tests`, pytest
   over `tests`), `pipeline/.python-version` (`3.13`), `pipeline/uv.lock` (written by `uv lock`),
@@ -48,20 +48,20 @@ says so in a note "As built".
   `__pycache__`, `.mypy_cache`, `.pytest_cache`, `.ruff_cache`. Verify: `$UV ruff format --check
   .`, `$UV ruff check .`, `$UV mypy` and `$UV pytest` each exit 0; `git status --short` lists
   no file under `pipeline/.venv`; `pnpm run format:check` and `pnpm run lint` still pass.
-- [ ] 2.2 Add the four steps to `scripts/verify-local.sh` after the existing seven, the pytest
+- [x] 2.2 Add the four steps to `scripts/verify-local.sh` after the existing seven, the pytest
   step to `--quick`, the refusal to run without `uv`, and the header comment (design, decision
   14). Verify: `./scripts/verify-local.sh` reports `All 11 steps passed`;
   `./scripts/verify-local.sh --quick` runs exactly `pnpm run test` and the pytest step; with
   `PATH` temporarily set so that `uv` is not found, the script runs no check, names `uv` and
   exits with status 1; with a temporary failing assertion in the pipeline's test, the script
   reports 1 of 11 steps failed and names the pytest step.
-- [ ] 2.3 Add the job `pipeline` to `.github/workflows/ci.yml`: checkout, `astral-sh/setup-uv`
+- [x] 2.3 Add the job `pipeline` to `.github/workflows/ci.yml`: checkout, `astral-sh/setup-uv`
   in its newest major version (read from the action's releases page), then the four commands
   of decision 14 as four steps. It has no `needs`. Verify: `grep -c "uv run --directory
   pipeline --locked" .github/workflows/ci.yml` prints 4, the four commands are character for
   character those of `scripts/verify-local.sh`, and the job is checked on the pull request in
   9.3.
-- [ ] 2.4 Extend `.claude/hooks/session-start.sh`: fail with a message when `uv` is not found,
+- [x] 2.4 Extend `.claude/hooks/session-start.sh`: fail with a message when `uv` is not found,
   and run `uv sync --directory pipeline --locked` without passing its output on. Verify:
   `rm -rf pipeline/.venv && CLAUDE_CODE_REMOTE=true ./.claude/hooks/session-start.sh` exits 0,
   prints nothing, and `$UV pytest` passes afterwards; a second run exits 0.

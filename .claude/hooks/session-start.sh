@@ -1,6 +1,6 @@
 #!/bin/bash
 # SessionStart hook for Claude Code on the web: puts the Node version of CI on the PATH and
-# installs pnpm, the OpenSpec CLI and the project's dependencies.
+# installs pnpm, the OpenSpec CLI, the project's dependencies and the pipeline's environment.
 # Idempotent: re-runs skip what is already there in the pinned version.
 set -euo pipefail
 
@@ -48,6 +48,18 @@ openspec config set workflows "$OPENSPEC_WORKFLOWS" >/dev/null
 # @playwright/test that app/package.json pins.
 if ! install_output="$(pnpm install --frozen-lockfile 2>&1)"; then
   echo "$install_output" >&2
+  exit 1
+fi
+
+# --- The pipeline's Python and packages --------------------------------------
+# uv is part of the cloud image; it installs the Python of pipeline/.python-version and the
+# packages of pipeline/uv.lock into pipeline/.venv.
+if ! command -v uv > /dev/null 2>&1; then
+  echo "session-start: uv not found; the pipeline needs it" >&2
+  exit 1
+fi
+if ! sync_output="$(uv sync --directory pipeline --locked 2>&1)"; then
+  echo "$sync_output" >&2
   exit 1
 fi
 

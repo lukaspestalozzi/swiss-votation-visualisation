@@ -369,7 +369,7 @@ uv run --directory pipeline --locked pytest
 
 `--quick` runs `pnpm run test` and the pytest step. The script refuses to run without `uv`.
 The cloud hook runs `uv sync --directory pipeline --locked`. CI installs uv with
-`astral-sh/setup-uv`, which reads the Python version from `pipeline/.python-version`.
+`astral-sh/setup-uv`; uv itself installs the Python version of `pipeline/.python-version`.
 
 Alternative considered: **inside the four existing steps** (`pnpm run lint` also runs ruff).
 Rejected: a failure of the first half hides the second, and the Node job would need Python.
