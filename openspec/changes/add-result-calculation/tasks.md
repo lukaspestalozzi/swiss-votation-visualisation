@@ -34,15 +34,15 @@ Each test is written first and seen to fail before the code that makes it pass, 
 
 ## 2. The kinds of vote
 
-- [ ] 2.1 Create `calculation/src/kinds.ts` with the types of design decision 5 and
+- [x] 2.1 Create `calculation/src/kinds.ts` with the types of design decision 5 and
   `calculation/src/kinds.test.ts`. Write the test "a popular initiative needs both majorities",
   then `majoritiesNeeded`. Verify: `pnpm run test` reports 6 passed.
-- [ ] 2.2 Write the tests for the mandatory referendum, the popular initiative with a
+- [x] 2.2 Write the tests for the mandatory referendum, the popular initiative with a
   counter-proposal and the counter-proposal, one after the other. Verify: `pnpm run test`
   reports 9 passed.
-- [ ] 2.3 Write the test "an optional referendum needs the majority of voters only", see it fail,
+- [x] 2.3 Write the test "an optional referendum needs the majority of voters only", see it fail,
   then make it pass. Verify: `pnpm run test` reports 10 passed.
-- [ ] 2.4 Write the test "a tie-break question is not calculated", see it fail, then make it pass.
+- [x] 2.4 Write the test "a tie-break question is not calculated", see it fail, then make it pass.
   Verify: `pnpm run test` reports 11 passed.
 
 ## 3. The result
