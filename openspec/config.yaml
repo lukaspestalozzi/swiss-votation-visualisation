@@ -28,8 +28,11 @@ context: |
      Basel-Landschaft, Appenzell Ausserrhoden and Appenzell Innerrhoden with half a vote each (23
      in total); a tie of cantonal votes is a rejection. Popular initiatives and mandatory
      referendums need both majorities; optional referendums need only the majority of voters. A
-     canton whose municipalities are all filtered out has no cantonal vote, and the number of
-     cantonal votes needed shrinks accordingly.
+     popular initiative voted on together with a counter-proposal, and that counter-proposal,
+     need both majorities too, each judged by its own votes; their tie-break question is not
+     calculated. A canton whose municipalities are all filtered out has no cantonal vote, and
+     the number of cantonal votes needed shrinks accordingly. When nothing remains, the vote
+     has failed.
   3. Recalculates immediately. The map and both verdicts update while a limit is being dragged,
      without a button. The budget in milliseconds is not decided; the change that adds the limits
      sets it.
@@ -93,8 +96,11 @@ context: |
   - Vote: one national proposal put to the voters (Vorlage). A vote day (Abstimmungstag) can
     hold several votes.
   - Kind of vote: popular initiative (Volksinitiative), mandatory referendum (obligatorisches
-    Referendum) or optional referendum (fakultatives Referendum). It decides which majorities
-    are needed (Federal Constitution, art. 140 to 142).
+    Referendum) or optional referendum (fakultatives Referendum); and, once in the period, a
+    popular initiative voted on together with a counter-proposal (Volksinitiative mit
+    Gegenentwurf), that counter-proposal (Gegenentwurf) and their tie-break question
+    (Stichfrage). It decides which majorities are needed (Federal Constitution, art. 139b and
+    140 to 142).
   - Valid votes: the yes votes plus the no votes. Blank and invalid ballots are disregarded
     (Federal Act on Political Rights, art. 13 para. 1).
   - Majority of voters (Volksmehr): more than half of the valid votes are yes.
