@@ -97,7 +97,9 @@ the calculation the way the app will: with one entry per municipality.
   initiative. Number 665, in which the municipal data differs from the Federal Chancellery's
   figure, is left out (decision 4).
 - **The file.** `calculation/src/reference-votes.json`: per vote its number, date, German title
-  and kind, and per canton a list of `[BFS number, yes, no]`, one canton per line. It lives in
+  and kind, and per canton a list of `[BFS number, yes, no]`, one canton per line; as built it
+  starts with one line that says what it is and where it comes from (243 lines, 221,165 bytes).
+  It lives in
   the calculation's `src/` because the package's `rootDir` lets a test import nothing from
   outside it. Only a test imports it, so it is not part of the app.
 - **Where it comes from.** A new script, `investigations/data-sources/write_reference_votes.py`,

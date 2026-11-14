@@ -113,16 +113,16 @@ taken from `investigations/data-sources.md`.
 
 ## 6. Documentation
 
-- [ ] 6.1 Update `openspec/config.yaml` (design, decision 8): in hard constraint 2 the two further
+- [x] 6.1 Update `openspec/config.yaml` (design, decision 8): in hard constraint 2 the two further
   kinds that need both majorities, the tie-break question that is not calculated, and that a
   vote has failed when nothing remains; in the glossary all six kinds. Hard constraint 1 stays
   as it is. Verify: `openspec validate --all --strict --no-interactive` exits 0, and `openspec
   instructions proposal --change add-result-calculation` shows the new wording.
-- [ ] 6.2 Update `docs/roadmap.md`: in entry #2 the scope as built and the decisions taken (no
+- [x] 6.2 Update `docs/roadmap.md`: in entry #2 the scope as built and the decisions taken (no
   open decision left); in entry #3 that it maps the sources' codes to the kinds and decides
   what "matches the official result" means. Verify: `openspec validate --all --strict
   --no-interactive` exits 0, and entry #2 names no decision that `design.md` does not record.
-- [ ] 6.3 Update `CLAUDE.md`: the status, the code map of `calculation/` (the files of design
+- [x] 6.3 Update `CLAUDE.md`: the status, the code map of `calculation/` (the files of design
   decision 7), the row of `investigations/` (the script that writes the reference data), and
   under "Conventions" that pull requests are merged by rebasing and a branch is started from an
   updated `main`. Verify: every path named in the "Where things are" table and in the code map
