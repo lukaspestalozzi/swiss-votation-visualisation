@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  specs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Validate OpenSpec specs and changes
+        env:
+          OPENSPEC_TELEMETRY: '0'
+        run: npx --yes @fission-ai/openspec@2.0.0 validate --all --strict --no-interactive
