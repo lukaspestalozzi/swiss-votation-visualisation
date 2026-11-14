@@ -195,7 +195,7 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
 
 ## 6. The first data
 
-- [ ] 6.1 List `app/static/data/` in `.prettierignore`, with the reason. Run `$UV python -m
+- [x] 6.1 List `app/static/data/` in `.prettierignore`, with the reason. Run `$UV python -m
   pipeline update`. Verify against the scenarios "on 2026-11-14" of both specs, as far as the
   sources have not moved since: the command exits 0 and names the four votes of 2026-11-29 as
   left out; `ls app/static/data/votes | wc -l` equals the number of votes in `votes.json`
@@ -203,7 +203,7 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   date 2026-01-01 and 12 entries of Swiss abroad; `sources.json` names 47 source files;
   `du -sh app/static/data` is about 7.5 MB and no vote file is above 61 kB. Where the sources
   have moved (a new vote day, a validation), the task notes the figures found and why.
-- [ ] 6.2 Verify the named votes in the written files with `python3 -c` one-liners or `jq`: id
+- [x] 6.2 Verify the named votes in the written files with `python3 -c` one-liners or `jq`: id
   5960 (result 1,609,152 : 1,664,224, 16.5 : 6.5, not passed, reference BBl 2019 4599, a note in
   three languages, sums 5,302,873 / 3,354,019 / 3,273,376, 2,115 entries, `withoutResult` 389,
   408, 422, 535, 629, 868, 877, entry 1 `[1, 1398, 999, 982, 432, 550]` under ZH, entry 9010
@@ -212,14 +212,16 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   under BE, 11 entries of Swiss abroad, none 9010); id 6850 (Moutier under JU); ids 6821 to
   6823 (kinds, number 682, `passed` null for 6823). Verify: every figure equals the scenario
   that names it.
-- [ ] 6.3 The run is repeatable and the lists bite, on the real data. Verify, each with
+- [x] 6.3 The run is repeatable and the lists bite, on the real data. Verify, each with
   `--reuse-downloads`: a second run leaves `git status --short app/static/data` unchanged;
   with `pipeline/canton-changes.json` temporarily emptied, the run stops, names id 5670, BE and
   both figures, and `git status --short app/static/data` is unchanged; with
   `pipeline/known-differences.json` temporarily emptied, it stops and names id 6650, "no votes",
   1,350,525 and 1,350,325; with a temporary extra line for id 5960, it stops and names that
-  line.
-- [ ] 6.4 Check that the site carries the data and nothing else changed. Verify: `pnpm run
+  line. (As built: the data files were compared by a checksum of all of them, as they were not
+  committed yet; it stayed the same through every run. A further run with fresh downloads also
+  wrote the same bytes, `sources.json` included, and reported no vote added.)
+- [x] 6.4 Check that the site carries the data and nothing else changed. Verify: `pnpm run
   format:check` and `pnpm run lint` pass; `pnpm run build` writes `app/build/data/votes.json`;
   `pnpm run test:e2e` reports 4 passed.
 

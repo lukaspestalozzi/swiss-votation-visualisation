@@ -9,3 +9,7 @@ pnpm-lock.yaml
 
 # Reference data of the calculation, written by a script with one canton per line.
 calculation/src/reference-votes.json
+
+# The app's data files, written by the pipeline (`python -m pipeline update`) with one line per
+# vote or per canton; formatting them would make every update's diff unreadable.
+app/static/data/
