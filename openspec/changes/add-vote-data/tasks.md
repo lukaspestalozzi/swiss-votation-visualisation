@@ -288,11 +288,15 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
 
 ## 9. Integration
 
-- [ ] 9.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`.
-- [ ] 9.2 Check the change against its specs once more by hand: each "THEN" of the scenarios
+- [x] 9.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`.
+- [x] 9.2 Check the change against its specs once more by hand: each "THEN" of the scenarios
   that stop the update is the message of a pipeline test, and each scenario with figures of a
   named vote is a check of 6.2 or a test of 7.3. Verify: a list of scenario to test or check,
-  written into the pull request's description, has no empty line.
+  written into the pull request's description, has no empty line. (As built: four scenarios had
+  nothing yet and were shown here: a type error in the pipeline (mypy names the file and the
+  line), a dependency declared without updating the lockfile (each of the four checks stops),
+  one failing unit test (all 11 steps run, one fails), and the 71 votes for which both sources
+  give cantonal votes, all equal.)
 - [ ] 9.3 Push the branch and open the pull request as a draft. Verify: the CI run shows the
   three jobs `specs`, `build` and `pipeline`, each passed.
 
