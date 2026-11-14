@@ -17,7 +17,7 @@ says so in a note "As built".
 
 ## 1. The investigation: three facts found while proposing
 
-- [ ] 1.1 Write `investigations/data-sources/check_ids_and_cantons.py` (design, Context). It
+- [x] 1.1 Write `investigations/data-sources/check_ids_and_cantons.py` (design, Context). It
   downloads what it needs with `fetch` of `sources.py` (the 45 BFS vote-day files, the register
   of 2026-01-01, and the Chancellery's national rows with `vote:id`, the registered voters and
   the ballots cast) and prints: how many BFS votes with a result have exactly one row with the
@@ -28,7 +28,7 @@ says so in a note "As built".
   125 votes matched by id, 117 validated, 39 with other registered voters, 5 with other ballots
   cast, and the cantons BE and JU on 41 vote days, 2013-03-03 to 2025-11-30, explained by entry
   6831 Moutier; `git status --short` shows no `__pycache__`.
-- [ ] 1.2 Update `investigations/data-sources.md`: add the script to the table of files and its
+- [x] 1.2 Update `investigations/data-sources.md`: add the script to the table of files and its
   output to "Output"; add a section "Found while proposing add-vote-data" with the three facts,
   with Clavaleyres (merged into Murten, FR, on 2022-01-01; its votes are inside Murten's entry)
   and with one sentence that `calculation/src/reference-votes.json` has Moutier under JU for

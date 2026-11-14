@@ -24,7 +24,8 @@ investigation (2026-11-14); task group 1 adds them to the investigation with a s
   canton figures for the 115 votes before 2026 still count it for Bern: there the entries of
   Bern and of Jura do not sum to the canton's figures (4,764 registered voters on 2013-03-03).
   Counting it for either canton changes no cantonal vote and no verdict in any of the 115
-  votes; the closest case is Jura on 2016-02-28, id 5990, decided by 99 votes.
+  votes; counted for the other canton, the closest case is Bern on 2017-09-24, id 6150, then
+  decided by 47 votes.
 
 Three spikes were run, outside the repository:
 
