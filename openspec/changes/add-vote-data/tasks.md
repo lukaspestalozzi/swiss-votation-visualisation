@@ -71,43 +71,57 @@ says so in a note "As built".
 Fixtures are small made-up files in the shape of the real ones, in `pipeline/tests/fixtures/`:
 two cantons, a handful of municipalities, three votes.
 
-- [ ] 3.1 `pipeline/src/pipeline/counts.py` and `tests/test_counts.py` (spec `vote-data`,
+- [x] 3.1 `pipeline/src/pipeline/counts.py` and `tests/test_counts.py` (spec `vote-data`,
   "Every count is a whole number from zero"; design, decision 9): the one function every count
   passes, with an error that carries the file, the vote, the entry and the figure. Tests, one
   after the other: a whole number from zero is returned as it is (0 and 1398); a missing value
   is refused; 550.0 is refused; the text "1398" is refused; -1 is refused; `True` is refused.
   Verify: `$UV pytest -q tests/test_counts.py` reports 6 passed, and the error of the missing
-  value contains the file name, the vote id, the entry number and "yes votes".
-- [ ] 3.2 `pipeline/src/pipeline/feed.py` and `tests/test_feed.py`, the votes of a BFS file
+  value contains the file name, the vote id, the entry number and "yes votes". (As built: one
+  condition covers all five refusals, so their tests passed when written; each was seen to fail
+  against a mutant of the function that accepts its value.)
+- [x] 3.2 `pipeline/src/pipeline/feed.py` and `tests/test_feed.py`, the votes of a BFS file
   (spec `vote-data`: "The votes covered", "The list of votes", "The kind of a vote"; spec
   `municipalities`: "One list of municipalities for all votes"). Tests, one after the other: a
   vote is read with its id, date, kind and three titles; the code 7 stops with the vote and the
   code; code 2 with the double majority stops; a missing Italian title stops with the vote and
   the language; a vote that is not closed is left out and named; the reference date of the file
   is read; a file without one stops. Verify: `$UV pytest -q tests/test_feed.py` reports 7
-  passed.
-- [ ] 3.3 The entries of a vote in `feed.py` (spec `vote-data`: "The entries of a vote", "Every
+  passed. (As built: 8; the title test is two, a missing and an empty title. The tests of the
+  left-out vote and of the reference date passed when written, since the first test needed that
+  code; each was seen to fail against a mutant. The fixtures are built by
+  `pipeline/tests/made_up.py`, not kept as files: every test breaks its own copy, and the sums
+  always add up.)
+- [x] 3.3 The entries of a vote in `feed.py` (spec `vote-data`: "The entries of a vote", "Every
   count is a whole number from zero", "The valid ballots and the votes"). Tests, one after the
   other: the entries are read with canton, number and five counts; missing yes votes in an
   entry of a complete vote stop with file, vote, entry and "yes votes"; more valid ballots than
   ballots cast stop; more ballots cast than registered voters stop; in a popular initiative,
   valid ballots other than yes plus no stop; in an initiative with a counter-proposal, more
   valid ballots than yes plus no are accepted; fewer stop. Verify: `$UV pytest -q
-  tests/test_feed.py` reports 14 passed, and `$UV mypy` passes.
-- [ ] 3.4 `pipeline/src/pipeline/chancellery.py` and `tests/test_chancellery.py` (spec
+  tests/test_feed.py` reports 14 passed, and `$UV mypy` passes. (As built: 22. Added
+  while building, each failing first: a canton numbered outside 1 to 26 stops (canton 0 was read
+  as JU), a verdict that is not true or false stops, cantonal votes that are not whole numbers
+  stop, and the cantonal votes and the verdict are read. The first two tests passed when
+  written and were seen to fail against mutants.)
+- [x] 3.4 `pipeline/src/pipeline/chancellery.py` and `tests/test_chancellery.py` (spec
   `vote-data`: "The result of a vote", "The Chancellery's reference and note"; design, decision
   15). Tests, one after the other: a validated row is read with number, yes, no, cantonal
   votes, verdict, reference and note in three languages; a row without figures is not
   validated; an optional referendum has no cantonal votes; two rows with one id stop; a
   validated row with neither "accepted" nor "rejected" stops, except for a tie-break question;
   a validated row without a reference stops; the vote days are listed. Verify: `$UV pytest -q
-  tests/test_chancellery.py` reports 7 passed.
-- [ ] 3.5 `pipeline/src/pipeline/register.py` and `tests/test_register.py` (spec
+  tests/test_chancellery.py` reports 7 passed. (As built: the reader keeps a missing verdict as none,
+  since only the BFS file knows whether the vote is a tie-break question; the check that stops
+  on it is a test of 4.3. Four tests passed when written, as the first test needed their code;
+  each was seen to fail against a mutant.)
+- [x] 3.5 `pipeline/src/pipeline/register.py` and `tests/test_register.py` (spec
   `municipalities`, "The list of municipalities"; design, decision 15). Tests, one after the
   other: the municipalities are read with number, name and canton, the canton found through the
   district; a number given twice stops with the number; a municipality without a name, or under
   a canton that is not one of the 26, stops. Verify: `$UV pytest -q tests/test_register.py`
-  reports 3 passed.
+  reports 3 passed. (As built: 3 tests, one of them with three cases, so pytest reports 5. The
+  refusals were written with the first test; each was seen to fail against a mutant.)
 
 ## 4. The checks between the sources
 
