@@ -53,7 +53,8 @@ context: |
   - Svelte 5 with SvelteKit 3 and its static adapter, built with Vite 8; every page is
     prerendered. TypeScript 6. A pnpm workspace on Node 24. Prettier and ESLint (type-aware,
     no issue allowed). Vitest for unit tests; Playwright for browser tests against the built
-    site. The design of the change add-project-skeleton gives the reasons and the alternatives.
+    site. The design of the archived change add-project-skeleton gives the reasons and the
+    alternatives.
   - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
     names it): how the map is drawn, the language of the pipeline and its tools, the hosting
     target, and how the three interface languages are handled.

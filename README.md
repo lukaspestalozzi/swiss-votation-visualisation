@@ -29,7 +29,7 @@ code is written without an approved change. `CLAUDE.md` describes the workflow s
 
 | Path | What |
 |------|------|
-| `openspec/specs/` | What the app does, one spec per capability. Empty until the first change is archived. |
+| `openspec/specs/` | What the app does, one spec per capability. |
 | `openspec/changes/` | Changes in progress; finished ones are under `archive/`, with their proposal, design decisions and tasks. |
 | `openspec/config.yaml` | Project context: product, hard constraints, stack, modules, quality bar and glossary. |
 | `docs/roadmap.md` | Planned changes and their status. |

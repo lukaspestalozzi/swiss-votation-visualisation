@@ -7,15 +7,15 @@ a working title: the name is not decided.
 
 **Status:** the skeleton. One page shows the 26 cantons and their cantonal votes; the build, the
 checks, the module boundaries and CI are in place. Change #1 of `docs/roadmap.md`,
-`add-project-skeleton`, is applied and waits to be verified and archived. Next: the first
-investigation (data sources), before #2 and #3. `README.md` is the human-facing overview.
+`add-project-skeleton`, is archived, and `openspec/specs/` holds its three specs. Next: the
+first investigation (data sources), before #2 and #3. `README.md` is the human-facing overview.
 
 ## Where things are
 
 | Path | What |
 |------|------|
 | `openspec/config.yaml` | Project context and rules: product, hard constraints, decided stack and what is still open, module boundaries, quality bar, glossary. Read first. |
-| `openspec/specs/` | Current truth: what the app does. Empty until the first change is archived. |
+| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `result-calculation`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
 | `investigations/` | Spikes and verified reference values (test oracles). It does not exist yet: the first investigation creates it. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
