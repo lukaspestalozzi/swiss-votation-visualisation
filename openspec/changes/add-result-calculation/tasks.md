@@ -9,7 +9,7 @@ Each test is written first and seen to fail before the code that makes it pass, 
 
 ## 1. Reference data
 
-- [ ] 1.1 Write `investigations/data-sources/write_reference_votes.py` (design, decision 3): it
+- [x] 1.1 Write `investigations/data-sources/write_reference_votes.py` (design, decision 3): it
   downloads the BFS files of the six vote days into a data directory with `fetch` of
   `sources.py`, writes the seven votes to the file given as second argument, one canton per
   line, and prints one line per vote with its entries, yes, no and cantonal votes. Verify:
@@ -19,11 +19,11 @@ Each test is written first and seen to fail before the code that makes it pass, 
   votes of 6.5 : 16.5); `python3 -c "import json;
   d=json.load(open('calculation/src/reference-votes.json')); print(len(d['votes']),
   {len(v['entries']) for v in d['votes']})"` prints `7 {26}`.
-- [ ] 1.2 List `calculation/src/reference-votes.json` in `.prettierignore`, with the reason.
+- [x] 1.2 List `calculation/src/reference-votes.json` in `.prettierignore`, with the reason.
   Verify: `pnpm run format` leaves the file unchanged (`git status --short` shows it as new,
-  `wc -l` prints 242), and `pnpm run format:check` prints `All matched files use Prettier code
+  `wc -l` prints 243), and `pnpm run format:check` prints `All matched files use Prettier code
   style!`.
-- [ ] 1.3 Update `investigations/data-sources.md`: add number 568 to the reference values (BBl
+- [x] 1.3 Update `investigations/data-sources.md`: add number 568 to the reference values (BBl
   2013 3129), add the script to the table of files, and add the section "Reference data for the
   calculation": the file, its source and list of municipalities, what changes when the script
   runs again, the counts of entries, and the figures the spec's scenarios use that are not in

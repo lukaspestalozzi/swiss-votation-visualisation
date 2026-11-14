@@ -6,3 +6,6 @@ docs/
 .claude/
 .github/
 pnpm-lock.yaml
+
+# Reference data of the calculation, written by a script with one canton per line.
+calculation/src/reference-votes.json
