@@ -227,15 +227,17 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
 
 ## 7. The calculation over the data files
 
-- [ ] 7.1 Add Vitest to the app: `vitest` as a development dependency of `app/package.json` in
+- [x] 7.1 Add Vitest to the app: `vitest` as a development dependency of `app/package.json` in
   the version the calculation uses, the script `test`, and in `app/vite.config.ts`
   `test.include` `src/**/*.test.ts` (design, decision 10). Write `app/src/lib/vote-data.ts` with
   the types of the four data files (design, decision 12) and
   `app/src/lib/vote-data.test.ts` with the first test, "every vote of the list has its file,
   and no file is left over". Verify: `pnpm install` adds no `minimumReleaseAgeExclude` entry;
   `pnpm run test` reports 34 passed for the calculation and 1 passed for the app; `pnpm run
-  check` and `pnpm run lint` pass; `pnpm run test:e2e` still reports 4 passed.
-- [ ] 7.2 The rules over every vote (spec `vote-data`, "The calculation gives the result of
+  check` and `pnpm run lint` pass; `pnpm run test:e2e` still reports 4 passed. (As built: the
+  test passed when written, its import of the types being erased at run time; it was seen to
+  fail with one vote file moved aside, and `pnpm run check` failed until the types existed.)
+- [x] 7.2 The rules over every vote (spec `vote-data`, "The calculation gives the result of
   every vote"). Tests, one after the other: for every vote whose kind is calculated, the
   calculated yes and no votes equal the sums, the cantonal votes equal the result's where it
   has them, and the verdict equals the result's; a validated vote has cantonal votes in its
@@ -243,15 +245,22 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   and its entries sum to the yes and no votes of the list. Verify: `pnpm run test` reports 4
   passed for the app. Then the control: with one yes vote temporarily added to an entry of the
   canton of Jura in `app/static/data/votes/5990.json`, the test fails and names id 5990;
-  restore the file with `git checkout`.
-- [ ] 7.3 The named votes (the same requirement, and spec `municipalities`). Tests, one after
+  restore the file with `git checkout`. (As built: the three tests passed when written, the data
+  being right; the control made the first fail naming vote 5990, cantonal votes given to the
+  optional referendum 5990 made the first two fail, and one more yes vote in the tie-break
+  question 6823 made the third fail.)
+- [x] 7.3 The named votes (the same requirement, and spec `municipalities`). Tests, one after
   the other: id 5960 gives 1,609,152 : 1,664,224, 16.5 : 6.5, failed; id 5670 gives 1,283,951 :
   1,078,531, 10 : 13, failed; id 6790 gives 1,384,586 : 1,363,362, passed; id 6650 gives
   1,884,096 : 1,350,525, 15 : 8, passed, and its result has 1,350,325 no votes; Moutier is
   under BE in id 5670 and under JU in id 6850; in every vote file, every municipality of the
   list is exactly one entry or named as without a result, and for id 5960 these are the seven
   of the scenario. Verify: `pnpm run test` reports 34 passed for the calculation and 10 passed
-  for the app; `./scripts/verify-local.sh --quick` passes both of its steps.
+  for the app; `./scripts/verify-local.sh --quick` passes both of its steps. (As built: the figures
+  are the investigation's official ones, an oracle independent of the pipeline; the tests passed
+  when written. Moving Moutier's entry of vote 5670 from BE to JU made only the Moutier test
+  fail, as the investigation predicts, and listing a municipality that has an entry as without
+  a result made the last test fail.)
 
 ## 8. The project context and the documents
 
