@@ -1,32 +1,140 @@
 schema: spec-driven
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+context: |
+  Product: a web app that shows how Switzerland voted in national popular votes, municipality by
+  municipality, and lets the user ask "what would the result have been if only municipalities of
+  a certain kind had voted?". The user picks a vote, sets a lower and an upper limit on
+  characteristics of municipalities (share of foreigners, age structure, party strength,
+  language, ...), and sees the map and the national verdict recalculated from the municipalities
+  that remain. Users: the curious public, anyone who knows what a Swiss popular vote is, without
+  statistical training and without a manual. Core value: directly steering a real vote result
+  and seeing which kinds of municipalities carry it. Working title: "Popular Vote Explorer"; the
+  names of the product and of its packages are not decided.
+  - A thought experiment, not a forecast. The app shows what happens when whole municipalities
+    are set aside, not how individual people voted, and it makes this clear to the user.
+  - General purpose. Any figure that is available for every municipality can become a
+    characteristic; adding one does not require redesigning the app.
+  - Says what it does. Every control is labelled so that a person without statistical training
+    understands which municipalities they are keeping.
+  - Covers all national votes from 2013 to today, with each new vote day added. The interface
+    and the vote titles are in German, French and Italian. The app is usable on a phone.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Hard constraints
+  1. Matches the official results. With no limit set, every covered vote shows exactly the
+     official federal result: the yes votes, the valid votes and the yes share of the voters, and
+     the number of cantonal votes in favour.
+  2. Follows the real voting rules. The majority of voters is more than half of the valid votes.
+     Each canton has one cantonal vote, except Obwalden, Nidwalden, Basel-Stadt,
+     Basel-Landschaft, Appenzell Ausserrhoden and Appenzell Innerrhoden with half a vote each (23
+     in total); a tie of cantonal votes is a rejection. Popular initiatives and mandatory
+     referendums need both majorities; optional referendums need only the majority of voters. A
+     canton whose municipalities are all filtered out has no cantonal vote, and the number of
+     cantonal votes needed shrinks accordingly.
+  3. Recalculates immediately. The map and both verdicts update while a limit is being dragged,
+     without a button. The budget in milliseconds is not decided; the change that adds the limits
+     sets it.
+  4. Public data, reproducible, private. Only public sources, each named. Every data file the
+     app loads can be regenerated from them by the pipeline. No accounts and no tracking of
+     users.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  Predecessor
+  - lukaspestalozzi/votation-visualisation (branch master), a course project from 2017, is the
+    source of the idea. It is to learn from, not to port: neither its code nor its data files are
+    copied. docs/roadmap.md lists its failure modes, each with the change that specifies against
+    it.
+
+  Tech stack (decided)
+  - A static web app in TypeScript. All filtering and recalculation runs in the browser; there
+    is no server, no database and no login, so the app can be served from static hosting. Reason:
+    the data is a few megabytes per year, so the browser can do the work and the result is
+    instant. Rejected: a web app with a backend (hosting cost and latency for nothing at this
+    data size) and a Python dashboard (every slider move is a server round trip).
+  - A separate offline data pipeline turns the public sources into the data files the app loads.
+  - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
+    names it): the UI framework (or none), the build tool, how the map is drawn, the language of
+    the pipeline, the formatter, linter and test tools, the hosting target, and how the three
+    interface languages are handled.
+  - Not verified: whether the public sources offer the results per municipality for every
+    national vote since 2013 and the characteristics for matching years, and how votes that
+    belong to no municipality on the map are counted. The first investigation settles this
+    (docs/roadmap.md).
+
+  Modules (their names and directories are decided in the first change)
+  - pipeline: offline. It turns the public sources into the data files the app loads and checks
+    them. The app and the calculation never import it; they share only the data files and their
+    format with it.
+  - calculation: the limits on characteristics, the sums, both majorities and the verdict. Pure
+    TypeScript that depends on neither of the other modules, nor on the DOM or a UI framework.
+    Tested against official results.
+  - app: the user interface in the browser (list of votes, map, limits, verdicts). It depends on
+    the calculation; the calculation never depends on the app.
+  - Not decided: whether the pipeline uses the calculation for its checks. It depends on the
+    language of the pipeline.
+
+  Quality bar
+  - CI (.github/workflows/ci.yml) and ./scripts/verify-local.sh run the same checks in the same
+    order. Today that is the OpenSpec validation; the first change adds formatter or linter,
+    static analysis, tests and build.
+  - The linter runs at zero issues; no suppressed warning without a written justification.
+  - Numeric behavior is tested against reference values with explicit tolerances. Counts of
+    votes and of cantonal votes are exact. investigations/ holds the reference values with their
+    sources.
+  - Conventional commits, `type(scope): description` (feat, fix, refactor, test, docs, chore,
+    style, ci); files are staged individually, never with `git add .`.
+  - Code, comments, specs, docs and commit messages are in English.
+
+  Glossary
+  - Vote: one national proposal put to the voters (Vorlage). A vote day (Abstimmungstag) can
+    hold several votes.
+  - Kind of vote: popular initiative (Volksinitiative), mandatory referendum (obligatorisches
+    Referendum) or optional referendum (fakultatives Referendum). It decides which majorities
+    are needed (Federal Constitution, art. 140 to 142).
+  - Valid votes: the yes votes plus the no votes. Blank and invalid ballots are disregarded
+    (Federal Act on Political Rights, art. 13 para. 1).
+  - Majority of voters (Volksmehr): more than half of the valid votes are yes.
+  - Cantonal vote (Standesstimme): the vote of a canton; it goes to the side that won among the
+    canton's voters. A canton with as many yes votes as no votes counts as voting no (Federal Act
+    on Political Rights, art. 13 para. 2). One vote per canton, half a vote for the six cantons
+    named in hard constraint 2.
+  - Majority of cantons (Ständemehr): more than half of the cantonal votes are in favour.
+  - Double majority (doppeltes Mehr): the majority of voters and the majority of cantons.
+  - Verdict: passed or failed, shown separately for the majority of voters and for the majority
+    of cantons.
+  - Official result: the federal result of a vote as published by the Confederation.
+  - Municipality (Gemeinde): the unit the results are published for, and the unit that is
+    filtered. Municipalities merge every year, so a list of municipalities is valid only with
+    its reference date.
+  - Reference date: the date whose list of municipalities a data set uses.
+  - Characteristic: a figure available for every municipality that can be limited, for example
+    the share of foreigners or the cows per inhabitant.
+  - Limit: the lower or the upper bound the user sets on a characteristic. A municipality
+    remains only if it lies within the limits of all characteristics at once.
+  - Set aside: said of a municipality outside a limit. It is left out of the recalculation as
+    if it had never existed, and it is grey on the map.
+  - Selection: the municipalities that remain under the current limits.
+
+rules:
+  proposal:
+    - Include a "Non-goals" section.
+    - Name the docs/roadmap.md entry this change implements, or state that it is off-roadmap and why.
+  specs:
+    - Numeric behavior is specified with concrete values and tolerances.
+    - Specify the behavior when required data is missing or unavailable; never rely on an implicit default.
+    - A requirement about a result (votes, yes share, cantonal votes, verdict) has at least one scenario with the official figures of a named vote, cited from investigations/.
+    - Every data set a requirement relies on names its public source, the reference date of its list of municipalities, and the pipeline step that regenerates it.
+  design:
+    - Ask the user about every decision that changes the specs, the approach or the task breakdown while drafting; record the answer under Decisions with the alternatives considered. "Open Questions" holds only deferrable unknowns.
+    - State a performance budget for any computation triggered by user interaction.
+    - Name every dependency the change adds and why. Everything the app needs at run time is served with it; it requests nothing from third-party servers.
+  tasks:
+    - Every task ends with its verification step, the exact command or manual check plus the expected result.
+    - Tests are written and run together with the code they cover, one at a time.
+    - The last task updates the code map and the "Where things are" table in CLAUDE.md for every file or package the change adds, moves or removes.
+
+operations:
+  apply:
+    guidance:
+      - Run ./scripts/verify-local.sh before pushing; report failures with the raw error, do not silently retry.
+  archive:
+    guidance:
+      - Run the verify workflow before archiving, and update the change's status in docs/roadmap.md.
