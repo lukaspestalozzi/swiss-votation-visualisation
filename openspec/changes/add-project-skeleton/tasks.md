@@ -109,7 +109,7 @@ Each task adds one temporary file, runs the check and removes the file.
 
 ## 5. Checks locally, in CI and in web sessions
 
-- [ ] 5.1 Extend `scripts/verify-local.sh`: the six steps `pnpm run format:check`, `lint`,
+- [x] 5.1 Extend `scripts/verify-local.sh`: the six steps `pnpm run format:check`, `lint`,
   `check`, `test`, `build`, `test:e2e` after the OpenSpec validation, the header (steps,
   requirements: Node, pnpm, the installed dependencies, the browser), and `--quick` as `pnpm run
   test`. Verify: `./scripts/verify-local.sh` ends with `All 7 steps passed` and status 0;
@@ -120,15 +120,15 @@ Each task adds one temporary file, runs the check and removes the file.
   of `scripts/verify-local.sh` (compare both lists); `grep -c "node-version: '24'"
   .github/workflows/ci.yml` prints `2`; after the push, the `specs` and the `build` job of the
   pull request are green.
-- [ ] 5.3 Make the script refuse a major version of Node other than the `node-version` of
+- [x] 5.3 Make the script refuse a major version of Node other than the `node-version` of
   `.github/workflows/ci.yml`, the way it refuses another OpenSpec version. Verify:
   `PATH=/opt/node22/bin:$PATH ./scripts/verify-local.sh` runs no step, prints the installed and
   the expected version, and exits 1; with Node 24, `./scripts/verify-local.sh --quick` exits 0.
-- [ ] 5.4 Check the behaviour on a failure. Verify: with one expected value in
+- [x] 5.4 Check the behaviour on a failure. Verify: with one expected value in
   `calculation/src/cantons.test.ts` temporarily changed, `./scripts/verify-local.sh` still runs
   the build and the browser test, prints `[FAIL] pnpm run test` and `1 of 7 steps failed`, and
   exits 1; after restoring the value, `All 7 steps passed`.
-- [ ] 5.5 Update `.claude/hooks/session-start.sh` (design, decision 12). Verify: with `f=$(mktemp)`,
+- [x] 5.5 Update `.claude/hooks/session-start.sh` (design, decision 12). Verify: with `f=$(mktemp)`,
   `CLAUDE_CODE_REMOTE=true CLAUDE_ENV_FILE=$f PATH=/opt/node22/bin:$PATH
   ./.claude/hooks/session-start.sh` exits 0 and prints nothing; `bash -c "source $f && node
   --version && pnpm --version && openspec --version"` prints `v24.`…, `12.18.0` and `2.0.0`; a

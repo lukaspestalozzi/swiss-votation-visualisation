@@ -17,9 +17,50 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Validate OpenSpec specs and changes
         env:
           OPENSPEC_TELEMETRY: '0'
         run: npx --yes @fission-ai/openspec@2.0.0 validate --all --strict --no-interactive
+
+  # The steps of scripts/verify-local.sh after the OpenSpec validation, in the same order.
+  # This job does not wait for `specs`: both always run, so one run shows every failure.
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Install pnpm in the version package.json pins
+        run: npm install -g "$(node -p "require('./package.json').packageManager")"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: pnpm run format:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Static analysis
+        run: pnpm run check
+
+      - name: Unit tests
+        run: pnpm run test
+
+      - name: Build the site
+        run: pnpm run build
+
+      - name: Install the browser of the browser tests
+        run: pnpm --filter app exec playwright install --with-deps chromium
+
+      - name: Browser tests
+        run: pnpm run test:e2e
