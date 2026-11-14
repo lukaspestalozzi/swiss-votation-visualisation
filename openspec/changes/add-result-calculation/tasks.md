@@ -49,29 +49,32 @@ Each test is written first and seen to fail before the code that makes it pass, 
 
 In `calculation/src/result.ts` and `calculation/src/result.test.ts`, with made-up figures.
 
-- [ ] 3.1 Write the test "the votes and the yes share" (two entries, 60 yes and 40 no, 30 yes and
+- [x] 3.1 Write the test "the votes and the yes share" (two entries, 60 yes and 40 no, 30 yes and
   70 no: yes 90, no 110, valid 200, yes share 0.45), then the types of design decision 5 and
   `calculateResult` as far as the test needs. Verify: `pnpm run test` reports 12 passed.
-- [ ] 3.2 Write, one after the other, the tests "a canton with as many yes as no votes counts
+- [x] 3.2 Write, one after the other, the tests "a canton with as many yes as no votes counts
   against" (Uri, 60 : 40 and 40 : 60), "a canton whose entries have no vote counts against"
   (Uri, 0 : 0) and "a canton with half a vote" (Obwalden, 60 : 40: 0.5 in favour, 0 against),
   each failing first, then the cantonal votes. Verify: `pnpm run test` reports 15 passed.
-- [ ] 3.3 Write, one after the other, the tests "as many yes as no votes: no majority of voters"
+  (As built: the test of the canton without votes passed at once, since the rule for a tied
+  canton covers it; it was seen to fail with a tie counted in favour.)
+- [x] 3.3 Write, one after the other, the tests "as many yes as no votes: no majority of voters"
   (500 : 500), "the cantonal votes split evenly: no majority of cantons" (the twelve and
   fourteen cantons of the spec's scenario: 11.5 : 11.5) and "fewer cantons remain" (ZH and BE in
   favour, LU against: 2 : 1, reached), then both majorities. Verify: `pnpm run test` reports 18
-  passed.
-- [ ] 3.4 Write the test "the verdict needs the cantons only where the kind does" (ZH 100 : 10,
+  passed. (As built: "fewer cantons remain" passed at once; it was seen to fail with the
+  majority of cantons fixed at more than 11.5.)
+- [x] 3.4 Write the test "the verdict needs the cantons only where the kind does" (ZH 100 : 10,
   BE 10 : 20, LU 10 : 20: with both majorities failed, with the voters only passed), see it
   fail, then the verdict. Verify: `pnpm run test` reports 19 passed.
-- [ ] 3.5 Write the test "nothing remains" (no entries, for both kinds of majorities: 0 yes, 0 no,
+- [x] 3.5 Write the test "nothing remains" (no entries, for both kinds of majorities: 0 yes, 0 no,
   0 valid, no yes share, cantonal votes 0 : 0, neither majority reached, failed). Verify:
   `pnpm run test` reports 20 passed.
-- [ ] 3.6 Write, one after the other, the tests "a canton that does not exist" (`XX`), "votes
+- [x] 3.6 Write, one after the other, the tests "a canton that does not exist" (`XX`), "votes
   below zero" (Uri, -1 yes) and "votes that are not whole" (Uri, 1.5 no), each expecting an
   error that names the canton, each failing first, then the check. Verify: `pnpm run test`
   reports 23 passed.
-- [ ] 3.7 Check that a tie-break question cannot reach the calculation. Verify: with a temporary
+- [x] 3.7 Check that a tie-break question cannot reach the calculation. Verify: with a temporary
   `calculation/src/violation.ts` that calls `calculateResult([],
   majoritiesNeeded('tie-break-question'))`, `pnpm run check` fails with `error TS2345` for
   `violation.ts`; without it, `pnpm run check` exits 0.
