@@ -297,8 +297,10 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   line), a dependency declared without updating the lockfile (each of the four checks stops),
   one failing unit test (all 11 steps run, one fails), and the 71 votes for which both sources
   give cantonal votes, all equal.)
-- [ ] 9.3 Push the branch and open the pull request as a draft. Verify: the CI run shows the
-  three jobs `specs`, `build` and `pipeline`, each passed.
+- [x] 9.3 Push the branch and open the pull request as a draft. Verify: the CI run shows the
+  three jobs `specs`, `build` and `pipeline`, each passed. (As built: the draft pull request #6
+  was opened with the proposal and its description updated; the run of commit df03ead passed
+  all three jobs.)
 
 ## Workflow follow-up
 
