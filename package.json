@@ -11,7 +11,10 @@
     "format:check": "prettier --check .",
     "lint": "eslint --max-warnings 0 .",
     "check": "pnpm -r run check",
-    "test": "pnpm -r run test"
+    "test": "pnpm -r run test",
+    "build": "pnpm --filter app run build",
+    "dev": "pnpm --filter app run dev",
+    "test:e2e": "pnpm --filter app run test:e2e"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
