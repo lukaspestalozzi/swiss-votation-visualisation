@@ -106,7 +106,7 @@ User decision.
 │   ├── src/
 │   │   ├── app.html
 │   │   ├── app.d.ts
-│   │   └── routes/         +layout.ts, +layout.svelte, +page.svelte
+│   │   └── routes/         +layout.ts, +page.svelte
 │   └── e2e/
 │       └── start-page.spec.ts
 └── pipeline/
@@ -285,8 +285,10 @@ Chromium for the browser test is already in the image.
 The app starts from the official scaffolder, pinned: `pnpm dlx sv@1.3.0 create app --template
 minimal --types ts --add sveltekit-adapter="adapter:static" --no-install`. Then it is reduced to
 the files of decision 3: the scaffolder's README, `.gitignore`, `.npmrc`, `.vscode/`,
-`static/robots.txt`, `src/lib/` with the Svelte logo used as favicon, and the `#lib` import
-alias are removed, and `prepare` loses its `|| echo ''`, which would hide a failure. The
+`static/robots.txt`, `src/lib/` with the Svelte logo used as favicon, the `#lib` import alias
+and `src/routes/+layout.svelte` (without the favicon it would only render the page, which
+SvelteKit does by default) are removed, and `prepare` loses its `|| echo ''`, which would hide
+a failure. `@types/node` is not added: the checks pass without it. The
 formatter, the linter and the tests are set up by hand as in decisions 7 and 8, not by the
 scaffolder's add-ons.
 
@@ -311,7 +313,6 @@ Development tools of `app/`:
 | `vite` | ^8.3 | The bundler SvelteKit builds with. |
 | `svelte-check` | ^4.7 | Static analysis of `.svelte` and `.ts` files of the app. |
 | `typescript` | ^6.0.3 | The compiler behind `svelte-check`. |
-| `@types/node` | ^24 | Types for the app's configuration files, which run in Node. |
 | `@playwright/test` | 1.63.0 | The browser test (decision 8). |
 | `sirv-cli` | ^3.0 | The plain static file server the browser test uses. |
 

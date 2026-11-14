@@ -52,34 +52,34 @@ the `PATH`, and start every command with `export PATH=/opt/node24/bin:$PATH &&`.
 
 ## 3. App module
 
-- [ ] 3.1 Scaffold the app with the command of design decision 13 and reduce it to the files of
+- [x] 3.1 Scaffold the app with the command of design decision 13 and reduce it to the files of
   decision 3: remove what decision 13 lists, declare `calculation` (`workspace:*`) as its
-  dependency and `@types/node` as a development tool, set `prepare` to `svelte-kit sync` and
+  dependency, set `prepare` to `svelte-kit sync` and
   `check` to `svelte-check --tsconfig ./tsconfig.json`, set `rootDir` to `.` in
   `app/tsconfig.json`, add `src/routes/+layout.ts` with `prerender = true`, and set the root
   scripts `build`, `dev` and `test:e2e` to the app's. Verify: `pnpm install` exits 0 and
   `app/.svelte-kit/` exists; `pnpm run check` ends with `0 ERRORS 0 WARNINGS`;
   `ls node_modules | grep -cx svelte` prints `0`.
-- [ ] 3.2 Write the start page: the heading "Popular Vote Explorer" and the table of the cantons
+- [x] 3.2 Write the start page: the heading "Popular Vote Explorer" and the table of the cantons
   with the total, all read from `calculation`; `lang="en"` in `app.html`. Verify: `pnpm run
   build` exits 0 and writes `app/build/index.html`; `grep -o '<td>[A-Z][A-Z]</td>'
   app/build/index.html | wc -l` prints `26`; `grep -c 'Popular Vote Explorer'
   app/build/index.html` prints at least `1`.
-- [ ] 3.3 Add `@playwright/test` (exactly `1.63.0`) and `sirv-cli` to the app,
+- [x] 3.3 Add `@playwright/test` (exactly `1.63.0`) and `sirv-cli` to the app,
   `app/playwright.config.ts` (the tests in `app/e2e/`, the web server `sirv build` on port
   4173) and the script `test:e2e`. Write the first browser test: the heading is shown, the
   table has 26 rows of cantons, the first is `ZH` and the last `JU`. Verify: after `pnpm run
   build`, `pnpm run test:e2e` reports `1 passed`.
-- [ ] 3.4 Write the browser tests "the six cantons with half a vote" (those six rows show `0.5`,
+- [x] 3.4 Write the browser tests "the six cantons with half a vote" (those six rows show `0.5`,
   the other 20 show `1`) and "the total" (`23`), one after the other. Verify: `pnpm run
   test:e2e` reports `3 passed`.
-- [ ] 3.5 Write the browser test "all requests go to the site itself": it records the origin of
+- [x] 3.5 Write the browser test "all requests go to the site itself": it records the origin of
   every request until the network is idle and expects only the page's own. Verify: `pnpm run
   test:e2e` reports `4 passed`; with a temporary `<link rel="stylesheet"
   href="https://fonts.googleapis.com/css2?family=Inter">` in `app/src/app.html` and a new build,
   it reports `1 failed` and the output names `https://fonts.googleapis.com`; after removing the
   link and building again, `4 passed`.
-- [ ] 3.6 Run the root tools over the app. Verify: `pnpm run format:check`, `pnpm run lint` and
+- [x] 3.6 Run the root tools over the app. Verify: `pnpm run format:check`, `pnpm run lint` and
   `pnpm run check` each exit 0; with a temporary unawaited call of an `async` function in the
   script of `+page.svelte`, `pnpm run lint` exits 1 and reports
   `@typescript-eslint/no-floating-promises` for `+page.svelte`.
