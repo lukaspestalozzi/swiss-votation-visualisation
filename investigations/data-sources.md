@@ -25,6 +25,7 @@ python3 check_chancellery.py /path/outside/the/repository
 python3 check_municipality_lists.py /path/outside/the/repository
 python3 reference_votes.py /path/outside/the/repository
 python3 write_reference_votes.py /path/outside/the/repository ../../calculation/src/reference-votes.json
+python3 check_ids_and_cantons.py /path/outside/the/repository
 ```
 
 | File | What |
@@ -38,6 +39,7 @@ python3 write_reference_votes.py /path/outside/the/repository ../../calculation/
 | `check_municipality_lists.py` | Which list of municipalities each source uses. |
 | `reference_votes.py` | The votes in which the rules matter, with their figures. |
 | `write_reference_votes.py` | Writes the reference data of the calculation; see "Reference data for the calculation". It downloads the six vote days it needs by itself. |
+| `check_ids_and_cantons.py` | Added with the change `add-vote-data`: the ids of the Chancellery's rows, the registered voters, and the two changes of canton; see "Found while proposing add-vote-data". It downloads what it needs by itself. |
 
 "Output" at the end of this file is what these scripts printed on 2026-11-14. The sources
 change (see "The list of municipalities"), so a later run can differ; the reference values
@@ -149,6 +151,10 @@ Council validated it.
 
 - Of the 125 votes with a result in the feed, 117 have figures at the Chancellery. For 116, yes
   and no are identical, and so are the cantonal votes where the double majority is needed.
+- The Chancellery's national rows carry the BFS's id (`vote:id`), and each of the 125 votes
+  has exactly one row with its id. `check_chancellery.py` matches by the number, which does not
+  tell the three questions of number 682 apart; the change `add-vote-data` matches by the id
+  (see "Found while proposing add-vote-data").
 - **One differs.** Number 665, 2024-03-03, popular initiative "Für ein besseres Leben im Alter
   (Initiative für eine 13. AHV-Rente)": the Chancellery has 1,350,325 no votes (BBl 2024 996);
   the table and the feed have 1,350,525, and their municipal entries sum to that. The yes votes
@@ -242,6 +248,39 @@ results of Switzerland:
 The yes share of number 596 without the canton of Zürich is 50.3945%. The figures of the canton
 of Zürich are the feed's result for that canton.
 
+## Found while proposing add-vote-data
+
+Three facts found on 2026-11-14 by running the checks the change `add-vote-data` plans over the
+downloads above. `check_ids_and_cantons.py` prints them (see "Output").
+
+**The Chancellery's rows carry the BFS's id.** Each national row has the property `vote:id`,
+the BFS's id of the vote (5960 for number 596; 6821, 6822 and 6823 for the three questions of
+number 682). All 125 votes with a result in the feed have exactly one row with their id. Of
+them, 117 are validated, and 116 have the same yes and no votes in both sources.
+
+**The two sources differ in the registered voters.** Of the 117 validated votes, the
+Chancellery's national number of registered voters differs from the feed's in 39, by 23 to
+3,135, and the ballots cast in 5, by 1 to 4,424. The Chancellery has no figures per
+municipality, so these differences cannot be traced to an entry.
+
+**Two municipalities changed canton.** The register's snapshots show both:
+
+- **Moutier** was BFS number 700 in the canton of Bern until 2025-12-31, and is 6831 in the
+  canton of Jura since 2026-01-01. The feed lists it as 6831 under Jura for every vote, while
+  its figures for the cantons still count it for Bern in the votes before 2026. So in 115
+  votes on 41 vote days, 2013-03-03 to 2025-11-30, the entries of Bern sum to less than the
+  canton's figures and those of Jura to more, each time by exactly the entry 6831. Counting it
+  for the other canton changes the outcome of no canton in these votes; the closest case is
+  Bern on 2017-09-24, vote 6150, which would then be decided by 47 votes.
+- **Clavaleyres** (661, canton of Bern) is in the snapshot of 2021-12-31 and not in the one of
+  2022-01-01: it merged into Murten (2275, canton of Fribourg). Its votes are inside Murten's
+  entry for every vote, and the feed's figures for the cantons agree with that, so no check on
+  the sums can see it. How many votes it had cannot be read from these sources.
+
+`calculation/src/reference-votes.json` groups the entries as the feed nests them, so Moutier
+is under Jura there in all seven votes. Its cantonal votes are those of the official results
+all the same, since counting Moutier for either canton changes none.
+
 ## Characteristics
 
 Looked at only as far as the roadmap's first question asks ("the characteristics for matching
@@ -262,28 +301,42 @@ municipality.
 
 ## What the changes have to decide
 
-Nothing here is decided. Each point names the change it belongs to.
+Nothing was decided when this was written. Each point names the change it belongs to, and
+what that change decided once it was proposed.
 
 1. **What "matches the official result" means (hard constraint 1; #2, #3).** The municipal data
    reproduces the Chancellery's result exactly for 116 of 117 validated votes, and is 200 no
-   votes off for one. The constraint as written cannot hold for that vote.
+   votes off for one. The constraint as written cannot hold for that vote. *Decided in
+   `add-vote-data`:* the official result is the Chancellery's validated one; the pipeline
+   lists the known differences (this vote) and stops on any other. Registered voters and
+   ballots cast are the BFS's and are not compared.
 2. **One list of municipalities or one per vote (#3, #6).** The roadmap asks for "the list of
    municipalities valid at each vote" and a map "matching the municipalities at the time of the
    vote". The sources offer today's list for every vote, and change all earlier results after a
-   merger.
+   merger. *Decided in `add-vote-data`:* one list for all votes, the one the BFS files state.
 3. **The Swiss abroad (#3, #8).** 1.0% to 1.6% of the valid ballots belong to no municipality.
    They are needed to match the official result; they cannot be judged by a characteristic.
+   *Decided in `add-vote-data`:* they are entries of their own, marked as Swiss abroad; what a
+   limit does with them is left to #8.
 4. **Municipalities without a result (#3, #6, #8).** Five to seven municipalities are on the
-   map and have no result; their votes are in a neighbour's figures.
+   map and have no result; their votes are in a neighbour's figures. *Decided in
+   `add-vote-data`:* each vote names them; they are no entry, and where their votes are counted
+   is not recorded.
 5. **The initiative with counter-proposal and tie-break question (#2, #4).** One case, three
    questions, with valid ballots that are not yes plus no.
 6. **The annulled vote of 2016-02-28 (#3, #4).** It has an official result and no legal effect.
+   *Decided in `add-vote-data`:* it is in the data with its result and the Chancellery's note;
+   #4 decides what the app does with it.
 7. **Provisional results (#3).** The newest votes are in the feed before the Chancellery has
-   validated them.
+   validated them. *Decided in `add-vote-data`:* they are in the data with the BFS's result,
+   marked as not validated; a later run replaces it.
 8. **Where the kind of a vote comes from (#3).** The feed states it and whether the double
-   majority is needed; the table does not.
+   majority is needed; the table does not. *Decided in `add-vote-data`:* the feed's code, one
+   to one, checked against its statement on the double majority.
 9. **Yearly re-generation (#3).** Because the sources follow the mergers, the data of every
-   vote changes when the list of municipalities changes.
+   vote changes when the list of municipalities changes. *Decided in `add-vote-data`:* one
+   command, run by hand, regenerates all data files; it stops when the feed's files do not all
+   state the same list.
 
 ## Not verified
 
@@ -407,4 +460,25 @@ the vote of failure mode 3:
   20160228 id 5960 kind 3 double | valid 3,273,376 yes 1,609,152 no 1,664,224 (49.1588%) | cantons 16.5 : 6.5 | failed | Volksinitiative «Für Ehe und Familie - gegen die Heiratsst
 
 verdict by the rules == 'accepted' of the feed, kinds 1 to 3: 122 of 122
+```
+
+`python3 check_ids_and_cantons.py <data>` (added with `add-vote-data`):
+
+```
+BFS votes with a result: 125; with exactly one row of the Chancellery with the same id: 125
+validated: 117; yes and no identical: 116
+  registered voters differ in 39, by 23 to 3,135
+  ballots cast differ in 5, by 1 to 4,424
+
+cantons whose entries do not sum to the canton's figures in the BFS file:
+  BE: the entries have fewer than the canton in 115 votes on 41 vote days, 2013-03-03 to 2025-11-30; the difference is exactly the entry 6831 Moutier
+  JU: the entries have more than the canton in 115 votes on 41 vote days, 2013-03-03 to 2025-11-30; the difference is exactly the entry 6831 Moutier
+Moutier counted for the other canton: 41 vote days, 2013-03-03 to 2025-11-30; cantons whose outcome changes: 0
+  closest, with Moutier counted for the other canton: BE on 2017-09-24, vote 6150, decided by 47 votes (cantonal votes 1)
+
+register snapshots:
+  2021-12-31: Clavaleyres 661 BE, Moutier 700 BE, Murten 2275 FR
+  2022-01-01: Moutier 700 BE, Murten 2275 FR
+  2025-12-31: Moutier 700 BE, Murten 2275 FR
+  2026-01-01: Moutier 6831 JU, Murten 2275 FR
 ```
