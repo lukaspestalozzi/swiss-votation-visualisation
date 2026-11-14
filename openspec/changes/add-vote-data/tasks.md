@@ -264,20 +264,20 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
 
 ## 8. The project context and the documents
 
-- [ ] 8.1 Update `openspec/config.yaml` as design decision 18 says: hard constraint 1, the
+- [x] 8.1 Update `openspec/config.yaml` as design decision 18 says: hard constraint 1, the
   stack, the modules, the quality bar and the glossary. Verify: `openspec validate --all
   --strict --no-interactive` passes; `openspec instructions specs --change add-vote-data`
   shows the new wording of hard constraint 1; `grep -n "Not verified\|language of the pipeline"
   openspec/config.yaml` finds no line that still calls them open.
-- [ ] 8.2 Update `docs/roadmap.md`: entry #3 as built (scope, and "None left" under open
+- [x] 8.2 Update `docs/roadmap.md`: entry #3 as built (scope, and "None left" under open
   decisions, pointing to this design), the wording of #6 and #12 (design, decision 18), and in
   "Investigations" what the first investigation's points became. The status of #3 changes when
   the change is archived. Verify: `grep -n "at the time of the vote\|different lists of
   municipalities" docs/roadmap.md` finds nothing.
-- [ ] 8.3 Update `README.md`: what the repository holds today, and `uv` among the requirements
+- [x] 8.3 Update `README.md`: what the repository holds today, and `uv` among the requirements
   of "Run it" with the command that updates the data. Verify: every command in "Run it" runs
   as written.
-- [ ] 8.4 Update `CLAUDE.md`: the status; in "Where things are", `app/static/data/` and the
+- [x] 8.4 Update `CLAUDE.md`: the status; in "Where things are", `app/static/data/` and the
   pipeline; the code map of `pipeline` (every file of decision 16, the two hand-kept lists) and
   of `app` (`src/lib/vote-data.ts`, its test, `static/data/`, Vitest); "Build and verify" (the
   11 steps, the three CI jobs, the four `uv` commands, the update command, the pinned versions:
