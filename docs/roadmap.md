@@ -48,17 +48,26 @@ Spikes run through `/openspec-explore`. Each writes a file under `investigations
 sources, the script and the output that produced its values, and the expected values with their
 tolerances.
 
-- **Data sources**, the first one, before #2 and #3. Not verified yet:
-  - whether the public sources offer the results per municipality for every national vote since
-    2013, and the characteristics for matching years;
-  - how votes that belong to no municipality on the map are counted (some cantons may count the
-    Swiss abroad separately);
-  - which list of municipalities each source uses, and how it follows the mergers;
-  - whether the period has votes that the three kinds of hard constraint 2 do not cover: a
-    counter-proposal with a tie-break question (Federal Constitution, art. 139b), or a mandatory
-    vote that needs only the majority of voters (art. 140 para. 2);
-  - the official results that serve as reference values, among them the vote of 2016-02-28 on
-    the taxation of couples (failure mode 3).
+- **Data sources**, the first one, before #2 and #3. Done on 2026-11-14:
+  `investigations/data-sources.md`, with its scripts in `investigations/data-sources/`. What it
+  found, question by question:
+  - The public sources offer the results per municipality for every national vote since 2013.
+    The characteristics exist for matching years, on other lists of municipalities; area,
+    language and religion per municipality were not found.
+  - Votes that belong to no municipality on the map: the Swiss abroad are a separate entry in
+    11 to 12 cantons (1.0% to 1.6% of the valid ballots), and five to seven municipalities of
+    the canton of Bern have no result of their own.
+  - The sources use today's list of municipalities for every vote, and convert the earlier
+    results after each merger.
+  - One case is not covered by the three kinds of hard constraint 2: an initiative, its
+    counter-proposal and a tie-break question on 2026-03-08. A mandatory vote that needs only
+    the majority of voters does not occur.
+  - The official results are the Federal Chancellery's. The municipal data matches them
+    exactly for 116 of 117 validated votes, among them the vote of 2016-02-28 on the taxation
+    of couples (failure mode 3); for one vote it is 200 no votes off.
+
+  The investigation lists nine points for the changes to decide. None is decided, and the
+  entries of the table above are as they were before it; #2, #3 and #6 take them up.
 
 ## Failure modes of the predecessor (must not repeat)
 
