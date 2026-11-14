@@ -25,7 +25,7 @@ showed, on a clean install with Node 24.22.1 and pnpm 12.18.0:
 | Type-aware lint rules | A promise that is not awaited is reported in a `.ts` file of the calculation and in a `.svelte` file of the app. |
 | Lint before the SvelteKit types exist | 2 errors in `+layout.svelte`. The app's `prepare` script (`svelte-kit sync`) creates them at install time. |
 | TypeScript 7 | Not usable: `svelte-check` 4.7 accepts TypeScript 5 and 6, `typescript-eslint` 8.72 accepts versions below 6.1. |
-| Node 22 with `engineStrict` | `pnpm install` refuses it; `pnpm run` does not. |
+| Node 22 with `engineStrict` | `pnpm install` refuses it whenever it has something to install, and always with `--frozen-lockfile`; a repeated plain install with nothing to do is skipped without the check. `pnpm run` does not check. |
 | pnpm's minimum release age | pnpm 12 writes an exception into `pnpm-workspace.yaml` when it installs a version published very recently (it did for `eslint@10.15.0`). |
 | The scaffolder `sv create --no-install` | With the add-ons for Prettier, ESLint, Vitest and Playwright it still left a `node_modules` and a lockfile in the new directory; stale links in it hid two of the findings above until they were deleted. With the static adapter as its only add-on (the command of decision 13) it leaves neither. |
 

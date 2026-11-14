@@ -1,0 +1,8 @@
+# The documents are wrapped by hand, and OpenSpec generates the skills: neither is formatted.
+*.md
+openspec/
+docs/
+.agents/
+.claude/
+.github/
+pnpm-lock.yaml

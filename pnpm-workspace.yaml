@@ -1,0 +1,4 @@
+packages:
+  - calculation
+  - app
+engineStrict: true

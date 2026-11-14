@@ -10,18 +10,18 @@ the `PATH`, and start every command with `export PATH=/opt/node24/bin:$PATH &&`.
 
 ## 1. Workspace and root tools
 
-- [ ] 1.1 Create the root `package.json` (name `popular-vote-explorer`, private, `type: module`,
+- [x] 1.1 Create the root `package.json` (name `popular-vote-explorer`, private, `type: module`,
   `packageManager: pnpm@12.18.0`, `engines.node: >=24`), `pnpm-workspace.yaml` (packages
   `calculation` and `app`, `engineStrict: true`) and `.gitignore` (`node_modules`, `app/build`,
   `app/.svelte-kit`, `app/test-results`). Verify: `pnpm install` exits 0 and writes
-  `pnpm-lock.yaml`; `PATH=/opt/node22/bin:$PATH pnpm install` exits 1 with `Unsupported engine`
-  and `wanted: {"node":">=24"}`.
-- [ ] 1.2 Add Prettier with the Svelte plugin to the root (design, decision 7):
+  `pnpm-lock.yaml`; `PATH=/opt/node22/bin:$PATH pnpm install --frozen-lockfile` exits 1 with
+  `Unsupported engine` and `wanted: {"node":">=24"}`.
+- [x] 1.2 Add Prettier with the Svelte plugin to the root (design, decision 7):
   `prettier.config.js`, `.prettierignore`, the scripts `format` and `format:check`. Verify:
   `pnpm run format` then `pnpm run format:check` prints `All matched files use Prettier code
   style!`, and `git status --short` lists no file under `openspec/`, `docs/`, `.agents/`,
   `.claude/`, `.github/` and no `.md` file as modified.
-- [ ] 1.3 Add ESLint with `typescript-eslint`, the Svelte plugin, `eslint-config-prettier` and
+- [x] 1.3 Add ESLint with `typescript-eslint`, the Svelte plugin, `eslint-config-prettier` and
   `globals` to the root: `eslint.config.js` and the script `lint` as `eslint --max-warnings 0 .`.
   Verify: `pnpm run lint` exits 0; with a temporary `w.js` holding `console.log('x');`,
   `pnpm exec eslint --max-warnings 0 --rule '{"no-console":"warn"}' w.js` exits 1 with `ESLint
