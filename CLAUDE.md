@@ -8,11 +8,10 @@ a working title: the name is not decided.
 **Status:** the skeleton and the calculation. One page shows the 26 cantons and their cantonal
 votes; the calculation gives the result of a vote from the entries that remain and is tested
 against seven official votes; the build, the checks, the module boundaries and CI are in place.
-Change #1 of `docs/roadmap.md`, `add-project-skeleton`, is archived, and `openspec/specs/` holds
-its three specs. Change #2, `add-result-calculation`, is applied and waits to be verified and
-archived. The first investigation (data sources) is done: `investigations/data-sources.md`; the
-points it left open are decided in #2 and #3. Next: change #3. `README.md` is the human-facing
-overview.
+Changes #1 and #2 of `docs/roadmap.md`, `add-project-skeleton` and `add-result-calculation`, are
+archived, and `openspec/specs/` holds their specs. The first investigation (data sources) is
+done: `investigations/data-sources.md`; the points it left open are decided in #2 and #3. Next:
+change #3. `README.md` is the human-facing overview.
 
 ## Where things are
 
