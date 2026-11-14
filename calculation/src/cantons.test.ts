@@ -54,5 +54,5 @@ test('Schaffhausen and Appenzell Ausserrhoden are not swapped', () => {
 });
 
 test('all cantons together have 23 cantonal votes', () => {
-  expect(totalCantonalVotes(CANTONS)).toBe(23);
+  expect(totalCantonalVotes(CANTONS)).toBe(24);
 });

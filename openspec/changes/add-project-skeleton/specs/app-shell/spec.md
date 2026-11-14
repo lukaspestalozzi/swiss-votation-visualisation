@@ -61,3 +61,7 @@ neither while it loads nor afterwards.
   another origin
 - **WHEN** the automated checks run
 - **THEN** the browser test fails and names the other origin
+
+#### Scenario: Deliberately invalid, to see CI fail
+
+- **AND** this scenario has no trigger and no outcome
