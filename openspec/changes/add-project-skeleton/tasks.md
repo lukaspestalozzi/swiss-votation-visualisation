@@ -114,7 +114,7 @@ Each task adds one temporary file, runs the check and removes the file.
   requirements: Node, pnpm, the installed dependencies, the browser), and `--quick` as `pnpm run
   test`. Verify: `./scripts/verify-local.sh` ends with `All 7 steps passed` and status 0;
   `./scripts/verify-local.sh --quick` runs one step, `pnpm run test`, and exits 0.
-- [ ] 5.2 Update `.github/workflows/ci.yml`: Node 24 in the `specs` job, and the `build` job of
+- [x] 5.2 Update `.github/workflows/ci.yml`: Node 24 in the `specs` job, and the `build` job of
   design decision 11. It comes before 5.3, whose check reads the Node version from this file.
   Verify: the `run:` commands of the `build` job contain the six `pnpm run` steps in the order
   of `scripts/verify-local.sh` (compare both lists); `grep -c "node-version: '24'"
@@ -136,16 +136,23 @@ Each task adds one temporary file, runs the check and removes the file.
 
 ## 6. Documentation
 
-- [ ] 6.1 Add to `README.md` what the app is today and how to run it: the requirements, `pnpm
+- [x] 6.1 Add to `README.md` what the app is today and how to run it: the requirements, `pnpm
   install`, `pnpm run dev`, `pnpm run build`, `./scripts/verify-local.sh`. Verify: each command
   of the new section, run as written, exits 0 (`pnpm run dev` starts and answers on its printed
   address).
-- [ ] 6.2 Update `docs/roadmap.md`: entry #1 (the three capabilities, the decisions taken, no open
+- [x] 6.2 Update `docs/roadmap.md`: entry #1 (the three capabilities, the decisions taken, no open
   decision left), entry #2 (the cantons and their half votes are specified; #2 extends that
   requirement), entry #3 (the pipeline's toolchain is its open decision). Verify: `openspec
   validate --all --strict --no-interactive` exits 0, and the capabilities named in entry #1 are
   the directories under `openspec/changes/add-project-skeleton/specs/`.
-- [ ] 6.3 Update `CLAUDE.md`: the status, the "Where things are" table (the root configuration
+- [x] 6.3 Update the project context in `openspec/config.yaml` to what this change decided: the
+  stack (framework, build, package manager and Node, formatter, linter, tests), the names and
+  directories of the modules and how their boundaries are enforced, the checks of the quality
+  bar; what is still open stays listed as open. This task was added while applying: the context
+  still called these points undecided. Verify: `openspec validate --all --strict
+  --no-interactive` exits 0; `openspec instructions proposal --change add-project-skeleton`
+  shows the new context; `grep -c "UI framework (or none)" openspec/config.yaml` prints `0`.
+- [x] 6.4 Update `CLAUDE.md`: the status, the "Where things are" table (the root configuration
   files, `calculation/`, `app/`, `pipeline/`), the code map (one table per module: file or
   package, and what), "Build and verify" (the commands, Node 24 and pnpm, the browser for the
   browser test, why the root package must not declare `svelte`, the `build` job), and the pinned

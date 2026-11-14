@@ -9,7 +9,7 @@ context: |
   that remain. Users: the curious public, anyone who knows what a Swiss popular vote is, without
   statistical training and without a manual. Core value: directly steering a real vote result
   and seeing which kinds of municipalities carry it. Working title: "Popular Vote Explorer"; the
-  names of the product and of its packages are not decided.
+  name of the product is not decided.
   - A thought experiment, not a forecast. The app shows what happens when whole municipalities
     are set aside, not how individual people voted, and it makes this clear to the user.
   - General purpose. Any figure that is available for every municipality can become a
@@ -50,16 +50,19 @@ context: |
     instant. Rejected: a web app with a backend (hosting cost and latency for nothing at this
     data size) and a Python dashboard (every slider move is a server round trip).
   - A separate offline data pipeline turns the public sources into the data files the app loads.
+  - Svelte 5 with SvelteKit 3 and its static adapter, built with Vite 8; every page is
+    prerendered. TypeScript 6. A pnpm workspace on Node 24. Prettier and ESLint (type-aware,
+    no issue allowed). Vitest for unit tests; Playwright for browser tests against the built
+    site. The design of the change add-project-skeleton gives the reasons and the alternatives.
   - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
-    names it): the UI framework (or none), the build tool, how the map is drawn, the language of
-    the pipeline, the formatter, linter and test tools, the hosting target, and how the three
-    interface languages are handled.
+    names it): how the map is drawn, the language of the pipeline and its tools, the hosting
+    target, and how the three interface languages are handled.
   - Not verified: whether the public sources offer the results per municipality for every
     national vote since 2013 and the characteristics for matching years, and how votes that
     belong to no municipality on the map are counted. The first investigation settles this
     (docs/roadmap.md).
 
-  Modules (their names and directories are decided in the first change)
+  Modules (each is a directory at the root; calculation and app are packages of the workspace)
   - pipeline: offline. It turns the public sources into the data files the app loads and checks
     them. The app and the calculation never import it; they share only the data files and their
     format with it.
@@ -68,13 +71,15 @@ context: |
     Tested against official results.
   - app: the user interface in the browser (list of votes, map, limits, verdicts). It depends on
     the calculation; the calculation never depends on the app.
+  - The static analysis enforces these boundaries: it fails when the calculation imports the
+    app, the pipeline, the UI framework or the DOM, and when the app imports the pipeline.
   - Not decided: whether the pipeline uses the calculation for its checks. It depends on the
     language of the pipeline.
 
   Quality bar
   - CI (.github/workflows/ci.yml) and ./scripts/verify-local.sh run the same checks in the same
-    order. Today that is the OpenSpec validation; the first change adds formatter or linter,
-    static analysis, tests and build.
+    order: the OpenSpec validation, the formatting check, the lint, the static analysis, the
+    unit tests, the build, and the browser tests against the built site.
   - The linter runs at zero issues; no suppressed warning without a written justification.
   - Numeric behavior is tested against reference values with explicit tolerances. Counts of
     votes and of cantonal votes are exact. investigations/ holds the reference values with their
