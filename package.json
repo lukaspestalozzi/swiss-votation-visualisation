@@ -9,7 +9,9 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint --max-warnings 0 ."
+    "lint": "eslint --max-warnings 0 .",
+    "check": "pnpm -r run check",
+    "test": "pnpm -r run test"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
