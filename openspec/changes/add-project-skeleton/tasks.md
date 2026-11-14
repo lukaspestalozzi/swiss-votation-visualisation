@@ -114,18 +114,20 @@ Each task adds one temporary file, runs the check and removes the file.
   requirements: Node, pnpm, the installed dependencies, the browser), and `--quick` as `pnpm run
   test`. Verify: `./scripts/verify-local.sh` ends with `All 7 steps passed` and status 0;
   `./scripts/verify-local.sh --quick` runs one step, `pnpm run test`, and exits 0.
-- [ ] 5.2 Make the script refuse a major version of Node other than the `node-version` of
-  `.github/workflows/ci.yml`, the way it refuses another OpenSpec version. Verify (after 5.4 has
-  set CI to 24): `PATH=/opt/node22/bin:$PATH ./scripts/verify-local.sh` runs no step, prints
-  the installed and the expected version, and exits 1.
-- [ ] 5.3 Check the behaviour on a failure. Verify: with one expected value in
+- [ ] 5.2 Update `.github/workflows/ci.yml`: Node 24 in the `specs` job, and the `build` job of
+  design decision 11. It comes before 5.3, whose check reads the Node version from this file.
+  Verify: the `run:` commands of the `build` job contain the six `pnpm run` steps in the order
+  of `scripts/verify-local.sh` (compare both lists); `grep -c "node-version: '24'"
+  .github/workflows/ci.yml` prints `2`; after the push, the `specs` and the `build` job of the
+  pull request are green.
+- [ ] 5.3 Make the script refuse a major version of Node other than the `node-version` of
+  `.github/workflows/ci.yml`, the way it refuses another OpenSpec version. Verify:
+  `PATH=/opt/node22/bin:$PATH ./scripts/verify-local.sh` runs no step, prints the installed and
+  the expected version, and exits 1; with Node 24, `./scripts/verify-local.sh --quick` exits 0.
+- [ ] 5.4 Check the behaviour on a failure. Verify: with one expected value in
   `calculation/src/cantons.test.ts` temporarily changed, `./scripts/verify-local.sh` still runs
   the build and the browser test, prints `[FAIL] pnpm run test` and `1 of 7 steps failed`, and
   exits 1; after restoring the value, `All 7 steps passed`.
-- [ ] 5.4 Update `.github/workflows/ci.yml`: Node 24 in the `specs` job, and the `build` job of
-  design decision 11. Verify: the `run:` commands of the `build` job contain the six `pnpm run`
-  steps in the order of `scripts/verify-local.sh` (compare both lists); after the push, the
-  `specs` and the `build` job of the pull request are green.
 - [ ] 5.5 Update `.claude/hooks/session-start.sh` (design, decision 12). Verify: with `f=$(mktemp)`,
   `CLAUDE_CODE_REMOTE=true CLAUDE_ENV_FILE=$f PATH=/opt/node22/bin:$PATH
   ./.claude/hooks/session-start.sh` exits 0 and prints nothing; `bash -c "source $f && node
