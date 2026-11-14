@@ -88,21 +88,21 @@ the `PATH`, and start every command with `export PATH=/opt/node24/bin:$PATH &&`.
 
 Each task adds one temporary file, runs the check and removes the file.
 
-- [ ] 4.1 Write `pipeline/README.md`: what the pipeline is, that the calculation and the app never
+- [x] 4.1 Write `pipeline/README.md`: what the pipeline is, that the calculation and the app never
   import it, and that #3 decides its language and tools. Verify: `pnpm run format:check` and
   `pnpm run lint` still exit 0.
-- [ ] 4.2 The calculation imports the app by a relative path (`import
+- [x] 4.2 The calculation imports the app by a relative path (`import
   '../../app/src/routes/+layout.ts';` in `calculation/src/violation.ts`). Verify: `pnpm run
   check` exits with a status other than 0 and prints `error TS6059` for `violation.ts`.
-- [ ] 4.3 The calculation imports the app by its name (`import 'app';`). Verify: `pnpm run check`
+- [x] 4.3 The calculation imports the app by its name (`import 'app';`). Verify: `pnpm run check`
   fails and prints `error TS2882` for `violation.ts`.
-- [ ] 4.4 The calculation imports the pipeline (a temporary `pipeline/x.ts`, imported by a
+- [x] 4.4 The calculation imports the pipeline (a temporary `pipeline/x.ts`, imported by a
   relative path). Verify: `pnpm run check` fails and prints `error TS6059` for `violation.ts`.
-- [ ] 4.5 The calculation imports the UI framework (`import { mount } from 'svelte';`). Verify:
+- [x] 4.5 The calculation imports the UI framework (`import { mount } from 'svelte';`). Verify:
   `pnpm run check` fails and prints `error TS2307` for `violation.ts`.
-- [ ] 4.6 The calculation uses the DOM (`export const title = document.title;`). Verify: `pnpm
+- [x] 4.6 The calculation uses the DOM (`export const title = document.title;`). Verify: `pnpm
   run check` fails and prints `error TS2584` for `violation.ts`.
-- [ ] 4.7 The app imports the pipeline (a temporary `pipeline/x.ts`, imported by a relative path
+- [x] 4.7 The app imports the pipeline (a temporary `pipeline/x.ts`, imported by a relative path
   from a temporary `app/src/violation.ts`). Verify: `pnpm run check` fails and prints `is not
   under 'rootDir'` for `violation.ts`; without the temporary files, `pnpm run check` exits 0
   with the app importing `calculation`.
