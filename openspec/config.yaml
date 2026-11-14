@@ -22,7 +22,13 @@ context: |
   Hard constraints
   1. Matches the official results. With no limit set, every covered vote shows exactly the
      official federal result: the yes votes, the valid votes and the yes share of the voters, and
-     the number of cantonal votes in favour.
+     the number of cantonal votes in favour. The official result is the one the Federal Council
+     validated, as the Federal Chancellery publishes it; until a vote is validated, it is the
+     Federal Statistical Office's, marked as not validated. Where the municipal data does not
+     reproduce the official result, the difference is named in the pipeline's list of known
+     differences and the data holds both figures; any other difference stops the pipeline. One
+     is named: the vote of 2024-03-03 on a 13th AHV pension, 200 no votes. Registered voters and
+     ballots cast are the Federal Statistical Office's figures and are not compared.
   2. Follows the real voting rules. The majority of voters is more than half of the valid votes.
      Each canton has one cantonal vote, except Obwalden, Nidwalden, Basel-Stadt,
      Basel-Landschaft, Appenzell Ausserrhoden and Appenzell Innerrhoden with half a vote each (23
@@ -58,18 +64,21 @@ context: |
     no issue allowed). Vitest for unit tests; Playwright for browser tests against the built
     site. The design of the archived change add-project-skeleton gives the reasons and the
     alternatives.
+  - The pipeline: Python 3.13 with polars, run by uv, which pins the Python version and every
+    package; ruff, mypy (strict) and pytest as its checks. The design of the archived change
+    add-vote-data gives the reasons and the alternatives.
   - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
-    names it): how the map is drawn, the language of the pipeline and its tools, the hosting
-    target, and how the three interface languages are handled.
-  - Not verified: whether the public sources offer the results per municipality for every
-    national vote since 2013 and the characteristics for matching years, and how votes that
-    belong to no municipality on the map are counted. The first investigation settles this
-    (docs/roadmap.md).
+    names it): how the map is drawn, the hosting target, and how the three interface languages
+    are handled.
+  - Found by the first investigation (investigations/data-sources.md): the public sources offer
+    the results per municipality for every national vote since 2013, all on one list of
+    municipalities, and the characteristics for matching years on other lists. Not found yet:
+    sources of area, language and religion per municipality (#7).
 
   Modules (each is a directory at the root; calculation and app are packages of the workspace)
   - pipeline: offline. It turns the public sources into the data files the app loads and checks
-    them. The app and the calculation never import it; they share only the data files and their
-    format with it.
+    them; the data files are committed in app/static/data/ and served with the site. The app and
+    the calculation never import it; they share only the data files and their format with it.
   - calculation: the limits on characteristics, the sums, both majorities and the verdict. Pure
     TypeScript that depends on neither of the other modules, nor on the DOM or a UI framework.
     Tested against official results.
@@ -77,13 +86,15 @@ context: |
     the calculation; the calculation never depends on the app.
   - The static analysis enforces these boundaries: it fails when the calculation imports the
     app, the pipeline, the UI framework or the DOM, and when the app imports the pipeline.
-  - Not decided: whether the pipeline uses the calculation for its checks. It depends on the
-    language of the pipeline.
+  - The pipeline does not use the calculation: its checks add up and compare, and apply no
+    voting rule. A unit test of the app runs the calculation over the data files, so the voting
+    rules exist once.
 
   Quality bar
   - CI (.github/workflows/ci.yml) and ./scripts/verify-local.sh run the same checks in the same
     order: the OpenSpec validation, the formatting check, the lint, the static analysis, the
-    unit tests, the build, and the browser tests against the built site.
+    unit tests, the build, and the browser tests against the built site; then the pipeline's
+    formatting check, lint, static analysis and unit tests, in a CI job of their own.
   - The linter runs at zero issues; no suppressed warning without a written justification.
   - Numeric behavior is tested against reference values with explicit tolerances. Counts of
     votes and of cantonal votes are exact. investigations/ holds the reference values with their
@@ -112,10 +123,20 @@ context: |
   - Double majority (doppeltes Mehr): the majority of voters and the majority of cantons.
   - Verdict: passed or failed, shown separately for the majority of voters and for the majority
     of cantons.
-  - Official result: the federal result of a vote as published by the Confederation.
+  - Official result: the federal result of a vote as the Federal Council validated it and the
+    Federal Chancellery publishes it (Erwahrung); see hard constraint 1.
+  - Validated: said of a vote whose official result is published. Until then the data holds
+    the Federal Statistical Office's result, marked as not validated.
   - Municipality (Gemeinde): the unit the results are published for, and the unit that is
     filtered. Municipalities merge every year, so a list of municipalities is valid only with
-    its reference date.
+    its reference date. All data uses one list, the one the Federal Statistical Office's files
+    state (2026-01-01 today); a municipality that merged since a vote shows the sum of its
+    parts.
+  - Entry: one line of the results of a vote, a municipality or the Swiss abroad of a canton.
+    It counts for the canton it voted in, which differs from its canton of today for a
+    municipality that changed canton since (Moutier, in Jura since 2026).
+  - Swiss abroad (Auslandschweizer): Swiss citizens living abroad. Twelve cantons count them
+    apart, in an entry of their own that belongs to no municipality.
   - Reference date: the date whose list of municipalities a data set uses.
   - Characteristic: a figure available for every municipality that can be limited, for example
     the share of foreigners or the cows per inhabitant.
