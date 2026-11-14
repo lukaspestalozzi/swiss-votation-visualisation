@@ -250,7 +250,9 @@ QUERY_VARIABLES = [
 REFERENCES = {
     5960: ("BBl 2019 4599", "FF 2019 4421", "FF 2019 3843"),
     5990: ("BBl 2016 3901", "FF 2016 3729", "FF 2016 3419"),
+    6850: ("BBl 2026 1999", "FF 2026 1999", "FF 2026 1999"),
 }
+VALIDATED = (5960, 5990)
 NOTES = {5960: ("Das Bundesgericht hat … aufgehoben.", "Le Tribunal fédéral …", "Il Tribunale …")}
 FUTURE: dict[str, Any] = {"date": "2027-02-28", "id": 6940}
 
@@ -259,8 +261,8 @@ def _literal(value: str) -> dict[str, str]:
     return {"type": "literal", "value": value}
 
 
-def _official_row(vote_id: int) -> dict[str, dict[str, str]]:
-    if vote_id in REFERENCES:
+def _official_row(vote_id: int, validated: tuple[int, ...]) -> dict[str, dict[str, str]]:
+    if vote_id in validated:
         vote = feed_vote(vote_id)
         result, staende = vote["resultat"], vote["staende"]
         given = staende["jaStaendeGanz"] is not None and vote["doppeltesMehr"]
@@ -295,12 +297,15 @@ def _official_row(vote_id: int) -> dict[str, dict[str, str]]:
     return {"id": _literal(str(vote_id))} | {key: _literal(value) for key, value in values.items()}
 
 
-def chancellery() -> dict[str, Any]:
-    """The answer of the Federal Chancellery's SPARQL endpoint to the pipeline's query."""
+def chancellery(validated: tuple[int, ...] = VALIDATED) -> dict[str, Any]:
+    """The answer of the Federal Chancellery's SPARQL endpoint to the pipeline's query.
+
+    The votes in `validated` have the Chancellery's figures; the others have none yet.
+    """
     ids = [5960, 5990, 6850, SCHEDULED["id"], FUTURE["id"]]
     return {
         "head": {"vars": QUERY_VARIABLES},
-        "results": {"bindings": [_official_row(vote_id) for vote_id in ids]},
+        "results": {"bindings": [_official_row(vote_id, validated) for vote_id in ids]},
     }
 
 
