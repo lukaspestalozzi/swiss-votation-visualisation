@@ -423,8 +423,11 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
     better than #6's own code, as Q asked on 2026-11-15.
 
   Verify: `grep -n "map-data.md\|d3-zoom" docs/roadmap.md` shows both.
-- [ ] 5.4 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
+- [x] 5.4 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
   calculation, 59 of the app, 38 browser tests and 95 of the pipeline.
+
+  (As built: 11 of 11, with 41, 59 and 38 as planned, and 96 of the pipeline, one more for
+  1.4.)
 - [ ] 5.5 Update `CLAUDE.md`: the status, the code map (`result-map.ts`, `map-view.ts`,
   `map-data.ts`, `ResultMap.svelte`, `result-map.spec.ts`, `boundaries.py`), "Where things are"
   (`app/static/data/map.json`, `investigations/map-data.md`), and the size of a run of the
