@@ -99,3 +99,5 @@ export const legendClass = (yes: boolean, from: number): string =>
   `${yes ? 'Ja' : 'Nein'}: ${from === 80 ? '80% und mehr' : `${String(from)}–${String(from + 10)}%`}`;
 export const LEGEND_TIE = 'Gleich viele Ja wie Nein';
 export const LEGEND_WITHOUT_RESULT = 'Kein eigenes Ergebnis';
+export const WITHOUT_RESULT =
+  'Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.';

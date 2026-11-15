@@ -1,7 +1,16 @@
 // What the map of a vote shows (spec result-map): the colour of each municipality from its
 // yes and no votes, the legend, and the details of a municipality. The design of the change
 // add-result-map gives the reasons (decisions 5, 6, 8 and 12).
-import { LEGEND_TIE, LEGEND_WITHOUT_RESULT, legendClass } from './texts.ts';
+import { formatCount, formatShare } from './format.ts';
+import {
+  LEGEND_TIE,
+  LEGEND_WITHOUT_RESULT,
+  NO_VOTES,
+  WITHOUT_RESULT,
+  YES_SHARE,
+  YES_VOTES,
+  legendClass,
+} from './texts.ts';
 
 export type Side = 'yes' | 'no';
 // The class of the share of the side with more votes: 1 from 50% to below 60%, 2 from 60%, 3
@@ -58,3 +67,31 @@ export const LEGEND: readonly LegendEntry[] = [
   { label: LEGEND_TIE, fill: TIE_COLOUR },
   { label: LEGEND_WITHOUT_RESULT, fill: 'hatch' },
 ];
+
+// What pointing at a municipality shows: its name, then one line per figure.
+export interface Details {
+  readonly name: string;
+  readonly lines: readonly string[];
+}
+
+/**
+ * The details of a municipality from its name, its canton and its yes and no votes; `null` for
+ * a municipality without a result of its own.
+ */
+export function detailsOf(
+  name: string,
+  canton: string,
+  figures: readonly [number, number] | null,
+): Details {
+  const title = name.endsWith(`(${canton})`) ? name : `${name} (${canton})`;
+  if (figures === null) return { name: title, lines: [WITHOUT_RESULT] };
+  const [yes, no] = figures;
+  return {
+    name: title,
+    lines: [
+      `${YES_SHARE}: ${formatShare(yes, yes + no)}`,
+      `${YES_VOTES}: ${formatCount(yes)}`,
+      `${NO_VOTES}: ${formatCount(no)}`,
+    ],
+  };
+}
