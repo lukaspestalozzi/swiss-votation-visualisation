@@ -96,6 +96,7 @@ test('nothing remains', () => {
       majorityOfVoters: false,
       majorityOfCantons: false,
       passed: false,
+      cantons: [],
     });
   }
 });
@@ -116,4 +117,42 @@ test('votes that are not whole', () => {
   const entries = [entry('ZH', 60, 40), entry('UR', 5, 1.5)];
   expect(() => calculateResult(entries, 'voters')).toThrow(RangeError);
   expect(() => calculateResult(entries, 'voters')).toThrow(/UR/);
+});
+
+test('the outcome of a canton with half a vote', () => {
+  const result = calculateResult([{ canton: 'OW', yes: 60, no: 40 }], 'voters-and-cantons');
+  expect(result.cantons).toEqual([
+    { canton: 'OW', yes: 60, no: 40, yesShare: 0.6, cantonalVotes: 0.5, inFavour: true },
+  ]);
+});
+
+test('the outcome of a canton with as many yes as no votes', () => {
+  const [uri] = calculateResult([{ canton: 'UR', yes: 50, no: 50 }], 'voters').cantons;
+  expect(uri).toEqual({
+    canton: 'UR',
+    yes: 50,
+    no: 50,
+    yesShare: 0.5,
+    cantonalVotes: 1,
+    inFavour: false,
+  });
+});
+
+test('the outcome of a canton without valid votes', () => {
+  const [uri] = calculateResult([{ canton: 'UR', yes: 0, no: 0 }], 'voters').cantons;
+  expect(uri?.yesShare).toBeUndefined();
+  expect(uri?.inFavour).toBe(false);
+  expect(uri?.cantonalVotes).toBe(1);
+});
+
+test('the cantons in the order of the constitution, only those with an entry', () => {
+  const entries: Entry[] = [
+    { canton: 'JU', yes: 1, no: 2 },
+    { canton: 'ZH', yes: 3, no: 1 },
+    { canton: 'OW', yes: 1, no: 1 },
+    { canton: 'ZH', yes: 1, no: 1 },
+  ];
+  const cantons = calculateResult(entries, 'voters').cantons;
+  expect(cantons.map((outcome) => outcome.canton)).toEqual(['ZH', 'OW', 'JU']);
+  expect(cantons[0]).toMatchObject({ yes: 4, no: 2 });
 });

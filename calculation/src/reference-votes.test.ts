@@ -148,3 +148,29 @@ test('number 596: the order of the entries does not matter', () => {
     calculateResult(entries, 'voters-and-cantons'),
   );
 });
+
+test('number 596: the outcome of the canton of Zürich', () => {
+  const zurich = calculateResult(entriesOf(596), 'voters-and-cantons').cantons[0];
+  expect(zurich).toMatchObject({ canton: 'ZH', yes: 253697, no: 329992, cantonalVotes: 1 });
+  expect(zurich?.inFavour).toBe(false);
+  expect(Math.abs((zurich?.yesShare ?? Number.NaN) - 0.434644)).toBeLessThan(0.0000005);
+});
+
+test('number 596: the cantons add up to the cantonal votes', () => {
+  const cantons = calculateResult(entriesOf(596), 'voters-and-cantons').cantons;
+  expect(cantons).toHaveLength(26);
+  expect([cantons[0]?.canton, cantons[25]?.canton]).toEqual(['ZH', 'JU']);
+  const sum = (inFavour: boolean) =>
+    cantons
+      .filter((outcome) => outcome.inFavour === inFavour)
+      .reduce((total, outcome) => total + outcome.cantonalVotes, 0);
+  expect(sum(true)).toBe(16.5);
+  expect(sum(false)).toBe(6.5);
+});
+
+test('number 596, without the canton of Zürich: 25 cantons', () => {
+  const entries = entriesOf(596).filter((entry) => entry.canton !== 'ZH');
+  const cantons = calculateResult(entries, 'voters-and-cantons').cantons;
+  expect(cantons).toHaveLength(25);
+  expect(cantons.map((outcome) => outcome.canton)).not.toContain('ZH');
+});

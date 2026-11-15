@@ -33,17 +33,22 @@ split or merged while building, the note says so too.
 In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `result-calculation`,
 "The outcome of each canton"; design, decision 9).
 
-- [ ] 2.1 Write the test "a canton with half a vote" (OW, 60 : 40: one canton, yes share 0.6,
+- [x] 2.1 Write the test "a canton with half a vote" (OW, 60 : 40: one canton, yes share 0.6,
   0.5 in favour), then the type of a canton's outcome and the field `cantons` of the result.
-  Verify: `pnpm run test` reports 35 passed in the calculation; `pnpm run check` passes.
-- [ ] 2.2 Write, one after the other, the tests "a canton with as many yes as no votes" (UR,
+  Verify: `pnpm run test` reports 35 passed in the calculation; `pnpm run check` passes. (As built:
+  the test "nothing remains" compares the whole result, so its expected result gains
+  `cantons: []`.)
+- [x] 2.2 Write, one after the other, the tests "a canton with as many yes as no votes" (UR,
   50 : 50: 1 against), "a canton without valid votes" (UR, 0 : 0: no yes share, 1 against) and
   "the cantons in the order of the constitution, only those with an entry" (made-up entries of
   JU, ZH and OW in this order: ZH, OW, JU). Verify: 38 passed in the calculation.
-- [ ] 2.3 In `calculation/src/reference-votes.test.ts`, write the tests of vote 596: Zürich has
+- [x] 2.3 In `calculation/src/reference-votes.test.ts`, write the tests of vote 596: Zürich has
   253,697 yes, 329,992 no, a yes share of 0.434644 within 0.0000005 and 1 against; the 26
   cantons' cantonal votes add up to 16.5 in favour and 6.5 against; without Zürich there are 25
-  cantons and none is ZH. Verify: 41 passed in the calculation; `pnpm run lint` passes.
+  cantons and none is ZH. Verify: 41 passed in the calculation; `pnpm run lint` passes. (As built:
+  the tests of 2.2 and 2.3 passed when written, as the code of 2.1 covered them; each was seen to
+  fail against a mutant: a tie counted in favour, a yes share of 0 without votes, the order of
+  the entries, the no share as the yes share, every canton with one vote, every canton listed.)
 
 ## 3. Formatting and texts
 
