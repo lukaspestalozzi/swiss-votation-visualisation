@@ -30,7 +30,7 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   - `uv run --directory pipeline --locked python -c "import importlib.metadata as m; print(m.metadata('pyshp')['License-Expression'])"`
     prints `MIT`;
   - `uv run --directory pipeline --locked mypy` passes.
-- [ ] 1.2 In `pipeline/tests/made_up.py`, write the made-up map sources in memory with pyshp's
+- [x] 1.2 In `pipeline/tests/made_up.py`, write the made-up map sources in memory with pyshp's
   writer, as ZIPs in the shape of the real ones (`investigations/map-data.md`):
   - the register's municipalities: one square per made-up municipality, Meienried (389)
     included;

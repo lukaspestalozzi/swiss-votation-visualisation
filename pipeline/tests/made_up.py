@@ -7,9 +7,21 @@ returns a new document.
 
 As in the real files, Moutier (6831) is listed under JU for every vote, and the canton figures
 count it for BE in the votes before 2026. Meienried (389) is on the register and has no entry.
+
+The map's sources are ZIPs of shapefiles in the shape of the real ones
+(`investigations/map-data.md`): the register's boundaries of the municipalities, of all 26
+cantons and of the country (one outer ring and one hole, a lake), and a ThemaKart set with its
+two layers of lakes, one lake each. The first lake reaches past the country, the second fills
+the hole. The first municipality's corners have fractions of a metre.
 """
 
-from typing import Any
+import io
+import zipfile
+from typing import Any, Literal
+
+import shapefile
+
+from pipeline.feed import CANTONS
 
 # The canton's position in the Federal Constitution, art. 1, as the BFS files number it.
 POSITIONS = {"ZH": 1, "BE": 2, "JU": 26}
@@ -338,3 +350,124 @@ def register() -> str:
         district = REGISTER_CANTONS[canton][2]
         lines.append(f"{12000 + number},{number},01.01.1960,,3,{district},{name},{name},,,,")
     return "\n".join(lines) + "\n"
+
+
+# A ring as `[x, y]` corners in LV95, closed. Shapefiles run outer rings clockwise and holes
+# counter-clockwise.
+Ring = list[list[float]]
+
+
+def _square(x: float, y: float, size: float) -> Ring:
+    """A clockwise square with its lower left corner at (x, y)."""
+    return [[x, y], [x, y + size], [x + size, y + size], [x + size, y], [x, y]]
+
+
+def _hole(x: float, y: float, size: float) -> Ring:
+    return list(reversed(_square(x, y, size)))
+
+
+# The country: x from 2,490,000 to 2,770,000, y from 1,090,000 to 1,210,000, with a hole.
+COUNTRY = _square(2_490_000, 1_090_000, 120_000)[:2] + [
+    [2_770_000, 1_210_000],
+    [2_770_000, 1_090_000],
+    [2_490_000, 1_090_000],
+]
+COUNTRY_HOLE = _hole(2_700_000, 1_150_000, 5_000)
+# The lakes: (layer, id, name, ring). The first reaches past the country's eastern edge.
+LAKES = [
+    ("k4seenyyyymmdd11_ch2007Poly", 9001, "Grenzsee", _square(2_765_000, 1_160_000, 10_000)),
+    ("k4seenyyyymmdd22_ch2007Poly", 9002, "Lochsee", _square(2_700_000, 1_150_000, 5_000)),
+]
+
+
+def municipality_ring(number: int) -> Ring:
+    """A square of 1 km per made-up municipality, in a row; the first with fractions."""
+    i = list(MUNICIPALITIES).index(number)
+    if i == 0:
+        return [[2_600_000.4, 1_200_000.6], [2_600_000.4, 1_201_000.5], [2_601_000.5, 1_201_000.5],
+                [2_601_000.5, 1_200_000.6], [2_600_000.4, 1_200_000.6]]  # fmt: skip
+    return _square(2_600_000 + 1_000 * i, 1_200_000, 1_000)
+
+
+def canton_ring(abbreviation: str) -> Ring:
+    """A square of 10 km per canton, in a row, in the order of the constitution."""
+    return _square(2_500_000 + 10_000 * CANTONS.index(abbreviation), 1_100_000, 10_000)
+
+
+Field = tuple[str, Literal["C", "N"]]
+
+
+def _shapefile(
+    stem: str, fields: list[Field], shapes: list[tuple[list[Any], list[Ring]]]
+) -> dict[str, bytes]:
+    """The files of one layer: `fields` as (name, type "N" or "C"), each shape its record
+    and rings."""
+    shp, shx, dbf = io.BytesIO(), io.BytesIO(), io.BytesIO()
+    writer = shapefile.Writer(shp=shp, shx=shx, dbf=dbf, shapeType=shapefile.POLYGON)
+    for name, kind in fields:
+        # pyshp 3.1.6 wraps Writer.field in functools.wraps(DbfWriter.field), which mypy reads
+        # as an unbound function that wants a Writer first; the call is right at run time.
+        writer.field(name, kind, 10 if kind == "N" else 254)  # type: ignore[arg-type]
+    for record, rings in shapes:
+        writer.poly([[(x, y) for x, y in ring] for ring in rings])
+        writer.record(*record)
+    writer.close()
+    return {
+        f"{stem}.shp": shp.getvalue(),
+        f"{stem}.shx": shx.getvalue(),
+        f"{stem}.dbf": dbf.getvalue(),
+        f"{stem}.cpg": b"UTF-8",
+        f"{stem}.prj": b'PROJCS["CH1903+ / LV95"]',
+    }
+
+
+def _zip(files: dict[str, bytes]) -> bytes:
+    content = io.BytesIO()
+    with zipfile.ZipFile(content, "w") as archive:
+        for name, data in files.items():
+            archive.writestr(name, data)
+    return content.getvalue()
+
+
+def boundaries_shapes(division: str) -> list[tuple[list[Any], list[Ring]]]:
+    """The records and rings the register gives for a division; a test changes its copy."""
+    if division == "Commune":
+        return [
+            ([name, 10000 + number, number, "", POSITIONS[canton], canton], [municipality_ring(number)])
+            for number, (name, canton) in MUNICIPALITIES.items()
+        ]  # fmt: skip
+    if division == "Canton":
+        return [([a, i + 1, a], [canton_ring(a)]) for i, a in enumerate(CANTONS)]
+    return [(["Switzerland", "CH"], [COUNTRY, COUNTRY_HOLE])]
+
+
+BOUNDARY_FIELDS: dict[str, list[Field]] = {
+    "Commune": [("GDENAME", "C"), ("GDEHISTID", "N"), ("GDENR", "N"), ("KTNAME", "C"),
+                ("KTNR", "N"), ("KTKZ", "C")],
+    "Canton": [("KTNAME", "C"), ("KTNR", "N"), ("KTKZ", "C")],
+    "Country": [("LNAME", "C"), ("LKZ", "C")],
+}  # fmt: skip
+
+
+def boundaries(
+    division: str,
+    date: str = "2026-01-01",
+    shapes: list[tuple[list[Any], list[Ring]]] | None = None,
+) -> bytes:
+    """The register's ZIP of the K4 boundaries of `division` on `date`."""
+    stem = f"Boundaries_K4_{division}_{date.replace('-', '')}"
+    given = boundaries_shapes(division) if shapes is None else shapes
+    return _zip(_shapefile(stem, BOUNDARY_FIELDS[division], given))
+
+
+def themakart(lakes: bool = True) -> bytes:
+    """The ThemaKart set's ZIP, with its two layers of lakes, or without them."""
+    files: dict[str, bytes] = {"2026_GEOM_TK/DOKU/README.txt": b"made up"}
+    if lakes:
+        for layer, number, name, ring in LAKES:
+            layer_files = _shapefile(
+                layer, [("id", "N"), ("name", "C")], [([number, name], [ring])]
+            )
+            for file_name, data in layer_files.items():
+                files[f"2026_GEOM_TK/00_TOPO/K4_seenyyyymmdd/{file_name}"] = data
+    return _zip(files)
