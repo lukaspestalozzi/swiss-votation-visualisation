@@ -15,6 +15,10 @@ const files = import.meta.glob<VoteFile>('../../static/data/votes/*.json', {
   import: 'default',
 });
 const fileOf = new Map(Object.values(files).map((file) => [file.id, file]));
+// The first data, written on 2026-11-14: its votes end with this vote day, and its list of
+// municipalities is the one of this date. A later update adds votes and moves to a later list.
+const FIRST_DATA_UNTIL = '2026-09-27';
+const FIRST_LIST = '2026-01-01';
 
 function entriesOf(vote: Vote): Entry[] {
   const file = fileOf.get(vote.id);
@@ -26,7 +30,7 @@ function entriesOf(vote: Vote): Entry[] {
 
 test('every vote of the list has its file, and no file is left over', () => {
   const ids = listing.votes.map((vote) => vote.id);
-  expect(ids).toHaveLength(125);
+  expect(listing.votes.filter((vote) => vote.date <= FIRST_DATA_UNTIL)).toHaveLength(125);
   expect([...fileOf.keys()].sort((a, b) => a - b)).toEqual([...ids].sort((a, b) => a - b));
   for (const [path, file] of Object.entries(files)) {
     expect(path).toBe(`../../static/data/votes/${String(file.id)}.json`);
@@ -34,7 +38,7 @@ test('every vote of the list has its file, and no file is left over', () => {
 });
 
 test('the calculation gives the result of every vote it judges', () => {
-  let judged = 0;
+  let judgedOfTheFirstData = 0;
   for (const vote of listing.votes) {
     const majorities = majoritiesNeeded(vote.kind);
     if (majorities === 'not-calculated') continue;
@@ -47,9 +51,9 @@ test('the calculation gives the result of every vote it judges', () => {
       expect(result.cantonalVotesAgainst, name).toBe(vote.result.cantonalVotesAgainst);
     }
     expect(result.passed, name).toBe(vote.result.passed);
-    judged += 1;
+    if (vote.date <= FIRST_DATA_UNTIL) judgedOfTheFirstData += 1;
   }
-  expect(judged).toBe(124);
+  expect(judgedOfTheFirstData).toBe(124);
 });
 
 test('a validated vote has cantonal votes exactly when its kind needs both majorities', () => {
@@ -68,7 +72,7 @@ test('a validated vote has cantonal votes exactly when its kind needs both major
 
 test('a tie-break question is not calculated, and its entries give its yes and no votes', () => {
   const tieBreaks = listing.votes.filter((vote) => vote.kind === 'tie-break-question');
-  expect(tieBreaks.map((vote) => vote.id)).toEqual([6823]);
+  expect(tieBreaks.map((vote) => vote.id)).toContain(6823);
   for (const vote of tieBreaks) {
     expect(majoritiesNeeded(vote.kind)).toBe('not-calculated');
     const entries = entriesOf(vote);
@@ -130,7 +134,6 @@ test('Moutier counts for Bern until 2025 and for Jura since 2026', () => {
 
 test('every municipality of the list is one entry or without a result, in every vote', () => {
   const numbers = Object.values(list.municipalities).flatMap((rows) => rows.map(([n]) => n));
-  expect(numbers).toHaveLength(2110);
   for (const file of fileOf.values()) {
     const entries = Object.values(file.entries).flatMap((rows) => rows.map(([n]) => n));
     const municipal = entries.filter((number) => numbers.includes(number));
@@ -139,5 +142,8 @@ test('every municipality of the list is one entry or without a result, in every 
       `vote ${String(file.id)}`,
     ).toEqual([...numbers].sort((a, b) => a - b));
   }
-  expect(fileOf.get(5960)?.withoutResult).toEqual([389, 408, 422, 535, 629, 868, 877]);
+  if (list.referenceDate === FIRST_LIST) {
+    expect(numbers).toHaveLength(2110);
+    expect(fileOf.get(5960)?.withoutResult).toEqual([389, 408, 422, 535, 629, 868, 877]);
+  }
 });
