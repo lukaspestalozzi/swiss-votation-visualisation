@@ -75,14 +75,19 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 `app/src/lib/vote-list.ts` and `vote-list.test.ts` (spec `vote-list`; design, decisions 6, 10,
 11), against `app/static/data/votes.json`.
 
-- [ ] 4.1 Tests, one after the other: 14 years from 2026 to 2013 and 125 votes; the first votes of
+- [x] 4.1 Tests, one after the other: 14 years from 2026 to 2013 and 125 votes; the first votes of
   2026 are those of 2026-09-27, the last of 2013 are 5670, 5680, 5690 in this order; the entry of
   5960 (date, title, link `/votes/5960`, "Volksinitiative", "abgelehnt, 49.16% Ja"); the entry of
   6790 ("Fakultatives Referendum", "angenommen, 50.39% Ja"); the entry of 6823 ("Stichfrage",
   "37.36% für die Initiative"); the entry of 6650 ("angenommen, 58.25% Ja"); the marks of 5960
   ("Hinweis"), of the 8 votes of 2026-03-08 and 2026-06-14 ("vorläufig") and of 5670 (none); an
   empty list throws an error that names the list of votes. Verify: `pnpm --filter app run test`
-  reports 23 passed.
+  reports 23 passed. (As built: as in `vote-data.test.ts`, the tests take the votes up to 2026-09-27, so
+  that an update with a later vote day leaves them as they are. The tests of 6790 and 6650 passed
+  when written; the first was seen to fail against a mutant that writes every verdict
+  "abgelehnt", the second against a copy of the data with 1,450,325 official no votes for 6650.
+  No test can tell the official yes share of 6650 from its municipal one: both round to 58.25%,
+  as decision 4 says.)
 
 ## 5. A vote's page
 
