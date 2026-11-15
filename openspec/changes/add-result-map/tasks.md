@@ -285,12 +285,16 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
     the site's path; it imports nothing of SvelteKit.
   - A failed load is kept like a successful one, so a page shows the failure for the rest of the
     visit.)
-- [ ] 4.2 The vote's page holds the figures of 2.5. `+page.server.ts` reads `map.json` at build
+- [x] 4.2 The vote's page holds the figures of 2.5. `+page.server.ts` reads `map.json` at build
   time to check them, so a mismatch fails the build naming the vote and the municipality. The
   tie-break question gets none. Verify:
   - `pnpm run build` passes;
   - `grep -c '46565' app/build/swiss-votation-visualisation/votes/5960/index.html` is at least 1;
   - the existing browser tests still pass, 14.
+
+  (As built: as planned. `grep` finds 46565 once in the page of 5960, which grew to 43 KB, and
+  the tie-break question's page holds `map: null`. The check of the figures is the function of
+  2.5, whose tests make the build's failure on a mismatch visible without changing a data file.)
 - [ ] 4.3 `ResultMap.svelte` on the vote's page, below the outcome and above the table of the
   cantons, under "Karte der Gemeinden". It draws:
   - the lake-coloured outline;
