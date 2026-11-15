@@ -1,5 +1,6 @@
 {
   "sources": [
+    {"address": "https://dam-api.bfs.admin.ch/hub/api/dam/assets/36390072/master", "bytes": 11836923, "sha256": "2ac8a8d68929f63c5f3f2ed5dee72c3c3a3fc4a64077072fcade53135f2191a6", "stated": null},
     {"address": "https://lindas.admin.ch/query", "bytes": 215805, "sha256": "1c668c14aa74541afcf52cefdfa435fae075f064faa1412243ddb6bcdd391073", "stated": null},
     {"address": "https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-20130303-eidgAbstimmung.json", "bytes": 2958688, "sha256": "ad59855d0d99c6657ee4efc932184dc882ed7a5361b90db116cc4e197db020ef", "stated": "2026-08-12T16:22:22"},
     {"address": "https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-20130609-eidgAbstimmung.json", "bytes": 1970459, "sha256": "549b3aa9a5663fefcfccbad9a6089b3b7d14c8ae217f92a88e4adb609fbae264", "stated": "2026-08-12T16:22:23"},
@@ -46,6 +47,9 @@
     {"address": "https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-20260614-eidgAbstimmung.json", "bytes": 2057822, "sha256": "04a69f0d7b154ac63ee4a7090622b5808edbfc48c8862fbf366cd32293cc1b58", "stated": "2026-06-23T15:50:54"},
     {"address": "https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-20260927-eidgAbstimmung.json", "bytes": 2056409, "sha256": "a73eaa0b9571af73d1d65ec77a7f19f25ba99ca3a8b874e4a954a0c13820e737", "stated": "2026-10-01T09:10:20"},
     {"address": "https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-20261129-eidgAbstimmung.json", "bytes": 4004341, "sha256": "3dc8f8838d4a1152231a48d4c1b3e0ae3fa5f1c9234d635bf944ce7040543274", "stated": "2026-11-13T09:25:19"},
+    {"address": "https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division=Canton&resolution=K4&dissolve=true&date=01-01-2026&format=shp", "bytes": 37463, "sha256": "39d818c3ce7af3b4ce9287ef89fff1629183d2a5c966f3f7bdbbc2a04bbbc59f", "stated": null},
+    {"address": "https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division=Commune&resolution=K4&dissolve=true&date=01-01-2026&format=shp", "bytes": 233282, "sha256": "2ed566281159bb1d22e59e4f2b3f60bf5a553bdf322113662dba4b23290b1c92", "stated": null},
+    {"address": "https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division=Country&resolution=K4&dissolve=true&date=01-01-2026&format=shp", "bytes": 17298, "sha256": "437bba2bb7722933b2506136798b8de7d6d65d06ebae1941ec060a00119040a3", "stated": null},
     {"address": "https://www.agvchapp.bfs.admin.ch/api/communes/snapshot?date=01-01-2026", "bytes": 135173, "sha256": "e0748c06c754dbde20f04425a7f58c2a718e77982ea10fb8f969ac9d21a83b7d", "stated": null}
   ]
 }
