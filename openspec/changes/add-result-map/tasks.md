@@ -326,7 +326,7 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   - The address of a static file is `asset('data/map.json')`, without a leading slash.
   - A screenshot of 5960 showed the map, the legend, the source and the sentence on the Swiss
     abroad as intended.)
-- [ ] 4.4 Pointing (design, decisions 12 and 17): the box of details, a polite live region at the
+- [x] 4.4 Pointing (design, decisions 12 and 17): the box of details, a polite live region at the
   top left of the map. It shows on hover and on click or tap, and clears on a lake. Write
   browser tests, one at a time:
   - pointing at Zürich;
@@ -336,6 +336,21 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   - Meienried.
 
   Verify: the browser tests give 29 passed.
+
+  (As built: 29, as planned.
+  - Pointing at Zürich failed first, for the missing box of details. The other four passed when
+    written, and each failed against its mutant:
+    - a name with a space appended;
+    - no click handler;
+    - the last municipality kept over a lake;
+    - figures of 0 : 0 instead of the sentence.
+  - The tests find a point inside a shape with the browser's `isPointInFill`, where the shape is
+    the topmost element. At first Meienried was not found: it lay below the 720 px window,
+    where the browser finds no element; the helper now scrolls the shape into view.
+  - The lake test first picked the lake nearest Zürich on the screen, across scrolls. It now
+    measures in the map's own coordinates.
+  - The map's `svelte-ignore` of the a11y rules on its click handler is justified in a comment:
+    reading a municipality without a pointer is #10's.)
 - [ ] 4.5 Zoom and move: the buttons "+" ("Vergrössern"), "−" ("Verkleinern") and "Ganze
   Schweiz"; the wheel over the map; dragging with Pointer Events; a drag of more than 4 px is
   not a click. Write browser tests, one at a time:

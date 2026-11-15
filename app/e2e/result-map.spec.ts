@@ -117,3 +117,93 @@ test('the Swiss abroad: eleven cantons in 2013', async ({ page }) => {
   await page.goto('votes/5670/');
   await expect(page.getByText(abroad(11), { exact: true })).toBeVisible();
 });
+
+// A point on the screen inside a shape of the map, where the shape is the topmost element. The
+// shape is scrolled into view first: outside the window no element is found at a point.
+async function pointIn(page: Page, selector: string): Promise<{ x: number; y: number }> {
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator(selector).scrollIntoViewIfNeeded();
+  return page.locator(selector).evaluate((element) => {
+    const path = element as SVGPathElement;
+    const box = path.getBBox();
+    const matrix = path.getScreenCTM();
+    if (matrix === null) throw new Error('the shape is not on the screen');
+    for (let i = 1; i < 40; i += 1) {
+      for (let j = 1; j < 40; j += 1) {
+        const inside = new DOMPoint(box.x + (box.width * i) / 40, box.y + (box.height * j) / 40);
+        if (!path.isPointInFill(inside)) continue;
+        const onScreen = inside.matrixTransform(matrix);
+        if (document.elementFromPoint(onScreen.x, onScreen.y) === path) {
+          return { x: onScreen.x, y: onScreen.y };
+        }
+      }
+    }
+    throw new Error('no point inside the shape is on top');
+  });
+}
+
+const details = (page: Page) => page.locator('.details');
+
+test('pointing at a municipality shows its details', async ({ page }) => {
+  await page.goto('votes/5960/');
+  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+  await page.mouse.move(zurich.x, zurich.y);
+  await expect(details(page).locator('.name')).toHaveText('Zürich (ZH)');
+  await expect(details(page).locator('li')).toHaveText([
+    'Ja-Anteil: 31.85%',
+    "Ja-Stimmen: 46'565",
+    "Nein-Stimmen: 99'614",
+  ]);
+  await expect(details(page)).toHaveAttribute('aria-live', 'polite');
+});
+
+test('a name that holds its canton is shown once with it', async ({ page }) => {
+  await page.goto('votes/5960/');
+  const benken = await pointIn(page, '.municipalities [data-number="22"]');
+  await page.mouse.move(benken.x, benken.y);
+  await expect(details(page).locator('.name')).toHaveText('Benken (ZH)');
+});
+
+test('clicking a municipality shows its details, without pointing first', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  // Only a click, as a tap ends with, and no pointer moving over it before.
+  await page.locator('.municipalities [data-number="351"]').dispatchEvent('click');
+  await expect(details(page).locator('.name')).toHaveText('Bern (BE)');
+  await expect(details(page).locator('li').first()).toHaveText('Ja-Anteil: 27.61%');
+});
+
+test('pointing at a lake shows no details', async ({ page }) => {
+  await page.goto('votes/5960/');
+  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+  await page.mouse.move(zurich.x, zurich.y);
+  await expect(details(page).locator('.name')).toHaveText('Zürich (ZH)');
+  // The lakes have no names in the data: the Zürichsee is the lake nearest to Zürich, measured
+  // in the map's own coordinates, which do not change as the page scrolls.
+  const nearest = await page.evaluate(() => {
+    const centre = (element: Element | null) => {
+      if (!(element instanceof SVGGraphicsElement)) throw new Error('no shape');
+      const box = element.getBBox();
+      return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    };
+    const city = centre(document.querySelector('.municipalities [data-number="261"]'));
+    const distances = [...document.querySelectorAll('.lakes path')].map((lake) => {
+      const c = centre(lake);
+      return Math.hypot(c.x - city.x, c.y - city.y);
+    });
+    return distances.indexOf(Math.min(...distances));
+  });
+  const lake = await pointIn(page, `.lakes path >> nth=${String(nearest)}`);
+  await page.mouse.move(lake.x, lake.y);
+  await expect(details(page).locator('.name')).toHaveCount(0);
+});
+
+test('pointing at a municipality without a result says why it has no figures', async ({ page }) => {
+  await page.goto('votes/5960/');
+  const meienried = await pointIn(page, '.municipalities [data-number="389"]');
+  await page.mouse.move(meienried.x, meienried.y);
+  await expect(details(page).locator('.name')).toHaveText('Meienried (BE)');
+  await expect(details(page).locator('li')).toHaveText([
+    'Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
+  ]);
+});
