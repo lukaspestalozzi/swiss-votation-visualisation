@@ -225,7 +225,7 @@ without an election result. Design: decisions 1, 11 and 15.
   (As built: the test failed first, because the module did not exist. Each definition gives
   its value as a quotient of two counts, so that a share is written from them as a vote's is,
   and #8 can take part / whole.)
-- [ ] 2.4 The figures that apply to a vote, from the years and elections the file holds. Write
+- [x] 2.4 The figures that apply to a vote, from the years and elections the file holds. Write
   four tests, one at a time:
   - 5960 takes 2015 and the election of 2015;
   - 5920 takes 2014 and the election of 2011;
@@ -233,7 +233,13 @@ without an election result. Design: decisions 1, 11 and 15.
   - a made-up vote of 2027-03-07 takes 2025.
 
   Verify: the app has 68 passed.
-- [ ] 2.5 The values, against `characteristics.json` and `investigations/characteristics.md`.
+
+  (As built: 70 passed, the plan's 68 and the two of 3.1, done ahead. The made-up vote of 2027
+  was written first, while the update ran, with a made-up file whose newest year is 2025, so
+  that it holds after a later update; it failed first, because `applyingTo` did not exist. The
+  three votes against the real file passed when written; two of them failed against a mutant
+  that also took the vote's own year.)
+- [x] 2.5 The values, against `characteristics.json` and `investigations/characteristics.md`.
   Write five tests, one at a time:
   - Zürich for 5960: every one of its 21 values, the shares within 0.00005 points;
   - Fétigny-Ménières for 5960: 1,376 inhabitants;
@@ -242,6 +248,12 @@ without an election result. Design: decisions 1, 11 and 15.
   - Meienried for 5960: no party value, and 52 inhabitants.
 
   Verify: the app has 73 passed.
+
+  (As built: 75 passed, the plan's 73 and the two of 3.1. The five tests passed when written:
+  the definitions and the file were there. Zürich's failed against a mutant without the factor
+  100 of the density; Zürich's, Fétigny-Ménières's and Moutier's against one that read the next
+  municipality's counts; Meienried's against one that gave no votes a value of 0 of 0. Zürich's
+  checks each count of its 21 values exactly, and the shares within 0.00005 points.)
 
 ## 3. The panel beside the map
 
@@ -255,7 +267,7 @@ and modified requirement. Design: decisions 13, 14 and 19.
   (As built: done before group 2 was finished, while the update ran. The first test failed
   first, because the loader did not exist; the second passed when written and failed against a
   mutant that swallowed the failure.)
-- [ ] 3.2 New component `CharacteristicsPanel.svelte`, with its texts in `texts.ts`, beside the
+- [x] 3.2 New component `CharacteristicsPanel.svelte`, with its texts in `texts.ts`, beside the
   map in `ResultMap.svelte`. Write five browser tests in `app/e2e/result-map.spec.ts`, one at a
   time:
   - Zürich in 2016, every line of the spec's scenario;
@@ -265,27 +277,45 @@ and modified requirement. Design: decisions 13, 14 and 19.
   - the sources.
 
   Verify: `pnpm run build` and `pnpm run test:e2e` give 46 passed.
-- [ ] 3.3 The panel keeps the last municipality. Write three browser tests, one at a time:
-  - before pointing;
-  - moving to the panel;
-  - another municipality.
 
-  Verify: 49 passed.
+  (As built: 46 passed. The component and the function `panelOf` in `characteristics.ts`, which
+  works out the groups and their lines, were written while the update ran, so the five tests
+  passed when written. Each failed against a mutant: the cattle's line without its year; every
+  page given the date of 2016; cattle with two decimals; "–" for a missing figure; the sources
+  cut short. The page also passes the vote's day to the map, which needs it for the years.)
+- [x] 3.3 The panel keeps the municipality last clicked or tapped (Q, 2026-11-15: the first of
+  these tests showed that a panel following the pointer cannot be read, see decision 14). Change
+  the five tests of 3.2 from pointing to clicking, and write four browser tests, one at a time:
+  - before clicking;
+  - moving across the map to the panel;
+  - pointing at another municipality does not change the panel;
+  - clicking another municipality.
+
+  Verify: 50 passed.
+
+  (As built: 50 passed. The first test written for this task, as planned, pointed at Zürich and
+  moved to the panel: it failed with "Gommiswald (SG)" in the panel, the last municipality
+  crossed. Q chose clicking, and the spec, the design and this task changed. The tests of 3.2
+  click now and still pass. Of the four new tests, the first two failed first: the prompt still
+  asked to point, and the panel showed "Grabs (SG)". Then only a click or a tap sets the panel's
+  municipality, and `texts.ts` asks for a click. The last two passed when written and failed
+  against their mutants: a panel following the pointer, and one that kept the first click.)
 - [ ] 3.4 Where the panel stands. Write two browser tests, one at a time: a window 1,280 pixels
-  wide, and one 800 pixels wide. Verify: 51 passed.
+  wide, and one 800 pixels wide. Verify: 52 passed.
 - [ ] 3.5 Loading. Write two browser tests, one at a time:
   - every request for `data/characteristics.json` fails;
   - its answer is held back.
 
-  Verify: 53 passed.
+  Verify: 54 passed.
 - [ ] 3.6 Change two existing browser tests to the modified requirements:
   - "From one vote to another" counts `data/characteristics.json` once;
-  - the budget test points once the characteristics have loaded.
+  - the budget test points at and clicks three municipalities once the characteristics have
+    loaded.
 
   Verify:
   - each changed test fails against a mutant (the file loaded twice; the panel updated in a
     loop of 20 ms);
-  - 53 passed, and the budget test prints its frames.
+  - 54 passed, and the budget test prints its frames.
 - [ ] 3.7 Look at `/votes/5960/` in the built site, in windows 1,280 and 800 pixels wide, with
   Zürich and Meienried selected. Verify: screenshots show the panel beside and below the map,
   and nothing overlaps.
@@ -306,7 +336,7 @@ and modified requirement. Design: decisions 13, 14 and 19.
   Verify: every file of `git diff --name-status main` with status A outside `openspec/` is named
   in `CLAUDE.md`, or lies in a directory its tables describe.
 - [ ] 4.3 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
-  calculation, 73 of the app, 53 browser tests and 121 of the pipeline.
+  calculation, 75 of the app, 54 browser tests and 124 of the pipeline.
 
 ## Workflow follow-up
 

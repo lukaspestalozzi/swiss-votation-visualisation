@@ -41,8 +41,8 @@ for it:
 
   The record of the sources names the new sources, and the query of each answer that was asked
   for with one.
-- **A panel beside the map** lists all characteristics of the municipality last pointed at or
-  clicked:
+- **A panel beside the map** lists all characteristics of the municipality last clicked or
+  tapped:
   - to the right of the map on a wide screen, below it on a narrow one;
   - each figure with the year it is from;
   - "keine Angabe" where a figure is missing: the party strengths of the 5 to 7 municipalities

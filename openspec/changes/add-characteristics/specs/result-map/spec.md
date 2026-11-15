@@ -3,13 +3,13 @@
 ### Requirement: The characteristics of a municipality beside the map
 
 Beside the map SHALL stand a panel headed "Merkmale der Gemeinde" with the characteristics of
-the municipality last pointed at, clicked or tapped (the `characteristics` capability), for the
+the municipality last clicked or tapped (the `characteristics` capability), for the
 figures that apply to the vote. It shows the municipality's name as its details write it, then
 the 21 characteristics in four groups, each group headed with the date of its figures.
 
 #### Scenario: Zürich in 2016
 
-- **WHEN** a visitor opens `/votes/5960/` and points at Zürich
+- **WHEN** a visitor opens `/votes/5960/` and clicks Zürich
 - **THEN** the panel shows "Zürich (ZH)" and, under "Bevölkerung Ende 2015": "Einwohner:
   396'955", "Ausländeranteil: 32.03%", "0–17 Jahre: 15.37%", "18–34 Jahre: 27.13%", "35–49
   Jahre: 25.41%", "50–64 Jahre: 16.43%", "65 Jahre und älter: 15.66%", "Einwohner je km²:
@@ -24,7 +24,7 @@ the 21 characteristics in four groups, each group headed with the date of its fi
 
 #### Scenario: The figures follow the vote
 
-- **WHEN** a visitor opens `/votes/6850/` and points at Zürich
+- **WHEN** a visitor opens `/votes/6850/` and clicks Zürich
 - **THEN** the panel's groups are headed "Bevölkerung Ende 2025" and "Nationalratswahl 2023"
 
 ### Requirement: How the characteristics are written
@@ -36,30 +36,36 @@ with its digits grouped as a count is.
 
 #### Scenario: Meienried's cattle
 
-- **WHEN** a visitor opens `/votes/5960/` and points at Meienried
+- **WHEN** a visitor opens `/votes/5960/` and clicks Meienried
 - **THEN** the panel shows "Einwohner je km²: 80", "Fläche (2026): 0.65 km²" and "Rinder je
   Einwohner (2015): 2.519"
 
 ### Requirement: The panel keeps the last municipality
 
-The panel SHALL keep the municipality last pointed at, clicked or tapped while the pointer
-leaves the map, points at a lake or moves to the panel. Before the first one, the panel SHALL
-show "Zeigen Sie auf eine Gemeinde, um ihre Merkmale zu sehen."
+The panel SHALL show the municipality last clicked or tapped, and keep it while the pointer
+points at other municipalities, leaves the map, points at a lake or moves to the panel. Pointing
+alone SHALL NOT change it. Before the first click or tap, the panel SHALL show "Klicken Sie auf
+eine Gemeinde, um ihre Merkmale zu sehen."
 
-#### Scenario: Before pointing
+#### Scenario: Before clicking
 
 - **WHEN** a visitor opens `/votes/5960/` and the map has loaded
-- **THEN** the panel shows "Zeigen Sie auf eine Gemeinde, um ihre Merkmale zu sehen."
+- **THEN** the panel shows "Klicken Sie auf eine Gemeinde, um ihre Merkmale zu sehen."
 
 #### Scenario: Moving to the panel
 
-- **WHEN** a visitor points at Zürich and then moves the pointer onto the panel
+- **WHEN** a visitor clicks Zürich and then moves the pointer across the map onto the panel
 - **THEN** the map shows no details and the panel still shows "Zürich (ZH)" with "Einwohner:
   396'955"
 
+#### Scenario: Pointing does not change the panel
+
+- **WHEN** a visitor clicks Zürich and then points at Bern
+- **THEN** the map shows the details of "Bern (BE)" and the panel still shows "Zürich (ZH)"
+
 #### Scenario: Another municipality
 
-- **WHEN** a visitor points at Zürich and then at Bern
+- **WHEN** a visitor clicks Zürich and then clicks Bern
 - **THEN** the panel shows "Bern (BE)" with "Einwohner: 131'554"
 
 ### Requirement: Where the panel stands
@@ -85,7 +91,7 @@ place of its value.
 
 #### Scenario: Meienried's parties
 
-- **WHEN** a visitor opens `/votes/5960/` and points at Meienried
+- **WHEN** a visitor opens `/votes/5960/` and clicks Meienried
 - **THEN** the panel shows "Meienried (BE)", "Einwohner: 52", and "keine Angabe" for each of
   the seven parties
 
@@ -97,7 +103,7 @@ Nationalratswahlen, Volkszählung 2000, Landwirtschaftliche Strukturerhebung); s
 
 #### Scenario: The sources
 
-- **WHEN** a visitor opens `/votes/5960/` and points at Zürich
+- **WHEN** a visitor opens `/votes/5960/` and clicks Zürich
 - **THEN** the panel ends with "Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000,
   Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026)."
 
@@ -141,13 +147,13 @@ NOT load them again.
 
 ### Requirement: The map's performance budget
 
-Each frame the browser draws after a zoom step, a move of the map or pointing at a municipality,
-with the panel showing its characteristics, SHALL take at most 16 ms of work on the page's main
-thread: the handling of the input and the drawing that follows, measured by the browser tests
-on the machine that runs them.
+Each frame the browser draws after a zoom step, a move of the map, or pointing at or clicking a
+municipality, with the panel showing its characteristics, SHALL take at most 16 ms of work on the
+page's main thread: the handling of the input and the drawing that follows, measured by the
+browser tests on the machine that runs them.
 
 #### Scenario: Zooming, moving and pointing
 
-- **WHEN** the browser tests zoom in four times, drag the map, and point at three municipalities
-  on `/votes/5960/` once the characteristics have loaded
+- **WHEN** the browser tests zoom in four times, drag the map, and point at and click three
+  municipalities on `/votes/5960/` once the characteristics have loaded
 - **THEN** no frame after these inputs took more than 16 ms of work on the main thread
