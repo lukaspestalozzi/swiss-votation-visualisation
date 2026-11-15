@@ -63,7 +63,7 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
     The reader stops on both, naming the source. These two guards have no test of their own.
   - The made-up corners use only fractions of .4 and .6, so the test does not depend on Python
     rounding .5 to the even neighbour.)
-- [ ] 1.4 The same module reads the cantons and the outline. Each of the 26 cantons is taken once,
+- [x] 1.4 The same module reads the cantons and the outline. Each of the 26 cantons is taken once,
   in the order of the constitution, and the outline keeps its outer rings only (design,
   decision 13). Write three tests, one at a time:
   - the cantons and the outer rings are read;
@@ -71,6 +71,11 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   - a canton given twice stops, named.
 
   Verify: pytest 88 passed.
+
+  (As built: 89 passed. A fourth test was added for the spec's "gives no outline": a country
+  without a shape stops the run, naming the source; before, it failed with Python's own
+  `ValueError`. Every later count of the pipeline's tests is one higher than planned. The path
+  of a shape is built from its rings, so the outline's outer rings need no shape of their own.)
 - [ ] 1.5 The same module reads the lakes of a ThemaKart set: both layers, found by their file
   names (`k4seenyyyymmdd11_ch2007Poly`, `k4seenyyyymmdd22_ch2007Poly`), whole and rounded.
   Write two tests, one at a time:

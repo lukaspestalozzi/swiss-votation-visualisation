@@ -3,7 +3,7 @@ from typing import Any
 import made_up
 import pytest
 
-from pipeline.boundaries import Frame, read_municipalities
+from pipeline.boundaries import Frame, read_cantons, read_municipalities, read_outline
 from pipeline.counts import SourceError
 
 # The made-up country's rectangle: x from 2,490,000, y up to 1,210,000.
@@ -45,3 +45,34 @@ def test_a_number_given_twice_stops_the_run() -> None:
     content = made_up.boundaries("Commune", shapes=shapes + [shapes[0]])
     with pytest.raises(SourceError, match=r"communes.zip: .*number 1 twice"):
         read_municipalities(content, LISTED, FRAME, "communes.zip")
+
+
+def test_the_outline_and_the_cantons_are_read() -> None:
+    outline = read_outline(made_up.boundaries("Country"), "country.zip")
+    # The outer ring only: the hole, a lake, is drawn by the lakes.
+    assert outline.frame == FRAME
+    assert outline.path == "M0 120000l0 -120000l280000 0l0 120000z"
+    cantons = read_cantons(made_up.boundaries("Canton"), FRAME, "cantons.zip")
+    assert [abbreviation for abbreviation, _ in cantons][:3] == ["ZH", "BE", "LU"]
+    assert len(cantons) == 26
+    assert cantons[0] == ("ZH", "M10000 110000l0 -10000l10000 0l0 10000z")
+
+
+def test_a_missing_canton_stops_the_run() -> None:
+    shapes = [shape for shape in made_up.boundaries_shapes("Canton") if shape[0][2] != "JU"]
+    content = made_up.boundaries("Canton", shapes=shapes)
+    with pytest.raises(SourceError, match=r"cantons.zip: .*no border.*JU"):
+        read_cantons(content, FRAME, "cantons.zip")
+
+
+def test_a_canton_given_twice_stops_the_run() -> None:
+    shapes = made_up.boundaries_shapes("Canton")
+    content = made_up.boundaries("Canton", shapes=shapes + [shapes[1]])
+    with pytest.raises(SourceError, match=r"cantons.zip: .*canton BE twice"):
+        read_cantons(content, FRAME, "cantons.zip")
+
+
+def test_a_country_without_an_outline_stops_the_run() -> None:
+    content = made_up.boundaries("Country", shapes=[])
+    with pytest.raises(SourceError, match=r"country.zip: .*no outline"):
+        read_outline(content, "country.zip")
