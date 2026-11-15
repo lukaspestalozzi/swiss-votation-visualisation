@@ -4,14 +4,19 @@ Working title: Popular Vote Explorer. A web app that shows how Switzerland voted
 popular votes, municipality by municipality, and recalculates the result as if only
 municipalities of a certain kind had voted. It is a static site: everything runs in the browser.
 
-Today it holds the data and the rules, and no screen for them yet:
+Today it shows every vote and its result, without limits yet, in German:
 
-- the results of every national vote since 2013 per municipality, made from public sources by
+- the start page lists the national votes since 2013 by year, each with its date, title, kind
+  and official result, marked where the Federal Chancellery adds a note or the result is not
+  validated yet;
+- each vote has its page (`/votes/<id>`): the yes and no votes, the yes share and the turnout,
+  the majority of voters and the majority of cantons side by side, the outcome, and a table of
+  the 26 cantons;
+- the results come from the data of every vote per municipality, made from public sources by
   the pipeline (`pipeline/`) and committed in `app/static/data/`; they reproduce the official
-  result of each vote, apart from one difference of 200 no votes that is written down;
+  result of each vote, apart from one difference of 200 no votes that the page names;
 - the calculation of a vote's result under the federal rules (`calculation/`), tested against
-  the official results;
-- one page with the 26 cantons and their cantonal votes, 23 in total.
+  the official results, works them out when the site is built.
 
 `docs/roadmap.md` lists what comes next.
 

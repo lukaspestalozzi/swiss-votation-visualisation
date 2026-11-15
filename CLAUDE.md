@@ -5,15 +5,18 @@ municipality, and recalculates the result as if only municipalities of a certain
 A static site for the curious public; everything runs in the browser. "Popular Vote Explorer" is
 a working title: the name is not decided.
 
-**Status:** the skeleton, the calculation and the vote data. One page shows the 26 cantons and
-their cantonal votes; the calculation gives the result of a vote from the entries that remain
-and is tested against seven official votes; the pipeline writes the results of the 125 national
-votes since 2013, per municipality, to `app/static/data/`, and a test runs the calculation over
-every one of them; the build, the checks, the module boundaries and CI are in place. Changes #1
-to #3 of `docs/roadmap.md`, `add-project-skeleton`, `add-result-calculation` and
-`add-vote-data`, are archived, and `openspec/specs/` holds their specs. The first investigation
-(data sources) is done: `investigations/data-sources.md`. Next: change #4, `add-vote-list`, the
-first screen. `README.md` is the human-facing overview.
+**Status:** the skeleton, the calculation, the vote data and the first screen. The start page
+lists the national votes by year, and each vote has its page with its result, the two verdicts
+side by side and a table of the cantons, calculated when the site is built and in German until
+#9; the calculation gives the result of a vote from the entries that remain and the outcome of
+each canton, and is tested against seven official votes; the pipeline writes the results of the
+125 national votes since 2013, per municipality, to `app/static/data/`, and a test runs the
+calculation over every one of them; the build, the checks, the module boundaries and CI are in
+place. Changes #1 to #3 of `docs/roadmap.md`, `add-project-skeleton`, `add-result-calculation`
+and `add-vote-data`, are archived, and `openspec/specs/` holds their specs; change #4,
+`add-vote-list`, is applied and still in `openspec/changes/`. The first investigation (data
+sources) is done: `investigations/data-sources.md`. Next: verify and archive #4, then change #5,
+`publish-site`. `README.md` is the human-facing overview.
 
 ## Where things are
 
@@ -23,7 +26,7 @@ first screen. `README.md` is the human-facing overview.
 | `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `municipalities`, `result-calculation`, `vote-data`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
-| `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first; its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
+| `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first; its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3, and `check_tie_break.py` what the yes and no of a tie-break question stand for, found while proposing #4. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
 | `calculation/`, `app/`, `pipeline/` | The three modules. The code map below lists their files. |
 | `app/static/data/` | The data files of the app: `app/static/data/votes.json` (the list of votes), `app/static/data/votes/<id>.json` (one file per vote, its entries), `app/static/data/municipalities.json` (the list of municipalities and the Swiss abroad), `app/static/data/sources.json` (the record of the source files). Written by the pipeline (`pipeline/README.md`), never by hand; committed, and served with the site as they are. Their shape is decision 12 of the design of `add-vote-data`, their types are in `app/src/lib/vote-data.ts`. |
 | `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml` | The root of the pnpm workspace: the scripts of every check, pnpm pinned in `packageManager`, Node 24 required (`engineStrict`). |
@@ -52,7 +55,7 @@ the DOM, Node or a UI framework.
 | `calculation/src/cantons.test.ts` | Its unit tests. Unit tests live next to the code as `*.test.ts`. |
 | `calculation/src/kinds.ts` | The six kinds of vote and the majorities each needs; a tie-break question is not calculated. |
 | `calculation/src/kinds.test.ts` | Its unit tests. |
-| `calculation/src/result.ts` | `calculateResult`: from the entries that remain, the votes, the yes share, the cantonal votes, both majorities and the verdict. It throws on an entry it cannot count. |
+| `calculation/src/result.ts` | `calculateResult`: from the entries that remain, the votes, the yes share, the cantonal votes, both majorities, the verdict, and the outcome of each canton with an entry, in the order of the constitution. It throws on an entry it cannot count. |
 | `calculation/src/result.test.ts` | The rules, with made-up figures. The package has neither DOM nor Node types, so a test uses no `console` and no `performance`. |
 | `calculation/src/reference-votes.json` | Test data: all municipal entries of seven official votes. Written by `investigations/data-sources/write_reference_votes.py`, not by hand, and not formatted. Only a test imports it. |
 | `calculation/src/reference-votes.test.ts` | The seven votes against their official figures, which are those of `investigations/data-sources.md`. |
@@ -60,21 +63,34 @@ the DOM, Node or a UI framework.
 ### app
 
 The user interface: SvelteKit 3 with the static adapter, Svelte 5. It depends on `calculation`.
+SvelteKit 3 has no `$lib`: the routes import `src/lib/` by relative paths. What a page shows is
+worked out in plain TypeScript in `src/lib/`; the Svelte components only lay it out.
 
 | File | What |
 |------|------|
 | `app/package.json` | The package `app`. `@playwright/test` is pinned exactly (see "Build and verify"); Vitest for the unit tests. |
 | `app/vite.config.ts` | The configuration of Vite and SvelteKit, with the static adapter, and of Vitest, which runs `src/**/*.test.ts` only, not the browser tests. There is no `svelte.config.js`. |
 | `app/tsconfig.json` | Extends the one SvelteKit generates. `rootDir` `.` makes an import from `pipeline/` fail. |
-| `app/src/app.html` | The page template. |
+| `app/src/app.html` | The page template; its language is German (`lang="de"`). |
 | `app/src/app.d.ts` | SvelteKit's place for the app's global types. |
 | `app/src/routes/+layout.ts` | `prerender = true`: every page is written as a file at build time. |
-| `app/src/routes/+page.svelte` | The start page: the working title and the table of the cantons. |
+| `app/src/routes/+page.server.ts` | The start page's data, at build time: the list of `vote-list.ts`, from `app/static/data/votes.json`. |
+| `app/src/routes/+page.svelte` | The start page: the working title and the votes by year, each linked to its page. |
+| `app/src/routes/votes/[id]/+page.server.ts` | A vote's page, at build time: `entries()` names every vote of the list; `load` reads the vote's file through `import.meta.glob` and returns what `vote-page.ts` gives, so the page holds its result and the browser loads no entries. |
+| `app/src/routes/votes/[id]/+page.svelte` | A vote's page: the head, the figures, the two verdicts side by side, the outcome, the table of the cantons or the tie-break question's figures, the sources and notes, and the link back. |
+| `app/src/lib/format.ts` | Counts, shares (rounded half away from zero, from the counts), cantonal votes and dates as the screen writes them, without the locale data of the machine. |
+| `app/src/lib/format.test.ts` | Its unit tests. |
+| `app/src/lib/texts.ts` | Every text of the screen, in German until #9; a text with figures is a function of them. |
+| `app/src/lib/vote-list.ts` | The start page's list: the years from the newest, and for each vote its date, title, kind, official result and marks. An empty list is an error. |
+| `app/src/lib/vote-list.test.ts` | Its unit tests, against `votes.json` up to 2026-09-27. |
+| `app/src/lib/vote-page.ts` | What a vote's page shows, from its vote of the list and the result the calculation gives over its file. A missing file or a refused entry is an error that names the vote. |
+| `app/src/lib/vote-page.test.ts` | Its unit tests, against the data files and the figures of `investigations/data-sources.md`. |
 | `app/src/lib/vote-data.ts` | The types of the data files in `app/static/data/`. |
 | `app/src/lib/vote-data.test.ts` | The calculation over every vote of the data files: it gives each vote's yes and no votes, cantonal votes and verdict; and four named votes against the official figures of `investigations/data-sources.md`. |
 | `app/static/data/` | The data files (see "Where things are"). |
 | `app/playwright.config.ts` | The browser tests: they run against `app/build`, served as plain files on port 4173. |
-| `app/e2e/start-page.spec.ts` | The browser tests of the start page, among them "all requests go to the site itself". |
+| `app/e2e/vote-list.spec.ts` | The browser tests of the start page, among them "all requests go to the site itself"; they compare with the site's own `/data/votes.json`. |
+| `app/e2e/vote-page.spec.ts` | The browser tests of the vote pages: named votes, no entries loaded, no other server. |
 
 Generated and not in the repository: `app/.svelte-kit/` (types, written by `svelte-kit sync` on
 every install) and `app/build/` (the site).
