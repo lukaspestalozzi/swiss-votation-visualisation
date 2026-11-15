@@ -10,18 +10,17 @@ their cantonal votes; the calculation gives the result of a vote from the entrie
 and is tested against seven official votes; the pipeline writes the results of the 125 national
 votes since 2013, per municipality, to `app/static/data/`, and a test runs the calculation over
 every one of them; the build, the checks, the module boundaries and CI are in place. Changes #1
-and #2 of `docs/roadmap.md`, `add-project-skeleton` and `add-result-calculation`, are archived,
-and `openspec/specs/` holds their specs; change #3, `add-vote-data`, is implemented in
-`openspec/changes/add-vote-data/` and waits for its verification and archive. The first
-investigation (data sources) is done: `investigations/data-sources.md`. Next: archive #3, then
-#4. `README.md` is the human-facing overview.
+to #3 of `docs/roadmap.md`, `add-project-skeleton`, `add-result-calculation` and
+`add-vote-data`, are archived, and `openspec/specs/` holds their specs. The first investigation
+(data sources) is done: `investigations/data-sources.md`. Next: change #4, `add-vote-list`, the
+first screen. `README.md` is the human-facing overview.
 
 ## Where things are
 
 | Path | What |
 |------|------|
 | `openspec/config.yaml` | Project context and rules: product, hard constraints, decided stack and what is still open, module boundaries, quality bar, glossary. Read first. |
-| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `result-calculation`. |
+| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `municipalities`, `result-calculation`, `vote-data`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
 | `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first; its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
