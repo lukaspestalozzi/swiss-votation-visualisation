@@ -132,7 +132,7 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   - the boundaries always asked for 2026-01-01;
   - the check of a missing boundary removed, so the update exited with 0;
   - the register's answers not recorded.)
-- [ ] 1.9 Run `uv run --directory pipeline --locked python -m pipeline update` for real. Review
+- [x] 1.9 Run `uv run --directory pipeline --locked python -m pipeline update` for real. Review
   the diff of `app/static/data/`:
   - `map.json` is new: reference date 2026-01-01, lakes set 2026, 2,110 municipalities, 26
     cantons, 37 lakes, about 370 KB;
@@ -142,6 +142,14 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   Run it again: `git status --short` shows no further change. Verify:
   `python3 -c "import json; d=json.load(open('app/static/data/map.json')); print(d['referenceDate'], d['lakesSet'], len(d['municipalities']), len(d['cantons']), len(d['lakes']))"`
   prints `2026-01-01 2026 2110 26 37`.
+
+  (As built: as planned.
+  - It printed `2026-01-01 2026 2110 26 37`.
+  - `map.json` is 382,656 bytes, 159,869 gzipped; its rectangle is 348,832 by 220,581 m.
+  - `sources.json` gained the register's three answers and the ThemaKart set (11,836,923
+    bytes); no other data file changed.
+  - A second run left the checksums of `map.json`, `sources.json` and `votes.json` as they
+    were. Each run took about 75 s.)
 - [ ] 1.10 In `pipeline/README.md`, add the two map sources to the table of sources, with what
   the pipeline takes from them, and update the size of a run's downloads. Verify: the table
   names the addresses of `download.py`, and the size matches `du -sh pipeline/downloads`.
