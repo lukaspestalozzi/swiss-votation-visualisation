@@ -119,12 +119,18 @@
   function down(event: PointerEvent): void {
     if (view === null || event.button !== 0) return;
     press = { x: event.clientX, y: event.clientY, view, moved: false };
+    // A new press ends the last drag's hold: its own click counts unless it becomes a drag.
+    released = null;
   }
 
   function drag(event: PointerEvent & { currentTarget: SVGSVGElement }): void {
+    // A press let go outside the map, before it became a drag, sent no release here.
+    if (press !== null && (event.buttons & 1) === 0) press = null;
     if (press === null || sources === null) {
       if (released !== null && (event.clientX !== released.x || event.clientY !== released.y)) {
+        // The first move after a drag points again, also within the municipality it ended on.
         released = null;
+        point(event);
       }
       return;
     }
