@@ -16,7 +16,7 @@ proposed.
 | 7 | `add-characteristics` | characteristics (new), result-map | The pipeline's second data. The predecessor's characteristics for every municipality: inhabitants, age groups, share of foreigners, population density; the strength of FDP, CVP, SP, SVP, GLP, GPS and the other parties; the shares of German, French, Italian and Romansh speakers; area; cows per inhabitant. Each characteristic has one definition (name, unit, source, reference date) that everything else uses; the same checks on the input as in #3. Pointing at a municipality also shows its key figures | The sources and which year's figures apply to a vote (first investigation), the age groups, the list of parties over the period (CVP and BDP merged into Die Mitte on 2021-01-01), what a municipality without a figure shows | planned |
 | 8 | `add-limits` | limits (new), verdicts, result-map, reading-guide (new) | A lower and an upper limit on every characteristic; a municipality remains only if it lies within all limits at once. Set-aside municipalities turn grey, and the map and both verdicts are recalculated while a limit is dragged, without a button. One step returns to the real result. Every control is labelled in plain words, and its range, its label and its filter come from the same characteristic. The app explains that this is a thought experiment about municipalities, not about people and not a forecast, and it names its sources | The performance budget (hard constraint 3), what a limit does with a municipality that has no figure, the form of the controls, where the explanation and the sources are shown | planned |
 | 9 | `add-interface-languages` | interface-languages (new), and the capabilities of the screens | The interface and the vote titles in German, French and Italian | How the three languages are handled, how the language is chosen and which is the default, the source of the vote titles, the names of municipalities and cantons in each language | planned |
-| 10 | `add-small-screens` | small-screens (new), and the capabilities of the screens | Usable on a phone: the map, the limits and the verdicts on a small touch screen | The layout, how a municipality's details are read without a pointer, the smallest screen supported | planned |
+| 10 | `add-small-screens` | small-screens (new), and the capabilities of the screens | Usable on a phone: the map, the limits and the verdicts on a small touch screen | The layout, how a municipality's details are read without a pointer, the smallest screen supported, whether a library for zoom and move (d3-zoom or another) serves better than #6's own code (Q, 2026-11-15) | planned |
 | 11 | `add-share-link` | share-link (new) | A link reproduces a chosen vote together with all limits | The form of the link, what a link shows when its vote or one of its characteristics no longer exists | planned |
 | 12 | `add-vote-comparison` | vote-comparison (new) | The same selection of municipalities applied to two votes side by side | The layout, on a phone too | planned |
 | 13 | `add-more-characteristics` | characteristics | More characteristics per municipality than the predecessor had | Which ones (named so far: income, education, religion, urban or rural type) | planned |
@@ -71,6 +71,12 @@ tolerances.
   6 to 9, which `investigations/data-sources.md` notes point by point; the entries of the
   table above show both. The most visible: the official result is the Federal Chancellery's, with one
   named difference; all votes use today's list of municipalities, so the map of #6 is one map.
+- **Map data**, found while proposing #6, on 2026-11-15: `investigations/map-data.md`, with its
+  scripts in `investigations/map-data/`. The BFS register gives the K4 boundaries of exactly the
+  list of municipalities of a date; the BFS ThemaKart set 2026 has the same municipalities,
+  simplified differently, and the lakes, which both leave as holes; the distances of the map's
+  colours under red-green colour vision deficiency; and the municipal figures the specs of the
+  map cite.
   While proposing #3, three more facts were found and added to the investigation: the two
   sources share the BFS's id, they differ in the registered voters, and Moutier changed canton
   on 2026-01-01.
