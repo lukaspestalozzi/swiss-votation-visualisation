@@ -139,9 +139,17 @@ def _previous(data: Path) -> dict[int, bool]:
     return {vote["id"]: vote["validated"] for vote in json.loads(path.read_text())["votes"]}
 
 
+def _put_back(data: Path) -> None:
+    """A run stopped between the two moves of `_replace` left the data files in `<data>.old`."""
+    old = data.with_name(data.name + ".old")
+    if old.exists() and not data.exists():
+        old.rename(data)
+
+
 def _replace(data: Path, built: Data) -> None:
     """Write into a new directory next to `data`, then put it in the place of `data`."""
     new, old = data.with_name(data.name + ".new"), data.with_name(data.name + ".old")
+    _put_back(data)
     for leftover in (new, old):
         shutil.rmtree(leftover, ignore_errors=True)
     new.mkdir(parents=True)
@@ -152,7 +160,13 @@ def _replace(data: Path, built: Data) -> None:
         raise
     if data.exists():
         data.rename(old)
-    new.rename(data)
+    try:
+        new.rename(data)
+    except BaseException:
+        if old.exists():
+            old.rename(data)
+        shutil.rmtree(new, ignore_errors=True)
+        raise
     shutil.rmtree(old, ignore_errors=True)
 
 
@@ -160,6 +174,7 @@ def update(
     project: Path, data: Path, fetch: Fetch, today: str, reuse_downloads: bool = False
 ) -> Report:
     """Bring the data files in `data` up to date; `project` holds the lists and the downloads."""
+    _put_back(data)
     known = read_known_differences(project / "known-differences.json")
     changes = read_canton_changes(project / "canton-changes.json")
     downloads = _Downloads(project / "downloads", fetch, reuse_downloads)

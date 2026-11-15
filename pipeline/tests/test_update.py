@@ -166,3 +166,37 @@ def test_a_line_of_a_hand_kept_list_that_cannot_be_read_stops(
     (directory / name).write_text(json.dumps([line]), encoding="utf-8")
     with pytest.raises(SourceError, match=rf"^{name}, .*{message}"):
         update(directory, tmp_path / "data", Sources(), TODAY)
+
+
+def test_a_swap_that_fails_leaves_the_data_files_as_they_were(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    rename = Path.rename
+
+    def failing(self: Path, target: Path) -> Path:
+        if self.name == "data.new":
+            raise OSError("the new directory cannot be moved")
+        return rename(self, target)
+
+    monkeypatch.setattr(Path, "rename", failing)
+    with pytest.raises(OSError, match="cannot be moved"):
+        update(directory, data, Sources(), TODAY)
+    assert snapshot(data) == before
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["data", "pipeline"]
+
+
+def test_the_data_files_of_a_run_stopped_between_its_two_moves_are_put_back(
+    tmp_path: Path,
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    data.rename(tmp_path / "data.old")
+    (directory / "canton-changes.json").write_text("[]", encoding="utf-8")
+    with pytest.raises(SourceError):
+        update(directory, data, Sources(), TODAY)
+    assert snapshot(data) == before
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["data", "pipeline"]
