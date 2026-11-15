@@ -166,12 +166,15 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   "vorläufig", every link to 5670, and a stylesheet from `https://example.org`. A first link
   mutant, to the id plus 10, did not build: prerendering follows every link and stopped at
   `404 GET /votes/6820`.)
-- [ ] 7.2 `app/e2e/vote-page.spec.ts`: the page of 5960 (head, figures, verdicts, the row of ZH,
+- [x] 7.2 `app/e2e/vote-page.spec.ts`: the page of 5960 (head, figures, verdicts, the row of ZH,
   the note), of 6790, of 6823, of 6650; the entries stay out of the browser (no request under
   `/data/votes/`); a vote's page requests nothing from other servers. Verify: `pnpm run
   test:e2e` reports all tests passed; with a temporary `<link rel="stylesheet"
   href="https://example.org/a.css">` in `app/src/app.html`, the requests test fails and names
-  `https://example.org`.
+  `https://example.org`. (As built: six tests, each passed when written and was seen to fail, for its own
+  reason, against one build with six mutants: the canton's cell showing its yes share, no class
+  `greyed`, the tie-break question's sentence left out, the notes on differences left out, a
+  `fetch` of `/data/votes/5960.json` in the page, and that stylesheet, which the test names.)
 
 ## 8. The build fails where it must
 
