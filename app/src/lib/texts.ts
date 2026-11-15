@@ -110,3 +110,4 @@ export const swissAbroadNotOnTheMap = (cantons: number): string =>
 export const ZOOM_IN = 'Vergrössern';
 export const ZOOM_OUT = 'Verkleinern';
 export const WHOLE_SWITZERLAND = 'Ganze Schweiz';
+export const MAP_FAILED = 'Die Karte kann nicht geladen werden.';

@@ -324,3 +324,35 @@ test('a drag that ends on a municipality shows no details', async ({ page }) => 
   expect(under).not.toBeNull();
   await expect(details(page).locator('.name')).toHaveCount(0);
 });
+
+test("the map's files are loaded once, from one vote to another", async ({ page, baseURL }) => {
+  const requested: string[] = [];
+  page.on('request', (request) => requested.push(new URL(request.url()).pathname));
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
+  await page.locator('a[href$="votes/5670"]').click();
+  await expect(page).toHaveURL('votes/5670/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  const path = (file: string) => new URL(file, baseURL).pathname;
+  expect(requested.filter((p) => p === path('data/map.json'))).toHaveLength(1);
+  expect(requested.filter((p) => p === path('data/municipalities.json'))).toHaveLength(1);
+  expect(requested.filter((p) => p.startsWith(path('data/votes/')))).toEqual([]);
+});
+
+test('a map that cannot be loaded: a message, and the rest of the page', async ({ page }) => {
+  await page.route('**/data/map.json', (route) => route.abort());
+  await page.goto('votes/5960/');
+  await expect(
+    page.getByText('Die Karte kann nicht geladen werden.', { exact: true }),
+  ).toBeVisible();
+  await expect(page.locator('.municipalities')).toHaveCount(0);
+  await expect(page.locator('.figures dd')).toHaveText([
+    "1'609'152",
+    "1'664'224",
+    '49.16%',
+    '63.25%',
+  ]);
+  await expect(page.locator('.verdict .word')).toHaveText(['Nein', 'Ja']);
+  await expect(page.locator('tbody tr')).toHaveCount(26);
+});

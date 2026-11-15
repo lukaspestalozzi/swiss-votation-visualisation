@@ -25,6 +25,7 @@
   import { formatDate } from '../../../lib/format.ts';
   import { moveBy, wholeView, zoomAround, type View } from '../../../lib/map-view.ts';
   import {
+    MAP_FAILED,
     MAP_HEADING,
     WHOLE_SWITZERLAND,
     ZOOM_IN,
@@ -40,6 +41,8 @@
   let sources = $state<MapSources | null>(null);
   // The part of the map shown, as the SVG's view box; the whole of Switzerland at first.
   let view = $state<View | null>(null);
+  // Whether the shapes or the names could not be loaded.
+  let failed = $state(false);
 
   // The fill of each municipality by its number: its class, or the hatching without a result.
   const fills = $derived(
@@ -155,15 +158,23 @@
   }
 
   onMount(() => {
-    void loadMap().then((loaded) => {
-      sources = loaded;
-      view = wholeView(loaded.map);
-    });
+    loadMap().then(
+      (loaded) => {
+        sources = loaded;
+        view = wholeView(loaded.map);
+      },
+      () => {
+        failed = true;
+      },
+    );
   });
 </script>
 
 <section class="map">
   <h2>{MAP_HEADING}</h2>
+  {#if failed}
+    <p>{MAP_FAILED}</p>
+  {/if}
   {#if sources !== null}
     {@const map = sources.map}
     <div class="frame">
