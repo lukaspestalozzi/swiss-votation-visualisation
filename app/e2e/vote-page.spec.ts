@@ -86,7 +86,17 @@ test("the vote's entries stay out of the browser", async ({ page }) => {
 
 test("a vote's page requests nothing from other servers", async ({ page }) => {
   const origins = new Set<string>();
-  page.on('request', (request) => origins.add(new URL(request.url()).origin));
+  const paths: string[] = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    origins.add(url.origin);
+    paths.push(url.pathname);
+  });
   await page.goto('/votes/5960', { waitUntil: 'networkidle' });
+  await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
+  await expect(page).toHaveURL('/');
+  await page.waitForLoadState('networkidle');
+  // Back on the start page, the browser has asked for its data.
+  expect(paths).toContain('/__data.json');
   expect([...origins]).toEqual([new URL(page.url()).origin]);
 });
