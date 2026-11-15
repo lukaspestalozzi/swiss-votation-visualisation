@@ -405,6 +405,33 @@ Left to Q: a check that the elections table still names the parties under their 
 
 With them: 78 tests of the app, 55 browser tests, 125 of the pipeline.
 
+## Review of the pull request
+
+Copilot's review of PR #10 found four faults; Q asked to fix all four before archiving. Each
+test failed first:
+
+- **The cattle per inhabitant mixed two years** (spec `characteristics`, "The languages, the
+  area and the cattle"): the cattle of their year were divided by the inhabitants of the
+  population's year, which differ when one is published before the other. The counts now hold
+  the inhabitants of the cattle's year, and the cattle take the last year of which the file has
+  both ("The figures that apply to a vote", two new scenarios; design, decision 1). Two app
+  tests with made-up files.
+- **A list of correspondences without a change was refused**: the register answers with the
+  header alone when no municipality of the table's list has changed, as for a table on the
+  votes' own list. It is now no change. Pipeline test.
+- **The cached correspondences did not name the list they lead to**: with `--reuse-downloads`,
+  a run on a newer list took those of the older one. Their file now names both dates. Pipeline
+  test.
+- **A table without the first year needed passed**: the population or the cattle without the
+  year before the first vote day, a year missing between it and the newest, or the elections
+  without the last before the first vote day, gave a file without the figures of the first
+  votes. The update now stops and names them ("The data file of the characteristics", a new
+  scenario; `pipeline/README.md`, "When the update stops"). Four pipeline tests and one of the
+  update, for each of the three tables.
+
+The update run again from the downloads gave the same bytes. With them: 80 tests of the app, 55
+browser tests, 134 of the pipeline.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`, which updates #7 in

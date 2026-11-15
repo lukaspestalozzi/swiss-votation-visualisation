@@ -368,3 +368,40 @@ def test_the_record_names_the_characteristics_sources(tmp_path: Path) -> None:
         assert REGISTER.format(date=start) in by_address
         assert download.CORRESPONDENCES.format(start=start, end="01-01-2026") in by_address
     assert by_address[download.SWISSBOUNDARIES][0]["query"] is None
+
+
+def test_reused_downloads_do_not_give_the_correspondences_of_another_list(tmp_path: Path) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY, reuse_downloads=True)
+    sources = Sources2027()
+    # The vote-day files of the new list are fetched again; everything else may be reused.
+    for name in (directory / "downloads").glob("feed_*.json"):
+        name.unlink()
+    update(directory, data, sources, TODAY, reuse_downloads=True)
+    for date in set(download.LIST_DATES.values()):
+        start = "-".join(reversed(date.split("-")))
+        address = download.CORRESPONDENCES.format(start=start, end="01-01-2027")
+        assert address in sources.requested
+
+
+@pytest.mark.parametrize(
+    ("years", "message"),
+    [
+        ("POPULATION_YEARS", "population_totals.json: no figures of the years [2015]"),
+        ("ELECTION_YEARS", "elections_description.json: no figures of the elections [2015]"),
+        ("FARM_YEARS", "cattle.json: no figures of the years [2015]"),
+    ],
+)
+def test_a_source_without_the_first_year_needed_leaves_the_data_files_as_they_were(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch,
+    years: str, message: str,
+) -> None:  # fmt: skip
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    # The first vote day is 2016-02-28: the figures of 2015 are the first needed.
+    monkeypatch.setattr(made_up, years, [y for y in getattr(made_up, years) if y != 2015])
+    status = main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data)
+    assert status == 1
+    assert message in capsys.readouterr().err
+    assert snapshot(data) == before

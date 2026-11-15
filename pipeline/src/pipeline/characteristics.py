@@ -358,11 +358,13 @@ def group_parties(votes: Votes) -> list[int]:
 def read_correspondences(text: str, source: str) -> dict[int, set[int]]:
     """The register's correspondences: each municipality of the start date that changed, with
     the municipalities of the end date it is part of."""
-    rows = list(csv.DictReader(io.StringIO(text)))
-    if not rows or "InitialCode" not in rows[0] or "TerminalCode" not in rows[0]:
+    reader = csv.DictReader(io.StringIO(text))
+    columns = reader.fieldnames or []
+    if "InitialCode" not in columns or "TerminalCode" not in columns:
         raise SourceError(f"{source}: the columns InitialCode and TerminalCode are not there")
     successors: dict[int, set[int]] = {}
-    for row in rows:
+    # No row when no municipality changed: the table already gives the list of the end date.
+    for row in reader:
         codes = row["InitialCode"], row["TerminalCode"]
         if not all(re.fullmatch(r"[0-9]+", code) for code in codes):
             raise SourceError(f"{source}: the row {codes} does not hold two numbers")
@@ -410,10 +412,20 @@ def onto_list(
     return {member: sums.get(group_of[member]) for member in sorted(today)}
 
 
+def required_years(table: Iterable[int], first: int, source: str) -> list[int]:
+    """The years the data needs: every year from `first` to the newest the table gives, each of
+    them there."""
+    years = set(table)
+    missing = [year for year in range(first, max(years | {first}) + 1) if year not in years]
+    if missing:
+        raise SourceError(f"{source}: no figures of the years {missing}")
+    return sorted(year for year in years if year >= first)
+
+
 def election_years(table: Iterable[int], first_vote_day: str, source: str) -> list[int]:
     """The elections the data needs: from the last before the first vote day to the newest the
-    table gives. Every election of the table from the first of `ELECTION_DAYS` on must have its
-    day there."""
+    table gives, each of them there. Every election of the table from the first of
+    `ELECTION_DAYS` on must have its day there."""
     years = sorted(set(table))
     unknown = [year for year in years if year >= min(ELECTION_DAYS) and year not in ELECTION_DAYS]
     if unknown:
@@ -422,6 +434,10 @@ def election_years(table: Iterable[int], first_vote_day: str, source: str) -> li
             "(pipeline/src/pipeline/download.py)"
         )
     last_before = max(year for year, day in ELECTION_DAYS.items() if day < first_vote_day)
+    newest = max([*years, last_before])
+    missing = [y for y in sorted(ELECTION_DAYS) if last_before <= y <= newest and y not in years]
+    if missing:
+        raise SourceError(f"{source}: no figures of the elections {missing}")
     return [year for year in years if year >= last_before]
 
 

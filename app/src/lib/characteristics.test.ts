@@ -71,6 +71,29 @@ test('a vote before the year before is published takes the newest year', () => {
   expect(applying.election.year).toBe(2023);
 });
 
+test('the cattle take the newest year before the vote that also has the population', () => {
+  // The cattle of 2026 are published before the population at the end of 2026.
+  const file: CharacteristicsFile = {
+    ...MADE_UP,
+    cattle: { years: [2024, 2025, 2026], counts: [...MADE_UP.cattle.counts, [7, 0]] },
+  };
+  const applying = applyingTo(file, '2027-03-07');
+  expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2025]);
+});
+
+test('the cattle per inhabitant count the inhabitants of the cattle year', () => {
+  // The population at the end of 2025 is published before the cattle of 2025.
+  const file: CharacteristicsFile = {
+    ...MADE_UP,
+    cattle: { years: [2024], counts: [MADE_UP.cattle.counts[0]] },
+  };
+  const applying = applyingTo(file, '2026-03-08');
+  expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2024]);
+  const cattle = DEFINITIONS[20];
+  expect(cattle.name).toBe('Rinder je Einwohner');
+  expect(cattle.value(countsOf(file, applying, 1))).toEqual({ part: 5, whole: 10 });
+});
+
 // The real data file, as the page reads it.
 const REAL = characteristicsFile as unknown as CharacteristicsFile;
 

@@ -86,6 +86,11 @@ the file, the vote and, where there is one, the entry.
 - **An election has no day.** The elections table has an election that `ELECTION_DAYS` in
   `download.py` does not have: add its day, as the Federal Council's circular to the cantons
   gives it (the next is 2027-10-24).
+- **A table of the characteristics lacks a year.** The population or the cattle lack a year
+  from the one before the first vote day to the newest, or the elections table an election from
+  the last before the first vote day; the message names the table and what is missing. Look at
+  the answer in `pipeline/downloads/` and run the update again later. A table that no longer
+  gives an early year at all leaves the first votes without figures: that needs a change.
 - **The characteristics do not add up.** The municipalities do not add up to a table's figure
   for Switzerland or a district, a municipality's ages to its inhabitants, or it has more
   foreigners than inhabitants. Look at the answer in `pipeline/downloads/` and run the update
