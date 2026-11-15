@@ -74,9 +74,14 @@ context: |
     https://lukaspestalozzi.github.io/swiss-votation-visualisation/, from CI, after every check of
     a push to main passed, as the build the browser tests checked; it is built for that path. The
     design of the archived change publish-site gives the reasons and the alternatives.
+  - The map of a vote is drawn as SVG, one path per municipality, zoomed and moved by the app's
+    own code; its shapes are the BFS's K4 boundaries of the list's reference date from the
+    register of municipalities, with the lakes of the BFS ThemaKart set, written by the pipeline
+    to app/static/data/map.json. Whether a library for zoom and move serves better is checked in
+    #10. The design of the change add-result-map gives the reasons and the alternatives.
   - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
-    names it): how the map is drawn, and how the three interface languages are handled (until
-    then the interface is German, as above).
+    names it): how the three interface languages are handled (until then the interface is
+    German, as above).
   - Found by the first investigation (investigations/data-sources.md): the public sources offer
     the results per municipality for every national vote since 2013, all on one list of
     municipalities, and the characteristics for matching years on other lists. Not found yet:
