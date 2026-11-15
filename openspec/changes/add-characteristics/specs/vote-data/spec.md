@@ -15,10 +15,11 @@ run: an update with unchanged sources SHALL leave every data file unchanged, byt
   the BFS register of municipalities, the register's three answers with the boundaries of the
   municipalities, of the cantons and of Switzerland, and the BFS ThemaKart set 2026, each with
   its address, size and checksum
-- **AND** for the characteristics it names 49 answers of the BFS statistics API (STAT-TAB), the
-  register's lists of 2000-12-05, 2023-01-01 and 2025-04-06 and its correspondences from each of
-  them to 2026-01-01, and swisstopo's swissBOUNDARIES3D of 2026-01, each with its address, size
-  and checksum, and each answer of STAT-TAB and of the Federal Chancellery with its query
+- **AND** for the characteristics it names 49 answers of the BFS statistics API (STAT-TAB) to a
+  query and its description of the table of the elections, the register's lists of 2000-12-05,
+  2023-01-01 and 2025-04-06 and its correspondences from each of them to 2026-01-01, and
+  swisstopo's swissBOUNDARIES3D of 2026-01, each with its address, size and checksum, and each
+  answer of STAT-TAB and of the Federal Chancellery with its query
 
 #### Scenario: A second run changes nothing
 

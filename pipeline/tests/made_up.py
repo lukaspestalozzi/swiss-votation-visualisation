@@ -16,7 +16,9 @@ the hole. The first municipality's corners have fractions of a metre.
 """
 
 import io
+import itertools
 import zipfile
+from collections.abc import Callable
 from typing import Any, Literal
 
 import shapefile
@@ -471,3 +473,354 @@ def themakart(lakes: bool = True, empty: bool = False) -> bytes:
             for file_name, data in layer_files.items():
                 files[f"2026_GEOM_TK/00_TOPO/K4_seenyyyymmdd/{file_name}"] = data
     return _zip(files)
+
+
+# The characteristics' sources (investigations/characteristics.md). STAT-TAB answers in json-stat2,
+# each table on the list of an earlier date: since then Bonstetten (3) merged into Affoltern am
+# Albis (2), and Moutier (700, BE) became 6831 (JU). The census of 2000 also has Wettswil (4),
+# whose land is now part of Aeugst am Albis (1) and of Affoltern am Albis (2). Meienried (389) has
+# no election result of its own. Every sum of a table is computed from its municipalities.
+EARLIER: dict[int, tuple[str, str]] = {
+    1: ("Aeugst am Albis", "ZH"),
+    2: ("Affoltern am Albis", "ZH"),
+    3: ("Bonstetten", "ZH"),
+    351: ("Bern", "BE"),
+    389: ("Meienried", "BE"),
+    700: ("Moutier", "BE"),
+    6711: ("Delémont", "JU"),
+}
+CENSUS_EARLIER = EARLIER | {4: ("Wettswil", "ZH")}
+# A number of an earlier list: the numbers of the list of 2026-01-01 it is part of.
+SUCCESSORS: dict[int, list[int]] = {2: [2], 3: [2], 700: [6831]}
+CENSUS_SUCCESSORS = SUCCESSORS | {4: [1, 2]}
+# The dates of the tables' lists, as the pipeline expects them.
+LIST_DATES = {"population": "2025-04-06", "elections": "2023-01-01", "census": "2000-12-05"}
+DISTRICTS = {"ZH": ("000101", "Bezirk Affoltern"), "BE": ("000243", "Verwaltungskreis Seeland"),
+             "JU": ("002601", "District de Delémont")}  # fmt: skip
+CANTON_NAMES = {"ZH": "Zürich", "BE": "Bern / Berne", "JU": "Jura"}
+POPULATION_YEARS = list(range(2010, 2026))
+FARM_YEARS = list(range(2025, 2009, -1))  # newest first, as the real table lists them
+ELECTION_YEARS = [2023, 2019, 2015, 2011]
+# The single year of age that holds each age group's made-up inhabitants.
+AGE_AT = [10, 25, 40, 55, 80]
+# The real table's parties, by code, in its order.
+PARTIES = {"1": "FDP", "34": "Mitte", "3": "SP", "4": "SVP", "5": "LPS", "7": "EVP", "8": "CSP",
+           "31": "GLP", "9": "PdA", "27": "Sol.", "12": "FGA", "13": "Grüne", "15": "SD",
+           "16": "EDU", "18": "Lega", "33": "MCR", "2": "CVP", "32": "BDP", "6": "LdU",
+           "11": "POCH", "14": "Rep.", "10": "PSA", "17": "FPS", "26": "Sep.", "35": "Übrige"}  # fmt: skip
+BASES = {1: 1_000, 2: 8_000, 3: 2_000, 4: 600, 351: 130_000, 389: 50, 700: 7_600, 6711: 12_000}
+# swisstopo's area of each municipality of 2026-01-01 and its part in a lake, in ha.
+AREAS: dict[int, tuple[int, int]] = {
+    1: (790, 0), 2: (1062, 0), 351: (5162, 0), 389: (65, 0), 6711: (2203, 0), 6831: (1961, 0),
+}  # fmt: skip
+
+
+def population_groups(number: int, year: int) -> list[int]:
+    """The inhabitants aged 0–17, 18–34, 35–49, 50–64, and 65 and over, at the end of a year."""
+    base = BASES[number] + (year - 2010) * BASES[number] // 100
+    return [base // 5, base // 4, base // 5, base // 5, base - base // 5 * 3 - base // 4]
+
+
+def foreigners(number: int, year: int) -> int:
+    return sum(population_groups(number, year)) // 4
+
+
+def cattle(number: int, year: int) -> int:
+    return 0 if number == 351 else BASES[number] // 10 + year - 2010
+
+
+def party_votes(number: int, year: int) -> dict[str, int]:
+    """A municipality's votes by party code; a party not named had no list there."""
+    if number == 389:
+        return {}
+    base = BASES[number] * (7 if number == 351 else 1)
+    votes = {"1": base // 7, "3": base // 4, "4": base // 4, "31": base // 20, "13": base // 10,
+             "7": base // 50}  # fmt: skip
+    return votes | ({"34": base // 8} if year >= 2021 else {"2": base // 10, "32": base // 40})
+
+
+def languages(number: int) -> list[int]:
+    """The census of 2000: all inhabitants, and those with German, French, Italian, Romansh."""
+    base = BASES[number] * 9 // 10
+    if EARLIER.get(number, ("", "ZH"))[1] == "JU" or number == 700:
+        return [base, base // 20, base * 8 // 10, base // 25, 0]
+    return [base, base * 8 // 10, base // 30, base // 25, base // 200]
+
+
+Dimension = tuple[str, list[tuple[str, str]]]
+
+
+def json_stat(
+    label: str, dimensions: list[Dimension], cell: Callable[[tuple[str, ...]], int | None]
+) -> dict[str, Any]:
+    """A STAT-TAB answer in json-stat2: `cell` gives the value of each combination of codes,
+    None for one the table writes "..."."""
+    values: list[int | None] = []
+    status: dict[str, str] = {}
+    for i, key in enumerate(itertools.product(*[[c for c, _ in codes] for _, codes in dimensions])):
+        value = cell(key)
+        values.append(value)
+        if value is None:
+            status[str(i)] = "..."
+    return {
+        "class": "dataset",
+        "label": label,
+        "source": "BFS - made up - © BFS",
+        "updated": "2026-01-01T00:00:00Z",
+        "id": [name for name, _ in dimensions],
+        "size": [len(codes) for _, codes in dimensions],
+        "dimension": {
+            name: {
+                "label": name,
+                "category": {
+                    "index": {code: i for i, (code, _) in enumerate(codes)},
+                    "label": dict(codes),
+                },
+            }
+            for name, codes in dimensions
+        },
+        "value": values,
+        "status": status,
+        "role": {},
+        "version": "2.0",
+        "extension": {"px": {"decimals": 0}},
+    }
+
+
+GEO = "Kanton (-) / Bezirk (>>) / Gemeinde (......)"
+Place = tuple[str, str, list[int]]  # code, label, the municipalities it sums
+
+
+def _places(style: str, listing: dict[int, tuple[str, str]]) -> list[Place]:
+    """The geographic dimension of a table: Switzerland, each canton, its district and its
+    municipalities, coded and labelled as the table does (`population`, `census`, `farms`)."""
+    places: list[Place] = [("8100" if style == "population" else "", "Schweiz", list(listing))]
+    for canton, name in CANTON_NAMES.items():
+        members = [n for n, (_, c) in listing.items() if c == canton]
+        canton_label = f"- Kanton {name}" if style == "census" else f"- {name}"
+        places.append((canton if style == "population" else "", canton_label, members))
+        code, district = DISTRICTS[canton]
+        places.append((code if style == "population" else "", f">> {district}", members))
+        for number in members:
+            places.append((f"{number:04d}" if style == "population" else "",
+                           f"......{number:04d} {listing[number][0]}", [number]))  # fmt: skip
+    # The other tables code their places by a running number.
+    return [(code or str(i), label, members) for i, (code, label, members) in enumerate(places)]
+
+
+def _single(codes: list[str], first: str = "") -> list[tuple[str, str]]:
+    return [(code, first or code) for code in codes]
+
+
+def population_totals() -> dict[str, Any]:
+    """The inhabitants and the foreigners of every year."""
+    places = {code: members for code, _, members in _places("population", EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        year, place, _, nationality, _, _ = key
+        members = places[place]
+        if nationality == "2":
+            return sum(foreigners(n, int(year)) for n in members)
+        return sum(sum(population_groups(n, int(year))) for n in members)
+
+    return json_stat(
+        "Ständige und nichtständige Wohnbevölkerung (made up)",
+        [
+            ("Jahr", _single([str(year) for year in POPULATION_YEARS])),
+            (GEO, [(code, label) for code, label, _ in _places("population", EARLIER)]),
+            ("Bevölkerungstyp", [("1", "Ständige Wohnbevölkerung")]),
+            ("Staatsangehörigkeit (Kategorie)", [("-99999", "Total"), ("2", "Ausland")]),
+            ("Geschlecht", [("-99999", "Geschlecht - Total")]),
+            ("Alter", [("-99999", "Alter - Total")]),
+        ],
+        cell,
+    )
+
+
+def population_ages(year: int, first: int, last: int) -> dict[str, Any]:
+    """The inhabitants of a year by single year of age, from `first` to `last`."""
+    places = {code: members for code, _, members in _places("population", EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        _, place, _, _, _, age = key
+        return sum(
+            group
+            for n in places[place]
+            for at, group in zip(AGE_AT, population_groups(n, year), strict=True)
+            if at == int(age)
+        )
+
+    return json_stat(
+        "Ständige und nichtständige Wohnbevölkerung nach Alter (made up)",
+        [
+            ("Jahr", _single([str(year)])),
+            (GEO, [(code, label) for code, label, _ in _places("population", EARLIER)]),
+            ("Bevölkerungstyp", [("1", "Ständige Wohnbevölkerung")]),
+            ("Staatsangehörigkeit (Kategorie)", [("-99999", "Total")]),
+            ("Geschlecht", [("-99999", "Geschlecht - Total")]),
+            ("Alter", [(str(age), f"{age} Jahre") for age in range(first, last + 1)]),
+        ],
+        cell,
+    )
+
+
+ELECTION_PLACES = "Bezirk (>>) / Gemeinde (......)"
+
+
+def _election_places() -> list[Place]:
+    """Each district before its municipalities; the Swiss abroad of ZH in a district of their
+    own, as the real table has them."""
+    places: list[Place] = []
+    for canton in CANTON_NAMES:
+        members = [n for n, (_, c) in EARLIER.items() if c == canton]
+        code, district = DISTRICTS[canton]
+        places.append((code, f">> {district}", members))
+        places += [(f"{n:04d}", f"......{EARLIER[n][0]}", [n]) for n in members]
+    return places + [
+        ("009010", ">> ZH-Ausland-CH", [9010]),
+        ("9010", "......ZH-Ausland-CH", [9010]),
+    ]
+
+
+def elections_description() -> dict[str, Any]:
+    """The table's description (GET of the table): its dimensions and their values."""
+    years = [str(year) for year in ELECTION_YEARS]
+    return {
+        "title": "Nationalratswahlen (Parteistimmen und Parteistärke seit 1971) (made up)",
+        "variables": [
+            {"code": ELECTION_PLACES, "text": ELECTION_PLACES,
+             "values": [c for c, _, _ in _election_places()],
+             "valueTexts": [label for _, label, _ in _election_places()]},
+            {"code": "Jahr", "text": "Jahr", "values": years, "valueTexts": years},
+            {"code": "Partei", "text": "Partei", "values": list(PARTIES),
+             "valueTexts": list(PARTIES.values())},
+            {"code": "Ergebnisse", "text": "Ergebnisse", "values": ["1", "2"],
+             "valueTexts": ["Parteistimmen", "Parteistärke in %"]},
+        ],
+    }  # fmt: skip
+
+
+def election(year: int) -> dict[str, Any]:
+    """The party votes of one election per district and municipality."""
+    places = {code: members for code, _, members in _election_places()}
+
+    def votes_of(number: int) -> dict[str, int]:
+        return {"1": 300, "3": 200} if number == 9010 else party_votes(number, year)
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        place, _, party, _ = key
+        given = [votes_of(n)[party] for n in places[place] if party in votes_of(n)]
+        return sum(given) if given else None
+
+    return json_stat(
+        "Nationalratswahlen (made up)",
+        [
+            (ELECTION_PLACES, [(code, label) for code, label, _ in _election_places()]),
+            ("Jahr", _single([str(year)])),
+            ("Partei", list(PARTIES.items())),
+            ("Ergebnisse", [("1", "Parteistimmen")]),
+        ],
+        cell,
+    )
+
+
+def farms() -> dict[str, Any]:
+    """The cattle of every year."""
+    places = {code: members for code, _, members in _places("farms", EARLIER)}
+    year_of = {str(i): year for i, year in enumerate(FARM_YEARS)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        _, place, _, year = key
+        return sum(cattle(n, year_of[year]) for n in places[place])
+
+    return json_stat(
+        "Landwirtschaftliche Betriebe und Nutztiere (made up)",
+        [
+            ("Beobachtungseinheit", [("15", "Tiere - Rinder")]),
+            (GEO, [(code, label) for code, label, _ in _places("farms", EARLIER)]),
+            ("Betriebssystem", [("0", "Betriebssystem - Total")]),
+            ("Jahr", [(code, str(year)) for code, year in year_of.items()]),
+        ],
+        cell,
+    )
+
+
+def census() -> dict[str, Any]:
+    """The census of 2000: the inhabitants by main language."""
+    places = {code: members for code, _, members in _places("census", CENSUS_EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        _, place, _, language = key
+        return sum(languages(n)[int(language)] for n in places[place])
+
+    return json_stat(
+        "Wohnbevölkerung 2000 nach Hauptsprache (made up)",
+        [
+            ("Wohnsitztyp", [("1", "Wirtschaftlicher Wohnsitz")]),
+            (GEO, [(code, label) for code, label, _ in _places("census", CENSUS_EARLIER)]),
+            ("Staatsangehörigkeit (Kategorie)", [("0", "Staatsangehörigkeit - Total")]),
+            ("Hauptsprache", [("0", "Hauptsprachen - Total"), ("1", "Deutsch"),
+                              ("2", "Französisch"), ("3", "Italienisch"),
+                              ("4", "Rätoromanisch")]),
+        ],
+        cell,
+    )  # fmt: skip
+
+
+def register_of(date: str) -> str:
+    """The register's snapshot of an earlier date, as CSV text: the list a table uses."""
+    listing = CENSUS_EARLIER if date == LIST_DATES["census"] else EARLIER
+    lines = [REGISTER_HEADER]
+    for abbreviation, (code, name, district) in REGISTER_CANTONS.items():
+        position = POSITIONS[abbreviation]
+        lines.append(f"{code},{position},12.09.1848,,1,,{name},{abbreviation},,,,")
+        lines.append(f"{district},{position}01,01.01.2010,,2,{code},Bezirk {name},{name},,,,")
+    for number, (name, canton) in listing.items():
+        district = REGISTER_CANTONS[canton][2]
+        lines.append(f"{12000 + number},{number},01.01.1960,,3,{district},{name},{name},,,,")
+    return "\n".join(lines) + "\n"
+
+
+CORRESPONDENCES_HEADER = (
+    "InitialHistoricalCode,InitialCode,InitialName,InitialParentHistoricalCode,InitialParentName,"
+    "InitialStep,TerminalHistoricalCode,TerminalCode,TerminalName,TerminalParentHistoricalCode,"
+    "TerminalParentName,TerminalStep"
+)
+
+
+def correspondences(date: str) -> str:
+    """The register's correspondences from the list of `date` to 2026-01-01, as CSV text: a row
+    per municipality that changed and each municipality it is part of."""
+    listing = CENSUS_EARLIER if date == LIST_DATES["census"] else EARLIER
+    successors = CENSUS_SUCCESSORS if date == LIST_DATES["census"] else SUCCESSORS
+    lines = [CORRESPONDENCES_HEADER]
+    for number, terminals in successors.items():
+        for terminal in terminals:
+            name = MUNICIPALITIES[terminal][0]
+            lines.append(f"{12000 + number},{number},{listing[number][0]},10053,Bezirk,29,"
+                         f"{13000 + terminal},{terminal},{name},10053,Bezirk,26")  # fmt: skip
+    return "\n".join(lines) + "\n"
+
+
+AREA_FIELDS: list[Field] = [("OBJEKTART", "C"), ("BFS_NUMMER", "N"), ("NAME", "C"),
+                            ("GEM_FLAECH", "N"), ("SEE_FLAECH", "N"), ("ICC", "C")]  # fmt: skip
+
+
+def area_rows() -> list[list[Any]]:
+    """swisstopo's records: the municipalities, a lake that belongs to a canton and a municipality
+    of Liechtenstein, as the real layer has them; a test changes its copy."""
+    rows: list[list[Any]] = [
+        ["Gemeindegebiet", number, MUNICIPALITIES[number][0], area, lake, "CH"]
+        for number, (area, lake) in AREAS.items()
+    ]
+    return rows + [["Kantonsgebiet", 9051, "Zürichsee (ZH)", 5584, 5584, "CH"],
+                   ["Gemeindegebiet", 7001, "Vaduz", 1728, 0, "LI"]]  # fmt: skip
+
+
+def swissboundaries(rows: list[list[Any]] | None = None) -> bytes:
+    """swisstopo's ZIP of swissBOUNDARIES3D, with its layer of municipal areas only."""
+    given = area_rows() if rows is None else rows
+    shapes = [
+        (row, [_square(2_600_000 + 1_000 * i, 1_200_000, 1_000)]) for i, row in enumerate(given)
+    ]
+    return _zip(_shapefile("swissBOUNDARIES3D_1_5_TLM_HOHEITSGEBIET", AREA_FIELDS, shapes))

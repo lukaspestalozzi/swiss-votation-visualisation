@@ -46,6 +46,7 @@ uv run --no-project --with pyshp==3.1.6 python reference_figures.py /path/outsid
 | Farms | STAT-TAB table `px-x-0702000000_104` | Per municipality and year since 1975 (yearly since 2010): farms, workers, farmland and livestock at classification level 1, among them cattle ("Tiere - Rinder"). | BFS, farm structure survey. Not read. |
 | Census 2000 | STAT-TAB table `px-x-4003000000_123` | The population of 2000 per municipality by main language (36 languages), nationality and residence (legal or economic). | BFS. The same figures as the census file `su-d-vz-SPRA_HG_2000_1` (asset 147501, an `.xls` of 2004), whose terms are OPEN-BY. |
 | Register's correspondences | `https://www.agvchapp.bfs.admin.ch/api/communes/correspondances?startPeriod=<dd-mm-yyyy>&endPeriod=<dd-mm-yyyy>` | For each municipality of the start date that changed until the end date, the municipality or municipalities it is part of at the end date. | BFS. The pages state no terms. |
+| Election days | The Federal Council's circulars to the cantons on the elections of the National Council of 23 October 2011, 18 October 2015, 20 October 2019 and 22 October 2023 ("Kreisschreiben des Bundesrates an die Kantonsregierungen über die Gesamterneuerungswahl des Nationalrates vom ..."), in the Federal Gazette: `https://fedlex.data.admin.ch/eli/fga/2010/1352`, `.../2014/1820`, `.../2018/2202`, `.../2022/2547` (found through Fedlex's SPARQL endpoint `https://fedlex.data.admin.ch/sparqlendpoint`, on 2026-11-15) | The day of each election. The next circular names 24 October 2027. | Federal Council, Federal Gazette. |
 | swissBOUNDARIES3D | `https://data.geo.admin.ch/ch.swisstopo.swissboundaries3d/swissboundaries3d_2026-01/swissboundaries3d_2026-01_2056_5728.shp.zip` (found through the STAC API `https://data.geo.admin.ch/api/stac/v0.9/collections/ch.swisstopo.swissboundaries3d/items`), 36 MB | The boundaries of the municipalities, districts, cantons and the country of 2026-01. Per municipality: `BFS_NUMMER`, `GEM_FLAECH` (its area in ha, its part of a lake included) and `SEE_FLAECH` (that part). | swisstopo. Not read. |
 
 Looked at and not used:
@@ -168,7 +169,8 @@ The rule the reference figures use:
 - **Language:** the census of 2000.
 - **Area:** that of swissBOUNDARIES3D 2026-01.
 
-The election days are 2011-10-23, 2015-10-18, 2019-10-20 and 2023-10-22. With the votes of the
+The election days are 2011-10-23, 2015-10-18, 2019-10-20 and 2023-10-22, as the Federal
+Council's circulars give them ("Sources"; the elections table gives only the years). With the votes of the
 data files, this gives:
 
 | Population and cattle | Election | Vote days |
@@ -247,8 +249,6 @@ Their other figures are their own, as the Output shows.
 
 - The terms of use of STAT-TAB's tables, the register's correspondences and swissBOUNDARIES3D.
   The census file's asset states OPEN-BY.
-- **The four election days** (2011-10-23, 2015-10-18, 2019-10-20, 2023-10-22). They were not
-  read from a source here: the elections table gives only the years.
 - When STAT-TAB moves the population and the farms to a newer list. Today it uses the list of
   2025-04-06, although the votes already use that of 2026-01-01.
 - **The land exchanges between municipalities** that the correspondences do not show, because no

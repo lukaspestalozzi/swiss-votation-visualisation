@@ -300,13 +300,14 @@ Alternatives considered:
 
 - **STAT-TAB, in the format json-stat2:** compact, with the labels and the signs for missing
   values. A query asks for at most 100,000 cells, so the single years of age take three queries
-  per year: 49 queries in all, with a pause of 0.4 s between them. The existing retries answer
-  HTTP 429.
+  per year: 49 queries in all, with a pause of 0.4 s after each answer. The existing retries
+  answer HTTP 429. A GET of the elections table's description gives the years of its elections,
+  so that the pipeline asks for each one it needs.
 - **swissBOUNDARIES3D:** the ZIP of shapefiles, 36 MB, of which only the attribute table of the
   municipalities is read, with pyshp.
 - **The four election days** are a constant in the pipeline. The update stops when the table has
-  an election since 2011 without a day. The investigation could not confirm the days from a
-  source, so the apply phase checks them against the Federal Chancellery.
+  an election since 2011 without a day. The days are those of the Federal Council's circulars
+  to the cantons (`investigations/characteristics.md`).
 
 ### 18. The modules
 
@@ -381,9 +382,9 @@ and the file is served with the site.
   The panel shows the year, and the diff of the run shows the new year.
 - **[The census of 2000 is old]** → The panel says so in the group's heading. #8's explanation
   names it again.
-- **[The election days are not confirmed by a source yet]** → A task of the apply phase checks
-  them. Today no vote day falls between June and December of an election year, so a wrong day
-  would change nothing in today's data.
+- **[A new election's day must be added by hand]** → The update stops when the table has an
+  election without a day. The Federal Council's circular gives it years ahead (24 October
+  2027).
 - **[Land exchanged without a change of number]** is counted where it was in the earlier year →
   Accepted. The investigation names it.
 - **[Castel San Pietro and Breggia share the languages of 2000]** → Their shares are right;
@@ -396,7 +397,7 @@ and the file is served with the site.
 ## Migration Plan
 
 1. While applying, run the update command for real. Review the diff: the new
-   `characteristics.json`, about 1.34 MB, and `sources.json`, with 56 more sources and the
+   `characteristics.json`, about 1.34 MB, and `sources.json`, with 57 more sources and the
    queries.
 2. Merge by rebasing. CI publishes the site with the panel.
 3. Check by hand, on a computer and on a phone:

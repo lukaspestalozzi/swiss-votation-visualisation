@@ -1,3 +1,4 @@
+import json
 import socket
 import threading
 from collections.abc import Iterator
@@ -5,6 +6,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import pytest
 
+from pipeline import download
 from pipeline.counts import SourceError
 from pipeline.download import BOUNDARIES, THEMAKART, THEMAKART_YEAR, Request, fetch_url
 
@@ -59,3 +61,33 @@ def test_the_addresses_of_the_maps_sources() -> None:
     )
     assert THEMAKART == "https://dam-api.bfs.admin.ch/hub/api/dam/assets/36390072/master"
     assert THEMAKART_YEAR == 2026
+
+
+# The number of codes of each dimension that a query asks for with the filter "all", in the
+# real tables on 2026-11-15 (investigations/characteristics.md).
+ALL_CODES = {
+    download.POPULATION: {"Jahr": 16, "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 2286},
+    download.ELECTIONS: {"Bezirk (>>) / Gemeinde (......)": 2333, "Partei": 25},
+    download.FARMS: {"Jahr": 28, "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 2285},
+    download.CENSUS_2000: {"Kanton (-) / Bezirk (>>) / Gemeinde (......)": 3107},
+}
+
+
+def test_no_query_asks_for_more_than_100000_cells() -> None:
+    requests = [download.population_totals(), download.cattle(), download.census()]
+    requests += [download.election(year) for year in (2011, 2015, 2019, 2023)]
+    requests += [
+        download.population_ages(year, first, last)
+        for year in range(2012, 2026)
+        for first, last in download.AGE_PARTS
+    ]
+    assert len(requests) == 49
+    for request in requests:
+        table = request.address.rsplit("/", 1)[1].removesuffix(".px")
+        assert request.body is not None
+        cells = 1
+        for dimension in json.loads(request.body)["query"]:
+            selection = dimension["selection"]
+            given = len(selection["values"])
+            cells *= ALL_CODES[table][dimension["code"]] if selection["filter"] == "all" else given
+        assert cells <= 100_000, (table, cells)

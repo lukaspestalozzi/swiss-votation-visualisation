@@ -1,3 +1,4 @@
+import dataclasses
 import json
 from pathlib import Path
 from typing import Any
@@ -6,6 +7,7 @@ import made_up
 
 from pipeline.boundaries import read_map
 from pipeline.chancellery import read_chancellery
+from pipeline.characteristics import CharacteristicsData
 from pipeline.checks import CantonChange, check_entries, counted_for
 from pipeline.feed import CANTONS, read_day
 from pipeline.register import read_register
@@ -45,7 +47,22 @@ def data() -> Data:
         listed=[m.number for m in municipalities],
         lakes_set=2026,
     )
-    return Data("2026-01-01", votes, municipalities, swiss_abroad, SOURCES, shapes)
+    return Data(
+        "2026-01-01", votes, municipalities, swiss_abroad, SOURCES, shapes, characteristics()
+    )
+
+
+def characteristics() -> CharacteristicsData:
+    """Counts of two municipalities, the second without an election result, given in another
+    order than the list's."""
+    return CharacteristicsData(
+        municipalities=[2, 1],
+        population={2015: {2: [8, 2, 1, 2, 2, 2, 1], 1: [5, 1, 1, 1, 1, 1, 1]}},
+        elections={2015: {2: None, 1: [7, 6, 5, 4, 3, 2, 1]}},
+        cattle={2015: {2: 0, 1: 12}},
+        languages={2: [9, 8, 1, 0, 0], 1: [4, 3, 1, 0, 0]},
+        areas={2: 1062, 1: 790},
+    )
 
 
 def written(tmp_path: Path, name: str) -> Any:
@@ -135,12 +152,14 @@ def test_the_record_of_the_sources(tmp_path: Path) -> None:
                 "bytes": 4,
                 "sha256": "5be08c9684a1d25efcee09318204824278b08bbfb4aef973ffefd0b9d7478313",
                 "stated": None,
+                "query": None,
             },
             {
                 "address": "https://example.org/b.json",
                 "bytes": 8,
                 "sha256": "cae1fd1cafc3a224720d8b52c3615332619526ae2526b2cd7afb72a7405ee526",
                 "stated": "2016-02-28T18:00:00",
+                "query": None,
             },
         ]
     }
@@ -152,7 +171,7 @@ def test_writing_twice_gives_the_same_bytes(tmp_path: Path) -> None:
         directory.mkdir()
         write_data(directory, data())
     files = sorted(path.relative_to(first) for path in first.rglob("*.json"))
-    assert len(files) == 7
+    assert len(files) == 8
     assert files == sorted(path.relative_to(second) for path in second.rglob("*.json"))
     for name in files:
         assert (first / name).read_bytes() == (second / name).read_bytes()
@@ -177,3 +196,58 @@ def test_the_map(tmp_path: Path) -> None:
     # One municipality, canton or lake per line, for a readable diff.
     text = (tmp_path / "map.json").read_text(encoding="utf-8")
     assert '\n    [1, "M110000 9999l0 -999l1001 0l0 999z"],\n' in text
+
+
+def test_the_characteristics(tmp_path: Path) -> None:
+    write_data(tmp_path, data())
+    assert (tmp_path / "characteristics.json").read_text(encoding="utf-8") == (
+        "{\n"
+        '  "referenceDate": "2026-01-01",\n'
+        '  "municipalities": [1, 2],\n'
+        '  "population": {"years": [2015], "counts": [\n'
+        "    [[5,1,1,1,1,1,1],[8,2,1,2,2,2,1]]\n"
+        "  ]},\n"
+        '  "elections": [\n'
+        '    {"year": 2015, "day": "2015-10-18", "votes": [[7,6,5,4,3,2,1],null]}\n'
+        "  ],\n"
+        '  "cattle": {"years": [2015], "counts": [\n'
+        "    [12,0]\n"
+        "  ]},\n"
+        '  "languages2000": [[4,3,1,0,0],[9,8,1,0,0]],\n'
+        '  "area": [790,1062]\n'
+        "}\n"
+    )
+
+
+def test_the_same_counts_in_another_order_give_the_same_bytes(tmp_path: Path) -> None:
+    given = characteristics()
+    reordered = CharacteristicsData(
+        municipalities=sorted(given.municipalities),
+        population={y: dict(sorted(rows.items())) for y, rows in given.population.items()},
+        elections={y: dict(sorted(rows.items())) for y, rows in given.elections.items()},
+        cattle={y: dict(sorted(rows.items())) for y, rows in given.cattle.items()},
+        languages=dict(sorted(given.languages.items())),
+        areas=dict(sorted(given.areas.items())),
+    )
+    first, second = tmp_path / "first", tmp_path / "second"
+    for directory, counts in ((first, given), (second, reordered)):
+        directory.mkdir()
+        write_data(directory, dataclasses.replace(data(), characteristics=counts))
+    name = "characteristics.json"
+    assert (first / name).read_bytes() == (second / name).read_bytes()
+
+
+def test_a_record_names_its_query(tmp_path: Path) -> None:
+    address = "https://example.org/table.px"
+    sources = [
+        Source(address, b"{}", None, '{"query": "b"}'),
+        Source(address, b"[]", None, '{"query": "a"}'),
+        Source("https://example.org/a.csv", b"a,b\n", None),
+    ]
+    write_data(tmp_path, dataclasses.replace(data(), sources=sources))
+    records = json.loads((tmp_path / "sources.json").read_text(encoding="utf-8"))["sources"]
+    assert [(r["address"], r["query"]) for r in records] == [
+        ("https://example.org/a.csv", None),
+        (address, '{"query": "a"}'),
+        (address, '{"query": "b"}'),
+    ]

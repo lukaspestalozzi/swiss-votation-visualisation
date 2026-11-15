@@ -37,7 +37,8 @@ SWISSTOPO = ("https://data.geo.admin.ch/ch.swisstopo.swissboundaries3d/swissboun
              "swissboundaries3d_2026-01_2056_5728.shp.zip")
 YEARS = [str(year) for year in range(2012, 2026)]  # population and cattle, end of each year
 ELECTION_YEARS = ["2011", "2015", "2019", "2023"]
-# The National Council elections (Federal Chancellery); the table gives only their years.
+# The National Council elections, as the Federal Council's circulars to the cantons give their
+# days (investigations/characteristics.md); the table gives only their years.
 ELECTION_DAYS = {"2011": "2011-10-23", "2015": "2015-10-18", "2019": "2019-10-20",
                  "2023": "2023-10-22"}
 # Five age groups, by the first and the last year of age; 100 stands for "100 and over".
