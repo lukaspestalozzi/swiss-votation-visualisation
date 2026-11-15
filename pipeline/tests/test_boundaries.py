@@ -1,7 +1,10 @@
+import io
+import zipfile
 from typing import Any
 
 import made_up
 import pytest
+import shapefile
 
 from pipeline.boundaries import (
     Frame,
@@ -98,3 +101,23 @@ def test_a_set_without_lakes_stops_the_run() -> None:
         read_lakes(made_up.themakart(lakes=False), FRAME, "themakart.zip")
     with pytest.raises(SourceError, match=r"themakart.zip: .*no lakes"):
         read_lakes(made_up.themakart(empty=True), FRAME, "themakart.zip")
+
+
+def test_a_layer_with_more_shapes_than_records_stops_the_run() -> None:
+    # pyshp writes no such file, so the shapes and the records come from two writers.
+    shp, shx, dbf = io.BytesIO(), io.BytesIO(), io.BytesIO()
+    shapes = shapefile.Writer(shp=shp, shx=shx, shapeType=shapefile.POLYGON)
+    for _ in range(2):
+        shapes.poly([[(x, y) for x, y in made_up.COUNTRY]])
+    shapes.close()
+    records = shapefile.Writer(dbf=dbf)
+    records.field("LKZ", "C", 254)  # type: ignore[arg-type]  # see made_up._shapefile
+    records.record("CH")
+    records.close()
+    content = io.BytesIO()
+    with zipfile.ZipFile(content, "w") as archive:
+        stem = "Boundaries_K4_Country_20260101"
+        for suffix, data in (("shp", shp), ("shx", shx), ("dbf", dbf)):
+            archive.writestr(f"{stem}.{suffix}", data.getvalue())
+    with pytest.raises(SourceError, match=r"country.zip: a shape without its record"):
+        read_outline(content.getvalue(), "country.zip")
