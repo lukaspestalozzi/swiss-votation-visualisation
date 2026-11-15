@@ -16,8 +16,11 @@ Python 3.13 with polars, run by [uv](https://docs.astral.sh/uv/), which installs
 | BFS vote-day files (Federal Statistical Office) | `https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-<yyyymmdd>-eidgAbstimmung.json` | The votes, their kinds and titles, the entries per municipality, the BFS's figures per canton and for Switzerland, and the reference date of the list of municipalities. |
 | Federal Chancellery | `https://lindas.admin.ch/query` (SPARQL; the query is in `download.py`) | The vote days, the number of each vote, and the result the Federal Council validated, with its reference in the Federal Gazette and its note. |
 | BFS register of municipalities | `https://www.agvchapp.bfs.admin.ch/api/communes/snapshot?date=<dd-mm-yyyy>` | The municipalities on the reference date, with their names and cantons. |
+| BFS register of municipalities, boundaries | `https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division=<Commune\|Canton\|Country>&resolution=K4&dissolve=true&date=<dd-mm-yyyy>&format=shp` | The boundaries of the municipalities and the cantons on the reference date, and the outline of Switzerland, for `map.json`: in LV95, rounded to the metre. |
+| BFS ThemaKart set 2026 | `https://dam-api.bfs.admin.ch/hub/api/dam/assets/36390072/master` | The 37 lakes, whole, for `map.json`. They are valid for all years; a newer set is taken by changing the address in `download.py`. |
 
-`investigations/data-sources.md` describes the sources and what was found in them.
+`investigations/data-sources.md` describes the sources and what was found in them, and
+`investigations/map-data.md` those of the map.
 
 ## Adding a vote day
 
@@ -31,13 +34,14 @@ day), and again when the Federal Chancellery has validated them (some weeks late
    uv run --directory pipeline --locked python -m pipeline update
    ```
 
-   It downloads the three sources into `pipeline/downloads/` (about 125 MB, a few minutes; git
+   It downloads the sources into `pipeline/downloads/` (about 135 MB, a few minutes; git
    ignores the directory), checks them, and writes the data files to `app/static/data/`. It
    prints the reference date of the list of municipalities, the number of votes and how many
    are validated, the votes added, the votes validated since the last run, and the votes left
    out because their result is not complete yet.
 3. Review the diff of `app/static/data/`: the new vote files, the changed lines of
-   `votes.json`, and `sources.json`.
+   `votes.json`, and `sources.json`. `map.json` changes only with a new list of
+   municipalities.
 4. Run `./scripts/verify-local.sh`: among its steps, a test runs the calculation over every
    vote of the data files.
 5. Commit the data files and open a pull request.
@@ -61,6 +65,11 @@ the file, the vote and, where there is one, the entry.
 - **The vote-day files use different lists of municipalities.** The BFS moves its files to a
   new list after the mergers of a year, one file at a time. Wait until every file states the
   new reference date, then run the update again: every data file changes.
+- **The map's boundaries do not fit the list.** The register gives no boundary for a
+  municipality of the list, a boundary for a number not on it, a number or a canton twice, or
+  no outline; or the ThemaKart set holds no lakes. The register's boundaries of a date are made
+  from its list of that date, so this means a broken answer: look at the ZIP in
+  `pipeline/downloads/` and run the update again later.
 - **A vote of the data files is missing from the sources.** The update never removes a vote;
   a vote that the sources no longer give means an incomplete answer, usually the Federal
   Chancellery's. Run the update again later, and look at `pipeline/downloads/chancellery.json`.
@@ -84,6 +93,7 @@ the file, the vote and, where there is one, the entry.
 | `src/pipeline/feed.py` | The reader of the BFS vote-day files, with its checks. |
 | `src/pipeline/chancellery.py` | The reader of the Federal Chancellery's answer. |
 | `src/pipeline/register.py` | The reader of the BFS register. |
+| `src/pipeline/boundaries.py` | The reader of the map's sources: the register's boundaries, checked against the list, and the ThemaKart set's lakes. |
 | `src/pipeline/checks.py` | The checks between the sources: entries against the list, the sums, the official result. |
 | `src/pipeline/write.py` | The data files. |
 | `tests/` | The unit tests (pytest); `made_up.py` builds made-up sources in the shape of the real ones. |
