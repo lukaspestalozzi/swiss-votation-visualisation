@@ -254,12 +254,16 @@ In `app/src/lib/map-view.ts`. Spec `result-map`: zoom, moving the map. Design: d
   - The third failed until the zoom was limited. It also checks that zooming back out to 1×
     around another point shows the whole of Switzerland, not shifted; that case failed until a
     zoom to the whole width gives the whole view.)
-- [ ] 3.2 A move by a distance on the screen, with the view's centre clamped to the rectangle
+- [x] 3.2 A move by a distance on the screen, with the view's centre clamped to the rectangle
   around Switzerland. Write two tests, one at a time:
   - a move at 4× shifts the view by the distance;
   - a move past the western edge stops at it.
 
   Verify: the app has 57 passed.
+
+  (As built: 57, as planned. Both tests failed first: `moveBy` was missing, and the view passed
+  the western edge. The zoom keeps the view's centre inside the rectangle as well, so a wheel
+  turned over a lake beyond the border cannot move it out. No test of its own covers that.)
 
 ## 4. The map on the vote's page
 

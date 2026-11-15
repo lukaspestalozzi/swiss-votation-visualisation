@@ -27,10 +27,34 @@ export function zoomAround(view: View, factor: number, point: Point, map: Size):
   const width = Math.min(map.width, Math.max(map.width / MAX_ZOOM, view.width / factor));
   if (width === map.width) return wholeView(map);
   const scale = width / view.width;
-  return {
+  const zoomed = {
     x: point.x - (point.x - view.x) * scale,
     y: point.y - (point.y - view.y) * scale,
     width: view.width * scale,
     height: view.height * scale,
+  };
+  return withinMap(zoomed, map);
+}
+
+/**
+ * The view after a drag of `dx` and `dy` pixels on a map shown `pixelsWide` pixels wide: the map
+ * follows the pointer.
+ */
+export function moveBy(view: View, dx: number, dy: number, pixelsWide: number, map: Size): View {
+  const unitsPerPixel = view.width / pixelsWide;
+  return withinMap(
+    { ...view, x: view.x - dx * unitsPerPixel, y: view.y - dy * unitsPerPixel },
+    map,
+  );
+}
+
+/** The view moved so that its centre lies inside the map's rectangle. */
+function withinMap(view: View, map: Size): View {
+  const clamp = (value: number, low: number, high: number): number =>
+    Math.min(high, Math.max(low, value));
+  return {
+    ...view,
+    x: clamp(view.x, -view.width / 2, map.width - view.width / 2),
+    y: clamp(view.y, -view.height / 2, map.height - view.height / 2),
   };
 }
