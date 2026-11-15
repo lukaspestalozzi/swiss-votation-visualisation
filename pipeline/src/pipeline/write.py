@@ -6,9 +6,11 @@ sources: no time of the run is written.
 - `votes.json`: the list of votes, one vote per line.
 - `votes/<id>.json`: the entries of one vote, one canton per line.
 - `municipalities.json`: the list of municipalities and the Swiss abroad, one canton per line.
+- `map.json`: the map's shapes, one municipality, canton or lake per line.
 - `sources.json`: the source files the data was made from.
 
-The shape of each file is decision 12 of the design of the change add-vote-data.
+The shape of each file is decision 12 of the design of the change add-vote-data, and for
+`map.json` decision 14 of the design of the change add-result-map.
 """
 
 import hashlib
@@ -19,6 +21,7 @@ from typing import Any
 
 import polars as pl
 
+from pipeline.boundaries import MapData
 from pipeline.chancellery import Official
 from pipeline.feed import CANTONS, Vote
 from pipeline.register import Municipality
@@ -54,6 +57,7 @@ class Data:
     # The canton and the number of its Swiss abroad, for every canton that counts them apart.
     swiss_abroad: dict[str, int]
     sources: list[Source]
+    map: MapData
 
 
 def _dumps(value: Any) -> str:
@@ -153,6 +157,26 @@ def _municipalities_json(data: Data) -> str:
     )
 
 
+def _lines(values: list[Any]) -> str:
+    return ",\n".join(f"    {_dumps(value)}" for value in values)
+
+
+def _map_json(data: Data) -> str:
+    shapes = data.map
+    return (
+        "{\n"
+        f'  "referenceDate": {_dumps(data.reference_date)},\n'
+        f'  "lakesSet": {shapes.lakes_set},\n'
+        f'  "width": {shapes.frame.width},\n'
+        f'  "height": {shapes.frame.height},\n'
+        f'  "municipalities": [\n{_lines([list(m) for m in shapes.municipalities])}\n  ],\n'
+        f'  "cantons": [\n{_lines([list(c) for c in shapes.cantons])}\n  ],\n'
+        f'  "outline": {_dumps(shapes.outline)},\n'
+        f'  "lakes": [\n{_lines(shapes.lakes)}\n  ]\n'
+        "}\n"
+    )
+
+
 def _sources_json(data: Data) -> str:
     records = [
         {
@@ -176,4 +200,5 @@ def write_data(directory: Path, data: Data) -> None:
             _vote_json(vote), encoding="utf-8"
         )
     (directory / "municipalities.json").write_text(_municipalities_json(data), encoding="utf-8")
+    (directory / "map.json").write_text(_map_json(data), encoding="utf-8")
     (directory / "sources.json").write_text(_sources_json(data), encoding="utf-8")

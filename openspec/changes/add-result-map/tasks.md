@@ -99,10 +99,19 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   Verify: pytest 91 passed.
 
   (As built: 92 passed, one more for 1.4.)
-- [ ] 1.7 In `pipeline/src/pipeline/write.py`, write `map.json` in the shape of design decision
+- [x] 1.7 In `pipeline/src/pipeline/write.py`, write `map.json` in the shape of design decision
   14: municipalities by number, cantons in the constitution's order, lakes as the set lists
   them. Write one test: the made-up map is written in that shape. The existing test of the same
   bytes on a second run covers the new file. Verify: pytest 92 passed.
+
+  (As built: 93 passed, one more for 1.4.
+  - The map became a field of the data the writer takes. So `update.py` had to give it one, and
+    part of 1.8 moved here: the update downloads, records and reads the four sources, and the
+    `Sources` fake of `tests/test_update.py` serves the made-up ones.
+  - The test of the kinds of data files, now five, expects `map.json`.
+  - The same-bytes test counts 7 files instead of 6 and compares `map.json` too.
+  - `boundaries.py` gained `read_map`, which reads the four sources into the map. The update and
+    the tests use it.)
 - [ ] 1.8 In `pipeline/src/pipeline/update.py`, for the list's reference date:
   - download and record the register's three answers and the ThemaKart set;
   - read and check them;

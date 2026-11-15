@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from pipeline.boundaries import MapData, read_map
 from pipeline.chancellery import read_chancellery
 from pipeline.checks import (
     CantonChange,
@@ -23,7 +24,16 @@ from pipeline.checks import (
     reference_date,
 )
 from pipeline.counts import SourceError, count
-from pipeline.download import FEED, REGISTER, Fetch, Request, chancellery_request
+from pipeline.download import (
+    BOUNDARIES,
+    FEED,
+    REGISTER,
+    THEMAKART,
+    THEMAKART_YEAR,
+    Fetch,
+    Request,
+    chancellery_request,
+)
 from pipeline.feed import CANTONS, Day, read_day
 from pipeline.register import read_register
 from pipeline.write import Data, Source, VoteData, write_data
@@ -208,6 +218,7 @@ def update(
         raise SourceError(f"{address}: the register has no list for {reference}")
     downloads.record(address, content, None)
     municipalities = read_register(content.decode("utf-8-sig"), name)
+    shapes = _map(downloads, reference, [m.number for m in municipalities])
 
     checked = []
     swiss_abroad: dict[str, int] = {}
@@ -234,7 +245,8 @@ def update(
         raise SourceError(
             f"the sources no longer give these votes of the data files: {', '.join(lost)}"
         )
-    _replace(data, Data(reference, votes, municipalities, swiss_abroad, downloads.sources))
+    built = Data(reference, votes, municipalities, swiss_abroad, downloads.sources, shapes)
+    _replace(data, built)
     return Report(
         reference_date=reference,
         votes=len(votes),
@@ -250,6 +262,33 @@ def update(
             and not previous[vote.vote.id][1]
         ],
         left_out=[_named(vote.id, vote.date) for day in days for vote in day.left_out],
+    )
+
+
+def _map(downloads: _Downloads, reference: str, listed: list[int]) -> MapData:
+    """The register's boundaries of the list's reference date, and the ThemaKart set's lakes."""
+    year, month, day = reference.split("-")
+    files: dict[str, tuple[bytes, str]] = {}
+    for division in ("Commune", "Canton", "Country"):
+        address = BOUNDARIES.format(division=division, date=f"{day}-{month}-{year}")
+        name = f"boundaries_{division.lower()}_{reference}.zip"
+        content = downloads.get(Request(address), name)
+        if content is None:
+            raise SourceError(f"{address}: the register has no boundaries for {reference}")
+        downloads.record(address, content, None)
+        files[division] = (content, name)
+    name = f"themakart_{THEMAKART_YEAR}.zip"
+    content = downloads.get(Request(THEMAKART), name)
+    if content is None:
+        raise SourceError(f"{THEMAKART}: the BFS has no ThemaKart set {THEMAKART_YEAR}")
+    downloads.record(THEMAKART, content, None)
+    return read_map(
+        communes=files["Commune"],
+        cantons=files["Canton"],
+        country=files["Country"],
+        lakes=(content, name),
+        listed=listed,
+        lakes_set=THEMAKART_YEAR,
     )
 
 
