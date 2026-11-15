@@ -150,9 +150,16 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
     bytes); no other data file changed.
   - A second run left the checksums of `map.json`, `sources.json` and `votes.json` as they
     were. Each run took about 75 s.)
-- [ ] 1.10 In `pipeline/README.md`, add the two map sources to the table of sources, with what
+- [x] 1.10 In `pipeline/README.md`, add the two map sources to the table of sources, with what
   the pipeline takes from them, and update the size of a run's downloads. Verify: the table
   names the addresses of `download.py`, and the size matches `du -sh pipeline/downloads`.
+
+  (As built: the table names both addresses, and "about 135 MB" matches `du -sh` (134M). The
+  README also gained:
+  - the map's investigation;
+  - when `map.json` changes;
+  - what to do when the map's check stops the update;
+  - `boundaries.py` in its table of files.)
 
 ## 2. The colours, the details and the figures of a municipality
 
