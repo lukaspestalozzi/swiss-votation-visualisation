@@ -201,7 +201,7 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
   - `detailsOf` was not a function;
   - "Benken (ZH) (ZH)";
   - figures that were not there.)
-- [ ] 2.5 The figures of a vote for the map: from the vote's file, the map's numbers and
+- [x] 2.5 The figures of a vote for the map: from the vote's file, the map's numbers and
   `municipalities.json`, each municipality's yes and no votes, the municipalities without a
   result, and the number of entries of Swiss abroad. Write three tests with made-up data, one at
   a time:
@@ -212,6 +212,13 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
     number.
 
   Verify: the app has 49 passed.
+
+  (As built: 49, as planned. Each test failed first:
+  - the function was missing;
+  - no error for 261;
+  - no error for 7999.
+
+  The lookups use sets, since the check runs for every vote when the site is built.)
 - [ ] 2.6 In `app/src/lib/vote-data.test.ts`, against the real data files:
   - the map's municipalities are those of `municipalities.json`;
   - every judged vote's figures fit the map;
