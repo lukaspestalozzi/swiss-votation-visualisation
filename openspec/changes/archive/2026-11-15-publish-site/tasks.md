@@ -211,6 +211,17 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
 
 - Verify the change with the verify workflow, then archive it and set the status of #5 in
   `docs/roadmap.md`.
+
+  (Verified on 2026-11-15: no critical issue. Warning 1 came from Copilot's review: the deploy
+  job's own concurrency kept deployments apart but not in order. The workflow now runs one run
+  per branch at a time: decision 13, task 4.4. Warning 2 is the hand check below, which only
+  the merge allows. The suggestion was not taken: an automated test of the 125 pages.
+
+  The sync at the archive made the main spec `verdicts` fail `--strict`: "A page for every vote"
+  grew from 429 to 528 characters, over OpenSpec's limit of 500. OpenSpec checks a MODIFIED
+  requirement's length only once it is in the main spec. On Q's decision, the sentence on the
+  address without the slash became a requirement of its own, "A vote's address without the
+  final slash", with its scenario.)
 - Before the merge: task 4.3, GitHub Pages switched on.
 - After the merge (design, Migration Plan):
   - The CI run of the push to `main` shows `deploy` passed and links the address.
