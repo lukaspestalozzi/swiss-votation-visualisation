@@ -58,8 +58,9 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   2,939,549: "37.36%"; 253,697 of 583,689: "43.46%"); a half away from zero (1 of 8: "12.50%";
   1 of 16,000: "0.01%"); cantonal votes ("16½", "6½", "10", "½"); a date ("2016-02-28":
   "28. Februar 2016"; "2026-03-08": "8. März 2026"). Verify: `pnpm --filter app run test`
-  reports 15 passed (10 before). (As built: the test of the rounding passed when written, as the share's
-  formula of the test before covered it; it was seen to fail against a mutant that truncates.)
+  reports 15 passed (10 before). (As built: the test of the rounding passed when written, as
+  the share's formula of the test before covered it; it was seen to fail against a mutant that
+  truncates.)
 - [x] 3.2 `app/src/lib/texts.ts` (design, decision 13): every German text of the specs `vote-list`
   and `verdicts`, among them the six kinds, the two majorities needed, "Ja", "Nein", "nicht
   nötig", "Angenommen", "Abgelehnt", "angenommen", "abgelehnt", the marks, the sentences of the
@@ -82,12 +83,12 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   "37.36% für die Initiative"); the entry of 6650 ("angenommen, 58.25% Ja"); the marks of 5960
   ("Hinweis"), of the 8 votes of 2026-03-08 and 2026-06-14 ("vorläufig") and of 5670 (none); an
   empty list throws an error that names the list of votes. Verify: `pnpm --filter app run test`
-  reports 23 passed. (As built: as in `vote-data.test.ts`, the tests take the votes up to 2026-09-27, so
-  that an update with a later vote day leaves them as they are. The tests of 6790 and 6650 passed
-  when written; the first was seen to fail against a mutant that writes every verdict
-  "abgelehnt", the second against a copy of the data with 1,450,325 official no votes for 6650.
-  No test can tell the official yes share of 6650 from its municipal one: both round to 58.25%,
-  as decision 4 says.)
+  reports 23 passed. (As built: as in `vote-data.test.ts`, the tests take the votes up to
+  2026-09-27, so that an update with a later vote day leaves them as they are. The tests of 6790
+  and 6650 passed when written; the first was seen to fail against a mutant that writes every
+  verdict "abgelehnt", the second against a copy of the data with 1,450,325 official no votes for
+  6650. No test can tell the official yes share of 6650 from its municipal one: both round to
+  58.25%, as decision 4 says.)
 
 ## 5. A vote's page
 
@@ -154,10 +155,17 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 
 ## 7. The browser tests
 
-- [ ] 7.1 Replace `app/e2e/start-page.spec.ts` by `app/e2e/vote-list.spec.ts`: the years, the
+- [x] 7.1 Replace `app/e2e/start-page.spec.ts` by `app/e2e/vote-list.spec.ts`: the years, the
   entries of 5960 and 6823, the marks, there and back, and "all requests go to the site itself"
   (moved). Write them one at a time. Verify: `pnpm run build && pnpm run test:e2e` reports the
-  tests of the list as passed; the file `start-page.spec.ts` is gone.
+  tests of the list as passed; the file `start-page.spec.ts` is gone. (As built: six tests; the
+  years, the entries and the marks are compared with the site's own `/data/votes.json`, so that
+  an update of the data leaves them as they are, while the unit tests pin the figures of the
+  data of 2026-11-14. Each passed when written and was seen to fail, for its own reason, against
+  one build with five mutants: the years reversed, the result written as the kind, no mark
+  "vorläufig", every link to 5670, and a stylesheet from `https://example.org`. A first link
+  mutant, to the id plus 10, did not build: prerendering follows every link and stopped at
+  `404 GET /votes/6820`.)
 - [ ] 7.2 `app/e2e/vote-page.spec.ts`: the page of 5960 (head, figures, verdicts, the row of ZH,
   the note), of 6790, of 6823, of 6650; the entries stay out of the browser (no request under
   `/data/votes/`); a vote's page requests nothing from other servers. Verify: `pnpm run
