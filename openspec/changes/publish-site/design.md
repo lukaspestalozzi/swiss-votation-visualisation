@@ -294,8 +294,9 @@ show the actual time.
 - **[GitHub's limits]** → 11 MB of 1 GB. The bandwidth limit of 100 GB a month is about 590,000
   visits of the start page: it loads 170 kB in 14 requests, a vote's page 108 kB, both measured
   uncompressed in the spike. That is far beyond what this site expects, and the limit is soft.
-- **[The development server moves under the path]** → `http://localhost:5173/` alone shows
-  SvelteKit's "not found" page. `CLAUDE.md` names the new address.
+- **[The development server moves under the path]** → `http://localhost:5173/` redirects to
+  `http://localhost:5173/swiss-votation-visualisation` (302, seen while applying task 5.2), so
+  the old address still leads there. `CLAUDE.md` and `README.md` name the new address.
 
 ## Migration Plan
 

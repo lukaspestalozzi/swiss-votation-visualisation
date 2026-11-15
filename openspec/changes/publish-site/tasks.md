@@ -21,7 +21,7 @@ note says so too.
 In `app/playwright.config.ts`, `app/e2e/*.spec.ts` and `app/vite.config.ts` (spec `app-shell`,
 "The site is a set of static files"; design, decisions 9 and 10).
 
-- [ ] 1.1 Make the browser tests open the site under its path:
+- [x] 1.1 Make the browser tests open the site under its path:
   - The base URL in `app/playwright.config.ts` becomes
     `http://localhost:4173/swiss-votation-visualisation/`.
   - Every `page.goto`, `request.get` and `toHaveURL` takes a path relative to it: `./`,
@@ -34,7 +34,7 @@ In `app/playwright.config.ts`, `app/e2e/*.spec.ts` and `app/vite.config.ts` (spe
   10 failed and 2 passed. The two that pass, "all requests go to the site itself" and "the
   vote's entries stay out of the browser", look only at requests, which a page that is not found
   also makes. Every other test fails because nothing is found under the path.
-- [ ] 1.2 In `app/vite.config.ts`, one constant holds the path `/swiss-votation-visualisation`.
+- [x] 1.2 In `app/vite.config.ts`, one constant holds the path `/swiss-votation-visualisation`.
   SvelteKit's `paths.base` is set to it, and the adapter's `pages` and `assets` to `build` plus
   the path. Verify:
   - `rm -rf app/build && pnpm run build` writes `app/build/swiss-votation-visualisation/index.html`,
@@ -47,24 +47,32 @@ In `app/playwright.config.ts`, `app/e2e/*.spec.ts` and `app/vite.config.ts` (spe
 In `app/e2e/*.spec.ts`, `app/src/routes/+layout.ts` and `app/vite.config.ts` (specs `verdicts`,
 "A page for every vote", and `vote-list`, "From the list to a vote"; design, decision 5).
 
-- [ ] 2.1 Make the browser tests open a vote's page at its address with the slash, `votes/5960/`
+- [x] 2.1 Make the browser tests open a vote's page at its address with the slash, `votes/5960/`
   (likewise for 6790, 6823 and 6650), and make "from the list to a vote and back" expect
   `votes/5960/`. Verify: `pnpm run test:e2e` gives 6 failed and 6 passed.
   - Five tests of `vote-page.spec.ts` fail, because sirv finds no `votes/5960/index.html`.
   - "From the list to a vote and back" fails: it sees `votes/5960`.
   - "The vote's entries stay out of the browser" passes, as in 1.1: it looks only at requests.
-- [ ] 2.2 `export const trailingSlash = 'always';` in `app/src/routes/+layout.ts`, with a comment
+
+  (As built: 3 failed and 9 passed. sirv answers `votes/5960/` with `votes/5960.html` too, so the
+  tests that read the prerendered page pass. At that address the page's relative paths
+  `../_app/...` point into `votes/_app/`, which is 404. So the page has no styles and no scripts,
+  and three tests catch it:
+  - the greyed figure of 6790 is black;
+  - "from the list to a vote and back" sees `votes/5960`;
+  - the link back, still the prerendered `../`, leads to `votes/`.)
+- [x] 2.2 `export const trailingSlash = 'always';` in `app/src/routes/+layout.ts`, with a comment
   that says why: no page shares its name with a directory. Verify:
   - `pnpm run build && pnpm run test:e2e` gives 12 passed;
   - `find app/build/swiss-votation-visualisation/votes -name index.html | wc -l` prints 125;
   - `find app/build/swiss-votation-visualisation/votes -name '*.html' ! -name index.html` prints
     nothing.
-- [ ] 2.3 Write the browser test "a vote's page without the final slash" in
+- [x] 2.3 Write the browser test "a vote's page without the final slash" in
   `app/e2e/vote-page.spec.ts`. It opens `votes/5960`, waits until the page has stopped loading,
   and expects the heading of 5960 and no response with a status of 400 or more and no failed
   request, naming any it finds. Verify: `pnpm run test:e2e` gives 1 failed, naming the files
   under `_app` that fail with 404, and 12 passed.
-- [ ] 2.4 `paths.relative: false` in `app/vite.config.ts`, with a comment that says why: a page
+- [x] 2.4 `paths.relative: false` in `app/vite.config.ts`, with a comment that says why: a page
   opened without its final slash finds its scripts. Verify: `pnpm run build && pnpm run
   test:e2e` gives 13 passed.
 
@@ -72,7 +80,7 @@ In `app/e2e/*.spec.ts`, `app/src/routes/+layout.ts` and `app/vite.config.ts` (sp
 
 In `app/e2e/vote-page.spec.ts` (spec `publishing`, "An address that names no page").
 
-- [ ] 3.1 Write the browser test "an address that names no page": a browser opening
+- [x] 3.1 Write the browser test "an address that names no page": a browser opening
   `votes/9999/` gets the status 404. It passes when written, so it must be seen to fail against
   a mutant. Verify:
   - `pnpm run test:e2e` gives 14 passed;
@@ -80,6 +88,12 @@ In `app/e2e/vote-page.spec.ts` (spec `publishing`, "An address that names no pag
     --port 4173`, which answers every address with a page, the test fails and shows the status
     200;
   - after the mutant is undone, 14 passed again.
+
+  (As built: `sirv build --single` alone was no mutant. It falls back to the `index.html` at the
+  root of `build`, and since 1.2 there is none, so it still answered 404, and the test passed.
+  Given the fallback file, `sirv build --single swiss-votation-visualisation/index.html --port
+  4173` answers every unknown address with the start page. With it the test failed: expected
+  404, received 200. Undone, 14 passed.)
 
 ## 4. Publishing from CI
 
@@ -112,7 +126,7 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
 
 ## 5. The project context and the documents
 
-- [ ] 5.1 Update `openspec/config.yaml`:
+- [x] 5.1 Update `openspec/config.yaml`:
   - Under the decided stack: the site is published on GitHub Pages at
     `https://lukaspestalozzi.github.io/swiss-votation-visualisation/`, from CI, after every check
     of a push to `main`; the design of the archived change publish-site gives the reasons and the
@@ -121,13 +135,21 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
 
   Verify: `openspec validate --all --strict --no-interactive` passes; `grep -n "hosting"
   openspec/config.yaml` shows only the decided line.
-- [ ] 5.2 Update `README.md`:
+  (As built: the validation passes. `grep -n "hosting"` also shows two older lines of the stack
+  paragraph ("static hosting", "hosting cost"), and the new line says "GitHub Pages", not
+  "hosting". The check that holds is `grep -n "hosting target"`, which prints nothing, and
+  `grep -n "GitHub Pages"`, which prints the new line.)
+- [x] 5.2 Update `README.md`:
   - the address of the site, published from `main` after every check passes;
   - that GitHub, the host, logs the IP addresses of visitors for security (design, Risks);
   - that the development server is at `http://localhost:5173/swiss-votation-visualisation/`.
 
   Verify: the address in `README.md` is the one in the spec `publishing`.
-- [ ] 5.3 Update `CLAUDE.md`:
+  (As built: the addresses match. The README's `/votes/<id>` and "written to app/build" are
+  updated too, since this change made them stale. `pnpm run dev` serves the path with 200, and
+  redirects `http://localhost:5173/` to it (302), not "not found" as the design's Risks said;
+  the design is corrected.)
+- [x] 5.3 Update `CLAUDE.md`:
   - **The status:** #5 done once archived. **Next:** #6.
   - **The code map of `app`:**
     - `vite.config.ts`: the path, the output directory, absolute paths;
@@ -145,11 +167,17 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
   Verify: every file this change adds or changes under `app/` and `.github/` is named with its
   current role (`git diff --name-status origin/main` against `CLAUDE.md`); `grep -n "app/build"
   CLAUDE.md` shows only the new path.
+  (As built: the six files are named with their current role. `grep -n "app/build"` shows the
+  nested path three times, and twice "against `app/build`, under the site's path": the
+  directory sirv serves, with the site under the path in it, which is accurate. The status
+  gains the published address now. The list of archived changes ("#1 to #4") and "Next" move to
+  #5 and #6 when the change is archived, as the list of specs did in #4.)
 
 ## 6. Integration
 
-- [ ] 6.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`, with 41 unit tests in
+- [x] 6.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`, with 41 unit tests in
   the calculation, 37 in the app, 14 browser tests and 81 in the pipeline.
+  (As built: passed, with exactly these counts.)
 - [ ] 6.2 Map each scenario of the four delta specs to the test or check that covers it, in the
   pull request's description. The scenarios of `publishing` about CI are covered by the CI runs
   of the pull request and of `main` (design, Tests). Verify: the list has no scenario without a
