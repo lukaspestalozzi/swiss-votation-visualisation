@@ -432,6 +432,14 @@ test failed first:
 The update run again from the downloads gave the same bytes. With them: 80 tests of the app, 55
 browser tests, 134 of the pipeline.
 
+## Archive
+
+Merged into `openspec/specs/`, the requirement "Adding a vote day" (spec `vote-data`) had 511
+characters, more than the 500 the strict validation allows in a main spec; the validation of
+the change does not count them in a modified requirement. Q chose, on 2026-11-15, to write "runs
+every check of the pipeline" in place of the list of capabilities, in the delta and the main
+spec.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`, which updates #7 in

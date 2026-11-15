@@ -30,11 +30,10 @@ run: an update with unchanged sources SHALL leave every data file unchanged, byt
 ### Requirement: Adding a vote day
 
 One command, run by hand, SHALL bring the data files up to date: it downloads the sources,
-runs the pipeline's checks of this capability, of `municipalities` and of `characteristics`,
-and writes all data files, adding a new vote day and replacing a result once validated. When a
-source cannot be reached or a check fails, it SHALL say which, exit with a status other than
-zero, and leave every data file as it was. The calculation's check runs with the unit tests;
-`pipeline/README.md` SHALL give the procedure.
+runs every check of the pipeline, and writes all data files, adding a new vote day and
+replacing a result once validated. When a source cannot be reached or a check fails, it SHALL
+say which, exit with a status other than zero, and leave every data file as it was. The
+calculation's check runs with the unit tests; `pipeline/README.md` SHALL give the procedure.
 
 #### Scenario: A new vote day
 

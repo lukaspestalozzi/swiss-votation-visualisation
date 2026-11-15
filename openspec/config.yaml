@@ -92,7 +92,7 @@ context: |
     written to app/static/data/characteristics.json. A vote takes the figures of the last year
     and the last election before its day. Languages per municipality exist only in the census of
     2000; so does religion (STAT-TAB px-x-4003000000_122), a candidate for #13. The design of
-    the change add-characteristics gives the reasons and the alternatives.
+    the archived change add-characteristics gives the reasons and the alternatives.
 
   Modules (each is a directory at the root; calculation and app are packages of the workspace)
   - pipeline: offline. It turns the public sources into the data files the app loads and checks
