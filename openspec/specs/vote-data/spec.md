@@ -466,9 +466,9 @@ cantonal votes in its result exactly when its kind needs both majorities.
 ### Requirement: The record of the sources
 
 The pipeline SHALL write, with the data files, a record of every source file they were made
-from: its address, its size, its checksum, and for a BFS vote-day file the time the file states
-for itself. The data files hold no time of the run: an update with unchanged sources SHALL
-leave every data file unchanged, byte for byte.
+from: its address, its size, its checksum, for a BFS vote-day file the time the file states for
+itself, and for an answer to a query the query it answers. The data files hold no time of the
+run: an update with unchanged sources SHALL leave every data file unchanged, byte for byte.
 
 #### Scenario: The record names every source file
 
@@ -478,6 +478,11 @@ leave every data file unchanged, byte for byte.
   the BFS register of municipalities, the register's three answers with the boundaries of the
   municipalities, of the cantons and of Switzerland, and the BFS ThemaKart set 2026, each with
   its address, size and checksum
+- **AND** for the characteristics it names 49 answers of the BFS statistics API (STAT-TAB) to a
+  query and its description of the table of the elections, the register's lists of 2000-12-05,
+  2023-01-01 and 2025-04-06 and its correspondences from each of them to 2026-01-01, and
+  swisstopo's swissBOUNDARIES3D of 2026-01, each with its address, size and checksum, and each
+  answer of STAT-TAB and of the Federal Chancellery with its query
 
 #### Scenario: A second run changes nothing
 
@@ -488,11 +493,10 @@ leave every data file unchanged, byte for byte.
 ### Requirement: Adding a vote day
 
 One command, run by hand, SHALL bring the data files up to date: it downloads the sources,
-runs the pipeline's checks of this capability and of `municipalities`, and writes all data
-files, adding a new vote day and replacing a result once validated. When a source cannot be
-reached or a check fails, it SHALL say which, exit with a status other than zero, and leave
-every data file as it was. The calculation's check runs with the unit tests; `pipeline/README.md`
-SHALL give the procedure.
+runs every check of the pipeline, and writes all data files, adding a new vote day and
+replacing a result once validated. When a source cannot be reached or a check fails, it SHALL
+say which, exit with a status other than zero, and leave every data file as it was. The
+calculation's check runs with the unit tests; `pipeline/README.md` SHALL give the procedure.
 
 #### Scenario: A new vote day
 
@@ -522,6 +526,13 @@ SHALL give the procedure.
 - **GIVEN** sources in which one check of this capability fails
 - **WHEN** the update command runs
 - **THEN** it exits with a status other than zero, and every data file is as it was before
+
+#### Scenario: The characteristics' source cannot be reached
+
+- **GIVEN** the BFS statistics API does not answer
+- **WHEN** the update command runs
+- **THEN** it names the address, exits with a status other than zero, and every data file is as
+  it was before
 
 ### Requirement: No vote is lost
 
