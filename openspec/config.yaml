@@ -78,7 +78,7 @@ context: |
     own code; its shapes are the BFS's K4 boundaries of the list's reference date from the
     register of municipalities, with the lakes of the BFS ThemaKart set, written by the pipeline
     to app/static/data/map.json. Whether a library for zoom and move serves better is checked in
-    #10. The design of the change add-result-map gives the reasons and the alternatives.
+    #10. The design of the archived change add-result-map gives the reasons and the alternatives.
   - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
     names it): how the three interface languages are handled (until then the interface is
     German, as above).
