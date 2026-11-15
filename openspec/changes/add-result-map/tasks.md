@@ -271,13 +271,20 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
 `app/e2e/result-map.spec.ts`. Spec `result-map`: every requirement. Design: decisions 4, 7, 10,
 12, 13, 15 to 17, 19 and 20.
 
-- [ ] 4.1 New module `app/src/lib/map-data.ts`: loads `data/map.json` and
+- [x] 4.1 New module `app/src/lib/map-data.ts`: loads `data/map.json` and
   `data/municipalities.json` under the site's path, once per visit, and fails as one. Write two
   tests with a fake `fetch`, one at a time:
   - two calls make one request per file;
   - a failed request rejects.
 
   Verify: the app has 59 passed.
+
+  (As built: 59, as planned. Both tests failed first: the module was missing, and a 404 was
+  read as data.
+  - The module takes the addresses and the fetch function from the page, which passes them under
+    the site's path; it imports nothing of SvelteKit.
+  - A failed load is kept like a successful one, so a page shows the failure for the rest of the
+    visit.)
 - [ ] 4.2 The vote's page holds the figures of 2.5. `+page.server.ts` reads `map.json` at build
   time to check them, so a mismatch fails the build naming the vote and the municipality. The
   tie-break question gets none. Verify:
