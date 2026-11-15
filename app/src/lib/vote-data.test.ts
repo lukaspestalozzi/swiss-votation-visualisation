@@ -3,11 +3,19 @@
 // votes. The figures named here are those of investigations/data-sources.md.
 import { calculateResult, majoritiesNeeded, type Entry } from 'calculation';
 import { expect, test } from 'vitest';
+import characteristicsFile from '../../static/data/characteristics.json';
 import mapData from '../../static/data/map.json';
 import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
 import { mapFiguresOf } from './result-map.ts';
-import type { MapFile, Municipalities, Vote, VoteFile, Votes } from './vote-data.ts';
+import type {
+  CharacteristicsFile,
+  MapFile,
+  Municipalities,
+  Vote,
+  VoteFile,
+  Votes,
+} from './vote-data.ts';
 
 const listing = votesFile as Votes;
 // A JSON import is typed from its content, with the [number, name] pairs as plain arrays.
@@ -178,4 +186,19 @@ test('the entries of Swiss abroad: 12 in 2016, 11 in 2013', () => {
   };
   expect(abroadIn(5960)).toBe(12);
   expect(abroadIn(5670)).toBe(11);
+});
+
+test('the characteristics are those of the municipalities of the list', () => {
+  const characteristics = characteristicsFile as unknown as CharacteristicsFile;
+  const listed = Object.values(list.municipalities).flatMap((rows) => rows.map(([n]) => n));
+  expect(characteristics.referenceDate).toBe(list.referenceDate);
+  expect(characteristics.municipalities).toEqual([...listed].sort((a, b) => a - b));
+  const sized = [
+    ...characteristics.population.counts,
+    ...characteristics.cattle.counts,
+    ...characteristics.elections.map((election) => election.votes),
+    characteristics.languages2000,
+    characteristics.area,
+  ];
+  for (const counts of sized) expect(counts).toHaveLength(listed.length);
 });

@@ -1,7 +1,8 @@
-// Loading the map's shapes and the names of the municipalities in the browser (spec result-map,
-// "The map's data is loaded once"; design of add-result-map, decisions 7 and 15). The page
-// passes the addresses under the site's path; a test passes a fake of `fetch`.
-import type { MapFile, Municipalities } from './vote-data.ts';
+// Loading the map's shapes, the names of the municipalities and their characteristics in the
+// browser (spec result-map, "The map's data is loaded once"; design of add-result-map, decisions
+// 7 and 15, and of add-characteristics, decision 13). The page passes the addresses under the
+// site's path; a test passes a fake of `fetch`.
+import type { CharacteristicsFile, MapFile, Municipalities } from './vote-data.ts';
 
 export interface MapSources {
   readonly map: MapFile;
@@ -32,6 +33,21 @@ export function createMapLoader(urls: MapUrls, fetcher: Fetch): () => Promise<Ma
         municipalities: municipalities as Municipalities,
       }),
     );
+    return loading;
+  };
+}
+
+/**
+ * A loader of the characteristics, apart from the map's, so that the map does not wait for
+ * them: it requests the file on its first call and gives the same answer after.
+ */
+export function createCharacteristicsLoader(
+  url: string,
+  fetcher: Fetch,
+): () => Promise<CharacteristicsFile> {
+  let loading: Promise<CharacteristicsFile> | undefined;
+  return () => {
+    loading ??= json(url, fetcher).then((file) => file as CharacteristicsFile);
     return loading;
   };
 }

@@ -83,3 +83,38 @@ export interface MapFile {
   readonly outline: string;
   readonly lakes: readonly string[];
 }
+
+// characteristics.json: the counts the characteristics are computed from, per municipality of
+// the list (spec characteristics; design of add-characteristics, decisions 11 and 12). Every
+// array of counts follows `municipalities`.
+export interface CharacteristicsFile {
+  // The date of the list of municipalities the counts are added up on.
+  readonly referenceDate: string;
+  readonly municipalities: readonly number[];
+  // Per year, the permanent resident population at its end, per municipality: inhabitants,
+  // foreigners, and those aged 0–17, 18–34, 35–49, 50–64, and 65 and over.
+  readonly population: Yearly<readonly number[]>;
+  // Per National Council election, per municipality the votes of FDP, Die Mitte (CVP and BDP
+  // until 2020), SP, SVP, GLP, Grüne and the other parties, or null for a municipality without
+  // an election result of its own.
+  readonly elections: readonly Election[];
+  // Per year, the cattle of each municipality.
+  readonly cattle: Yearly<number>;
+  // The census of 2000, per municipality: all inhabitants, and those with German, French,
+  // Italian and Romansh as their main language.
+  readonly languages2000: readonly (readonly number[])[];
+  // swisstopo's area of each municipality in ha, its part in a lake included.
+  readonly area: readonly number[];
+}
+
+export interface Yearly<Counts> {
+  readonly years: readonly number[];
+  // Per year, in the order of `years`: the counts of each municipality.
+  readonly counts: readonly (readonly Counts[])[];
+}
+
+export interface Election {
+  readonly year: number;
+  readonly day: string;
+  readonly votes: readonly (readonly number[] | null)[];
+}

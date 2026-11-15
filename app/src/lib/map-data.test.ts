@@ -1,7 +1,7 @@
 // Loading the map's data (spec result-map, "The map's data is loaded once" and "A map that
 // cannot be loaded"), with a fake of the browser's fetch.
 import { expect, test } from 'vitest';
-import { createMapLoader } from './map-data.ts';
+import { createCharacteristicsLoader, createMapLoader } from './map-data.ts';
 
 const URLS = { map: '/site/data/map.json', municipalities: '/site/data/municipalities.json' };
 
@@ -29,4 +29,21 @@ test('a failed request rejects, naming the file', async () => {
   const { fetcher } = fakeFetch((url) => (url === URLS.map ? 404 : 200));
   const load = createMapLoader(URLS, fetcher);
   await expect(load()).rejects.toThrow(/\/site\/data\/map\.json: HTTP 404/);
+});
+
+const CHARACTERISTICS = '/site/data/characteristics.json';
+
+test('the characteristics are requested once', async () => {
+  const { fetcher, requested } = fakeFetch();
+  const load = createCharacteristicsLoader(CHARACTERISTICS, fetcher);
+  const first = await load();
+  expect(await load()).toBe(first);
+  expect(first).toEqual({ url: CHARACTERISTICS });
+  expect(requested).toEqual([CHARACTERISTICS]);
+});
+
+test('a failed request of the characteristics rejects, naming the file', async () => {
+  const { fetcher } = fakeFetch(() => 404);
+  const load = createCharacteristicsLoader(CHARACTERISTICS, fetcher);
+  await expect(load()).rejects.toThrow(/\/site\/data\/characteristics\.json: HTTP 404/);
 });
