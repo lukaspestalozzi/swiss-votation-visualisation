@@ -219,4 +219,8 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 ## Workflow follow-up
 
 - Verify the change with the verify workflow, then archive it and set the status of #4 in
-  `docs/roadmap.md`.
+  `docs/roadmap.md`. (Verified on 2026-11-15: no critical issue. Of its three warnings, the
+  requirement "A page for every vote" now says that a tie-break question shows neither sentence
+  of the majorities, as its own scenario already did; the design says that the budgets were
+  measured by hand; and the month names moved from `format.ts` to `texts.ts`. Its suggestion, a
+  test that an optional referendum's page shows the table, was not taken.)

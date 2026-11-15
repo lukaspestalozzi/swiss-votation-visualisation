@@ -6,6 +6,22 @@ import type { Kind, Majorities } from 'calculation';
 export const TITLE = 'Popular Vote Explorer';
 export const ALL_VOTES = 'Alle Abstimmungen';
 
+// The months of a date, from January; format.ts writes the date with them.
+export const MONTHS: readonly string[] = [
+  'Januar',
+  'Februar',
+  'März',
+  'April',
+  'Mai',
+  'Juni',
+  'Juli',
+  'August',
+  'September',
+  'Oktober',
+  'November',
+  'Dezember',
+];
+
 export const KINDS: Readonly<Record<Kind, string>> = {
   'mandatory-referendum': 'Obligatorisches Referendum',
   'optional-referendum': 'Fakultatives Referendum',
