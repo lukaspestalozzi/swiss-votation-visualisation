@@ -438,6 +438,23 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   `test_boundaries.py` under `pipeline/tests/test_*.py`, the investigation's scripts under
   `map-data/`. The status says that #6 is applied and not yet archived; the archive updates it.)
 
+## Review of the pull request
+
+Copilot reviewed PR #9 on 2026-11-15 with four findings, each verified and fixed with a test
+seen to fail first:
+
+- **A layer whose shapes and records differ in number** lost its extra shapes quietly: `zip`
+  stopped at the shorter. pyshp reads such a layer without complaint. With `zip_longest` the
+  reader stops. Pipeline test 97.
+- **After a drag, a click on the spot where it ended** selected nothing, until the pointer
+  moved. A new press now ends the drag's hold. Browser test 39.
+- **After a drag, moving within the municipality it ended on** showed nothing. The first move
+  now points again. Browser test 40.
+- **A press let go outside the map, before it became a drag,** moved the map later, without a
+  button held. A move without the primary button now ends the press. Browser test 41.
+
+With them: 59 tests of the app, 41 browser tests, 97 of the pipeline.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`, which updates #6 in

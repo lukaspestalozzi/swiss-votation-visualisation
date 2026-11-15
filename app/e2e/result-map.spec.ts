@@ -426,3 +426,48 @@ test('the budget: no frame after zooming, moving or pointing takes more than 16 
   expect(frames.length).toBeGreaterThan(10);
   expect(frames.filter((f) => f.work > 16)).toEqual([]);
 });
+
+test('after a drag, a click on the spot where it ended shows the details', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: 'Vergrössern' }).click();
+  await drag(page, -150, 0);
+  await expect(details(page).locator('.name')).toHaveCount(0);
+  // A new press and release, without moving: a click.
+  await page.mouse.down();
+  await page.mouse.up();
+  await expect(details(page).locator('.name')).toHaveCount(1);
+});
+
+test('after a drag, the first move shows the municipality under the pointer', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: 'Vergrössern' }).click();
+  const box = await page.locator('.map svg').boundingBox();
+  if (box === null) throw new Error('the map is not on the screen');
+  await drag(page, -150, 0);
+  await expect(details(page).locator('.name')).toHaveCount(0);
+  // One pixel further, still on the same municipality: pointing again.
+  await page.mouse.move(box.x + box.width / 2 - 149, box.y + box.height / 2);
+  await expect(details(page).locator('.name')).toHaveCount(1);
+});
+
+test('a press let go outside the map does not move it later', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  const box = await page.locator('.map svg').boundingBox();
+  if (box === null) throw new Error('the map is not on the screen');
+  const before = await viewOf(page);
+  // Pressed just inside the right edge, let go just outside: less than 4 pixels, no drag.
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width - 1, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width + 2, y);
+  await page.mouse.up();
+  // Back over the map with no button held.
+  await page.mouse.move(box.x + box.width / 2, y, { steps: 10 });
+  expect(await viewOf(page)).toEqual(before);
+});
