@@ -222,3 +222,57 @@ def test_a_vote_the_sources_no_longer_give_stops_the_update(
         in capsys.readouterr().err
     )
     assert snapshot(data) == before
+
+
+class Sources2027(Sources):
+    """The made-up sources on the list of 2027-01-01: same municipalities, a new date."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        for day in DAYS:
+            feed = made_up.feed_day(day)
+            for unit in feed["spatial_reference"]:
+                unit["spatial_date"] = "2027-01-01"
+            self.files[FEED.format(day=day.replace("-", ""))] = json.dumps(feed).encode()
+        self.files[REGISTER.format(date="01-01-2027")] = made_up.register().encode()
+        for division in ("Commune", "Canton", "Country"):
+            address = BOUNDARIES.format(division=division, date="01-01-2027")
+            self.files[address] = made_up.boundaries(division, "2027-01-01")
+
+
+def test_a_new_list_brings_the_boundaries_of_its_date(tmp_path: Path) -> None:
+    data, sources = tmp_path / "data", Sources2027()
+    update(project(tmp_path), data, sources, TODAY)
+    for division in ("Commune", "Canton", "Country"):
+        assert BOUNDARIES.format(division=division, date="01-01-2027") in sources.requested
+        assert BOUNDARIES.format(division=division, date="01-01-2026") not in sources.requested
+    document = json.loads((data / "map.json").read_text(encoding="utf-8"))
+    assert document["referenceDate"] == "2027-01-01"
+
+
+def test_a_failing_check_of_the_map_leaves_the_data_files_as_they_were(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    without_bern = Sources()
+    shapes = [s for s in made_up.boundaries_shapes("Commune") if s[0][2] != 351]
+    address = BOUNDARIES.format(division="Commune", date="01-01-2026")
+    without_bern.files[address] = made_up.boundaries("Commune", shapes=shapes)
+    status = main(["update"], fetch=without_bern, today=TODAY, project=directory, data=data)
+    assert status == 1
+    assert "no boundary for the municipalities [351]" in capsys.readouterr().err
+    assert snapshot(data) == before
+
+
+def test_the_record_names_the_maps_sources(tmp_path: Path) -> None:
+    data = tmp_path / "data"
+    update(project(tmp_path), data, Sources(), TODAY)
+    record = json.loads((data / "sources.json").read_text(encoding="utf-8"))["sources"]
+    addresses = [source["address"] for source in record]
+    for division in ("Commune", "Canton", "Country"):
+        assert BOUNDARIES.format(division=division, date="01-01-2026") in addresses
+    assert THEMAKART in addresses
+    themakart = next(source for source in record if source["address"] == THEMAKART)
+    assert themakart["bytes"] == len(made_up.themakart())

@@ -112,7 +112,7 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   - The same-bytes test counts 7 files instead of 6 and compares `map.json` too.
   - `boundaries.py` gained `read_map`, which reads the four sources into the map. The update and
     the tests use it.)
-- [ ] 1.8 In `pipeline/src/pipeline/update.py`, for the list's reference date:
+- [x] 1.8 In `pipeline/src/pipeline/update.py`, for the list's reference date:
   - download and record the register's three answers and the ThemaKart set;
   - read and check them;
   - write `map.json` with the other data files.
@@ -125,6 +125,13 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   - the record of the sources names the four new source files.
 
   Verify: pytest 95 passed; mypy, `ruff check` and `ruff format --check` pass.
+
+  (As built: 96 passed, one more for 1.4. The fake and the test of the kinds of data files were
+  done in 1.7. The three new tests each passed when written, since 1.7 had wired the update.
+  Each failed against its mutant:
+  - the boundaries always asked for 2026-01-01;
+  - the check of a missing boundary removed, so the update exited with 0;
+  - the register's answers not recorded.)
 - [ ] 1.9 Run `uv run --directory pipeline --locked python -m pipeline update` for real. Review
   the diff of `app/static/data/`:
   - `map.json` is new: reference date 2026-01-01, lakes set 2026, 2,110 municipalities, 26
