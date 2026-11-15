@@ -351,7 +351,7 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
     measures in the map's own coordinates.
   - The map's `svelte-ignore` of the a11y rules on its click handler is justified in a comment:
     reading a municipality without a pointer is #10's.)
-- [ ] 4.5 Zoom and move: the buttons "+" ("Vergrössern"), "−" ("Verkleinern") and "Ganze
+- [x] 4.5 Zoom and move: the buttons "+" ("Vergrössern"), "−" ("Verkleinern") and "Ganze
   Schweiz"; the wheel over the map; dragging with Pointer Events; a drag of more than 4 px is
   not a click. Write browser tests, one at a time:
   - "+" halves the view around its centre;
@@ -362,6 +362,17 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   - a drag that ends on a municipality shows no details.
 
   Verify: the browser tests give 35 passed.
+
+  (As built: 35, as planned.
+  - Failed first: "+", the limits with "−" and "Ganze Schweiz", the wheel, and dragging.
+  - Passed when written, each failed against its mutant:
+    - the western edge: a move without the clamp;
+    - the drag that ends on a municipality: no check after the release.
+  - Svelte makes a wheel handler passive, so the wheel's listener is added through an
+    attachment with `passive: false`; that lets it keep the page from scrolling. The wheel
+    zooms by 2 per 300 pixels.
+  - A press becomes a drag after 4 pixels and captures the pointer. After its release, pointing
+    and clicking wait until the pointer moves from where it was let go.)
 - [ ] 4.6 Loading once, and failure: "Die Karte kann nicht geladen werden." in place of the map.
   Write browser tests, one at a time:
   - from 5960 to the start page to 5670, `data/map.json` and `data/municipalities.json` are

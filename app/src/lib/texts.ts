@@ -107,3 +107,6 @@ export const mapSource = (date: string, lakesSet: number): string =>
 export const swissAbroadNotOnTheMap = (cantons: number): string =>
   'Nicht auf der Karte: die Stimmen der Auslandschweizerinnen und Auslandschweizer, ' +
   `die ${String(cantons)} Kantone getrennt zählen.`;
+export const ZOOM_IN = 'Vergrössern';
+export const ZOOM_OUT = 'Verkleinern';
+export const WHOLE_SWITZERLAND = 'Ganze Schweiz';
