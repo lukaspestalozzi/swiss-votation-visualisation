@@ -11,7 +11,7 @@ interface ListedVote {
 }
 
 async function listedVotes(request: APIRequestContext): Promise<ListedVote[]> {
-  const response = await request.get('/data/votes.json');
+  const response = await request.get('data/votes.json');
   return ((await response.json()) as { votes: ListedVote[] }).votes;
 }
 
@@ -20,7 +20,7 @@ test('a heading per year, from the newest to 2013, and an entry per vote', async
   request,
 }) => {
   const votes = await listedVotes(request);
-  await page.goto('/');
+  await page.goto('./');
   // The screen is German until #9.
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
@@ -54,7 +54,7 @@ function entry(page: Page, title: string): Locator {
 }
 
 test('the entry of a vote that failed', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   const failed = entry(page, 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»');
   await expect(failed.locator('span:not(.mark)')).toHaveText([
     '28. Februar 2016',
@@ -64,7 +64,7 @@ test('the entry of a vote that failed', async ({ page }) => {
 });
 
 test('the entry of the tie-break question shows its share for the initiative', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   const tieBreak = entry(page, 'Bargeldinitiative und Gegenvorschlag: Stichfrage');
   await expect(tieBreak.locator('span:not(.mark)')).toHaveText([
     '8. März 2026',
@@ -76,7 +76,7 @@ test('the entry of the tie-break question shows its share for the initiative', a
 
 test('the marks of the entries', async ({ page, request }) => {
   const votes = await listedVotes(request);
-  await page.goto('/');
+  await page.goto('./');
   const annulled = entry(page, 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»');
   await expect(annulled.locator('.mark')).toHaveText(['Hinweis']);
   await expect(
@@ -93,18 +93,18 @@ test('the marks of the entries', async ({ page, request }) => {
 
 test('from the list to a vote and back', async ({ page }) => {
   const title = 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»';
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('link', { name: title, exact: true }).click();
-  await expect(page).toHaveURL('/votes/5960');
+  await expect(page).toHaveURL('votes/5960/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
   await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('./');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
 });
 
 test('all requests go to the site itself', async ({ page }) => {
   const origins = new Set<string>();
   page.on('request', (request) => origins.add(new URL(request.url()).origin));
-  await page.goto('/', { waitUntil: 'networkidle' });
+  await page.goto('./', { waitUntil: 'networkidle' });
   expect([...origins]).toEqual([new URL(page.url()).origin]);
 });
