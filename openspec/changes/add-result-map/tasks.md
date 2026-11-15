@@ -295,7 +295,7 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   (As built: as planned. `grep` finds 46565 once in the page of 5960, which grew to 43 KB, and
   the tie-break question's page holds `map: null`. The check of the figures is the function of
   2.5, whose tests make the build's failure on a mismatch visible without changing a data file.)
-- [ ] 4.3 `ResultMap.svelte` on the vote's page, below the outcome and above the table of the
+- [x] 4.3 `ResultMap.svelte` on the vote's page, below the outcome and above the table of the
   cantons, under "Karte der Gemeinden". It draws:
   - the lake-coloured outline;
   - the municipalities, with their colours and the hatching;
@@ -315,6 +315,17 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   - the Swiss abroad: 12 on 5960, 11 on 5670.
 
   Verify: `pnpm run build && pnpm run test:e2e` gives 24 passed.
+
+  (As built: 24, as planned. The component was built up test by test.
+  - Failed first, then passed: the map's place, the colours, the hatching, the legend, the
+    cantons and lakes, the source, and the Swiss abroad of 2016.
+  - Passed when written, each failed against a mutant:
+    - no map on 6823: the map placed outside the judged part and given to the tie-break question;
+    - the tie: a tie without a fill;
+    - the Swiss abroad of 2013: always 12.
+  - The address of a static file is `asset('data/map.json')`, without a leading slash.
+  - A screenshot of 5960 showed the map, the legend, the source and the sentence on the Swiss
+    abroad as intended.)
 - [ ] 4.4 Pointing (design, decisions 12 and 17): the box of details, a polite live region at the
   top left of the map. It shows on hover and on click or tap, and clears on a lake. Write
   browser tests, one at a time:
