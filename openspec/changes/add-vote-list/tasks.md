@@ -188,14 +188,16 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 
 ## 9. The project context and the documents
 
-- [ ] 9.1 `openspec/config.yaml`: the interface is German until #9 (stack, the paragraph "not
+- [x] 9.1 `openspec/config.yaml`: the interface is German until #9 (stack, the paragraph "not
   decided"). `docs/roadmap.md`: entry #4 as built (capabilities, scope, "None left" under open
   decisions). Verify: `openspec validate --all --strict --no-interactive` passes.
-- [ ] 9.2 `README.md`: what the site shows now. `CLAUDE.md`: the status; the code map of `app`
+- [x] 9.2 `README.md`: what the site shows now. `CLAUDE.md`: the status; the code map of `app`
   (the routes, the four modules of `src/lib/` and their tests, the two browser test files) and
   of `calculation` (the outcome of each canton). Verify: every file this change adds or removes
   is named or no longer named in the code map (`git diff --name-status origin/main` against
-  `CLAUDE.md`).
+  `CLAUDE.md`). (As built: every file added under `app/` and `calculation/` is named, `start-page.spec.ts` no
+  longer is, and `check_tie_break.py` is named next to the script of #3. The list of the specs
+  under "Where things are" gains `verdicts` and `vote-list` when the change is archived.)
 
 ## 10. Integration
 
