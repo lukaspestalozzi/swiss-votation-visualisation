@@ -124,7 +124,7 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
   request's CI run (task 6.3), the job `deploy` is shown as skipped and the three others pass.
   (As built: the YAML check printed the four jobs, the three needed and the condition. On
   `019732f`, `deploy` was skipped and `specs`, `build` and `pipeline` passed.)
-- [ ] 4.4 Added after Copilot's review of the pull request (design, decision 13; spec
+- [x] 4.4 Added after Copilot's review of the pull request (design, decision 13; spec
   `publishing`, "An older push never replaces a newer site"):
   - a workflow-level `concurrency` in `ci.yml`, with the group `ci-${{ github.ref }}` and
     `cancel-in-progress: false`, and a comment that says why;
@@ -133,6 +133,8 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
   Verify, before the push: `python3 -c "import yaml; w = yaml.safe_load(open('.github/workflows/ci.yml')); print(w['concurrency'], w['jobs']['deploy'].get('concurrency'))"`
   prints the group, `cancel-in-progress` false, and `None`. After the push, in the pull request's
   CI run, `specs`, `build` and `pipeline` pass and `deploy` is skipped.
+  (As built: the YAML check printed `{'group': 'ci-${{ github.ref }}', 'cancel-in-progress':
+  False} None`. On `b74215e`, `specs`, `build` and `pipeline` passed and `deploy` was skipped.)
 - [x] 4.3 Q switches on GitHub Pages: Settings → Pages → Build and deployment → Source: "GitHub
   Actions". Verify: Q confirms that the page shows the source "GitHub Actions", before the pull
   request is merged.
