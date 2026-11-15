@@ -207,3 +207,120 @@ test('pointing at a municipality without a result says why it has no figures', a
     'Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
   ]);
 });
+
+// The part of the map shown: the SVG's view box.
+async function viewOf(page: Page) {
+  const box = await page.locator('.map svg').getAttribute('viewBox');
+  const [x = NaN, y = NaN, width = NaN, height = NaN] = (box ?? '').split(' ').map(Number);
+  return { x, y, width, height };
+}
+
+test('"+" zooms in by 2 around the centre of the view', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  const whole = await viewOf(page);
+  expect([whole.x, whole.y]).toEqual([0, 0]);
+  await page.getByRole('button', { name: 'Vergrössern' }).click();
+  const zoomed = await viewOf(page);
+  expect(zoomed.width).toBeCloseTo(whole.width / 2, 6);
+  expect(zoomed.height).toBeCloseTo(whole.height / 2, 6);
+  expect(zoomed.x + zoomed.width / 2).toBeCloseTo(whole.width / 2, 6);
+  expect(zoomed.y + zoomed.height / 2).toBeCloseTo(whole.height / 2, 6);
+});
+
+test('the zoom stays between the whole of Switzerland and 16 times', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  const whole = await viewOf(page);
+  for (let i = 0; i < 5; i += 1) {
+    await page.getByRole('button', { name: 'Vergrössern' }).click();
+  }
+  expect((await viewOf(page)).width).toBeCloseTo(whole.width / 16, 6);
+  await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
+  await page.getByRole('button', { name: 'Verkleinern' }).click();
+  expect(await viewOf(page)).toEqual(whole);
+});
+
+// The point of the map at a point of the screen, and back.
+const toMap = (page: Page, point: { x: number; y: number }) =>
+  page.locator('.map svg').evaluate((svg, p) => {
+    const matrix = svg instanceof SVGSVGElement ? svg.getScreenCTM() : null;
+    if (matrix === null) throw new Error('the map is not on the screen');
+    const inMap = new DOMPoint(p.x, p.y).matrixTransform(matrix.inverse());
+    return { x: inMap.x, y: inMap.y };
+  }, point);
+const toScreen = (page: Page, point: { x: number; y: number }) =>
+  page.locator('.map svg').evaluate((svg, p) => {
+    const matrix = svg instanceof SVGSVGElement ? svg.getScreenCTM() : null;
+    if (matrix === null) throw new Error('the map is not on the screen');
+    const onScreen = new DOMPoint(p.x, p.y).matrixTransform(matrix);
+    return { x: onScreen.x, y: onScreen.y };
+  }, point);
+
+test('the wheel zooms in around the point under the pointer', async ({ page }) => {
+  await page.goto('votes/5960/');
+  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+  await page.mouse.move(zurich.x, zurich.y);
+  const inMap = await toMap(page, zurich);
+  const whole = await viewOf(page);
+  await page.mouse.wheel(0, -300);
+  await expect.poll(async () => (await viewOf(page)).width).toBeLessThan(whole.width);
+  const after = await toScreen(page, inMap);
+  expect(Math.abs(after.x - zurich.x)).toBeLessThanOrEqual(1);
+  expect(Math.abs(after.y - zurich.y)).toBeLessThanOrEqual(1);
+});
+
+// Drag the map from its centre by (dx, dy) pixels, in steps as a hand would.
+async function drag(page: Page, dx: number, dy: number) {
+  const box = await page.locator('.map svg').boundingBox();
+  if (box === null) throw new Error('the map is not on the screen');
+  const start = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x + dx, start.y + dy, { steps: 10 });
+  await page.mouse.up();
+  return box.width;
+}
+
+test('dragging moves the map with the pointer', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  for (let i = 0; i < 2; i += 1) {
+    await page.getByRole('button', { name: 'Vergrössern' }).click();
+  }
+  const before = await viewOf(page);
+  const pixelsWide = await drag(page, -100, 0);
+  const after = await viewOf(page);
+  // 100 pixels to the left: the area 100 pixels further east.
+  expect(after.x - before.x).toBeCloseTo((100 * before.width) / pixelsWide, 3);
+  expect(after.y).toBeCloseTo(before.y, 6);
+});
+
+test('dragging past the western edge stops at it', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: 'Vergrössern' }).click();
+  await drag(page, 2000, 0);
+  const view = await viewOf(page);
+  // The centre of the view is on the western edge of the rectangle around Switzerland, x = 0.
+  expect(view.x + view.width / 2).toBeCloseTo(0, 6);
+});
+
+test('a drag that ends on a municipality shows no details', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  await page.getByRole('button', { name: 'Vergrössern' }).click();
+  const box = await page.locator('.map svg').boundingBox();
+  if (box === null) throw new Error('the map is not on the screen');
+  await drag(page, -150, 0);
+  const end = { x: box.x + box.width / 2 - 150, y: box.y + box.height / 2 };
+  const under = await page.evaluate(
+    (p) => document.elementFromPoint(p.x, p.y)?.getAttribute('data-number') ?? null,
+    end,
+  );
+  expect(under).not.toBeNull();
+  await expect(details(page).locator('.name')).toHaveCount(0);
+});

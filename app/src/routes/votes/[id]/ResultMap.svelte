@@ -23,13 +23,23 @@
     type MapFigures,
   } from '../../../lib/result-map.ts';
   import { formatDate } from '../../../lib/format.ts';
-  import { MAP_HEADING, mapSource, swissAbroadNotOnTheMap } from '../../../lib/texts.ts';
+  import { moveBy, wholeView, zoomAround, type View } from '../../../lib/map-view.ts';
+  import {
+    MAP_HEADING,
+    WHOLE_SWITZERLAND,
+    ZOOM_IN,
+    ZOOM_OUT,
+    mapSource,
+    swissAbroadNotOnTheMap,
+  } from '../../../lib/texts.ts';
 
   // The map of a vote (spec result-map): its figures are written into the page when the site is
   // built; the shapes and the names are loaded in the browser.
   let { figures }: { figures: MapFigures } = $props();
 
   let sources = $state<MapSources | null>(null);
+  // The part of the map shown, as the SVG's view box; the whole of Switzerland at first.
+  let view = $state<View | null>(null);
 
   // The fill of each municipality by its number: its class, or the hatching without a result.
   const fills = $derived(
@@ -64,6 +74,79 @@
     return detailsOf(named.name, named.canton, counts.get(selected) ?? null);
   });
 
+  function showWholeSwitzerland(): void {
+    if (sources !== null) view = wholeView(sources.map);
+  }
+
+  /** Zoom by `factor` around the centre of the view. */
+  function zoom(factor: number): void {
+    if (sources === null || view === null) return;
+    const centre = { x: view.x + view.width / 2, y: view.y + view.height / 2 };
+    view = zoomAround(view, factor, centre, sources.map);
+  }
+
+  /**
+   * The wheel over the map zooms around the point under the pointer, a factor of 2 per 300
+   * pixels of the wheel, and the page does not scroll. The listener is not passive, so that it
+   * may keep the page from scrolling.
+   */
+  function wheelZoom(svg: SVGSVGElement): () => void {
+    const onWheel = (event: WheelEvent): void => {
+      const matrix = svg.getScreenCTM();
+      if (sources === null || view === null || matrix === null) return;
+      event.preventDefault();
+      const pixels =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE ? event.deltaY * 16 : event.deltaY;
+      const point = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+      view = zoomAround(view, 2 ** (-pixels / 300), point, sources.map);
+    };
+    svg.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      svg.removeEventListener('wheel', onWheel);
+    };
+  }
+
+  // A press on the map: where it began, the view then, and whether it has become a drag, after
+  // more than 4 pixels (design of add-result-map, decision 17).
+  let press: { x: number; y: number; view: View; moved: boolean } | null = null;
+  // After a drag, its release selects nothing, until the pointer moves from where it was let go.
+  let released: { x: number; y: number } | null = null;
+
+  function down(event: PointerEvent): void {
+    if (view === null || event.button !== 0) return;
+    press = { x: event.clientX, y: event.clientY, view, moved: false };
+  }
+
+  function drag(event: PointerEvent & { currentTarget: SVGSVGElement }): void {
+    if (press === null || sources === null) {
+      if (released !== null && (event.clientX !== released.x || event.clientY !== released.y)) {
+        released = null;
+      }
+      return;
+    }
+    const dx = event.clientX - press.x;
+    const dy = event.clientY - press.y;
+    if (!press.moved) {
+      if (Math.hypot(dx, dy) <= 4) return;
+      press.moved = true;
+      selected = null;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    const pixelsWide = event.currentTarget.getBoundingClientRect().width;
+    view = moveBy(press.view, dx, dy, pixelsWide, sources.map);
+  }
+
+  function up(event: PointerEvent): void {
+    if (press?.moved === true) released = { x: event.clientX, y: event.clientY };
+    press = null;
+  }
+
+  /** Pointing or clicking, but not as part of a drag. */
+  function pointUnlessDragged(event: Event): void {
+    if (press?.moved === true || released !== null) return;
+    point(event);
+  }
+
   /** The municipality under the pointer, or none over a lake or outside Switzerland. */
   function point(event: Event): void {
     const target = event.target;
@@ -72,7 +155,10 @@
   }
 
   onMount(() => {
-    void loadMap().then((loaded) => (sources = loaded));
+    void loadMap().then((loaded) => {
+      sources = loaded;
+      view = wholeView(loaded.map);
+    });
   });
 </script>
 
@@ -91,14 +177,38 @@
           </ul>
         {/if}
       </div>
+      <div class="zoom">
+        <button
+          type="button"
+          aria-label={ZOOM_IN}
+          onclick={() => {
+            zoom(2);
+          }}>+</button
+        >
+        <button
+          type="button"
+          aria-label={ZOOM_OUT}
+          onclick={() => {
+            zoom(0.5);
+          }}>−</button
+        >
+        <button type="button" onclick={showWholeSwitzerland}>{WHOLE_SWITZERLAND}</button>
+      </div>
       <!-- Pointing and clicking show a municipality's details; without a pointer the table of the
            cantons gives the figures, and reading a municipality's details without one is #10's
            (design of add-result-map, decision 20). -->
       <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
       <svg
-        viewBox="0 0 {map.width} {map.height}"
-        onpointerover={point}
-        onclick={point}
+        {@attach wheelZoom}
+        viewBox={view === null
+          ? undefined
+          : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}
+        onpointerover={pointUnlessDragged}
+        onclick={pointUnlessDragged}
+        onpointerdown={down}
+        onpointermove={drag}
+        onpointerup={up}
+        onpointercancel={() => (press = null)}
         onpointerleave={() => (selected = null)}
       >
         <defs>
@@ -168,6 +278,13 @@
     padding: 0 0.5rem;
     background: rgb(255 255 255 / 90%);
     pointer-events: none;
+  }
+  .zoom {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    gap: 0.25rem;
   }
   .details:empty {
     display: none;
