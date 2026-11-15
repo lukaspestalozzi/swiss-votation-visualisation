@@ -168,7 +168,7 @@ a result, the legend, pointing, the details without a result, the Swiss abroad, 
 the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
 `investigations/map-data.md`.
 
-- [ ] 2.1 In `app/src/lib/vote-data.ts`, add the type of `map.json`. Verify: `pnpm run check`
+- [x] 2.1 In `app/src/lib/vote-data.ts`, add the type of `map.json`. Verify: `pnpm run check`
   passes.
 - [ ] 2.2 New module `app/src/lib/result-map.ts`: the side and class of a municipality from its
   yes and no votes, compared in whole numbers. Write, one at a time:

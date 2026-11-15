@@ -65,3 +65,21 @@ export interface Municipalities {
   // The number of the entry of each canton's Swiss abroad, for the cantons that count them apart.
   readonly swissAbroad: Readonly<Record<string, number>>;
 }
+
+// map.json: the map's shapes as SVG path data, in whole metres from the top left corner of the
+// rectangle around Switzerland (spec municipalities; design of add-result-map, decision 14).
+export interface MapFile {
+  // The date of the list of municipalities the boundaries belong to.
+  readonly referenceDate: string;
+  // The year of the BFS ThemaKart set the lakes come from.
+  readonly lakesSet: number;
+  readonly width: number;
+  readonly height: number;
+  // Per municipality: [number, path], by number.
+  readonly municipalities: readonly (readonly [number, string])[];
+  // Per canton: [abbreviation, path], in the order of the constitution.
+  readonly cantons: readonly (readonly [string, string])[];
+  // The outer rings of Switzerland, drawn in the lakes' colour under the municipalities.
+  readonly outline: string;
+  readonly lakes: readonly string[];
+}
