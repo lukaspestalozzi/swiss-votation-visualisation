@@ -239,13 +239,21 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
 In `app/src/lib/map-view.ts`. Spec `result-map`: zoom, moving the map. Design: decisions 4 and
 15.
 
-- [ ] 3.1 The view box of the whole of Switzerland. A zoom by a factor around a point keeps that
+- [x] 3.1 The view box of the whole of Switzerland. A zoom by a factor around a point keeps that
   point in place, within 1× and 16×. Write three tests, one at a time:
   - a zoom in by 2 around the centre halves the width and the height;
   - a zoom around a point keeps that point;
   - five zooms in end at 16×, and a zoom out at 1× stays at 1×.
 
   Verify: the app has 55 passed.
+
+  (As built: 55, as planned.
+  - The first test failed for the missing module.
+  - The second passed when written: the zoom already kept any point. It failed against a mutant
+    that zooms around the view's centre.
+  - The third failed until the zoom was limited. It also checks that zooming back out to 1×
+    around another point shows the whole of Switzerland, not shifted; that case failed until a
+    zoom to the whole width gives the whole view.)
 - [ ] 3.2 A move by a distance on the screen, with the view's centre clamped to the rectangle
   around Switzerland. Write two tests, one at a time:
   - a move at 4× shifts the view by the distance;
