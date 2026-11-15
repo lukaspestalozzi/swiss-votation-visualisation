@@ -11,6 +11,7 @@ import {
   YES_VOTES,
   legendClass,
 } from './texts.ts';
+import type { VoteFile } from './vote-data.ts';
 
 export type Side = 'yes' | 'no';
 // The class of the share of the side with more votes: 1 from 50% to below 60%, 2 from 60%, 3
@@ -94,4 +95,53 @@ export function detailsOf(
       `${NO_VOTES}: ${formatCount(no)}`,
     ],
   };
+}
+
+// What a vote's page holds for its map, written when the site is built.
+export interface MapFigures {
+  // Per municipality of the map with an entry: [number, yes votes, no votes], by number.
+  readonly figures: readonly (readonly [number, number, number])[];
+  // The municipalities the vote's file names as without a result.
+  readonly withoutResult: readonly number[];
+  // The number of the vote's entries of Swiss abroad, which are not on the map.
+  readonly swissAbroad: number;
+}
+
+/**
+ * The figures of a vote for the map with the municipalities `onTheMap`; `swissAbroad` are the
+ * numbers of the entries of Swiss abroad.
+ */
+export function mapFiguresOf(
+  file: VoteFile,
+  onTheMap: readonly number[],
+  swissAbroad: readonly number[],
+): MapFigures {
+  const map = new Set(onTheMap);
+  const abroadNumbers = new Set(swissAbroad);
+  const figures: [number, number, number][] = [];
+  let abroad = 0;
+  for (const rows of Object.values(file.entries)) {
+    for (const [number, , , , yes, no] of rows) {
+      if (abroadNumbers.has(number)) {
+        abroad += 1;
+      } else if (map.has(number)) {
+        figures.push([number, yes, no]);
+      } else {
+        throw new Error(
+          `vote ${String(file.id)}: the entry ${String(number)} is no municipality of the map`,
+        );
+      }
+    }
+  }
+  figures.sort((a, b) => a[0] - b[0]);
+  const counted = new Set([...figures.map(([number]) => number), ...file.withoutResult]);
+  for (const number of onTheMap) {
+    if (!counted.has(number)) {
+      throw new Error(
+        `vote ${String(file.id)}: the municipality ${String(number)} of the map has no entry ` +
+          'and is not named as without a result',
+      );
+    }
+  }
+  return { figures, withoutResult: [...file.withoutResult], swissAbroad: abroad };
 }

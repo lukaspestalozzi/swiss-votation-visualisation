@@ -1,7 +1,8 @@
 // The map's logic (spec result-map). The municipal figures are those of
 // investigations/map-data.md, "Municipal figures".
 import { expect, test } from 'vitest';
-import { LEGEND, colourOf, colouringOf, detailsOf } from './result-map.ts';
+import { LEGEND, colourOf, colouringOf, detailsOf, mapFiguresOf } from './result-map.ts';
+import type { VoteFile } from './vote-data.ts';
 
 test('named municipalities of 2016-02-28: the side and the class', () => {
   expect(colouringOf(432, 550)).toEqual({ side: 'no', step: 1 }); // Aeugst am Albis, 56.0% no
@@ -78,4 +79,44 @@ test('a municipality without a result says why it has no figures', () => {
     name: 'Meienried (BE)',
     lines: ['Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.'],
   });
+});
+
+// A made-up vote: two municipalities with entries, Meienried without a result, and the Swiss
+// abroad of ZH.
+const FILE: VoteFile = {
+  id: 5960,
+  entries: {
+    ZH: [
+      [1, 1398, 999, 982, 432, 550],
+      [2, 8000, 5000, 4900, 2000, 2900],
+      [9010, 24121, 8699, 8535, 3596, 4939],
+    ],
+    BE: [],
+  },
+  withoutResult: [389],
+};
+const SWISS_ABROAD = [9010];
+
+test('the figures of a vote for the map, when they fit it', () => {
+  expect(mapFiguresOf(FILE, [1, 2, 389], SWISS_ABROAD)).toEqual({
+    figures: [
+      [1, 432, 550],
+      [2, 2000, 2900],
+    ],
+    withoutResult: [389],
+    swissAbroad: 1,
+  });
+});
+
+test('a municipality of the map without figures is an error that names the vote', () => {
+  expect(() => mapFiguresOf(FILE, [1, 2, 261, 389], SWISS_ABROAD)).toThrow(
+    /vote 5960: the municipality 261 of the map has no entry/,
+  );
+});
+
+test('an entry that is no municipality of the map is an error that names the vote', () => {
+  const file: VoteFile = { ...FILE, entries: { ...FILE.entries, BE: [[7999, 10, 8, 8, 4, 4]] } };
+  expect(() => mapFiguresOf(file, [1, 2, 389], SWISS_ABROAD)).toThrow(
+    /vote 5960: the entry 7999 is no municipality of the map/,
+  );
 });
