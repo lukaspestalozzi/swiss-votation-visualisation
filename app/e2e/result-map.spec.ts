@@ -100,6 +100,17 @@ test('the cantons and the lakes, on the outline of Switzerland in the lakes colo
   });
   expect(order).not.toContain(-1);
   expect(order).toEqual([...order].sort((a, b) => a - b));
+  // The lakes are whole: the Lago Maggiore reaches south of Switzerland's outline, by far more
+  // than a kilometre in the map's metres.
+  const beyond = await page.evaluate(() => {
+    const bottom = (element: Element) =>
+      element instanceof SVGGraphicsElement ? element.getBBox().y + element.getBBox().height : NaN;
+    const outline = document.querySelector('.outline');
+    if (outline === null) throw new Error('no outline');
+    const lakes = [...document.querySelectorAll('.lakes path')].map(bottom);
+    return Math.max(...lakes) - bottom(outline);
+  });
+  expect(beyond).toBeGreaterThan(1000);
 });
 
 test('the source of the map, with the dates of its data', async ({ page }) => {

@@ -455,6 +455,17 @@ seen to fail first:
 
 With them: 59 tests of the app, 41 browser tests, 97 of the pipeline.
 
+## Verification
+
+`/openspec-verify-change` on 2026-11-15 found no critical issue and two warnings, both fixed:
+
+- **The design said the first drawing of the map is measured and reported.** No test does
+  that; the design now says it is neither bounded nor measured.
+- **The scenario "Cantons and lakes on the map" names the Lago Maggiore reaching past the
+  border,** which the browser test did not check. It now checks that a lake reaches more than
+  1 km south of Switzerland's outline. It passed when written and failed against a mutant that
+  drew the lakes with the outline's shape.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`, which updates #6 in
