@@ -70,9 +70,13 @@ context: |
   - The interface and the vote titles are in German until #9 adds French and Italian; every text
     of the screen is in one module of the app (app/src/lib/texts.ts). The design of the archived
     change add-vote-list gives the reasons and the alternatives.
+  - The site is published on GitHub Pages at
+    https://lukaspestalozzi.github.io/swiss-votation-visualisation/, from CI, after every check of
+    a push to main passed, as the build the browser tests checked; it is built for that path. The
+    design of the archived change publish-site gives the reasons and the alternatives.
   - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
-    names it): how the map is drawn, the hosting target, and how the three interface languages
-    are handled (until then the interface is German, as above).
+    names it): how the map is drawn, and how the three interface languages are handled (until
+    then the interface is German, as above).
   - Found by the first investigation (investigations/data-sources.md): the public sources offer
     the results per municipality for every national vote since 2013, all on one list of
     municipalities, and the characteristics for matching years on other lists. Not found yet:
