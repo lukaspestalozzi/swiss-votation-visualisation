@@ -460,14 +460,14 @@ def boundaries(
     return _zip(_shapefile(stem, BOUNDARY_FIELDS[division], given))
 
 
-def themakart(lakes: bool = True) -> bytes:
-    """The ThemaKart set's ZIP, with its two layers of lakes, or without them."""
+def themakart(lakes: bool = True, empty: bool = False) -> bytes:
+    """The ThemaKart set's ZIP, with its two layers of lakes, or without them; `empty` keeps
+    the layers without a lake."""
     files: dict[str, bytes] = {"2026_GEOM_TK/DOKU/README.txt": b"made up"}
     if lakes:
         for layer, number, name, ring in LAKES:
-            layer_files = _shapefile(
-                layer, [("id", "N"), ("name", "C")], [([number, name], [ring])]
-            )
+            shapes: list[tuple[list[Any], list[Ring]]] = [] if empty else [([number, name], [ring])]
+            layer_files = _shapefile(layer, [("id", "N"), ("name", "C")], shapes)
             for file_name, data in layer_files.items():
                 files[f"2026_GEOM_TK/00_TOPO/K4_seenyyyymmdd/{file_name}"] = data
     return _zip(files)

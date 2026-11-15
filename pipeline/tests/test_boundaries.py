@@ -3,7 +3,13 @@ from typing import Any
 import made_up
 import pytest
 
-from pipeline.boundaries import Frame, read_cantons, read_municipalities, read_outline
+from pipeline.boundaries import (
+    Frame,
+    read_cantons,
+    read_lakes,
+    read_municipalities,
+    read_outline,
+)
 from pipeline.counts import SourceError
 
 # The made-up country's rectangle: x from 2,490,000, y up to 1,210,000.
@@ -76,3 +82,19 @@ def test_a_country_without_an_outline_stops_the_run() -> None:
     content = made_up.boundaries("Country", shapes=[])
     with pytest.raises(SourceError, match=r"country.zip: .*no outline"):
         read_outline(content, "country.zip")
+
+
+def test_the_lakes_of_both_layers_are_read_whole() -> None:
+    lakes = read_lakes(made_up.themakart(), FRAME, "themakart.zip")
+    # The first reaches past the country's eastern edge, at 280,000 m: it is kept whole.
+    assert lakes == [
+        "M275000 50000l0 -10000l10000 0l0 10000z",
+        "M210000 60000l0 -5000l5000 0l0 5000z",
+    ]
+
+
+def test_a_set_without_lakes_stops_the_run() -> None:
+    with pytest.raises(SourceError, match=r"themakart.zip: .*k4seenyyyymmdd11_ch2007Poly"):
+        read_lakes(made_up.themakart(lakes=False), FRAME, "themakart.zip")
+    with pytest.raises(SourceError, match=r"themakart.zip: .*no lakes"):
+        read_lakes(made_up.themakart(empty=True), FRAME, "themakart.zip")

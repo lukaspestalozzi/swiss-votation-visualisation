@@ -143,3 +143,19 @@ def read_cantons(content: bytes, frame: Frame, source: str) -> list[tuple[str, s
     if missing:
         raise SourceError(f"{source}: no border for the cantons {missing}")
     return [(abbreviation, paths[abbreviation]) for abbreviation in CANTONS]
+
+
+# The layers of the lakes in a ThemaKart set: more than 500 ha, and 195 to 499 ha.
+LAKE_LAYERS = ("k4seenyyyymmdd11_ch2007Poly", "k4seenyyyymmdd22_ch2007Poly")
+
+
+def read_lakes(content: bytes, frame: Frame, source: str) -> list[str]:
+    """The lakes of both layers of the ThemaKart set, whole, as the set lists them."""
+    lakes = [
+        _path(_rings(shape), frame)
+        for stem in LAKE_LAYERS
+        for _, shape in _shapes(_layer(content, source, stem), source)
+    ]
+    if not lakes:
+        raise SourceError(f"{source}: the set holds no lakes")
+    return lakes
