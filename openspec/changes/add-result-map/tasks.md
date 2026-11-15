@@ -76,13 +76,20 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   without a shape stops the run, naming the source; before, it failed with Python's own
   `ValueError`. Every later count of the pipeline's tests is one higher than planned. The path
   of a shape is built from its rings, so the outline's outer rings need no shape of their own.)
-- [ ] 1.5 The same module reads the lakes of a ThemaKart set: both layers, found by their file
+- [x] 1.5 The same module reads the lakes of a ThemaKart set: both layers, found by their file
   names (`k4seenyyyymmdd11_ch2007Poly`, `k4seenyyyymmdd22_ch2007Poly`), whole and rounded.
   Write two tests, one at a time:
   - the two made-up lakes are read, the first also outside the country;
   - a set without the lake layers stops the run, naming the set.
 
   Verify: pytest 90 passed.
+
+  (As built: 91 passed, one more for 1.4.
+  - The test of a set without the lake layers passed when written: the reader already stops on
+    a layer it cannot find. Against a mutant that skips a missing layer, it failed with "did not
+    raise".
+  - It also checks a set whose two layers hold no lake. That case first failed with "did not
+    raise", and the reader now stops on it too.)
 - [ ] 1.6 In `pipeline/src/pipeline/download.py`:
   - the address of the register's boundaries, by division (`Commune`, `Canton`, `Country`) and
     date, at K4, as a shapefile;
