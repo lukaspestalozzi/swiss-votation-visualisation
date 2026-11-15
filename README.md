@@ -4,12 +4,17 @@ Working title: Popular Vote Explorer. A web app that shows how Switzerland voted
 popular votes, municipality by municipality, and recalculates the result as if only
 municipalities of a certain kind had voted. It is a static site: everything runs in the browser.
 
+The site is at https://lukaspestalozzi.github.io/swiss-votation-visualisation/. CI publishes it
+from `main` after every push whose checks all pass, as the build its browser tests checked. It
+sets no cookie and loads nothing from other servers; GitHub, which hosts it, logs the IP
+addresses of visitors for security.
+
 Today it shows every vote and its result, without limits yet, in German:
 
 - the start page lists the national votes since 2013 by year, each with its date, title, kind
   and official result, marked where the Federal Chancellery adds a note or the result is not
   validated yet;
-- each vote has its page (`/votes/<id>`): the yes and no votes, the yes share and the turnout,
+- each vote has its page (`/votes/<id>/`): the yes and no votes, the yes share and the turnout,
   the majority of voters and the majority of cantons side by side, the outcome, and a table of
   the 26 cantons;
 - the results come from the data of every vote per municipality, made from public sources by
@@ -28,8 +33,8 @@ version and the packages the pipeline pins.
 
 ```sh
 pnpm install               # the dependencies
-pnpm run dev               # the app with live reload, at the address it prints
-pnpm run build             # the static site, written to app/build
+pnpm run dev               # the app with live reload, at http://localhost:5173/swiss-votation-visualisation/
+pnpm run build             # the static site, written to app/build/swiss-votation-visualisation
 ./scripts/verify-local.sh  # every check CI runs
 
 # After a vote day: download the sources, check them, and write the data files.
