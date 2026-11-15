@@ -84,8 +84,15 @@ context: |
     German, as above).
   - Found by the first investigation (investigations/data-sources.md): the public sources offer
     the results per municipality for every national vote since 2013, all on one list of
-    municipalities, and the characteristics for matching years on other lists. Not found yet:
-    sources of area, language and religion per municipality (#7).
+    municipalities, and the characteristics for matching years on other lists.
+  - The characteristics (decided in #7, investigations/characteristics.md): 21 per
+    municipality, counted by the pipeline from four BFS STAT-TAB tables (population, National
+    Council elections, farms, census of 2000) and swisstopo's swissBOUNDARIES3D, each table
+    brought onto the list of municipalities through the BFS register's correspondences, and
+    written to app/static/data/characteristics.json. A vote takes the figures of the last year
+    and the last election before its day. Languages per municipality exist only in the census of
+    2000; so does religion (STAT-TAB px-x-4003000000_122), a candidate for #13. The design of
+    the change add-characteristics gives the reasons and the alternatives.
 
   Modules (each is a directory at the root; calculation and app are packages of the workspace)
   - pipeline: offline. It turns the public sources into the data files the app loads and checks
