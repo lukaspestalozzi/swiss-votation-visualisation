@@ -65,6 +65,14 @@ jobs:
       - name: Browser tests
         run: pnpm run test:e2e
 
+      # The build the browser tests just checked, as the artifact the job `deploy` publishes
+      # (spec publishing). It runs on pull requests too, so that this step is exercised before a
+      # merge; only the job `deploy` is limited to pushes to main.
+      - name: Upload the tested site
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: app/build/swiss-votation-visualisation
+
   # The pipeline's checks, steps 8 to 11 of scripts/verify-local.sh. Independent of the other two
   # jobs. uv installs the Python of pipeline/.python-version and the packages of pipeline/uv.lock.
   pipeline:
@@ -89,3 +97,26 @@ jobs:
 
       - name: Unit tests of the pipeline
         run: uv run --directory pipeline --locked pytest
+
+  # Publishes the site on GitHub Pages (spec publishing): the build the job `build` uploaded after
+  # its browser tests, not a second build, and only for a push to main whose three jobs all
+  # passed. On a pull request this job shows as skipped.
+  deploy:
+    needs: [specs, build, pipeline]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    # Two quick merges publish one after the other; a running deployment is not cancelled.
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    steps:
+      - name: Publish the tested site
+        id: deployment
+        uses: actions/deploy-pages@v5
