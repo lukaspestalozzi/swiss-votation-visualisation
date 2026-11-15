@@ -90,13 +90,15 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
     raise".
   - It also checks a set whose two layers hold no lake. That case first failed with "did not
     raise", and the reader now stops on it too.)
-- [ ] 1.6 In `pipeline/src/pipeline/download.py`:
+- [x] 1.6 In `pipeline/src/pipeline/download.py`:
   - the address of the register's boundaries, by division (`Commune`, `Canton`, `Country`) and
     date, at K4, as a shapefile;
   - the address of the ThemaKart set 2026 (asset 36390072) and its year.
 
   Write one test: the addresses of 2026-01-01 are those of `investigations/map-data.md`.
   Verify: pytest 91 passed.
+
+  (As built: 92 passed, one more for 1.4.)
 - [ ] 1.7 In `pipeline/src/pipeline/write.py`, write `map.json` in the shape of design decision
   14: municipalities by number, cantons in the constitution's order, lakes as the set lists
   them. Write one test: the made-up map is written in that shape. The existing test of the same

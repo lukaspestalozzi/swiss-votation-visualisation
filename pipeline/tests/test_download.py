@@ -6,7 +6,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import pytest
 
 from pipeline.counts import SourceError
-from pipeline.download import Request, fetch_url
+from pipeline.download import BOUNDARIES, THEMAKART, THEMAKART_YEAR, Request, fetch_url
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -49,3 +49,13 @@ def test_a_server_that_cannot_be_reached_stops_and_is_named(
     with pytest.raises(SourceError, match=rf"^{address} cannot be reached: "):
         fetch_url(Request(address))
     assert attempts == [3, 6, 9, 12, 15, 18]
+
+
+def test_the_addresses_of_the_maps_sources() -> None:
+    # As read in investigations/map-data.md.
+    assert BOUNDARIES.format(division="Commune", date="01-01-2026") == (
+        "https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division=Commune"
+        "&resolution=K4&dissolve=true&date=01-01-2026&format=shp"
+    )
+    assert THEMAKART == "https://dam-api.bfs.admin.ch/hub/api/dam/assets/36390072/master"
+    assert THEMAKART_YEAR == 2026
