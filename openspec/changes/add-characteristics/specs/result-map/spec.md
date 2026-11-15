@@ -147,13 +147,20 @@ NOT load them again.
 
 ### Requirement: The map's performance budget
 
-Each frame the browser draws after a zoom step, a move of the map, or pointing at or clicking a
-municipality, with the panel showing its characteristics, SHALL take at most 16 ms of work on the
-page's main thread: the handling of the input and the drawing that follows, measured by the
-browser tests on the machine that runs them.
+Each frame the browser draws after a zoom step, a move of the map or pointing at a municipality
+SHALL take at most 16 ms of work on the page's main thread: the handling of the input and the
+drawing that follows, measured by the browser tests on the machine that runs them. Clicking a
+municipality, which fills the panel, and the inputs that follow it SHALL take at most 50 ms per
+frame, until a later change revisits this budget.
 
 #### Scenario: Zooming, moving and pointing
 
-- **WHEN** the browser tests zoom in four times, drag the map, and point at and click three
-  municipalities on `/votes/5960/` once the characteristics have loaded
+- **WHEN** the browser tests zoom in four times, drag the map, and point at three municipalities
+  on `/votes/5960/` once the characteristics have loaded
 - **THEN** no frame after these inputs took more than 16 ms of work on the main thread
+
+#### Scenario: Clicking municipalities
+
+- **WHEN** the browser tests click three municipalities on `/votes/5960/` once the
+  characteristics have loaded, each after showing the whole of Switzerland and pointing at it
+- **THEN** no frame after these inputs took more than 50 ms of work on the main thread

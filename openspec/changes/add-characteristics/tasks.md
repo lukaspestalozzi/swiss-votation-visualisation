@@ -316,26 +316,48 @@ and modified requirement. Design: decisions 13, 14 and 19.
   (As built: 54 passed. Both passed when written, the loader having come with 3.1 and the map's
   wiring with 3.2. Each failed against its mutant: a failure that left the panel loading, and a
   map that waited for both files.)
-- [ ] 3.6 Change two existing browser tests to the modified requirements:
+- [x] 3.6 Change two existing browser tests to the modified requirements, and add one:
   - "From one vote to another" counts `data/characteristics.json` once;
-  - the budget test points at and clicks three municipalities once the characteristics have
-    loaded.
+  - the budget test points at three municipalities once the characteristics have loaded;
+  - a new budget test clicks three municipalities, each after "Ganze Schweiz" and pointing at
+    it, with 50 ms per frame (Q, 2026-11-15, decision 20: with 16 ms, frames after a click
+    reached 17 to 21 ms in about one run of three).
 
   Verify:
-  - each changed test fails against a mutant (the file loaded twice; the panel updated in a
-    loop of 20 ms);
-  - 54 passed, and the budget test prints its frames.
-- [ ] 3.7 Look at `/votes/5960/` in the built site, in windows 1,280 and 800 pixels wide, with
+  - each test fails against a mutant (the file loaded twice; pointing slowed by 20 ms; the
+    panel's update slowed by 60 ms);
+  - 55 passed, and the budget tests print their frames.
+
+  (As built: 55 passed. With the plan's single budget test of 16 ms that also clicked, the
+  frames after a click reached 16.7 to 21.1 ms in 7 of 16 runs, never the click's own frame;
+  without clicks they stayed under 6 ms, and a window 2,000 pixels tall did not help, so
+  scrolling is not the cause. Q chose a relaxed budget for clicking (decision 20). The test of
+  16 ms points once the characteristics have loaded; the new test clicks, with 50 ms, and its
+  longest frame was 10.6 to 17.3 ms in three runs. Each test passed when written and failed
+  against its mutant: the file loaded on every page; pointing slowed by 20 ms; the panel's
+  update slowed by 60 ms. The two share a helper that reads and prints the frames.)
+- [x] 3.7 Look at `/votes/5960/` in the built site, in windows 1,280 and 800 pixels wide, with
   Zürich and Meienried selected. Verify: screenshots show the panel beside and below the map,
   and nothing overlaps.
 
+  (As built: screenshots of the built site, Zürich and Meienried clicked, at 1,280 and 800
+  pixels wide. At 1,280 the panel stands to the right of the map, its top at the map's; at 800
+  below it. Nothing overlaps: the script checked the boxes of the map and the panel in all
+  four. The long line of Die Mitte wraps with "keine Angabe" at 1,280 and fits at 800.
+  Meienried, 65 ha, is about one pixel at 800 pixels wide: a click on the whole of Switzerland
+  hit Safnern, its neighbour; zoomed in, it is clicked as it should be.)
+
 ## 4. Documentation and the whole
 
-- [ ] 4.1 Update `README.md` (what the site shows, the data files), `openspec/config.yaml` (the
+- [x] 4.1 Update `README.md` (what the site shows, the data files), `openspec/config.yaml` (the
   sources of area and language are found; religion per municipality exists in the census of
   2000, for #13) and `docs/roadmap.md` (the third investigation under "Investigations"). Verify:
   `openspec validate --all --strict` passes, and each file names the characteristics.
-- [ ] 4.2 Update `CLAUDE.md`: the status, the code map and "Where things are" for every file this
+
+  (As built: `README.md` describes the panel and its file; `openspec/config.yaml` records how
+  the characteristics are made, and the census's religion as a candidate for #13; the roadmap
+  lists the investigation. The validation passes.)
+- [x] 4.2 Update `CLAUDE.md`: the status, the code map and "Where things are" for every file this
   change adds:
   - `characteristics.py`, `test_characteristics.py`, `characteristics.ts`,
     `CharacteristicsPanel.svelte`;
@@ -344,8 +366,16 @@ and modified requirement. Design: decisions 13, 14 and 19.
 
   Verify: every file of `git diff --name-status main` with status A outside `openspec/` is named
   in `CLAUDE.md`, or lies in a directory its tables describe.
-- [ ] 4.3 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
-  calculation, 75 of the app, 54 browser tests and 124 of the pipeline.
+
+  (As built: each of the 10 added files is named, or in a directory the tables describe: the
+  investigation's three scripts under `characteristics/`, `test_characteristics.py` under
+  `pipeline/tests/test_*.py`. The status says that #7 is applied and not yet archived, and that
+  a look at performance follows it (Q); the archive updates it. The sizes of a run are 185 MB
+  and a quarter of an hour.)
+- [x] 4.3 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
+  calculation, 75 of the app, 55 browser tests and 124 of the pipeline.
+
+  (As built: 11 of 11 steps passed, with 41, 75, 55 and 124 tests.)
 
 ## Workflow follow-up
 
