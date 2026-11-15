@@ -208,7 +208,9 @@ None. The pages use SvelteKit, Svelte and the calculation, all in the workspace 
 ### Performance budget
 
 No computation in this change is triggered by the user: every result is calculated at build
-time. Budgets the browser tests or the build check:
+time. The budgets were measured by hand when the pages were built (tasks 6.1 and 6.2: at most
+15,082 bytes for a vote's page with its `__data.json`, 99,673 for the start page); the build
+time is read from the CI job (44 s for the whole `build` job on 2026-11-15). No test checks them:
 
 | What | Budget | Measured in the spike |
 |------|--------|-----------------------|

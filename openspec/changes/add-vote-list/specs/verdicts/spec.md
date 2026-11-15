@@ -21,7 +21,9 @@ says.
 
 The build SHALL write a page at `/votes/<id>` for every vote of the list of votes. The page SHALL
 show the vote's German title as its heading, its date, its kind and which majorities that kind
-needs: "Braucht das Volksmehr und das Ständemehr." or "Braucht nur das Volksmehr.".
+needs: "Braucht das Volksmehr und das Ständemehr." or "Braucht nur das Volksmehr.". A tie-break
+question, which the calculation does not judge, shows neither; its page says what the
+requirement "The tie-break question" asks for instead.
 
 #### Scenario: The page of a vote
 
