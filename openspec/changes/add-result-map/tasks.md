@@ -170,7 +170,7 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
 
 - [x] 2.1 In `app/src/lib/vote-data.ts`, add the type of `map.json`. Verify: `pnpm run check`
   passes.
-- [ ] 2.2 New module `app/src/lib/result-map.ts`: the side and class of a municipality from its
+- [x] 2.2 New module `app/src/lib/result-map.ts`: the side and class of a municipality from its
   yes and no votes, compared in whole numbers. Write, one at a time:
   - Aeugst am Albis is no, class 1; Zürich no, 2; Bern no, 3; Wachseldorn yes, 3;
   - the class boundaries: Flurlingen no, 2; Bettingen yes, 2; Romainmôtier-Envy yes, 4;
@@ -178,6 +178,10 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
   - as many yes as no: Hünenberg 2,111 : 2,111, and 0 : 0.
 
   Verify: `pnpm run test` gives 41 passed in the calculation and 41 in the app.
+
+  (As built: 41 and 41, as planned. The first test failed because the module did not exist. The
+  function was then written whole, so the other three passed when written. Each failed against
+  its mutant: `>` instead of `>=` at the class boundaries; no class 4; no tie.)
 - [ ] 2.3 The colour of each class and side, of a tie and of the hatching, and the legend's ten
   entries in order. Write two tests, one at a time: the colours of the spec, and the legend.
   Verify: the app has 43 passed.
