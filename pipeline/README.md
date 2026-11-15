@@ -61,6 +61,9 @@ the file, the vote and, where there is one, the entry.
 - **The vote-day files use different lists of municipalities.** The BFS moves its files to a
   new list after the mergers of a year, one file at a time. Wait until every file states the
   new reference date, then run the update again: every data file changes.
+- **A vote of the data files is missing from the sources.** The update never removes a vote;
+  a vote that the sources no longer give means an incomplete answer, usually the Federal
+  Chancellery's. Run the update again later, and look at `pipeline/downloads/chancellery.json`.
 - **A value the reader does not understand** (a missing count, a text where a number belongs,
   an unknown kind of vote, an unknown municipality). Look at the source file in
   `pipeline/downloads/`. The source has changed or is wrong; the reader is not to be loosened

@@ -520,3 +520,17 @@ SHALL give the procedure.
 - **GIVEN** sources in which one check of this capability fails
 - **WHEN** the update command runs
 - **THEN** it exits with a status other than zero, and every data file is as it was before
+
+### Requirement: No vote is lost
+
+An update SHALL NOT remove a vote from the data files. When a vote that the data files hold is
+not among the votes the sources give, the update SHALL stop with an error that names each such
+vote by its id and date, and SHALL leave every data file as it was.
+
+#### Scenario: The sources no longer give a vote
+
+- **GIVEN** data files that hold the vote with id 6850 of 2026-03-08, and an answer of the
+  Federal Chancellery without the vote day 2026-03-08
+- **WHEN** the update command runs
+- **THEN** it stops with an error that names 6850 (2026-03-08), and every data file is as it was
+  before
