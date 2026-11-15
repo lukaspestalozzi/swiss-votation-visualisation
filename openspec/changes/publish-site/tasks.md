@@ -100,14 +100,16 @@ In `app/e2e/vote-page.spec.ts` (spec `publishing`, "An address that names no pag
 In `.github/workflows/ci.yml` (spec `publishing`; design, decisions 4, 8 and 11). The CI run of
 the pull request checks these tasks (task 6.3); before that, nothing in them runs.
 
-- [ ] 4.1 In the job `build`, after the step "Browser tests", add a step that uploads
+- [x] 4.1 In the job `build`, after the step "Browser tests", add a step that uploads
   `app/build/swiss-votation-visualisation` with `actions/upload-pages-artifact@v5`. Its comment
   says that this is the build the browser tests checked, and that it runs on pull requests too,
   so the step is exercised before a merge. Verify, before the push:
   `python3 -c "import yaml; s = yaml.safe_load(open('.github/workflows/ci.yml'))['jobs']['build']['steps']; print([x['name'] for x in s][-2:])"`
   prints the step "Browser tests" followed by the new step. After the push, in the pull request's
   CI run (task 6.3), the job `build` passes and lists the artifact `github-pages`.
-- [ ] 4.2 Add the job `deploy`:
+  (As built: the YAML check printed `['Browser tests', 'Upload the tested site']`. On `019732f`
+  the job `build` passed and uploaded `github-pages`, 3,299,937 bytes compressed.)
+- [x] 4.2 Add the job `deploy`:
   - `needs: [specs, build, pipeline]`;
   - `if: github.event_name == 'push' && github.ref == 'refs/heads/main'`;
   - `permissions: { pages: write, id-token: write }`;
@@ -120,9 +122,12 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
   `python3 -c "import yaml; j = yaml.safe_load(open('.github/workflows/ci.yml'))['jobs']; print(list(j), j['deploy']['needs'], j['deploy']['if'])"`
   prints the four jobs, the three it needs and its condition. After the push, in the pull
   request's CI run (task 6.3), the job `deploy` is shown as skipped and the three others pass.
-- [ ] 4.3 Q switches on GitHub Pages: Settings → Pages → Build and deployment → Source: "GitHub
+  (As built: the YAML check printed the four jobs, the three needed and the condition. On
+  `019732f`, `deploy` was skipped and `specs`, `build` and `pipeline` passed.)
+- [x] 4.3 Q switches on GitHub Pages: Settings → Pages → Build and deployment → Source: "GitHub
   Actions". Verify: Q confirms that the page shows the source "GitHub Actions", before the pull
   request is merged.
+  (As built: Q confirmed on 2026-11-15 that Pages is switched on.)
 
 ## 5. The project context and the documents
 
@@ -178,13 +183,18 @@ the pull request checks these tasks (task 6.3); before that, nothing in them run
 - [x] 6.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`, with 41 unit tests in
   the calculation, 37 in the app, 14 browser tests and 81 in the pipeline.
   (As built: passed, with exactly these counts.)
-- [ ] 6.2 Map each scenario of the four delta specs to the test or check that covers it, in the
+- [x] 6.2 Map each scenario of the four delta specs to the test or check that covers it, in the
   pull request's description. The scenarios of `publishing` about CI are covered by the CI runs
   of the pull request and of `main` (design, Tests). Verify: the list has no scenario without a
   test or check.
-- [ ] 6.3 Push the branch and open the pull request. Verify: the CI run shows `specs`, `build`
+  (As built: the map is in the description of PR #8. Every scenario has a test or check; two
+  of `publishing` are covered by how GitHub Actions treats `needs` and failed steps, not
+  provoked, as the design's Tests say.)
+- [x] 6.3 Push the branch and open the pull request. Verify: the CI run shows `specs`, `build`
   and `pipeline` passed, `deploy` skipped, and the artifact `github-pages` in the run's
   artifacts.
+  (As built: the branch was pushed to the open PR #8. On `019732f`, `specs`, `build` and
+  `pipeline` passed, `deploy` was skipped, and the artifact `github-pages` was uploaded.)
 
 ## Workflow follow-up
 
