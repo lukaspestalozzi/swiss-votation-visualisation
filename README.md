@@ -17,9 +17,16 @@ Today it shows every vote and its result, without limits yet, in German:
 - each vote has its page (`/votes/<id>/`): the yes and no votes, the yes share and the turnout,
   the majority of voters and the majority of cantons side by side, the outcome, and a table of
   the 26 cantons;
+- the page also shows a map of the 2,110 municipalities. Each is coloured by the side with more
+  votes and how clearly it won, blue-green for yes and orange-red for no; the cantons and the
+  lakes are drawn on top. You can zoom and move it; pointing at a municipality shows its name,
+  its yes share and its votes. Its shapes come from the Federal Statistical Office
+  ("Kartengrundlage: © BFS": the register of municipalities and the ThemaKart set 2026), written
+  by the pipeline to `app/static/data/map.json`;
 - the results come from the data of every vote per municipality, made from public sources by
-  the pipeline (`pipeline/`) and committed in `app/static/data/`; they reproduce the official
-  result of each vote, apart from one difference of 200 no votes that the page names;
+  the pipeline (`pipeline/`) and committed in `app/static/data/` with the map's data; they
+  reproduce the official result of each vote, apart from one difference of 200 no votes that the
+  page names;
 - the calculation of a vote's result under the federal rules (`calculation/`), tested against
   the official results, works them out when the site is built.
 

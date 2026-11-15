@@ -412,7 +412,7 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
 
 ## 5. Documents and the whole
 
-- [ ] 5.1 Add the map and its source to `README.md`. Verify: it names the map, "Kartengrundlage:
+- [x] 5.1 Add the map and its source to `README.md`. Verify: it names the map, "Kartengrundlage:
   © BFS", and `data/map.json` among the data files.
 - [ ] 5.2 In `openspec/config.yaml`, move "how the map is drawn" from "Not decided" to the
   decided stack: SVG, own zoom code, the BFS's K4 boundaries, citing this change's design.
