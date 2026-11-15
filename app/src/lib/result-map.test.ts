@@ -1,7 +1,7 @@
 // The map's logic (spec result-map). The municipal figures are those of
 // investigations/map-data.md, "Municipal figures".
 import { expect, test } from 'vitest';
-import { colouringOf } from './result-map.ts';
+import { LEGEND, colourOf, colouringOf } from './result-map.ts';
 
 test('named municipalities of 2016-02-28: the side and the class', () => {
   expect(colouringOf(432, 550)).toEqual({ side: 'no', step: 1 }); // Aeugst am Albis, 56.0% no
@@ -24,4 +24,40 @@ test('the clearest classes, of 2024-03-03', () => {
 test('as many yes as no votes, also none of either, is a tie', () => {
   expect(colouringOf(2111, 2111)).toBe('tie'); // Hünenberg on 2016-02-28
   expect(colouringOf(0, 0)).toBe('tie');
+});
+
+test('the colours of the classes, from class 1 to class 4, and of a tie', () => {
+  const steps = [1, 2, 3, 4] as const;
+  expect(steps.map((step) => colourOf({ side: 'no', step }))).toEqual([
+    '#fbbea3',
+    '#e5946f',
+    '#c2673b',
+    '#934319',
+  ]);
+  expect(steps.map((step) => colourOf({ side: 'yes', step }))).toEqual([
+    '#92dfd0',
+    '#4bc1ad',
+    '#009c86',
+    '#007260',
+  ]);
+  expect(colourOf('tie')).toBe('#f0efec');
+  // Zürich, Bern and Wachseldorn on 2016-02-28.
+  expect(colourOf(colouringOf(46565, 99614))).toBe('#e5946f');
+  expect(colourOf(colouringOf(15928, 41756))).toBe('#c2673b');
+  expect(colourOf(colouringOf(95, 25))).toBe('#009c86');
+});
+
+test('the legend: the ten entries in order, each with its colour or the hatching', () => {
+  expect(LEGEND).toEqual([
+    { label: 'Nein: 80% und mehr', fill: '#934319' },
+    { label: 'Nein: 70–80%', fill: '#c2673b' },
+    { label: 'Nein: 60–70%', fill: '#e5946f' },
+    { label: 'Nein: 50–60%', fill: '#fbbea3' },
+    { label: 'Ja: 50–60%', fill: '#92dfd0' },
+    { label: 'Ja: 60–70%', fill: '#4bc1ad' },
+    { label: 'Ja: 70–80%', fill: '#009c86' },
+    { label: 'Ja: 80% und mehr', fill: '#007260' },
+    { label: 'Gleich viele Ja wie Nein', fill: '#f0efec' },
+    { label: 'Kein eigenes Ergebnis', fill: 'hatch' },
+  ]);
 });

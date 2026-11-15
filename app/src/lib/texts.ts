@@ -93,3 +93,9 @@ export const knownDifference = (
   `Das erwahrte Ergebnis zählt ${official} ${count === 'yes' ? 'Ja' : 'Nein'}-Stimmen ` +
   `(${reference}); die Zahlen der Gemeinden, aus denen hier gerechnet wird, ergeben ` +
   `${difference} ${more ? 'mehr' : 'weniger'}.`;
+
+// A vote's page: the map (spec result-map).
+export const legendClass = (yes: boolean, from: number): string =>
+  `${yes ? 'Ja' : 'Nein'}: ${from === 80 ? '80% und mehr' : `${String(from)}–${String(from + 10)}%`}`;
+export const LEGEND_TIE = 'Gleich viele Ja wie Nein';
+export const LEGEND_WITHOUT_RESULT = 'Kein eigenes Ergebnis';

@@ -182,9 +182,13 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
   (As built: 41 and 41, as planned. The first test failed because the module did not exist. The
   function was then written whole, so the other three passed when written. Each failed against
   its mutant: `>` instead of `>=` at the class boundaries; no class 4; no tie.)
-- [ ] 2.3 The colour of each class and side, of a tie and of the hatching, and the legend's ten
+- [x] 2.3 The colour of each class and side, of a tie and of the hatching, and the legend's ten
   entries in order. Write two tests, one at a time: the colours of the spec, and the legend.
   Verify: the app has 43 passed.
+
+  (As built: 43, as planned. Both tests failed first: `colourOf` was not a function, and the
+  legend was undefined. The colours of the lakes and the hatching are constants of
+  `result-map.ts` too; the legend's texts are in `texts.ts`.)
 - [ ] 2.4 The details of a municipality, with the texts in `app/src/lib/texts.ts`. Write three
   tests, one at a time:
   - Zürich: "Zürich (ZH)", "Ja-Anteil: 31.85%", "Ja-Stimmen: 46'565", "Nein-Stimmen: 99'614";
