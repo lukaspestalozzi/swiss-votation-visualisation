@@ -14,6 +14,16 @@ from pipeline.counts import SourceError
 FEED = "https://ogd-static.voteinfo-app.ch/v1/ogd/sd-t-17-02-{day}-eidgAbstimmung.json"
 # BFS: the register of municipalities on a date; date as dd-mm-yyyy.
 REGISTER = "https://www.agvchapp.bfs.admin.ch/api/communes/snapshot?date={date}"
+# BFS register: the K4 boundaries of a division (Commune, Canton, Country) on a date, as a ZIP
+# of a shapefile in LV95; date as dd-mm-yyyy.
+BOUNDARIES = (
+    "https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division={division}"
+    "&resolution=K4&dissolve=true&date={date}&format=shp"
+)
+# BFS: the ThemaKart set of 2026, map geometries for thematic maps; the map takes its lakes,
+# which are valid for all years (investigations/map-data.md).
+THEMAKART = "https://dam-api.bfs.admin.ch/hub/api/dam/assets/36390072/master"
+THEMAKART_YEAR = 2026
 # Federal Chancellery: the national results of the popular votes as linked data.
 SPARQL = "https://lindas.admin.ch/query"
 # The first day of the votes the data covers.
