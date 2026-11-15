@@ -52,19 +52,23 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 
 ## 3. Formatting and texts
 
-- [ ] 3.1 `app/src/lib/format.ts` and `format.test.ts` (spec `vote-list`, "How dates and numbers
+- [x] 3.1 `app/src/lib/format.ts` and `format.test.ts` (spec `vote-list`, "How dates and numbers
   are written"; design, decision 12). Tests, one after the other: a count ("1'609'152", and
   "0", "999", "1'000"); a share from two counts (1,609,152 of 3,273,376: "49.16%"; 1,098,341 of
   2,939,549: "37.36%"; 253,697 of 583,689: "43.46%"); a half away from zero (1 of 8: "12.50%";
   1 of 16,000: "0.01%"); cantonal votes ("16½", "6½", "10", "½"); a date ("2016-02-28":
   "28. Februar 2016"; "2026-03-08": "8. März 2026"). Verify: `pnpm --filter app run test`
-  reports 15 passed (10 before).
-- [ ] 3.2 `app/src/lib/texts.ts` (design, decision 13): every German text of the specs `vote-list`
+  reports 15 passed (10 before). (As built: the test of the rounding passed when written, as the share's
+  formula of the test before covered it; it was seen to fail against a mutant that truncates.)
+- [x] 3.2 `app/src/lib/texts.ts` (design, decision 13): every German text of the specs `vote-list`
   and `verdicts`, among them the six kinds, the two majorities needed, "Ja", "Nein", "nicht
   nötig", "Angenommen", "Abgelehnt", "angenommen", "abgelehnt", the marks, the sentences of the
   tie-break question, of a provisional result and of a known difference, "Quelle: ", "Hinweis
   der Bundeskanzlei" and "Alle Abstimmungen". Verify: `pnpm run check` and `pnpm run lint`
-  pass; every text in quotes in the two specs is in the module (`grep` each).
+  pass; every text in quotes in the two specs is in the module (`grep` each). (As built: checked
+  by evaluating the module against each quoted text, since a sentence spans two lines of the
+  module; the quoted texts it does not hold are figures, which `format.ts` writes, the data of a
+  vote, and the names of sections of the investigation.)
 
 ## 4. The list
 
