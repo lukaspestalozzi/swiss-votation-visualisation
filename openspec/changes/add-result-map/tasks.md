@@ -219,13 +219,20 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
   - no error for 7999.
 
   The lookups use sets, since the check runs for every vote when the site is built.)
-- [ ] 2.6 In `app/src/lib/vote-data.test.ts`, against the real data files:
+- [x] 2.6 In `app/src/lib/vote-data.test.ts`, against the real data files:
   - the map's municipalities are those of `municipalities.json`;
   - every judged vote's figures fit the map;
   - the number of entries of Swiss abroad is 12 for vote 5960 and 11 for 5670.
 
   Write three tests, one at a time; each passes when written, so each is seen to fail against a
   mutant of the function it calls. Verify: the app has 52 passed.
+
+  (As built: 52, as planned. Each test passed when written and failed against a mutant:
+  - the list test, against a map without the municipality 1. It calls no function of the app,
+    so its input was changed. A first attempt put the mark of the mutant in the middle of the
+    line, which commented out the assertion, and the test passed; the mutant was redone.
+  - the fit, against a check that ignores the numbers of the Swiss abroad;
+  - the count of the Swiss abroad, against one that counts each twice.)
 
 ## 3. The view: zoom and move
 

@@ -3,13 +3,16 @@
 // votes. The figures named here are those of investigations/data-sources.md.
 import { calculateResult, majoritiesNeeded, type Entry } from 'calculation';
 import { expect, test } from 'vitest';
+import mapData from '../../static/data/map.json';
 import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
-import type { Municipalities, Vote, VoteFile, Votes } from './vote-data.ts';
+import { mapFiguresOf } from './result-map.ts';
+import type { MapFile, Municipalities, Vote, VoteFile, Votes } from './vote-data.ts';
 
 const listing = votesFile as Votes;
 // A JSON import is typed from its content, with the [number, name] pairs as plain arrays.
 const list = municipalitiesFile as unknown as Municipalities;
+const map = mapData as unknown as MapFile;
 const files = import.meta.glob<VoteFile>('../../static/data/votes/*.json', {
   eager: true,
   import: 'default',
@@ -146,4 +149,33 @@ test('every municipality of the list is one entry or without a result, in every 
     expect(numbers).toHaveLength(2110);
     expect(fileOf.get(5960)?.withoutResult).toEqual([389, 408, 422, 535, 629, 868, 877]);
   }
+});
+
+test("the map's municipalities are those of the list", () => {
+  const listed = Object.values(list.municipalities).flatMap((rows) => rows.map(([n]) => n));
+  expect(map.referenceDate).toBe(list.referenceDate);
+  expect(map.municipalities.map(([number]) => number)).toEqual([...listed].sort((a, b) => a - b));
+});
+
+const onTheMap = map.municipalities.map(([number]) => number);
+const swissAbroad = Object.values(list.swissAbroad);
+
+test("every judged vote's figures fit the map", () => {
+  const judged = listing.votes.filter((vote) => vote.kind !== 'tie-break-question');
+  expect(judged.length).toBeGreaterThanOrEqual(124);
+  for (const vote of judged) {
+    const file = fileOf.get(vote.id);
+    if (file === undefined) throw new Error(`vote ${String(vote.id)} has no file`);
+    expect(() => mapFiguresOf(file, onTheMap, swissAbroad)).not.toThrow();
+  }
+});
+
+test('the entries of Swiss abroad: 12 in 2016, 11 in 2013', () => {
+  const abroadIn = (id: number): number => {
+    const file = fileOf.get(id);
+    if (file === undefined) throw new Error(`vote ${String(id)} has no file`);
+    return mapFiguresOf(file, onTheMap, swissAbroad).swissAbroad;
+  };
+  expect(abroadIn(5960)).toBe(12);
+  expect(abroadIn(5670)).toBe(11);
 });
