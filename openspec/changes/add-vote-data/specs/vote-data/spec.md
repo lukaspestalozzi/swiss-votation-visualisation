@@ -486,10 +486,11 @@ leave every data file unchanged, byte for byte.
 ### Requirement: Adding a vote day
 
 One command, run by hand, SHALL bring the data files up to date: it downloads the sources,
-runs every check of this capability and of the `municipalities` capability, and writes all data
-files. It thereby adds a new vote day and replaces a result once the vote is validated. When a
-source cannot be reached or a check fails, it SHALL say which, exit with a status other than
-zero, and leave every data file as it was. `pipeline/README.md` SHALL give the procedure.
+runs the pipeline's checks of this capability and of `municipalities`, and writes all data
+files, adding a new vote day and replacing a result once validated. When a source cannot be
+reached or a check fails, it SHALL say which, exit with a status other than zero, and leave
+every data file as it was. The calculation's check runs with the unit tests; `pipeline/README.md`
+SHALL give the procedure.
 
 #### Scenario: A new vote day
 
