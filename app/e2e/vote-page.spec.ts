@@ -14,7 +14,7 @@ function contrastOnWhite(colour: string): number {
 }
 
 test('the page of a vote: head, figures, verdicts, cantons and note', async ({ page }) => {
-  await page.goto('/votes/5960');
+  await page.goto('votes/5960/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
@@ -43,8 +43,22 @@ test('the page of a vote: head, figures, verdicts, cantons and note', async ({ p
   ).toBeVisible();
 });
 
+test("a vote's page without the final slash", async ({ page }) => {
+  const failures: string[] = [];
+  page.on('response', (response) => {
+    if (response.status() >= 400) failures.push(`${String(response.status())} ${response.url()}`);
+  });
+  page.on('requestfailed', (request) => failures.push(`failed ${request.url()}`));
+  await page.goto('votes/5960', { waitUntil: 'networkidle' });
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
+  );
+  // Its scripts and styles are found too, on a server that does not add the slash.
+  expect(failures).toEqual([]);
+});
+
 test('a majority that is not needed: its cantonal votes greyed out', async ({ page }) => {
-  await page.goto('/votes/6790');
+  await page.goto('votes/6790/');
   await expect(page.getByText('Braucht nur das Volksmehr.', { exact: true })).toBeVisible();
   await expect(page.locator('.verdict .word')).toHaveText(['Ja', 'nicht nötig']);
   const figures = page.locator('.verdict p:not(.word)');
@@ -59,7 +73,7 @@ test('a majority that is not needed: its cantonal votes greyed out', async ({ pa
 });
 
 test('the tie-break question: its figures, and no verdicts', async ({ page }) => {
-  await page.goto('/votes/6823');
+  await page.goto('votes/6823/');
   for (const line of [
     "Für die Initiative: 1'098'341 (37.36%)",
     "Für den Gegenentwurf: 1'841'208 (62.64%)",
@@ -78,7 +92,7 @@ test('the tie-break question: its figures, and no verdicts', async ({ page }) =>
 test('the calculated figures, with a note where they differ from the validated result', async ({
   page,
 }) => {
-  await page.goto('/votes/6650');
+  await page.goto('votes/6650/');
   await expect(page.locator('.figures dd').nth(1)).toHaveText("1'350'525");
   await expect(page.locator('.outcome')).toHaveText('Angenommen');
   await expect(
@@ -90,15 +104,16 @@ test('the calculated figures, with a note where they differ from the validated r
   ).toBeVisible();
 });
 
-test("the vote's entries stay out of the browser", async ({ page }) => {
+test("the vote's entries stay out of the browser", async ({ page, baseURL }) => {
   const paths: string[] = [];
   page.on('request', (request) => paths.push(new URL(request.url()).pathname));
-  await page.goto('/votes/5960', { waitUntil: 'networkidle' });
-  expect(paths).toContain('/votes/5960');
-  expect(paths.filter((path) => path.startsWith('/data/votes/'))).toEqual([]);
+  await page.goto('votes/5960/', { waitUntil: 'networkidle' });
+  expect(paths).toContain(new URL('votes/5960/', baseURL).pathname);
+  const entries = new URL('data/votes/', baseURL).pathname;
+  expect(paths.filter((path) => path.startsWith(entries))).toEqual([]);
 });
 
-test("a vote's page requests nothing from other servers", async ({ page }) => {
+test("a vote's page requests nothing from other servers", async ({ page, baseURL }) => {
   const origins = new Set<string>();
   const paths: string[] = [];
   page.on('request', (request) => {
@@ -106,11 +121,17 @@ test("a vote's page requests nothing from other servers", async ({ page }) => {
     origins.add(url.origin);
     paths.push(url.pathname);
   });
-  await page.goto('/votes/5960', { waitUntil: 'networkidle' });
+  await page.goto('votes/5960/', { waitUntil: 'networkidle' });
   await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
-  await expect(page).toHaveURL('/');
+  await expect(page).toHaveURL('./');
   await page.waitForLoadState('networkidle');
   // Back on the start page, the browser has asked for its data.
-  expect(paths).toContain('/__data.json');
+  expect(paths).toContain(new URL('__data.json', baseURL).pathname);
   expect([...origins]).toEqual([new URL(page.url()).origin]);
+});
+
+test('an address that names no page', async ({ page }) => {
+  // 9999 is the id of no vote; the server's own "not found" answers (spec publishing).
+  const response = await page.goto('votes/9999/');
+  expect(response?.status()).toBe(404);
 });
