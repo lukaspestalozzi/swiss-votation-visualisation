@@ -384,8 +384,8 @@ def municipality_ring(number: int) -> Ring:
     """A square of 1 km per made-up municipality, in a row; the first with fractions."""
     i = list(MUNICIPALITIES).index(number)
     if i == 0:
-        return [[2_600_000.4, 1_200_000.6], [2_600_000.4, 1_201_000.5], [2_601_000.5, 1_201_000.5],
-                [2_601_000.5, 1_200_000.6], [2_600_000.4, 1_200_000.6]]  # fmt: skip
+        return [[2_600_000.4, 1_200_000.6], [2_600_000.4, 1_201_000.4], [2_601_000.6, 1_201_000.4],
+                [2_601_000.6, 1_200_000.6], [2_600_000.4, 1_200_000.6]]  # fmt: skip
     return _square(2_600_000 + 1_000 * i, 1_200_000, 1_000)
 
 
