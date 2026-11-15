@@ -23,7 +23,7 @@ All commands run from the repository root, on a branch started from an updated `
 In `pipeline/`. Specs: `municipalities` (the boundaries, the cantons and the outline, the lakes)
 and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 and 14.
 
-- [ ] 1.1 Add `pyshp[stubs]==3.1.6` to the pipeline's dependencies and run
+- [x] 1.1 Add `pyshp[stubs]==3.1.6` to the pipeline's dependencies and run
   `uv lock --directory pipeline`. Verify:
   - `uv run --directory pipeline --locked python -c "import shapefile; print(shapefile.__version__)"`
     prints `3.1.6`;
