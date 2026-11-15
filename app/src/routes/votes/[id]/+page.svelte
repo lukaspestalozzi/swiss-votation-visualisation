@@ -133,7 +133,8 @@
     font-weight: bold;
   }
   .greyed {
-    color: GrayText;
+    /* The lightest grey with WCAG's 4.5:1 on white (4.54:1); GrayText gives only 3.95:1. */
+    color: #767676;
   }
   td,
   th {

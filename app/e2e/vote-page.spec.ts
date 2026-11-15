@@ -2,6 +2,17 @@
 // investigations/data-sources.md.
 import { expect, test } from '@playwright/test';
 
+// The contrast of a colour "rgb(r, g, b)" on the white page (WCAG 2.1, relative luminance).
+function contrastOnWhite(colour: string): number {
+  const channels = (colour.match(/\d+/g) ?? []).slice(0, 3).map((value) => {
+    const c = Number(value) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  expect(channels).toHaveLength(3);
+  const [r = 0, g = 0, b = 0] = channels;
+  return 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05);
+}
+
 test('the page of a vote: head, figures, verdicts, cantons and note', async ({ page }) => {
   await page.goto('/votes/5960');
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
@@ -42,6 +53,8 @@ test('a majority that is not needed: its cantonal votes greyed out', async ({ pa
   const colour = (index: number) =>
     figures.nth(index).evaluate((element) => getComputedStyle(element).color);
   expect(await colour(1)).not.toBe(await colour(0));
+  // Greyed, but still readable: WCAG's minimum for text of normal size.
+  expect(contrastOnWhite(await colour(1))).toBeGreaterThanOrEqual(4.5);
   await expect(page.locator('.outcome')).toHaveText('Angenommen');
 });
 

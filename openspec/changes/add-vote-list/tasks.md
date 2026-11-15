@@ -223,4 +223,7 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   requirement "A page for every vote" now says that a tie-break question shows neither sentence
   of the majorities, as its own scenario already did; the design says that the budgets were
   measured by hand; and the month names moved from `format.ts` to `texts.ts`. Its suggestion, a
-  test that an optional referendum's page shows the table, was not taken.)
+  test that an optional referendum's page shows the table, was not taken. A later review found
+  that `GrayText`, rgb(128, 128, 128), has 3.95:1 contrast on white, below WCAG's 4.5:1 for text
+  of this size; the greyed figures are `#767676` (4.54:1) now, and the browser test of 6790
+  checks the contrast, seen to fail at 3.95 with `GrayText`.)
