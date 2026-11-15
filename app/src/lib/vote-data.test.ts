@@ -202,3 +202,16 @@ test('the characteristics are those of the municipalities of the list', () => {
   ];
   for (const counts of sized) expect(counts).toHaveLength(listed.length);
 });
+
+test('the characteristics hold every year from the one before the first vote day', () => {
+  const characteristics = characteristicsFile as unknown as CharacteristicsFile;
+  // The first vote day is 2013-03-03: the population and the cattle from the end of 2012, the
+  // elections from the last before it, 2011-10-23; a later update only adds years.
+  for (const years of [characteristics.population.years, characteristics.cattle.years]) {
+    expect(years[0]).toBe(2012);
+    expect(years).toEqual(years.map((_, i) => 2012 + i));
+  }
+  const elections = characteristics.elections.map((election) => election.year);
+  expect(elections.slice(0, 4)).toEqual([2011, 2015, 2019, 2023]);
+  expect(characteristics.elections[0]?.day).toBe('2011-10-23');
+});

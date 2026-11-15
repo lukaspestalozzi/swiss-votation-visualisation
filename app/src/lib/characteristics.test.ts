@@ -158,3 +158,19 @@ test('a municipality without an election result has no party values: Meienried',
   expect(values[0]).toEqual({ part: 52, whole: 1 });
   expect(values.slice(8, 15)).toEqual(Array(7).fill(null));
 });
+
+test('each definition gives the year of its figures', () => {
+  const applying = applyingTo(REAL, '2016-02-28'); // 5960
+  expect(DEFINITIONS.map((definition) => definition.year(applying))).toEqual([
+    ...Array<number>(8).fill(2015), // the population at the end of 2015
+    ...Array<number>(7).fill(2015), // the election of 2015
+    ...Array<number>(4).fill(2000), // the census
+    2026, // swisstopo's areas
+    2015, // the cattle
+  ]);
+});
+
+test('a party without a list counts no votes: Zürich in 2023, Die Mitte its own', () => {
+  const mitte = valuesOf(261, '2024-03-03')[9]; // the election of 2023
+  expect(mitte).toEqual({ part: 265215, whole: 4292333 });
+});

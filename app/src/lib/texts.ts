@@ -144,7 +144,8 @@ export const PANEL_FAILED = 'Die Merkmale können nicht geladen werden.';
 export const NO_FIGURE = 'keine Angabe';
 export const populationHeading = (year: number): string => `Bevölkerung Ende ${String(year)}`;
 export const electionHeading = (year: number): string => `Nationalratswahl ${String(year)}`;
-export const LANGUAGES_HEADING = 'Hauptsprache, Volkszählung 2000';
+export const languagesHeading = (year: number): string =>
+  `Hauptsprache, Volkszählung ${String(year)}`;
 export const LAND_HEADING = 'Fläche und Landwirtschaft';
 export const ofYear = (name: string, year: number): string => `${name} (${String(year)})`;
 export const characteristic = (name: string, value: string): string => `${name}: ${value}`;

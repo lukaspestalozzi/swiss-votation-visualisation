@@ -56,12 +56,12 @@ CORRESPONDENCES = (
     "https://www.agvchapp.bfs.admin.ch/api/communes/correspondances"
     "?startPeriod={start}&endPeriod={end}"
 )
-# swisstopo: swissBOUNDARIES3D of 2026-01, whose areas are those of the list of 2026-01-01.
+# swisstopo: swissBOUNDARIES3D of 2026-01. Its areas must be those of the votes' list; the update
+# stops when they are not (a newer release is taken by changing the address).
 SWISSBOUNDARIES = (
     "https://data.geo.admin.ch/ch.swisstopo.swissboundaries3d/swissboundaries3d_2026-01/"
     "swissboundaries3d_2026-01_2056_5728.shp.zip"
 )
-SWISSBOUNDARIES_DATE = "2026-01-01"
 
 # One row per national result since SINCE, with the BFS's id. The Chancellery writes "" for a
 # figure it does not give yet; the reader treats that as none. Each figure has an OPTIONAL of its
