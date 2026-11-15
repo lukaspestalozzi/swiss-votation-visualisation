@@ -385,12 +385,17 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   (As built: 37, as planned. The test of loading once passed when written, since the loader of
   4.1 lives in the component's module. It failed against a mutant that made a loader per map.
   The test of a blocked file failed first and passes since the failure shows its message.)
-- [ ] 4.7 The budget (design, decision 10). A browser test adds the measuring script before the
+- [x] 4.7 The budget (design, decision 10). A browser test adds the measuring script before the
   page loads, zooms in four times, drags, points at three municipalities, prints each frame's
   work, and fails above 16 ms. Verify:
   - the browser tests give 38 passed, and the printed frames are below 16 ms;
   - against a temporary mutant that spins 20 ms in the wheel handler, the test fails and names
     the frame.
+
+  (As built: 38, as planned. The test zooms with the wheel four times, drags, and points at
+  Zürich, Bern and Genève.
+  - It measured 56 frames, the longest 5.5 ms, a wheel step; pointing took up to about 4 ms.
+  - Against the mutant the four wheel frames took 23 to 26 ms, and the failure listed them.)
 - [ ] 4.8 The map's label for assistive technology: `role="img"` and a label that names the vote
   and points to the table of the cantons. Verify:
   - a browser test of 4.3 is extended to find the map by its role and label;

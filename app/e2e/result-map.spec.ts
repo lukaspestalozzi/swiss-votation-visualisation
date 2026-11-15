@@ -356,3 +356,65 @@ test('a map that cannot be loaded: a message, and the rest of the page', async (
   await expect(page.locator('.verdict .word')).toHaveText(['Nein', 'Ja']);
   await expect(page.locator('tbody tr')).toHaveCount(26);
 });
+
+// The work of each frame after an input, on the page's main thread (design of add-result-map,
+// decision 10): from a listener on `window` that runs before the app's handlers to one that runs
+// after them, plus the frame itself, from an animation frame asked for before the app's own to a
+// task that runs once the frame is drawn.
+const MEASURE_FRAMES = `
+  window.__frames = [];
+  const started = new WeakMap();
+  for (const type of ['wheel', 'pointermove', 'pointerover', 'click']) {
+    window.addEventListener(type, (event) => {
+      const entry = { type, start: performance.now(), handled: 0 };
+      started.set(event, entry);
+      requestAnimationFrame(() => {
+        const frame = performance.now();
+        setTimeout(() => {
+          const handlers = (entry.handled || frame) - entry.start;
+          window.__frames.push({ type, work: Math.max(0, handlers) + (performance.now() - frame) });
+        });
+      });
+    }, { capture: true, passive: true });
+    window.addEventListener(type, (event) => {
+      const entry = started.get(event);
+      if (entry) entry.handled = performance.now();
+    }, { passive: true });
+  }
+`;
+
+test('the budget: no frame after zooming, moving or pointing takes more than 16 ms', async ({
+  page,
+}) => {
+  await page.addInitScript(MEASURE_FRAMES);
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await page.locator('.map svg').scrollIntoViewIfNeeded();
+  const box = await page.locator('.map svg').boundingBox();
+  if (box === null) throw new Error('the map is not on the screen');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.evaluate(() => {
+    (window as unknown as { __frames: unknown[] }).__frames = [];
+  });
+  for (let i = 0; i < 4; i += 1) {
+    await page.mouse.wheel(0, -300);
+    await page.waitForTimeout(50);
+  }
+  await drag(page, -120, 40);
+  for (const number of [261, 351, 6621]) {
+    await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
+    const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
+    await page.mouse.move(point.x, point.y, { steps: 5 });
+  }
+  await page.waitForTimeout(100);
+  const frames = await page.evaluate(
+    () => (window as unknown as { __frames: { type: string; work: number }[] }).__frames,
+  );
+  console.log(
+    `frames: ${String(frames.length)}, longest ${Math.max(...frames.map((f) => f.work)).toFixed(1)} ms;`,
+    frames.map((f) => `${f.type} ${f.work.toFixed(1)}`).join(', '),
+  );
+  expect(frames.filter((f) => f.type === 'wheel')).toHaveLength(4);
+  expect(frames.length).toBeGreaterThan(10);
+  expect(frames.filter((f) => f.work > 16)).toEqual([]);
+});
