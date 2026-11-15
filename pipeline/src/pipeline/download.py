@@ -20,7 +20,8 @@ SPARQL = "https://lindas.admin.ch/query"
 SINCE = "2013-01-01"
 
 # One row per national result since SINCE, with the BFS's id. The Chancellery writes "" for a
-# figure it does not give yet; the reader treats that as none.
+# figure it does not give yet; the reader treats that as none. Each figure has an OPTIONAL of its
+# own, so that a result given on one side only reaches the reader, which refuses it.
 QUERY = string.Template("""
 PREFIX cube: <https://cube.link/>
 PREFIX schema: <http://schema.org/>
@@ -32,8 +33,10 @@ SELECT ?date ?number ?id ?result ?yes ?no ?cy ?cn
        vote:id ?id ; vote:ergebnis ?result .
   OPTIONAL { ?obs vote:region ?region . }
   FILTER(!BOUND(?region) || ?region = <https://ld.admin.ch/country/CHE>)
-  OPTIONAL { ?obs vote:ja ?yes ; vote:nein ?no . }
-  OPTIONAL { ?obs vote:standesstimmenJa ?cy ; vote:standesstimmenNein ?cn . }
+  OPTIONAL { ?obs vote:ja ?yes . }
+  OPTIONAL { ?obs vote:nein ?no . }
+  OPTIONAL { ?obs vote:standesstimmenJa ?cy . }
+  OPTIONAL { ?obs vote:standesstimmenNein ?cn . }
   OPTIONAL { ?obs vote:quelle ?source .
     OPTIONAL { ?source schema:name ?srcde . FILTER(LANG(?srcde) = "de") }
     OPTIONAL { ?source schema:name ?srcfr . FILTER(LANG(?srcfr) = "fr") }
