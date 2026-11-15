@@ -19,6 +19,7 @@
     LEGEND,
     colourOf,
     colouringOf,
+    detailsOf,
     type MapFigures,
   } from '../../../lib/result-map.ts';
   import { formatDate } from '../../../lib/format.ts';
@@ -28,7 +29,7 @@
   // built; the shapes and the names are loaded in the browser.
   let { figures }: { figures: MapFigures } = $props();
 
-  let sources: MapSources | null = $state(null);
+  let sources = $state<MapSources | null>(null);
 
   // The fill of each municipality by its number: its class, or the hatching without a result.
   const fills = $derived(
@@ -41,6 +42,35 @@
     ]),
   );
 
+  // The name and the canton of each municipality, by its number.
+  const names = $derived(
+    new Map(
+      sources === null
+        ? []
+        : Object.entries(sources.municipalities.municipalities).flatMap(([canton, rows]) =>
+            rows.map(([number, name]) => [number, { name, canton }] as const),
+          ),
+    ),
+  );
+  const counts = $derived(
+    new Map(figures.figures.map(([number, yes, no]) => [number, [yes, no] as const])),
+  );
+
+  // The municipality pointed at, or clicked or tapped.
+  let selected = $state<number | null>(null);
+  const details = $derived.by(() => {
+    const named = selected === null ? undefined : names.get(selected);
+    if (selected === null || named === undefined) return null;
+    return detailsOf(named.name, named.canton, counts.get(selected) ?? null);
+  });
+
+  /** The municipality under the pointer, or none over a lake or outside Switzerland. */
+  function point(event: Event): void {
+    const target = event.target;
+    const number = target instanceof SVGPathElement ? target.dataset.number : undefined;
+    selected = number === undefined ? null : Number(number);
+  }
+
   onMount(() => {
     void loadMap().then((loaded) => (sources = loaded));
   });
@@ -50,38 +80,59 @@
   <h2>{MAP_HEADING}</h2>
   {#if sources !== null}
     {@const map = sources.map}
-    <svg viewBox="0 0 {map.width} {map.height}">
-      <defs>
-        <!-- In metres of the map: a line every 1.5 km, a third of it wide. -->
-        <pattern
-          id="hatch"
-          width="1500"
-          height="1500"
-          patternUnits="userSpaceOnUse"
-          patternTransform="rotate(45)"
-        >
-          <rect width="1500" height="1500" fill={HATCH_BACKGROUND} />
-          <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
-        </pattern>
-      </defs>
-      <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
-      <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
-      <g class="municipalities">
-        {#each map.municipalities as [number, path] (number)}
-          <path d={path} data-number={number} fill={fills.get(number)} />
-        {/each}
-      </g>
-      <g class="lakes">
-        {#each map.lakes as path, i (i)}
-          <path d={path} fill={LAKE_COLOUR} />
-        {/each}
-      </g>
-      <g class="cantons">
-        {#each map.cantons as [canton, path] (canton)}
-          <path d={path} data-canton={canton} />
-        {/each}
-      </g>
-    </svg>
+    <div class="frame">
+      <div class="details" aria-live="polite">
+        {#if details !== null}
+          <p class="name">{details.name}</p>
+          <ul>
+            {#each details.lines as line (line)}
+              <li>{line}</li>
+            {/each}
+          </ul>
+        {/if}
+      </div>
+      <!-- Pointing and clicking show a municipality's details; without a pointer the table of the
+           cantons gives the figures, and reading a municipality's details without one is #10's
+           (design of add-result-map, decision 20). -->
+      <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+      <svg
+        viewBox="0 0 {map.width} {map.height}"
+        onpointerover={point}
+        onclick={point}
+        onpointerleave={() => (selected = null)}
+      >
+        <defs>
+          <!-- In metres of the map: a line every 1.5 km, a third of it wide. -->
+          <pattern
+            id="hatch"
+            width="1500"
+            height="1500"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            <rect width="1500" height="1500" fill={HATCH_BACKGROUND} />
+            <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
+          </pattern>
+        </defs>
+        <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
+        <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
+        <g class="municipalities">
+          {#each map.municipalities as [number, path] (number)}
+            <path d={path} data-number={number} fill={fills.get(number)} />
+          {/each}
+        </g>
+        <g class="lakes">
+          {#each map.lakes as path, i (i)}
+            <path d={path} fill={LAKE_COLOUR} />
+          {/each}
+        </g>
+        <g class="cantons">
+          {#each map.cantons as [canton, path] (canton)}
+            <path d={path} data-canton={canton} />
+          {/each}
+        </g>
+      </svg>
+    </div>
     <ul class="legend">
       {#each LEGEND as entry (entry.label)}
         <li>
@@ -106,6 +157,30 @@
 </section>
 
 <style>
+  .frame {
+    position: relative;
+  }
+  /* The details of the municipality pointed at, at the top left: nothing moves with the mouse. */
+  .details {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 0.5rem;
+    background: rgb(255 255 255 / 90%);
+    pointer-events: none;
+  }
+  .details:empty {
+    display: none;
+  }
+  .details ul {
+    margin: 0 0 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+  .name {
+    margin: 0.5rem 0 0;
+    font-weight: bold;
+  }
   /* Borders keep their width on the screen at every zoom. */
   .municipalities path {
     stroke: #fff;
