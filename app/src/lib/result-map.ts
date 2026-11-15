@@ -1,6 +1,7 @@
 // What the map of a vote shows (spec result-map): the colour of each municipality from its
 // yes and no votes, the legend, and the details of a municipality. The design of the change
 // add-result-map gives the reasons (decisions 5, 6, 8 and 12).
+import { LEGEND_TIE, LEGEND_WITHOUT_RESULT, legendClass } from './texts.ts';
 
 export type Side = 'yes' | 'no';
 // The class of the share of the side with more votes: 1 from 50% to below 60%, 2 from 60%, 3
@@ -17,3 +18,43 @@ export function colouringOf(yes: number, no: number): Colouring {
     10 * won >= 8 * total ? 4 : 10 * won >= 7 * total ? 3 : 10 * won >= 6 * total ? 2 : 1;
   return { side: yes > no ? 'yes' : 'no', step };
 }
+
+// The colours of the classes, from class 1 to class 4: blue-green for yes, orange-red for no.
+// investigations/map-data.md measures how far apart they are.
+const COLOURS: Readonly<Record<Side, readonly [string, string, string, string]>> = {
+  no: ['#fbbea3', '#e5946f', '#c2673b', '#934319'],
+  yes: ['#92dfd0', '#4bc1ad', '#009c86', '#007260'],
+};
+export const TIE_COLOUR = '#f0efec';
+export const LAKE_COLOUR = '#9fb8e8';
+// A municipality without a result: grey diagonal lines on white.
+export const HATCH_LINE = '#999999';
+export const HATCH_BACKGROUND = '#ffffff';
+
+/** The fill of a municipality with an entry. */
+export function colourOf(colouring: Colouring): string {
+  return colouring === 'tie' ? TIE_COLOUR : COLOURS[colouring.side][colouring.step - 1];
+}
+
+// An entry of the legend: its text, and its colour or the hatching.
+export interface LegendEntry {
+  readonly label: string;
+  readonly fill: string;
+}
+
+const STEPS = [1, 2, 3, 4] as const;
+const from = (step: Step): number => 40 + 10 * step;
+
+/** From the clearest no to the clearest yes, then a tie and the hatching. */
+export const LEGEND: readonly LegendEntry[] = [
+  ...[...STEPS].reverse().map((step) => ({
+    label: legendClass(false, from(step)),
+    fill: colourOf({ side: 'no', step }),
+  })),
+  ...STEPS.map((step) => ({
+    label: legendClass(true, from(step)),
+    fill: colourOf({ side: 'yes', step }),
+  })),
+  { label: LEGEND_TIE, fill: TIE_COLOUR },
+  { label: LEGEND_WITHOUT_RESULT, fill: 'hatch' },
+];
