@@ -47,7 +47,7 @@ What the change builds on:
 
 ## Decisions
 
-Q decided decisions 1 to 7, 9, 13 and 14 on 2026-11-15, each from the options and the facts of
+Q decided decisions 1 to 7, 9, 13, 14 and 20 on 2026-11-15, each from the options and the facts of
 the investigation. The others follow from them or from the code, and are open to Q's review of
 this change.
 
@@ -336,6 +336,20 @@ Alternatives considered:
 - **Accessibility:** the panel is a section with a heading, and is not announced on every
   change, unlike the box of details. Reading it without a pointer is #10's.
 
+### 20. A relaxed budget for clicking (Q)
+
+Zoom, move and pointing keep their 16 ms per frame. Clicking a municipality fills the panel, and
+in the browser test some frames that follow reached 17 to 21 ms, in about one run of three,
+never on the click itself (the 16 ms test without clicks stayed under 6 ms). The cause is not
+known yet: a later layout of the grid around the map, garbage collection, or the measurement.
+Q decided on 2026-11-15 to relax the budget of clicking to 50 ms per frame, three frames at 60 Hz,
+in a browser test of its own, and to revisit performance after this change is merged.
+
+Alternatives considered:
+- **Finding the cause first** with a performance trace of the browser.
+- **Isolating the panel's layout by guess** (CSS `contain`, or a fixed height).
+- **Measuring without the step "Ganze Schweiz" between the clicks**, which weakens the check.
+
 ### Tests
 
 - **Pipeline (pytest).** `tests/made_up.py` gains made-up json-stat2 answers, correspondences
@@ -359,7 +373,8 @@ Alternatives considered:
   - the new format function at its rounding edges.
 - **Browser (Playwright):**
   - one test per added or modified scenario of `result-map`;
-  - the existing budget test, now with the panel;
+  - the existing budget test, now once the characteristics have loaded, and a budget test of
+    clicking (decision 20);
   - the existing test that no page requests another server.
 
 ### Dependencies added
@@ -369,15 +384,20 @@ and the file is served with the site.
 
 ### Performance budget
 
-- **Pointing and clicking:** 16 ms of main-thread work per frame, now with the panel's update
-  on a click (spec `result-map`). Its 21 values are computed from one municipality's counts.
-- **Loading:** `characteristics.json` is about 1.34 MB, 563 KB gzipped, loaded once per visit.
-  The map does not wait for it (decision 13). Parsing it is not budgeted; the browser tests
-  print its time.
+- **Zoom, move and pointing:** 16 ms of main-thread work per frame, as before (spec
+  `result-map`).
+- **Clicking a municipality:** 50 ms per frame for the click and the inputs that follow it,
+  relaxed until performance is revisited after this change (decision 20). The panel's 21 values
+  are computed from one municipality's counts.
+- **Loading:** `characteristics.json` is about 1.36 MB, 569 KB gzipped, loaded once per visit.
+  The map does not wait for it (decision 13). Parsing it is neither budgeted nor measured.
 - **The pipeline:** a run downloads about 50 MB more, and spends a few minutes more, mostly on
   STAT-TAB's limit of 50 queries in 15 seconds.
 
 ## Risks / Trade-offs
+
+- **[Frames after a click reach 17 to 21 ms, their cause unknown]** → A relaxed budget of 50 ms
+  for clicking (decision 20), and a look at performance once this change is merged.
 
 - **[STAT-TAB moves a table to a newer list]** → The update stops, naming the table and the
   dates (decision 8). `pipeline/README.md` gives the step, and the investigation's check script
