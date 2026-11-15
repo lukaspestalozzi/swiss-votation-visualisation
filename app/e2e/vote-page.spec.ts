@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 
 test('the page of a vote: head, figures, verdicts, cantons and note', async ({ page }) => {
   await page.goto('/votes/5960');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
   );
