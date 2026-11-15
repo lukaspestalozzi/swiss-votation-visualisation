@@ -5,18 +5,20 @@ municipality, and recalculates the result as if only municipalities of a certain
 A static site for the curious public; everything runs in the browser. "Popular Vote Explorer" is
 a working title: the name is not decided.
 
-**Status:** the skeleton, the calculation, the vote data and the first screen. The start page
-lists the national votes by year, and each vote has its page with its result, the two verdicts
-side by side and a table of the cantons, calculated when the site is built and in German until
-#9; the calculation gives the result of a vote from the entries that remain and the outcome of
+**Status:** the skeleton, the calculation, the vote data, the first screen and the map. The
+start page lists the national votes by year, and each vote has its page with its result, the two
+verdicts side by side, a map of the municipalities in the colours of their result, which can be
+zoomed, moved and pointed at, and a table of the cantons, calculated when the site is built and
+in German until #9; the calculation gives the result of a vote from the entries that remain and the outcome of
 each canton, and is tested against seven official votes; the pipeline writes the results of the
-125 national votes since 2013, per municipality, to `app/static/data/`, and a test runs the
-calculation over every one of them; the build, the checks, the module boundaries and CI are in
+125 national votes since 2013, per municipality, and the map's shapes to `app/static/data/`, and
+a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
 after every push to `main` whose checks pass. Changes #1 to #5 of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list` and
-`publish-site`, are archived, and `openspec/specs/` holds their specs. The first investigation
-(data sources) is done: `investigations/data-sources.md`. Next: change #6, `add-result-map`.
+`publish-site`, are archived, and `openspec/specs/` holds their specs; change #6,
+`add-result-map`, is applied and not yet archived. Two investigations are done:
+`investigations/data-sources.md` and `investigations/map-data.md`.
 `README.md` is the human-facing overview.
 
 ## Where things are
@@ -27,9 +29,9 @@ after every push to `main` whose checks pass. Changes #1 to #5 of `docs/roadmap.
 | `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `municipalities`, `publishing`, `result-calculation`, `verdicts`, `vote-data`, `vote-list`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
-| `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first; its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3, and `check_tie_break.py` what the yes and no of a tie-break question stand for, found while proposing #4. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
+| `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first, `map-data.md` the second (the map's sources, the distances of its colours, the municipal figures its specs cite; scripts in `map-data/`, run as the file says); its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3, and `check_tie_break.py` what the yes and no of a tie-break question stand for, found while proposing #4. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
 | `calculation/`, `app/`, `pipeline/` | The three modules. The code map below lists their files. |
-| `app/static/data/` | The data files of the app: `app/static/data/votes.json` (the list of votes), `app/static/data/votes/<id>.json` (one file per vote, its entries), `app/static/data/municipalities.json` (the list of municipalities and the Swiss abroad), `app/static/data/sources.json` (the record of the source files). Written by the pipeline (`pipeline/README.md`), never by hand; committed, and served with the site as they are. Their shape is decision 12 of the design of `add-vote-data`, their types are in `app/src/lib/vote-data.ts`. |
+| `app/static/data/` | The data files of the app: `app/static/data/votes.json` (the list of votes), `app/static/data/votes/<id>.json` (one file per vote, its entries), `app/static/data/municipalities.json` (the list of municipalities and the Swiss abroad), `app/static/data/map.json` (the map's shapes: municipalities, cantons, the outline of Switzerland, lakes), `app/static/data/sources.json` (the record of the source files). Written by the pipeline (`pipeline/README.md`), never by hand; committed, and served with the site as they are. Their shape is decision 12 of the design of `add-vote-data` (of `map.json`, decision 14 of the design of `add-result-map`), their types are in `app/src/lib/vote-data.ts`. |
 | `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml` | The root of the pnpm workspace: the scripts of every check, pnpm pinned in `packageManager`, Node 24 required (`engineStrict`). |
 | `eslint.config.js`, `prettier.config.js`, `.prettierignore` | The linter and the formatter, one configuration for both packages. Prettier leaves Markdown, `openspec/`, `docs/`, `.agents/`, `.claude/`, `.github/`, the calculation's reference data and the app's data files alone. |
 | `.agents/skills/` | The OpenSpec workflows as skills, generated by `openspec init`; `.claude/skills/` holds a link to each. Not edited by hand: `openspec update` writes them again. |
@@ -77,8 +79,9 @@ worked out in plain TypeScript in `src/lib/`; the Svelte components only lay it 
 | `app/src/routes/+layout.ts` | `prerender = true`: every page is written as a file at build time; `trailingSlash = 'always'`: as `<path>/index.html`, at the address `<path>/` (`/votes/5960/`). |
 | `app/src/routes/+page.server.ts` | The start page's data, at build time: the list of `vote-list.ts`, from `app/static/data/votes.json`. |
 | `app/src/routes/+page.svelte` | The start page: the working title and the votes by year, each linked to its page. |
-| `app/src/routes/votes/[id]/+page.server.ts` | A vote's page, at build time: `entries()` names every vote of the list; `load` reads the vote's file through `import.meta.glob` and returns what `vote-page.ts` gives, so the page holds its result and the browser loads no entries. |
-| `app/src/routes/votes/[id]/+page.svelte` | A vote's page: the head, the figures, the two verdicts side by side, the outcome, the table of the cantons or the tie-break question's figures, the sources and notes, and the link back. |
+| `app/src/routes/votes/[id]/+page.server.ts` | A vote's page, at build time: `entries()` names every vote of the list; `load` reads the vote's file through `import.meta.glob` and returns what `vote-page.ts` gives, so the page holds its result and the browser loads no entries, and, for a judged vote, each municipality's yes and no votes for the map, checked against `map.json`. |
+| `app/src/routes/votes/[id]/+page.svelte` | A vote's page: the head, the figures, the two verdicts side by side, the outcome, the map, the table of the cantons or the tie-break question's figures, the sources and notes, and the link back. |
+| `app/src/routes/votes/[id]/ResultMap.svelte` | The map of a vote: it loads the shapes and the names once per visit, draws the outline in the lakes' colour, the municipalities in their colours or hatched, the lakes and the cantons as SVG; the box of details on pointing or clicking; zoom with the buttons and the wheel, and dragging; the legend, the source and the Swiss abroad; the message when it cannot load. |
 | `app/src/lib/format.ts` | Counts, shares (rounded half away from zero, from the counts), cantonal votes and dates as the screen writes them, without the locale data of the machine. |
 | `app/src/lib/format.test.ts` | Its unit tests. |
 | `app/src/lib/texts.ts` | Every text of the screen, in German until #9; a text with figures is a function of them. |
@@ -86,12 +89,19 @@ worked out in plain TypeScript in `src/lib/`; the Svelte components only lay it 
 | `app/src/lib/vote-list.test.ts` | Its unit tests, against `votes.json` up to 2026-09-27. |
 | `app/src/lib/vote-page.ts` | What a vote's page shows, from its vote of the list and the result the calculation gives over its file. A missing file or a refused entry is an error that names the vote. |
 | `app/src/lib/vote-page.test.ts` | Its unit tests, against the data files and the figures of `investigations/data-sources.md`. |
-| `app/src/lib/vote-data.ts` | The types of the data files in `app/static/data/`. |
-| `app/src/lib/vote-data.test.ts` | The calculation over every vote of the data files: it gives each vote's yes and no votes, cantonal votes and verdict; and four named votes against the official figures of `investigations/data-sources.md`. |
+| `app/src/lib/vote-data.ts` | The types of the data files in `app/static/data/`, `map.json` included. |
+| `app/src/lib/result-map.ts` | What the map shows: the side and class of a municipality from its votes, compared in whole numbers; the colours; the legend; the details of a municipality; a vote's figures for the map, checked against it. |
+| `app/src/lib/result-map.test.ts` | Its unit tests, with the figures of `investigations/map-data.md`. |
+| `app/src/lib/map-view.ts` | The part of the map shown, as the SVG's view box: zoom around a point from 1 to 16 times, and moving by a distance on the screen, the view's centre kept inside Switzerland. |
+| `app/src/lib/map-view.test.ts` | Its unit tests. |
+| `app/src/lib/map-data.ts` | Loads `map.json` and `municipalities.json` once, from addresses and a fetch function the page gives; a failed request rejects. |
+| `app/src/lib/map-data.test.ts` | Its unit tests, with a fake fetch. |
+| `app/src/lib/vote-data.test.ts` | The calculation over every vote of the data files: it gives each vote's yes and no votes, cantonal votes and verdict; four named votes against the official figures of `investigations/data-sources.md`; and the map: its municipalities are the list's, every judged vote fits it. |
 | `app/static/data/` | The data files (see "Where things are"). |
 | `app/playwright.config.ts` | The browser tests: they run against `app/build`, served as plain files on port 4173, under the site's path; the tests open pages by paths relative to it (`votes/5960/`). |
 | `app/e2e/vote-list.spec.ts` | The browser tests of the start page, among them "all requests go to the site itself"; they compare with the site's own `data/votes.json`. |
 | `app/e2e/vote-page.spec.ts` | The browser tests of the vote pages: named votes, the address without the final slash, no entries loaded, no other server, and an address that names no page (404). |
+| `app/e2e/result-map.spec.ts` | The browser tests of the map: its place, colours, hatching, legend, cantons and lakes, source and Swiss abroad; pointing and clicking; zoom and move; loading once and failing; and the budget of 16 ms per frame, measured by a script added before the page loads. |
 
 Generated and not in the repository: `app/.svelte-kit/` (types, written by `svelte-kit sync` on
 every install) and `app/build/` (the site, in `app/build/swiss-votation-visualisation/`).
@@ -110,18 +120,19 @@ and checks them. Nothing imports it, and it does not use the calculation.
 | `pipeline/src/pipeline/__init__.py` | The package; it holds only its description. |
 | `pipeline/src/pipeline/__main__.py` | The command line: `update`, with `--reuse-downloads`. |
 | `pipeline/src/pipeline/update.py` | The steps of a run: download, read, check, write into a new directory that replaces `app/static/data/` only when every check has passed and no vote of the data files would be lost; the two lists above; the report. |
-| `pipeline/src/pipeline/download.py` | The addresses of the three sources, the Federal Chancellery's SPARQL query, and the download with its retries. |
+| `pipeline/src/pipeline/download.py` | The addresses of the sources (the map's two among them), the Federal Chancellery's SPARQL query, and the download with its retries. |
 | `pipeline/src/pipeline/counts.py` | `SourceError`, and the one function every count passes: a whole number from zero, or the run stops. |
 | `pipeline/src/pipeline/feed.py` | The reader of the BFS vote-day files: votes, kinds, titles, entries, and their checks. |
 | `pipeline/src/pipeline/chancellery.py` | The reader of the Federal Chancellery's answer: the validated results. |
 | `pipeline/src/pipeline/register.py` | The reader of the BFS register: the list of municipalities. |
+| `pipeline/src/pipeline/boundaries.py` | The reader of the map's sources (with pyshp): the register's K4 boundaries of the municipalities, checked against the list, the cantons and the outline of Switzerland, and the ThemaKart set's lakes, as SVG path data in whole metres. |
 | `pipeline/src/pipeline/checks.py` | The checks between the sources: the entries against the list, the canton an entry counts for, the sums, the official result. They apply no voting rule. |
-| `pipeline/src/pipeline/write.py` | The data files: the same bytes for the same sources. |
-| `pipeline/tests/made_up.py` | Made-up sources in the shape of the real ones; each test breaks its own copy. |
+| `pipeline/src/pipeline/write.py` | The data files, `map.json` among them: the same bytes for the same sources. |
+| `pipeline/tests/made_up.py` | Made-up sources in the shape of the real ones, the map's ZIPs of shapefiles among them; each test breaks its own copy. |
 | `pipeline/tests/test_*.py` | The unit tests (pytest), one file per module. |
 
 Generated and not in the repository: `pipeline/.venv/` (written by `uv`) and
-`pipeline/downloads/` (the source files of the last run, about 125 MB).
+`pipeline/downloads/` (the source files of the last run, about 135 MB).
 
 ## Workflow: no code without an approved change
 
@@ -162,7 +173,7 @@ the root.
 | `pnpm run test` | The unit tests (Vitest) of the calculation and of the app; the app's run the calculation over the data files. |
 | `pnpm run build` | The static site, written to `app/build/swiss-votation-visualisation`. |
 | `pnpm run test:e2e` | The browser tests (Playwright) against `app/build`, under the site's path; build first. |
-| `uv run --directory pipeline --locked python -m pipeline update` | Download the sources, check them and write the data files (`pipeline/README.md`). About 125 MB and a minute or two. |
+| `uv run --directory pipeline --locked python -m pipeline update` | Download the sources, check them and write the data files (`pipeline/README.md`). About 135 MB and a minute or two. |
 | `uv run --directory pipeline --locked ruff format --check .` | The pipeline's formatting; `ruff format .` formats. |
 | `uv run --directory pipeline --locked ruff check .` | The pipeline's lint. |
 | `uv run --directory pipeline --locked mypy` | The pipeline's static analysis, strict. |
