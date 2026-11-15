@@ -1,7 +1,7 @@
 // The view of the map (spec result-map, "Zoom" and "Moving the map"), on a made-up map 1000 by
 // 600 units.
 import { expect, test } from 'vitest';
-import { wholeView, zoomAround } from './map-view.ts';
+import { moveBy, wholeView, zoomAround } from './map-view.ts';
 
 const MAP = { width: 1000, height: 600 };
 
@@ -29,4 +29,18 @@ test('the zoom stays between the whole of Switzerland and 16 times', () => {
   const corner = { x: 100, y: 50 };
   const zoomed = zoomAround(wholeView(MAP), 4, corner, MAP);
   expect(zoomAround(zoomed, 0.25, { x: 900, y: 500 }, MAP)).toEqual(wholeView(MAP));
+});
+
+test('a drag moves the view by the distance on the screen', () => {
+  // At 4×, the map 500 pixels wide shows 250 units: a pixel is half a unit.
+  const view = zoomAround(wholeView(MAP), 4, { x: 500, y: 300 }, MAP);
+  expect(view).toEqual({ x: 375, y: 225, width: 250, height: 150 });
+  // Dragged 100 pixels to the left, it shows the area 50 units further east.
+  expect(moveBy(view, -100, 0, 500, MAP)).toEqual({ x: 425, y: 225, width: 250, height: 150 });
+});
+
+test('a drag past the western edge stops with the centre of the view on it', () => {
+  const view = zoomAround(wholeView(MAP), 2, { x: 500, y: 300 }, MAP);
+  // Dragged far to the right: the view moves west until its centre is at the edge, x = 0.
+  expect(moveBy(view, 10000, 0, 500, MAP)).toEqual({ x: -250, y: 150, width: 500, height: 300 });
 });
