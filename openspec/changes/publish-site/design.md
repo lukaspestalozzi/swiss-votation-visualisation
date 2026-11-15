@@ -76,7 +76,8 @@ repository, and in GitHub's and SvelteKit's documentation:
 ## Decisions
 
 Decisions 1 to 8 were asked while drafting (2026-11-15); each records the answer and the
-alternatives. Decisions 9 to 12 follow from them and were not asked one by one.
+alternatives. Decisions 9 to 12 follow from them and were not asked one by one. Decision 13 was
+asked after Copilot's review of the pull request (2026-11-15).
 
 ### 1. GitHub Pages
 
@@ -224,8 +225,8 @@ In `.github/workflows/ci.yml`:
     request it shows as skipped.
   - Permissions `pages: write` and `id-token: write`, for this job only.
   - The environment `github-pages`, with the address as its URL.
-  - `concurrency: pages` without cancelling a running deployment, so that two quick merges
-    publish one after the other.
+  - No concurrency of its own: the workflow's (decision 13) runs one run of `main` at a time,
+    so two deployments cannot overlap.
   - One step: `actions/deploy-pages`.
 
 The deploy job does not check out or build anything (spec `publishing`: one build per run).
@@ -246,6 +247,27 @@ Alternatives considered:
 - **An empty `app/static/.nojekyll` anyway**, as SvelteKit's recipe adds. Rejected: a file for a
   case this setup does not have. If the first deployment shows otherwise, it is a one-line fix.
 
+### 13. One CI run per branch at a time
+
+The workflow has `concurrency: ci-${{ github.ref }}` without cancelling a running run. GitHub
+then runs one run per branch at a time, and a waiting run is replaced by the run of a newer push.
+So the runs of `main` publish in the order of the pushes, and an older run never publishes over a
+newer site (spec `publishing`, "An older push never replaces a newer site").
+
+Copilot's review found the gap. Decision 11 first gave the deploy job a concurrency group of its
+own, which keeps two deployments from overlapping but not in order. Suppose push A and then push
+B land on `main` close together, and B's checks finish first. B is published, and then A's deploy
+job finds the group free and publishes A over B.
+
+Alternatives considered:
+- **A guard in the deploy job** (Copilot's suggestion): a step asks GitHub for the head of `main`
+  and skips publishing when the run's commit is no longer it. Rejected:
+  - it needs a shell step with an API call and the permission `contents: read`;
+  - if the newer push then fails its checks, neither push is published.
+- **Accept and record the risk.** It needs two merges within about a minute that finish out of
+  order, and re-running the newest run's deploy job repairs it. Rejected: a known wrong state
+  for three lines of configuration.
+
 ### Tests
 
 - **Browser tests:** the existing 12 run under the path (decision 10), and the spec scenarios
@@ -260,8 +282,10 @@ Alternatives considered:
   - the deploy job skipped on the pull request, and the artifact uploaded;
   - after the merge, the deploy job publishing.
 
-  A failing push to `main` and Pages switched off are not provoked: that a failed job fails the
-  run and skips the jobs that need it is how GitHub Actions works, not code of this change.
+  A failing push to `main`, Pages switched off and two pushes in quick succession are not
+  provoked. That a failed job fails the run and skips the jobs that need it, and that a
+  concurrency group runs one run at a time and replaces a waiting one, is how GitHub Actions
+  works, not code of this change.
 
 ### Dependencies added
 
@@ -289,6 +313,9 @@ show the actual time.
 - **[GitHub Pages' handling of `/votes/5670` is not verified before the first deployment]**
   (decision 7) → Decision 5 makes both forms work under sirv. The first deployment is checked by
   hand at both addresses.
+- **[A run of `main` that waits is replaced by a newer push]** (decision 13) → Its commit is then
+  not checked on `main`, and the check shows as cancelled. It was checked on its pull request,
+  and the newer run checks the tree that contains it.
 - **[A change that passes every test but looks wrong goes live]** → Every merge is published.
   Revert the commit on `main`, and CI publishes the state before it.
 - **[GitHub's limits]** → 11 MB of 1 GB. The bandwidth limit of 100 GB a month is about 590,000

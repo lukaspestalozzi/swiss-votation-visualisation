@@ -49,6 +49,26 @@ against. Publishing SHALL NOT build the site a second time.
 - **THEN** its CI run built the site once, and the files it published are the build its browser
   tests were run against
 
+### Requirement: An older push never replaces a newer site
+
+CI SHALL run the pushes to `main` one at a time, in the order they were made, so that the run of
+an older push never publishes after the run of a newer one. A run that waits while another runs
+MAY be replaced by the run of a newer push; it then checks and publishes nothing.
+
+#### Scenario: Two pushes in quick succession
+
+- **GIVEN** the CI run of a push A to `main` is running
+- **WHEN** a push B to `main` follows
+- **THEN** the run of B starts only after the run of A has finished, and once both have passed,
+  the address shows the site of B
+
+#### Scenario: A third push while one waits
+
+- **GIVEN** the CI run of a push A to `main` is running and the run of a push B waits
+- **WHEN** a push C to `main` follows
+- **THEN** the run of B is cancelled without running, and the run of C starts after the run of A
+  has finished
+
 ### Requirement: A publishing that fails is reported
 
 When the host refuses or does not complete the publishing, for example because GitHub Pages is
