@@ -300,13 +300,22 @@ and modified requirement. Design: decisions 13, 14 and 19.
   asked to point, and the panel showed "Grabs (SG)". Then only a click or a tap sets the panel's
   municipality, and `texts.ts` asks for a click. The last two passed when written and failed
   against their mutants: a panel following the pointer, and one that kept the first click.)
-- [ ] 3.4 Where the panel stands. Write two browser tests, one at a time: a window 1,280 pixels
+- [x] 3.4 Where the panel stands. Write two browser tests, one at a time: a window 1,280 pixels
   wide, and one 800 pixels wide. Verify: 52 passed.
-- [ ] 3.5 Loading. Write two browser tests, one at a time:
+
+  (As built: 52 passed. Both passed when written, the layout having come with 3.2. Each failed
+  against its own mutant of the breakpoint and only against it: 1,400 pixels put the panel
+  below the map in the wide window, 700 pixels beside it in the narrow one. The wide test also
+  checks that the panel's top is the map's.)
+- [x] 3.5 Loading. Write two browser tests, one at a time:
   - every request for `data/characteristics.json` fails;
   - its answer is held back.
 
   Verify: 54 passed.
+
+  (As built: 54 passed. Both passed when written, the loader having come with 3.1 and the map's
+  wiring with 3.2. Each failed against its mutant: a failure that left the panel loading, and a
+  map that waited for both files.)
 - [ ] 3.6 Change two existing browser tests to the modified requirements:
   - "From one vote to another" counts `data/characteristics.json` once;
   - the budget test points at and clicks three municipalities once the characteristics have

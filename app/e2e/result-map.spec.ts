@@ -621,3 +621,42 @@ test('clicking another municipality shows it in the panel', async ({ page }) => 
   await expect(panel(page).locator('.name')).toHaveText('Bern (BE)');
   await expect(panel(page).locator('li').first()).toHaveText("Einwohner: 131'554");
 });
+
+test('in a wide window the panel stands to the right of the map', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  const map = await page.locator('.map svg').boundingBox();
+  const beside = await panel(page).boundingBox();
+  if (map === null || beside === null) throw new Error('the map or the panel is not shown');
+  expect(beside.x).toBeGreaterThanOrEqual(map.x + map.width);
+  expect(Math.abs(beside.y - map.y)).toBeLessThan(1);
+});
+
+test('in a narrow window the panel stands below the map', async ({ page }) => {
+  await page.setViewportSize({ width: 800, height: 900 });
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  const map = await page.locator('.map svg').boundingBox();
+  const below = await panel(page).boundingBox();
+  if (map === null || below === null) throw new Error('the map or the panel is not shown');
+  expect(below.y).toBeGreaterThanOrEqual(map.y + map.height);
+});
+
+test('characteristics that cannot be loaded: a message, and the map works', async ({ page }) => {
+  await page.route('**/data/characteristics.json', (route) => route.abort());
+  await page.goto('votes/5960/');
+  await expect(panel(page)).toContainText('Die Merkmale können nicht geladen werden.');
+  await pointAt(page, 261);
+  await expect(details(page).locator('.name')).toHaveText('Zürich (ZH)');
+  await expect(details(page).locator('li').first()).toHaveText('Ja-Anteil: 31.85%');
+});
+
+test('the map does not wait for the characteristics', async ({ page }) => {
+  await page.route('**/data/characteristics.json', () => {
+    // Never answered while the test runs.
+  });
+  await page.goto('votes/5960/');
+  await expect(page.locator('.municipalities path')).toHaveCount(2110);
+  await expect(panel(page)).toContainText('Die Merkmale werden geladen …');
+});
