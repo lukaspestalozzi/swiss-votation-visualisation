@@ -94,23 +94,33 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 `app/src/lib/vote-page.ts` and `vote-page.test.ts` (spec `verdicts`; design, decisions 3 to 9,
 11), against the data files and the calculation.
 
-- [ ] 5.1 Tests, one after the other: the head of 5960 (title, "28. Februar 2016",
+- [x] 5.1 Tests, one after the other: the head of 5960 (title, "28. Februar 2016",
   "Volksinitiative", "Braucht das Volksmehr und das Ständemehr."); its figures ("1'609'152",
   "1'664'224", "49.16%", turnout "63.25%"); its verdicts (Volksmehr "Nein" "49.16%",
   Ständemehr "Ja" "16½ : 6½", "Abgelehnt"); the verdicts of 5670 ("Ja" "54.35%", "Nein"
-  "10 : 13", "Abgelehnt"). Verify: `pnpm --filter app run test` reports 27 passed.
-- [ ] 5.2 Tests, one after the other: 6790 ("Braucht nur das Volksmehr.", Volksmehr "Ja"
+  "10 : 13", "Abgelehnt"). Verify: `pnpm --filter app run test` reports 27 passed. (As built:
+  the test of 5670 passed when written; it was seen to fail against a mutant that takes the
+  outcome from the majority of voters alone.)
+- [x] 5.2 Tests, one after the other: 6790 ("Braucht nur das Volksmehr.", Volksmehr "Ja"
   "50.39%", Ständemehr "nicht nötig" with "7½ : 15½" marked as greyed, "Angenommen"); the table
   of 5960 (26 rows, ZH "43.46%" "1" "Nein", "½" for the six half cantons, the "Ja" rows adding up
-  to 16½); a canton without valid votes shows "–" (made-up result). Verify: 30 passed.
-- [ ] 5.3 Tests, one after the other: the tie-break question 6823 (the two lines with their
+  to 16½); a canton without valid votes shows "–" (made-up result). Verify: 30 passed. (As built:
+  the test of a canton without valid votes passed when written, as `formatShare` gives "–" for
+  no votes; it was seen to fail against a mutant that leaves such a canton out of the table.)
+- [x] 5.3 Tests, one after the other: the tie-break question 6823 (the two lines with their
   shares, "Stände: 2 für die Initiative, 21 für den Gegenentwurf", the sentence, no verdicts, no
   table); the sources of 5670 ("Quelle: BBl 2013 3129", no note, not provisional); of 5960 (the
   reference and the note under "Hinweis der Bundeskanzlei"); of 6850 (the sentence of a
   provisional result, no "Quelle: "); the known difference of 6650 (no votes "1'350'525",
   "Angenommen", the note of the spec word for word); no such note for 5960; a vote without its
   file throws an error that names the vote. Verify: 37 passed; `pnpm run check` and
-  `pnpm run lint` pass.
+  `pnpm run lint` pass. (As built: the test of the missing file also covers an entry the calculation
+  refuses, which the requirement "The page holds its result" names too; each of its two
+  expectations was seen to fail on its own. The test of 5960 without a note passed when written;
+  it was seen to fail against a mutant that writes a note for every count. The notes of a
+  difference compare the validated result with the sums of the file's entries, as the
+  requirement says, so they would also apply to a validated tie-break question. `knownDifference`
+  takes `'yes'` or `'no'`, so that "Ja" and "Nein" stay in `texts.ts`.)
 
 ## 6. The pages
 

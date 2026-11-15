@@ -69,10 +69,11 @@ export const PROVISIONAL = 'Vorläufiges Ergebnis: vom Bundesrat noch nicht erwa
 export const NOTE_HEADING = 'Hinweis der Bundeskanzlei';
 export const knownDifference = (
   official: string,
-  count: 'Ja' | 'Nein',
+  count: 'yes' | 'no',
   reference: string,
   difference: string,
   more: boolean,
 ): string =>
-  `Das erwahrte Ergebnis zählt ${official} ${count}-Stimmen (${reference}); die Zahlen der ` +
-  `Gemeinden, aus denen hier gerechnet wird, ergeben ${difference} ${more ? 'mehr' : 'weniger'}.`;
+  `Das erwahrte Ergebnis zählt ${official} ${count === 'yes' ? 'Ja' : 'Nein'}-Stimmen ` +
+  `(${reference}); die Zahlen der Gemeinden, aus denen hier gerechnet wird, ergeben ` +
+  `${difference} ${more ? 'mehr' : 'weniger'}.`;
