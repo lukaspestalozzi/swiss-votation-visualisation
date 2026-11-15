@@ -179,8 +179,10 @@ the root.
   failure. On a push to `main`, once all three have passed, the `deploy` job publishes the build
   the `build` job uploaded after its browser tests, on GitHub Pages
   (`actions/upload-pages-artifact`, `actions/deploy-pages`, pinned by major version like
-  `actions/checkout`). Pull requests publish nothing. GitHub Pages is switched on in the
-  repository's settings (Pages → Source: "GitHub Actions").
+  `actions/checkout`). Pull requests publish nothing. CI runs one run per branch at a time, in
+  the order of the pushes (a waiting run is replaced by a newer one), so an older run of `main`
+  never publishes over a newer site. GitHub Pages is switched on in the repository's settings
+  (Pages → Source: "GitHub Actions").
 - **The root `package.json` must not declare `svelte`.** The compiler also looks in the root
   `node_modules`, so the calculation could then import the UI framework. The Svelte plugins of
   ESLint and Prettier get `svelte` from pnpm as a peer.

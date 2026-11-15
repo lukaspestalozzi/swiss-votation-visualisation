@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ main ]
 
+# One run per branch at a time, in the order of the pushes, so that a run of an older push to main
+# never publishes after a newer one (spec publishing). A running run is not cancelled; a waiting run
+# is replaced by the run of a newer push, as GitHub does within a concurrency group.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   specs:
     runs-on: ubuntu-latest
@@ -100,7 +107,8 @@ jobs:
 
   # Publishes the site on GitHub Pages (spec publishing): the build the job `build` uploaded after
   # its browser tests, not a second build, and only for a push to main whose three jobs all
-  # passed. On a pull request this job shows as skipped.
+  # passed. On a pull request this job shows as skipped. Deployments cannot overlap: the
+  # workflow's concurrency runs one run of main at a time.
   deploy:
     needs: [specs, build, pipeline]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -111,10 +119,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    # Two quick merges publish one after the other; a running deployment is not cancelled.
-    concurrency:
-      group: pages
-      cancel-in-progress: false
 
     steps:
       - name: Publish the tested site
