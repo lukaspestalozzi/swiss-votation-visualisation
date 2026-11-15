@@ -428,11 +428,15 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
 
   (As built: 11 of 11, with 41, 59 and 38 as planned, and 96 of the pipeline, one more for
   1.4.)
-- [ ] 5.5 Update `CLAUDE.md`: the status, the code map (`result-map.ts`, `map-view.ts`,
+- [x] 5.5 Update `CLAUDE.md`: the status, the code map (`result-map.ts`, `map-view.ts`,
   `map-data.ts`, `ResultMap.svelte`, `result-map.spec.ts`, `boundaries.py`), "Where things are"
   (`app/static/data/map.json`, `investigations/map-data.md`), and the size of a run of the
   update. Verify: each file that `git diff --name-status --diff-filter=A main` lists outside
   `openspec/` is named in `CLAUDE.md`, or is in a directory its tables describe.
+
+  (As built: each of the 15 added files is named, or in a directory the tables describe:
+  `test_boundaries.py` under `pipeline/tests/test_*.py`, the investigation's scripts under
+  `map-data/`. The status says that #6 is applied and not yet archived; the archive updates it.)
 
 ## Workflow follow-up
 
