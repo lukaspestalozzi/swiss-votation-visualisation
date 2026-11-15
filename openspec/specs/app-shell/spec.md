@@ -20,40 +20,23 @@ code, no database and no login SHALL be needed to show it.
 - **THEN** the server answers with the start page, and the browser shows the heading "Popular
   Vote Explorer"
 
-### Requirement: The start page shows the cantons and their cantonal votes
-
-The start page SHALL show the working title "Popular Vote Explorer" as its heading and a table
-with one row for each of the 26 cantons, in the order and with the values that the
-`result-calculation` capability defines. Each row SHALL show the canton's abbreviation and its
-number of cantonal votes, written `1` or `0.5`. Below the rows the table SHALL show the total of
-the cantonal votes.
-
-#### Scenario: One row for each canton
-
-- **WHEN** a visitor opens the start page
-- **THEN** the table has exactly 26 rows of cantons, the first is `ZH` and the last is `JU`
-
-#### Scenario: The six cantons with half a vote
-
-- **WHEN** a visitor opens the start page
-- **THEN** the rows of `OW`, `NW`, `BS`, `BL`, `AR` and `AI` each show `0.5`, and each of the
-  other 20 rows shows `1`
-
-#### Scenario: The total
-
-- **WHEN** a visitor opens the start page
-- **THEN** the table shows `23` as the total of the cantonal votes
-
 ### Requirement: The page requests nothing from other servers
 
-Everything the page needs at run time (markup, scripts, styles, fonts, images and data) SHALL be
-served from the same origin as the page. The page SHALL NOT send any request to another origin,
-neither while it loads nor afterwards.
+Everything a page of the site needs at run time (markup, scripts, styles, fonts, images and
+data) SHALL be served from the same origin as the page. No page SHALL send any request to
+another origin, neither while it loads nor afterwards. This holds for the start page and for the
+page of every vote.
 
 #### Scenario: All requests go to the site itself
 
 - **WHEN** a browser opens the start page and waits until the page has stopped loading
 - **THEN** every request the browser made for the page went to the origin that serves the page
+
+#### Scenario: A vote's page requests nothing from other servers
+
+- **WHEN** a browser opens the page of the vote of 2016-02-28, number 596, follows the link back
+  to the start page, and waits until the page has stopped loading
+- **THEN** every request the browser made went to the origin that serves the site
 
 #### Scenario: A resource from another server is caught
 
