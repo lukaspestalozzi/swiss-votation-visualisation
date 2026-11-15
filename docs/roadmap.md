@@ -80,6 +80,13 @@ tolerances.
   While proposing #3, three more facts were found and added to the investigation: the two
   sources share the BFS's id, they differ in the registered voters, and Moutier changed canton
   on 2026-01-01.
+- **Characteristics**, the first investigation of #7, found while proposing it on 2026-11-15:
+  `investigations/characteristics.md`, with its scripts in `investigations/characteristics/`.
+  Four BFS STAT-TAB tables give the population, the elections, the cattle and the census of
+  2000, each on the register's list of one date, which the register's correspondences bring
+  onto the list of the votes; swisstopo's swissBOUNDARIES3D gives the area. Languages per
+  municipality exist only in the census of 2000, cows only per canton. The election days come
+  from the Federal Council's circulars to the cantons.
 
 ## Failure modes of the predecessor (must not repeat)
 

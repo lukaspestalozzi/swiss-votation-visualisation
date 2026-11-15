@@ -23,6 +23,12 @@ Today it shows every vote and its result, without limits yet, in German:
   its yes share and its votes. Its shapes come from the Federal Statistical Office
   ("Kartengrundlage: © BFS": the register of municipalities and the ThemaKart set 2026), written
   by the pipeline to `app/static/data/map.json`;
+- beside the map, a panel lists the characteristics of the municipality last clicked: its
+  inhabitants, share of foreigners, five age groups and density at the end of the year before
+  the vote, the party strengths of the last National Council election before it, the shares of
+  the four national languages in the census of 2000, its area, and its cattle per inhabitant.
+  They come from the Federal Statistical Office's statistics and swisstopo, written by the
+  pipeline to `app/static/data/characteristics.json`; the limits on them come with #8;
 - the results come from the data of every vote per municipality, made from public sources by
   the pipeline (`pipeline/`) and committed in `app/static/data/` with the map's data; they
   reproduce the official result of each vote, apart from one difference of 200 no votes that the
