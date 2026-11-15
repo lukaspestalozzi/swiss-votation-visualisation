@@ -14,7 +14,7 @@ split or merged while building, the note says so too.
 
 ## 1. The investigation: what the tie-break question's yes and no stand for
 
-- [ ] 1.1 Write `investigations/data-sources/check_tie_break.py` (design, Context). It asks the
+- [x] 1.1 Write `investigations/data-sources/check_tie_break.py` (design, Context). It asks the
   Federal Chancellery for every tie-break question with votes for the initiative and the
   counter-proposal (`vote:stimmenInitiative`, `vote:stimmenGegenentwurf`), asks the BFS table
   for the yes and no votes of the same ids, and prints both side by side. It downloads with
@@ -22,7 +22,7 @@ split or merged while building, the note says so too.
   <downloads>` exits 0 and prints 3 of 3 tie-break questions (4653, 4893, 5523) whose yes equal
   the votes for the initiative and whose no equal those for the counter-proposal;
   `git status --short` shows no `__pycache__`.
-- [ ] 1.2 Add to `investigations/data-sources.md` a section "Found while proposing add-vote-list"
+- [x] 1.2 Add to `investigations/data-sources.md` a section "Found while proposing add-vote-list"
   with that finding and what it means for id 6823 (1,098,341 votes for the initiative,
   1,841,208 for the counter-proposal, 37.3643% and 62.6357%, cantons 2 : 21), the script in the
   table of files, and its output under "Output". Verify: every figure of the section is in the

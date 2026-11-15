@@ -26,6 +26,7 @@ python3 check_municipality_lists.py /path/outside/the/repository
 python3 reference_votes.py /path/outside/the/repository
 python3 write_reference_votes.py /path/outside/the/repository ../../calculation/src/reference-votes.json
 python3 check_ids_and_cantons.py /path/outside/the/repository
+python3 check_tie_break.py /path/outside/the/repository
 ```
 
 | File | What |
@@ -40,6 +41,7 @@ python3 check_ids_and_cantons.py /path/outside/the/repository
 | `reference_votes.py` | The votes in which the rules matter, with their figures. |
 | `write_reference_votes.py` | Writes the reference data of the calculation; see "Reference data for the calculation". It downloads the six vote days it needs by itself. |
 | `check_ids_and_cantons.py` | Added with the change `add-vote-data`: the ids of the Chancellery's rows, the registered voters, and the two changes of canton; see "Found while proposing add-vote-data". It downloads what it needs by itself. |
+| `check_tie_break.py` | Added with the change `add-vote-list`: the BFS's yes and no of a tie-break question against the Chancellery's votes for the initiative and the counter-proposal; see "Found while proposing add-vote-list". It downloads what it needs by itself. |
 
 "Output" at the end of this file is what these scripts printed on 2026-11-14. The sources
 change (see "The list of municipalities"), so a later run can differ; the reference values
@@ -281,6 +283,22 @@ municipality, so these differences cannot be traced to an entry.
 is under Jura there in all seven votes. Its cantonal votes are those of the official results
 all the same, since counting Moutier for either canton changes none.
 
+## Found while proposing add-vote-list
+
+**What the yes and no of a tie-break question stand for.** The BFS files give a tie-break
+question yes and no votes, as for any other vote. The Federal Chancellery gives, for the
+tie-break questions it has validated, the votes for the initiative and for the counter-proposal.
+For all three it has (2000-09-24, id 4653; 2002-09-22, id 4893; 2010-11-28, id 5523), the BFS
+table's yes votes are exactly the votes for the initiative and its no votes those for the
+counter-proposal: 570,401 and 1,079,944; 953,316 and 1,020,309; 1,252,761 and 1,271,365.
+`check_tie_break.py` prints them (see "Output").
+
+For the tie-break question of 2026-03-08, id 6823, not validated yet, the feed's 1,098,341 yes
+votes are therefore the votes for the initiative and its 1,841,208 no votes those for the
+counter-proposal, 37.3643% of the two for the initiative; the cantons are 2 for the initiative
+and 21 for the counter-proposal (the output of `reference_votes.py` below). The Chancellery's validated
+figures for number 682 will confirm it.
+
 ## Characteristics
 
 Looked at only as far as the roadmap's first question asks ("the characteristics for matching
@@ -481,4 +499,20 @@ register snapshots:
   2022-01-01: Moutier 700 BE, Murten 2275 FR
   2025-12-31: Moutier 700 BE, Murten 2275 FR
   2026-01-01: Moutier 6831 JU, Murten 2275 FR
+```
+
+`python3 check_tie_break.py <data>` (added with `add-vote-list`):
+
+```
+2000-09-24 id 4653 Solarinitiative und Gegenvorschlag: Stichfrage
+  BFS table: yes 570,401, no 1,079,944
+  Chancellery: for the initiative 570,401, for the counter-proposal 1,079,944 -> the same
+2002-09-22 id 4893 Goldinitiative und Gegenvorschlag: Stichfrage
+  BFS table: yes 953,316, no 1,020,309
+  Chancellery: for the initiative 953,316, for the counter-proposal 1,020,309 -> the same
+2010-11-28 id 5523 Ausschaffungsinitiative und Gegenvorschlag: Stichfrage
+  BFS table: yes 1,252,761, no 1,271,365
+  Chancellery: for the initiative 1,252,761, for the counter-proposal 1,271,365 -> the same
+
+tie-break questions whose yes are the votes for the initiative and whose no those for the counter-proposal: 3 of 3
 ```
