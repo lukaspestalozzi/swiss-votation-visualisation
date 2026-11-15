@@ -62,7 +62,8 @@ def _shapes(
     layer: shapefile.Reader, source: str
 ) -> Iterator[tuple[shapefile._Record, shapefile.Shape]]:
     """Each record of the layer with its shape."""
-    for record, shape in zip(layer.records(), layer.shapes()):
+    # zip_longest: a record without its shape, or a shape without its record, gives a None.
+    for record, shape in itertools.zip_longest(layer.records(), layer.shapes()):
         if record is None or shape is None:
             raise SourceError(
                 f"{source}: a shape without its record, or a record without its shape"
