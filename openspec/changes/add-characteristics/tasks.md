@@ -377,6 +377,34 @@ and modified requirement. Design: decisions 13, 14 and 19.
 
   (As built: 11 of 11 steps passed, with 41, 75, 55 and 124 tests.)
 
+## Verification
+
+`/openspec-verify-change` on 2026-11-15 found no critical issue, two warnings and four
+suggestions. Q asked to fix them; the warnings and the first three suggestions are fixed, each
+test seen to fail against a mutant:
+
+- **A characteristic's date was not part of its definition** (spec `characteristics`, "One
+  definition per characteristic"; design, decision 11): `panelOf` worked the years out from the
+  source. Each definition now gives the year of its figures, and the panel takes its headings
+  and its lines' years from the definitions; the heading of the languages names the census's
+  year from them too. App test: the 21 years for 5960; it failed first, and against a mutant
+  that gave the census the population's year.
+- **The record of the characteristics' sources was checked by hand only** (spec `vote-data`,
+  "The record names every source file"). Pipeline test: the record names the STAT-TAB answers
+  with their queries, the elections table's description without one, the register's lists and
+  correspondences, and swissBOUNDARIES3D; it failed against a mutant that recorded no query.
+- **`SWISSBOUNDARIES_DATE` in `download.py` was never used**: removed. The areas are checked
+  against the votes' list, which its comment now says.
+- **Two scenarios were checked by hand or on made-up data only**: the years in the file
+  (population and cattle every year from 2012, the elections from 2011) and Zürich's Die Mitte of
+  2023, its own 265,215 votes. Two app tests; the second failed against a mutant that took the
+  first election instead of the last.
+- **`CLAUDE.md`'s row of the investigations** now says "the first's scripts".
+
+Left to Q: a check that the elections table still names the parties under their codes.
+
+With them: 78 tests of the app, 55 browser tests, 125 of the pipeline.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`, which updates #7 in

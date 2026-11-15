@@ -342,3 +342,29 @@ def test_a_run_writes_the_characteristics_on_the_list(tmp_path: Path) -> None:
     votes_2015 = dict(zip(numbers, document["elections"][0]["votes"], strict=True))
     assert votes_2015[389] is None
     assert document["area"] == [made_up.AREAS[n][0] for n in numbers]
+
+
+def test_the_record_names_the_characteristics_sources(tmp_path: Path) -> None:
+    data = tmp_path / "data"
+    update(project(tmp_path), data, Sources(), TODAY)
+    record = json.loads((data / "sources.json").read_text(encoding="utf-8"))["sources"]
+    by_address: dict[str, list[dict[str, Any]]] = {}
+    for source in record:
+        by_address.setdefault(source["address"], []).append(source)
+    # The population's totals, and three queries of ages for each year from 2015 to 2025.
+    population = by_address[download.STAT_TAB.format(table=download.POPULATION)]
+    totals = download.population_totals()
+    assert totals.body is not None
+    assert totals.body.decode() in [source["query"] for source in population]
+    assert len(population) == 1 + 3 * 11
+    # The elections: their description (no query) and the three elections from 2015.
+    elections = by_address[download.STAT_TAB.format(table=download.ELECTIONS)]
+    assert sorted(source["query"] is None for source in elections) == [False] * 3 + [True]
+    for table in (download.FARMS, download.CENSUS_2000):
+        [answer] = by_address[download.STAT_TAB.format(table=table)]
+        assert answer["query"] is not None
+    for date in set(download.LIST_DATES.values()):
+        start = "-".join(reversed(date.split("-")))
+        assert REGISTER.format(date=start) in by_address
+        assert download.CORRESPONDENCES.format(start=start, end="01-01-2026") in by_address
+    assert by_address[download.SWISSBOUNDARIES][0]["query"] is None

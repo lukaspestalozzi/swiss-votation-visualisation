@@ -12,11 +12,11 @@ import {
   INHABITANTS,
   LAND_HEADING,
   LANGUAGES,
-  LANGUAGES_HEADING,
   NO_FIGURE,
   PARTIES,
   characteristic,
   electionHeading,
+  languagesHeading,
   ofYear,
   populationHeading,
 } from './texts.ts';
@@ -53,8 +53,33 @@ export interface Definition {
   readonly name: string;
   readonly unit: Unit;
   readonly source: Source;
+  // The year of its figures, among those that apply to a vote.
+  readonly year: (applying: Applying) => number;
   // Null where the municipality has no figure.
   readonly value: (counts: Counts) => Quotient | null;
+}
+
+// The year of the census, and of swisstopo's areas (swissBOUNDARIES3D of 2026-01, the pipeline's
+// download.py).
+export const CENSUS_YEAR = 2000;
+export const AREA_YEAR = 2026;
+
+// The year of each source's figures.
+const YEAR_OF: Readonly<Record<Source, (applying: Applying) => number>> = {
+  population: (applying) => applying.populationYear,
+  election: (applying) => applying.election.year,
+  census: () => CENSUS_YEAR,
+  area: () => AREA_YEAR,
+  cattle: (applying) => applying.cattleYear,
+};
+
+function define(
+  name: string,
+  unit: Unit,
+  source: Source,
+  value: (counts: Counts) => Quotient | null,
+): Definition {
+  return { name, unit, source, year: YEAR_OF[source], value };
 }
 
 const ofInhabitants = (i: number) => (c: Counts) => ({
@@ -70,49 +95,19 @@ function partyShare(i: number): (c: Counts) => Quotient | null {
 }
 
 export const DEFINITIONS: readonly Definition[] = [
-  {
-    name: INHABITANTS,
-    unit: 'count',
-    source: 'population',
-    value: (c) => ({ part: c.population[0], whole: 1 }),
-  },
-  { name: FOREIGNERS, unit: 'percent', source: 'population', value: ofInhabitants(1) },
-  ...AGE_GROUPS.map((name, i): Definition => ({
-    name,
-    unit: 'percent',
-    source: 'population',
-    value: ofInhabitants(2 + i),
+  define(INHABITANTS, 'count', 'population', (c) => ({ part: c.population[0], whole: 1 })),
+  define(FOREIGNERS, 'percent', 'population', ofInhabitants(1)),
+  ...AGE_GROUPS.map((name, i) => define(name, 'percent', 'population', ofInhabitants(2 + i))),
+  define(DENSITY, 'per-km2', 'population', (c) => ({
+    part: 100 * c.population[0],
+    whole: c.hectares,
   })),
-  {
-    name: DENSITY,
-    unit: 'per-km2',
-    source: 'population',
-    value: (c) => ({ part: 100 * c.population[0], whole: c.hectares }),
-  },
-  ...PARTIES.map((name, i): Definition => ({
-    name,
-    unit: 'percent',
-    source: 'election',
-    value: partyShare(i),
-  })),
-  ...LANGUAGES.map((name, i): Definition => ({
-    name,
-    unit: 'percent',
-    source: 'census',
-    value: (c) => ({ part: c.languages[1 + i], whole: c.languages[0] }),
-  })),
-  {
-    name: AREA,
-    unit: 'km2',
-    source: 'area',
-    value: (c) => ({ part: c.hectares, whole: 100 }),
-  },
-  {
-    name: CATTLE,
-    unit: 'per-inhabitant',
-    source: 'cattle',
-    value: (c) => ({ part: c.cattle, whole: c.population[0] }),
-  },
+  ...PARTIES.map((name, i) => define(name, 'percent', 'election', partyShare(i))),
+  ...LANGUAGES.map((name, i) =>
+    define(name, 'percent', 'census', (c) => ({ part: c.languages[1 + i], whole: c.languages[0] })),
+  ),
+  define(AREA, 'km2', 'area', (c) => ({ part: c.hectares, whole: 100 })),
+  define(CATTLE, 'per-inhabitant', 'cattle', (c) => ({ part: c.cattle, whole: c.population[0] })),
 ];
 
 // The figures that apply to a vote (spec characteristics, "The figures that apply to a vote").
@@ -142,9 +137,6 @@ export function applyingTo(file: CharacteristicsFile, voteDate: string): Applyin
     election,
   };
 }
-
-// The year of swisstopo's areas, swissBOUNDARIES3D of 2026-01 (the pipeline's download.py).
-export const AREA_YEAR = 2026;
 
 /** The counts of the municipality `number` that apply; the years are those `applyingTo` gave. */
 export function countsOf(file: CharacteristicsFile, applying: Applying, number: number): Counts {
@@ -192,21 +184,25 @@ export interface PanelGroup {
  * heading of its figures' date; the area and the cattle name their years on their own lines.
  */
 export function panelOf(counts: Counts, applying: Applying): readonly PanelGroup[] {
-  const lineOf = (definition: Definition): string => {
-    const named =
-      definition.source === 'area'
-        ? ofYear(definition.name, AREA_YEAR)
-        : definition.source === 'cattle'
-          ? ofYear(definition.name, applying.cattleYear)
-          : definition.name;
-    return characteristic(named, written(definition, definition.value(counts)));
-  };
-  const of = (...sources: Source[]): readonly string[] =>
-    DEFINITIONS.filter((definition) => sources.includes(definition.source)).map(lineOf);
+  const of = (...sources: Source[]): readonly Definition[] =>
+    DEFINITIONS.filter((definition) => sources.includes(definition.source));
+  const lines = (definitions: readonly Definition[], withYear: boolean): readonly string[] =>
+    definitions.map((definition) => {
+      const name = withYear ? ofYear(definition.name, definition.year(applying)) : definition.name;
+      return characteristic(name, written(definition, definition.value(counts)));
+    });
+  const yearOf = (definitions: readonly Definition[]): number =>
+    definitions[0]?.year(applying) ?? Number.NaN;
+  const [population, election, census, land] = [
+    of('population'),
+    of('election'),
+    of('census'),
+    of('area', 'cattle'),
+  ];
   return [
-    { heading: populationHeading(applying.populationYear), lines: of('population') },
-    { heading: electionHeading(applying.election.year), lines: of('election') },
-    { heading: LANGUAGES_HEADING, lines: of('census') },
-    { heading: LAND_HEADING, lines: of('area', 'cattle') },
+    { heading: populationHeading(yearOf(population)), lines: lines(population, false) },
+    { heading: electionHeading(yearOf(election)), lines: lines(election, false) },
+    { heading: languagesHeading(yearOf(census)), lines: lines(census, false) },
+    { heading: LAND_HEADING, lines: lines(land, true) },
   ];
 }
