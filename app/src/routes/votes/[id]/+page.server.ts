@@ -33,5 +33,6 @@ export const load: PageServerLoad = async ({ params }) => {
   // votePage has refused a vote without its file; a tie-break question gets no map.
   const map =
     file === undefined || page.judged === null ? null : mapFiguresOf(file, onTheMap, swissAbroad);
-  return { ...page, map };
+  // The vote's day decides which characteristics apply (spec characteristics).
+  return { ...page, map, voteDate: vote.date };
 };

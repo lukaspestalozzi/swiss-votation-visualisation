@@ -1,5 +1,11 @@
 import { expect, test } from 'vitest';
-import { formatCantonalVotes, formatCount, formatDate, formatShare } from './format.ts';
+import {
+  formatCantonalVotes,
+  formatCount,
+  formatDate,
+  formatQuotient,
+  formatShare,
+} from './format.ts';
 
 test('a count is grouped by three with an apostrophe', () => {
   expect(formatCount(1609152)).toBe("1'609'152");
@@ -32,4 +38,24 @@ test('a date is written with the German name of its month', () => {
   expect(formatDate('2016-02-28')).toBe('28. Februar 2016');
   expect(formatDate('2026-03-08')).toBe('8. März 2026');
   expect(formatDate('2013-12-01')).toBe('1. Dezember 2013');
+});
+
+test('a quotient without decimals is grouped like a count', () => {
+  // Zürich's inhabitants per km² at the end of 2015: 396,955 on 9,188 ha.
+  expect(formatQuotient(100 * 396955, 9188, 0)).toBe("4'320");
+});
+
+test('a quotient with two decimals', () => {
+  // Meienried's area: 65 ha.
+  expect(formatQuotient(65, 100, 2)).toBe('0.65');
+  expect(formatQuotient(9188, 100, 2)).toBe('91.88');
+  expect(formatQuotient(905, 100, 2)).toBe('9.05');
+});
+
+test('a quotient with three decimals is rounded half away from zero', () => {
+  // Cattle per inhabitant at the end of 2015: Meienried 131 on 52, Zürich 850 on 396,955.
+  expect(formatQuotient(131, 52, 3)).toBe('2.519');
+  expect(formatQuotient(850, 396955, 3)).toBe('0.002');
+  expect(formatQuotient(1, 2000, 3)).toBe('0.001');
+  expect(formatQuotient(1, 2001, 3)).toBe('0.000');
 });

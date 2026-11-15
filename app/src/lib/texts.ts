@@ -113,3 +113,41 @@ export const WHOLE_SWITZERLAND = 'Ganze Schweiz';
 export const MAP_FAILED = 'Die Karte kann nicht geladen werden.';
 export const mapLabel = (title: string): string =>
   `Karte der Gemeinden: ${title}. Die Zahlen der Kantone stehen in der Tabelle unter der Karte.`;
+
+// A vote's page: the characteristics of a municipality (specs characteristics and result-map).
+export const INHABITANTS = 'Einwohner';
+export const FOREIGNERS = 'Ausländeranteil';
+export const AGE_GROUPS = [
+  '0–17 Jahre',
+  '18–34 Jahre',
+  '35–49 Jahre',
+  '50–64 Jahre',
+  '65 Jahre und älter',
+] as const;
+export const DENSITY = 'Einwohner je km²';
+export const PARTIES = [
+  'FDP',
+  'Die Mitte (bis 2020 CVP und BDP)',
+  'SP',
+  'SVP',
+  'GLP',
+  'Grüne',
+  'Übrige Parteien',
+] as const;
+export const LANGUAGES = ['Deutsch', 'Französisch', 'Italienisch', 'Rätoromanisch'] as const;
+export const AREA = 'Fläche';
+export const CATTLE = 'Rinder je Einwohner';
+export const PANEL_HEADING = 'Merkmale der Gemeinde';
+export const PANEL_PROMPT = 'Zeigen Sie auf eine Gemeinde, um ihre Merkmale zu sehen.';
+export const PANEL_LOADING = 'Die Merkmale werden geladen …';
+export const PANEL_FAILED = 'Die Merkmale können nicht geladen werden.';
+export const NO_FIGURE = 'keine Angabe';
+export const populationHeading = (year: number): string => `Bevölkerung Ende ${String(year)}`;
+export const electionHeading = (year: number): string => `Nationalratswahl ${String(year)}`;
+export const LANGUAGES_HEADING = 'Hauptsprache, Volkszählung 2000';
+export const LAND_HEADING = 'Fläche und Landwirtschaft';
+export const ofYear = (name: string, year: number): string => `${name} (${String(year)})`;
+export const characteristic = (name: string, value: string): string => `${name}: ${value}`;
+export const CHARACTERISTICS_SOURCES =
+  'Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000, ' +
+  'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).';

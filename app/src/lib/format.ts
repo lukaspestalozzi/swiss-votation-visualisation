@@ -29,6 +29,29 @@ export function formatShare(part: number, whole: number): string {
   return `${String(Math.floor(hundredths / 100))}.${String(hundredths % 100).padStart(2, '0')}%`;
 }
 
+/**
+ * The quotient of two whole numbers with a number of decimals, its whole part grouped as a
+ * count is: 4'320, 0.65, 2.519. It is rounded half away from zero, in whole numbers, like a
+ * share. Without a whole there is no quotient, written "–".
+ */
+export function formatQuotient(part: number, whole: number, decimals: number): string {
+  formatCount(part);
+  formatCount(whole);
+  if (whole === 0) {
+    return '–';
+  }
+  const scale = 10 ** decimals;
+  if (!Number.isSafeInteger(2 * part * scale)) {
+    throw new RangeError(`${String(part)} with ${String(decimals)} decimals is too large`);
+  }
+  const scaled = Math.floor((2 * part * scale + whole) / (2 * whole));
+  const written = formatCount(Math.floor(scaled / scale));
+  if (decimals === 0) {
+    return written;
+  }
+  return `${written}.${String(scaled % scale).padStart(decimals, '0')}`;
+}
+
 /** Cantonal votes, whole or with a half: 16½, ½, 10. */
 export function formatCantonalVotes(cantonalVotes: number): string {
   const halves = cantonalVotes * 2;
