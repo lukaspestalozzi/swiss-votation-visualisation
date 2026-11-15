@@ -189,13 +189,18 @@ the map. Design: decisions 5 to 8, 12, 15 and 18. The figures are those of
   (As built: 43, as planned. Both tests failed first: `colourOf` was not a function, and the
   legend was undefined. The colours of the lakes and the hatching are constants of
   `result-map.ts` too; the legend's texts are in `texts.ts`.)
-- [ ] 2.4 The details of a municipality, with the texts in `app/src/lib/texts.ts`. Write three
+- [x] 2.4 The details of a municipality, with the texts in `app/src/lib/texts.ts`. Write three
   tests, one at a time:
   - Zürich: "Zürich (ZH)", "Ja-Anteil: 31.85%", "Ja-Stimmen: 46'565", "Nein-Stimmen: 99'614";
   - Benken (22) stays "Benken (ZH)";
   - Meienried without a result gives its sentence.
 
   Verify: the app has 46 passed.
+
+  (As built: 46, as planned. Each test failed first:
+  - `detailsOf` was not a function;
+  - "Benken (ZH) (ZH)";
+  - figures that were not there.)
 - [ ] 2.5 The figures of a vote for the map: from the vote's file, the map's numbers and
   `municipalities.json`, each municipality's yes and no votes, the municipalities without a
   result, and the number of entries of Swiss abroad. Write three tests with made-up data, one at

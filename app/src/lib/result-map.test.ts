@@ -1,7 +1,7 @@
 // The map's logic (spec result-map). The municipal figures are those of
 // investigations/map-data.md, "Municipal figures".
 import { expect, test } from 'vitest';
-import { LEGEND, colourOf, colouringOf } from './result-map.ts';
+import { LEGEND, colourOf, colouringOf, detailsOf } from './result-map.ts';
 
 test('named municipalities of 2016-02-28: the side and the class', () => {
   expect(colouringOf(432, 550)).toEqual({ side: 'no', step: 1 }); // Aeugst am Albis, 56.0% no
@@ -60,4 +60,22 @@ test('the legend: the ten entries in order, each with its colour or the hatching
     { label: 'Gleich viele Ja wie Nein', fill: '#f0efec' },
     { label: 'Kein eigenes Ergebnis', fill: 'hatch' },
   ]);
+});
+
+test('the details of a municipality: its name with its canton, its share and its votes', () => {
+  expect(detailsOf('Zürich', 'ZH', [46565, 99614])).toEqual({
+    name: 'Zürich (ZH)',
+    lines: ['Ja-Anteil: 31.85%', "Ja-Stimmen: 46'565", "Nein-Stimmen: 99'614"],
+  });
+});
+
+test('a name that already ends with its canton keeps it once', () => {
+  expect(detailsOf('Benken (ZH)', 'ZH', [210, 201]).name).toBe('Benken (ZH)');
+});
+
+test('a municipality without a result says why it has no figures', () => {
+  expect(detailsOf('Meienried', 'BE', null)).toEqual({
+    name: 'Meienried (BE)',
+    lines: ['Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.'],
+  });
 });
