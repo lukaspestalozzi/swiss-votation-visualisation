@@ -21,6 +21,8 @@ test('a heading per year, from the newest to 2013, and an entry per vote', async
 }) => {
   const votes = await listedVotes(request);
   await page.goto('/');
+  // The screen is German until #9.
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
   const years = await page.getByRole('heading', { level: 2 }).allTextContents();
   // The years of the data of 2026-11-14; a later year comes before them.

@@ -210,8 +210,11 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   servers" did not follow the link back to the start page, as the scenario of `app-shell` says;
   it does now, and a `fetch` of another origin made by the start page only was seen to make it
   fail and name `https://example.org`.)
-- [ ] 10.3 Push the branch and update the pull request. Verify: the CI run shows `specs`, `build`
-  and `pipeline` passed.
+- [x] 10.3 Push the branch and update the pull request. Verify: the CI run shows `specs`, `build`
+  and `pipeline` passed. (As built: passed on `bd6e80b`. The review of the proposal asked for the
+  page language German, which 6.1 had set, and for a browser test of it on both pages; the first
+  test of each browser test file now checks `lang="de"`, and both were seen to fail with
+  `lang="en"`.)
 
 ## Workflow follow-up
 
