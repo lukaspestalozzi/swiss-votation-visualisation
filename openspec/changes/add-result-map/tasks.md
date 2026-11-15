@@ -417,7 +417,7 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
 - [x] 5.2 In `openspec/config.yaml`, move "how the map is drawn" from "Not decided" to the
   decided stack: SVG, own zoom code, the BFS's K4 boundaries, citing this change's design.
   Verify: `openspec validate --all --strict --no-interactive` passes.
-- [ ] 5.3 In `docs/roadmap.md`:
+- [x] 5.3 In `docs/roadmap.md`:
   - add `investigations/map-data.md` to the investigations;
   - add to #10's open decisions whether a library for zoom and move (d3-zoom or another) serves
     better than #6's own code, as Q asked on 2026-11-15.
