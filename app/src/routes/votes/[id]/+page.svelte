@@ -63,7 +63,7 @@
   <p class="outcome">{judged.outcome}</p>
 
   {#if data.map !== null}
-    <ResultMap figures={data.map} />
+    <ResultMap figures={data.map} title={data.title} />
   {/if}
 
   <table>
