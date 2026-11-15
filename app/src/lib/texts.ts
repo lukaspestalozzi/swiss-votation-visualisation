@@ -101,3 +101,9 @@ export const LEGEND_TIE = 'Gleich viele Ja wie Nein';
 export const LEGEND_WITHOUT_RESULT = 'Kein eigenes Ergebnis';
 export const WITHOUT_RESULT =
   'Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.';
+export const MAP_HEADING = 'Karte der Gemeinden';
+export const mapSource = (date: string, lakesSet: number): string =>
+  `Kartengrundlage: © BFS, Gemeinden und Kantone am ${date}, Seen: ThemaKart ${String(lakesSet)}`;
+export const swissAbroadNotOnTheMap = (cantons: number): string =>
+  'Nicht auf der Karte: die Stimmen der Auslandschweizerinnen und Auslandschweizer, ' +
+  `die ${String(cantons)} Kantone getrennt zählen.`;

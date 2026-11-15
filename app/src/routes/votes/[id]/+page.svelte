@@ -13,6 +13,7 @@
     YES_VOTES,
   } from '../../../lib/texts.ts';
   import type { PageProps } from './$types';
+  import ResultMap from './ResultMap.svelte';
 
   let { data }: PageProps = $props();
 </script>
@@ -60,6 +61,10 @@
     {/each}
   </div>
   <p class="outcome">{judged.outcome}</p>
+
+  {#if data.map !== null}
+    <ResultMap figures={data.map} />
+  {/if}
 
   <table>
     <thead>
