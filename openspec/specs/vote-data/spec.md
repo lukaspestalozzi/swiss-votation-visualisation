@@ -472,10 +472,12 @@ leave every data file unchanged, byte for byte.
 
 #### Scenario: The record names every source file
 
-- **GIVEN** the sources as they were on 2026-11-14
+- **GIVEN** the sources as they were on 2026-11-15
 - **WHEN** the record of the sources is read
-- **THEN** it names 45 BFS vote-day files, the answer of the Federal Chancellery and the answer
-  of the BFS register of municipalities, each with its address, size and checksum
+- **THEN** it names 45 BFS vote-day files, the answer of the Federal Chancellery, the answer of
+  the BFS register of municipalities, the register's three answers with the boundaries of the
+  municipalities, of the cantons and of Switzerland, and the BFS ThemaKart set 2026, each with
+  its address, size and checksum
 
 #### Scenario: A second run changes nothing
 

@@ -14,11 +14,11 @@ each canton, and is tested against seven official votes; the pipeline writes the
 125 national votes since 2013, per municipality, and the map's shapes to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #5 of `docs/roadmap.md`,
-`add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list` and
-`publish-site`, are archived, and `openspec/specs/` holds their specs; change #6,
-`add-result-map`, is applied and not yet archived. Two investigations are done:
-`investigations/data-sources.md` and `investigations/map-data.md`.
+after every push to `main` whose checks pass. Changes #1 to #6 of `docs/roadmap.md`,
+`add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
+`publish-site` and `add-result-map`, are archived, and `openspec/specs/` holds their specs. Two
+investigations are done: `investigations/data-sources.md` and `investigations/map-data.md`.
+Next: change #7, `add-characteristics`.
 `README.md` is the human-facing overview.
 
 ## Where things are
@@ -26,7 +26,7 @@ after every push to `main` whose checks pass. Changes #1 to #5 of `docs/roadmap.
 | Path | What |
 |------|------|
 | `openspec/config.yaml` | Project context and rules: product, hard constraints, decided stack and what is still open, module boundaries, quality bar, glossary. Read first. |
-| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `municipalities`, `publishing`, `result-calculation`, `verdicts`, `vote-data`, `vote-list`. |
+| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `municipalities`, `publishing`, `result-calculation`, `result-map`, `verdicts`, `vote-data`, `vote-list`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
 | `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first, `map-data.md` the second (the map's sources, the distances of its colours, the municipal figures its specs cite; scripts in `map-data/`, run as the file says); its scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3, and `check_tie_break.py` what the yes and no of a tie-break question stand for, found while proposing #4. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
