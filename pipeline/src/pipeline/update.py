@@ -7,12 +7,33 @@ were. The steps are decision 13 of the design of the change add-vote-data.
 import json
 import re
 import shutil
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from pipeline import download
 from pipeline.boundaries import MapData, read_map
 from pipeline.chancellery import read_chancellery
+from pipeline.characteristics import (
+    ELECTION_PLACE,
+    NOT_A_MUNICIPALITY,
+    PLACE,
+    CharacteristicsData,
+    Counts,
+    Cube,
+    check_list,
+    election_years,
+    group_parties,
+    onto_list,
+    read_areas,
+    read_cattle,
+    read_correspondences,
+    read_cube,
+    read_elections,
+    read_languages,
+    read_population,
+)
 from pipeline.checks import (
     CantonChange,
     KnownDifference,
@@ -35,7 +56,7 @@ from pipeline.download import (
     chancellery_request,
 )
 from pipeline.feed import CANTONS, Day, read_day
-from pipeline.register import read_register
+from pipeline.register import Municipality, read_register
 from pipeline.write import Data, Source, VoteData, write_data
 
 DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
@@ -137,8 +158,19 @@ class _Downloads:
                 part.replace(path)
         return content
 
-    def record(self, address: str, content: bytes, stated: str | None) -> None:
-        self.sources.append(Source(address, content, stated))
+    def record(
+        self, address: str, content: bytes, stated: str | None, query: str | None = None
+    ) -> None:
+        self.sources.append(Source(address, content, stated, query))
+
+    def answer(self, request: Request, name: str, what: str) -> bytes:
+        """A source that must be there, recorded with the query it answers."""
+        content = self.get(request, name)
+        if content is None:
+            raise SourceError(f"{request.address}: {what}")
+        query = request.body.decode("utf-8") if request.body is not None else None
+        self.record(request.address, content, None, query)
+        return content
 
 
 def _previous(data: Path) -> dict[int, tuple[str, bool]]:
@@ -191,11 +223,10 @@ def update(
     downloads = _Downloads(project / "downloads", fetch, reuse_downloads)
 
     request = chancellery_request()
-    content = downloads.get(request, "chancellery.json")
-    if content is None:
-        raise SourceError(f"{request.address}: the Federal Chancellery gives no answer")
-    downloads.record(request.address, content, None)
-    chancellery = read_chancellery(_json(content, "chancellery.json"), "chancellery.json")
+    answer = downloads.answer(
+        request, "chancellery.json", "the Federal Chancellery gives no answer"
+    )
+    chancellery = read_chancellery(_json(answer, "chancellery.json"), "chancellery.json")
 
     days: list[Day] = []
     for date in chancellery.vote_days:
@@ -245,7 +276,9 @@ def update(
         raise SourceError(
             f"the sources no longer give these votes of the data files: {', '.join(lost)}"
         )
-    built = Data(reference, votes, municipalities, swiss_abroad, downloads.sources, shapes)
+    first_vote_day = min(vote.vote.date for vote in votes)
+    found = _characteristics(downloads, reference, municipalities, first_vote_day)
+    built = Data(reference, votes, municipalities, swiss_abroad, downloads.sources, shapes, found)
     _replace(data, built)
     return Report(
         reference_date=reference,
@@ -290,6 +323,103 @@ def _map(downloads: _Downloads, reference: str, listed: list[int]) -> MapData:
         listed=listed,
         lakes_set=THEMAKART_YEAR,
     )
+
+
+def _register_date(date: str) -> str:
+    """A date of the data (2026-01-01) as the register writes it in its addresses."""
+    year, month, day = date.split("-")
+    return f"{day}-{month}-{year}"
+
+
+def _characteristics(
+    downloads: _Downloads, reference: str, municipalities: list[Municipality], first_vote_day: str
+) -> CharacteristicsData:
+    """The counts of the characteristics, each source checked against the list it gives and
+    brought onto the list of `reference` (design of add-characteristics, decisions 8 to 10)."""
+    today = [m.number for m in municipalities]
+    listed: dict[str, list[int]] = {}
+    successors: dict[str, dict[int, set[int]]] = {}
+    for date in sorted(set(download.LIST_DATES.values())):
+        name = f"register_{date}.csv"
+        content = downloads.answer(
+            Request(REGISTER.format(date=_register_date(date))), name, f"no list for {date}"
+        )
+        listed[date] = [m.number for m in read_register(content.decode("utf-8-sig"), name)]
+        address = download.CORRESPONDENCES.format(
+            start=_register_date(date), end=_register_date(reference)
+        )
+        name = f"correspondences_{date}.csv"
+        content = downloads.answer(Request(address), name, f"no correspondences from {date}")
+        successors[date] = read_correspondences(content.decode("utf-8-sig"), name)
+
+    def cube(request: Request, name: str, table: str) -> Cube:
+        found = read_cube(downloads.answer(request, name, f"STAT-TAB gives no {name}"), name)
+        date = download.LIST_DATES[table]
+        places = ELECTION_PLACE if table == download.ELECTIONS else PLACE
+        numbers = [n for n in found.municipalities(places).values() if n < NOT_A_MUNICIPALITY]
+        check_list(name, date, numbers, listed[date])
+        return found
+
+    def onto(table: str, counts: Mapping[int, Counts], what: str) -> dict[int, Counts]:
+        date = download.LIST_DATES[table]
+        return onto_list(counts, successors[date], today, what)
+
+    first_year = int(first_vote_day[:4]) - 1
+    totals = cube(download.population_totals(), "population_totals.json", download.POPULATION)
+    years = [int(year) for year in totals.codes_of("Jahr") if int(year) >= first_year]
+    ages = [
+        cube(download.population_ages(year, first, last), f"population_ages_{year}_{first}.json",
+             download.POPULATION)
+        for year in years
+        for first, last in download.AGE_PARTS
+    ]  # fmt: skip
+    population: dict[int, dict[int, list[int]]] = {}
+    for year, by_number in read_population(totals, ages).items():
+        moved = onto(download.POPULATION, by_number, f"the population of {year}")
+        population[year] = {n: _given(counts) for n, counts in moved.items()}
+
+    name = "elections_description.json"
+    content = downloads.answer(download.description(download.ELECTIONS), name, "no description")
+    elections: dict[int, dict[int, Counts]] = {}
+    for year in election_years(_description_years(content, name), first_vote_day, name):
+        found = cube(download.election(year), f"election_{year}.json", download.ELECTIONS)
+        rows: dict[int, Counts] = {
+            n: None if votes is None else group_parties(votes)
+            for n, votes in read_elections(found)[year].items()
+        }
+        elections[year] = onto(download.ELECTIONS, rows, f"the election of {year}")
+
+    farms = read_cattle(cube(download.cattle(), "cattle.json", download.FARMS))
+    cattle: dict[int, dict[int, int]] = {}
+    for year in sorted(year for year in farms if year >= first_year):
+        moved = onto(download.FARMS, {n: [head] for n, head in farms[year].items()}, "cattle")
+        cattle[year] = {n: _given(counts)[0] for n, counts in moved.items()}
+
+    census = read_languages(cube(download.census(), "census_2000.json", download.CENSUS_2000))
+    moved = onto(download.CENSUS_2000, census, "the census of 2000")
+    languages = {n: _given(counts) for n, counts in moved.items()}
+
+    name = "swissboundaries3d_2026-01.zip"
+    content = downloads.answer(Request(download.SWISSBOUNDARIES), name, "swisstopo gives no areas")
+    areas = read_areas(content, name)
+    check_list(name, reference, areas, today)
+    return CharacteristicsData(today, population, elections, cattle, languages, areas)
+
+
+def _given(counts: Counts) -> list[int]:
+    """Counts every municipality has: only an election can be without them."""
+    if counts is None:
+        raise SourceError("a municipality has no counts where every one must have them")
+    return counts
+
+
+def _description_years(content: bytes, name: str) -> list[int]:
+    """The years a STAT-TAB table's description gives."""
+    variables = _json(content, name).get("variables", [])
+    years = [v["values"] for v in variables if v.get("code") == "Jahr"]
+    if len(years) != 1 or not all(re.fullmatch(r"[0-9]{4}", y) for y in years[0]):
+        raise SourceError(f"{name}: no years of the elections")
+    return [int(year) for year in years[0]]
 
 
 def _named(vote_id: int, date: str) -> str:

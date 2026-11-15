@@ -7,10 +7,12 @@ sources: no time of the run is written.
 - `votes/<id>.json`: the entries of one vote, one canton per line.
 - `municipalities.json`: the list of municipalities and the Swiss abroad, one canton per line.
 - `map.json`: the map's shapes, one municipality, canton or lake per line.
+- `characteristics.json`: the counts of the characteristics, one year or election per line.
 - `sources.json`: the source files the data was made from.
 
 The shape of each file is decision 12 of the design of the change add-vote-data, and for
-`map.json` decision 14 of the design of the change add-result-map.
+`map.json` decision 14 of the design of the change add-result-map, for `characteristics.json`
+decision 12 of the design of the change add-characteristics.
 """
 
 import hashlib
@@ -23,17 +25,21 @@ import polars as pl
 
 from pipeline.boundaries import MapData
 from pipeline.chancellery import Official
+from pipeline.characteristics import CharacteristicsData
+from pipeline.download import ELECTION_DAYS
 from pipeline.feed import CANTONS, Vote
 from pipeline.register import Municipality
 
 
 @dataclass(frozen=True)
 class Source:
-    """A source file: its address, its content, and the time it states for itself, if any."""
+    """A source file: its address, its content, the time it states for itself, if any, and for
+    an answer to a query, the query (the body of the request)."""
 
     address: str
     content: bytes
     stated: str | None
+    query: str | None = None
 
 
 @dataclass(frozen=True, eq=False)
@@ -58,6 +64,7 @@ class Data:
     swiss_abroad: dict[str, int]
     sources: list[Source]
     map: MapData
+    characteristics: CharacteristicsData
 
 
 def _dumps(value: Any) -> str:
@@ -177,6 +184,38 @@ def _map_json(data: Data) -> str:
     )
 
 
+def _compact(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
+
+def _characteristics_json(data: Data) -> str:
+    """Each array follows the list's numbers; one line per year and per election."""
+    found = data.characteristics
+    numbers = sorted(found.municipalities)
+
+    def yearly(by_year: dict[int, dict[int, Any]]) -> str:
+        years = sorted(by_year)
+        lines = ",\n".join(f"    {_compact([by_year[y][n] for n in numbers])}" for y in years)
+        return f'{{"years": {_dumps(years)}, "counts": [\n{lines}\n  ]}}'
+
+    elections = ",\n".join(
+        f'    {{"year": {year}, "day": {_dumps(ELECTION_DAYS[year])}, '
+        f'"votes": {_compact([found.elections[year][n] for n in numbers])}}}'
+        for year in sorted(found.elections)
+    )
+    return (
+        "{\n"
+        f'  "referenceDate": {_dumps(data.reference_date)},\n'
+        f'  "municipalities": {_dumps(numbers)},\n'
+        f'  "population": {yearly(found.population)},\n'
+        f'  "elections": [\n{elections}\n  ],\n'
+        f'  "cattle": {yearly(found.cattle)},\n'
+        f'  "languages2000": {_compact([found.languages[n] for n in numbers])},\n'
+        f'  "area": {_compact([found.areas[n] for n in numbers])}\n'
+        "}\n"
+    )
+
+
 def _sources_json(data: Data) -> str:
     records = [
         {
@@ -184,8 +223,9 @@ def _sources_json(data: Data) -> str:
             "bytes": len(source.content),
             "sha256": hashlib.sha256(source.content).hexdigest(),
             "stated": source.stated,
+            "query": source.query,
         }
-        for source in sorted(data.sources, key=lambda source: source.address)
+        for source in sorted(data.sources, key=lambda source: (source.address, source.query or ""))
     ]
     lines = ",\n".join(f"    {_dumps(record)}" for record in records)
     return f'{{\n  "sources": [\n{lines}\n  ]\n}}\n'
@@ -201,4 +241,5 @@ def write_data(directory: Path, data: Data) -> None:
         )
     (directory / "municipalities.json").write_text(_municipalities_json(data), encoding="utf-8")
     (directory / "map.json").write_text(_map_json(data), encoding="utf-8")
+    (directory / "characteristics.json").write_text(_characteristics_json(data), encoding="utf-8")
     (directory / "sources.json").write_text(_sources_json(data), encoding="utf-8")

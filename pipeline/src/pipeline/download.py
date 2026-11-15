@@ -1,5 +1,6 @@
-"""The addresses of the three sources, the Federal Chancellery's query, and the downloads."""
+"""The addresses of the sources, the queries they are asked, and the downloads."""
 
+import json
 import string
 import time
 import urllib.error
@@ -7,6 +8,7 @@ import urllib.parse
 import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from pipeline.counts import SourceError
 
@@ -28,6 +30,38 @@ THEMAKART_YEAR = 2026
 SPARQL = "https://lindas.admin.ch/query"
 # The first day of the votes the data covers.
 SINCE = "2013-01-01"
+
+# The characteristics (investigations/characteristics.md). The BFS statistics API (STAT-TAB)
+# answers a query of a table, POSTed in JSON, in json-stat2; a GET of the address describes the
+# table. A query names every dimension: one it leaves out is summed up silently.
+STAT_TAB = "https://www.pxweb.bfs.admin.ch/api/v1/de/{table}/{table}.px"
+POPULATION = "px-x-0102010000_101"
+ELECTIONS = "px-x-1702020000_105"
+FARMS = "px-x-0702000000_104"
+CENSUS_2000 = "px-x-4003000000_123"
+# The date of the register's list each table gives for all its years. When STAT-TAB moves a
+# table to a newer list, the update stops; the new date goes here (pipeline/README.md).
+LIST_DATES = {POPULATION: "2025-04-06", ELECTIONS: "2023-01-01", FARMS: "2025-04-06",
+              CENSUS_2000: "2000-12-05"}  # fmt: skip
+# STAT-TAB answers at most 100,000 cells per query and 50 queries in 15 seconds.
+STAT_TAB_PAUSE = 0.4
+# A year's single years of age, in three queries.
+AGE_PARTS = ((0, 33), (34, 66), (67, 100))
+# The days of the National Council elections, as the Federal Council's circulars to the cantons
+# give them (Federal Gazette; investigations/characteristics.md). The table gives the years.
+ELECTION_DAYS = {2011: "2011-10-23", 2015: "2015-10-18", 2019: "2019-10-20", 2023: "2023-10-22"}
+# BFS register: the municipalities of a list that changed until another date, and what they are
+# part of then; dates as dd-mm-yyyy.
+CORRESPONDENCES = (
+    "https://www.agvchapp.bfs.admin.ch/api/communes/correspondances"
+    "?startPeriod={start}&endPeriod={end}"
+)
+# swisstopo: swissBOUNDARIES3D of 2026-01, whose areas are those of the list of 2026-01-01.
+SWISSBOUNDARIES = (
+    "https://data.geo.admin.ch/ch.swisstopo.swissboundaries3d/swissboundaries3d_2026-01/"
+    "swissboundaries3d_2026-01_2056_5728.shp.zip"
+)
+SWISSBOUNDARIES_DATE = "2026-01-01"
 
 # One row per national result since SINCE, with the BFS's id. The Chancellery writes "" for a
 # figure it does not give yet; the reader treats that as none. Each figure has an OPTIONAL of its
@@ -84,6 +118,83 @@ def chancellery_request() -> Request:
     )
 
 
+PLACES = "Kanton (-) / Bezirk (>>) / Gemeinde (......)"
+
+
+def _item(code: str, values: list[str]) -> dict[str, Any]:
+    return {"code": code, "selection": {"filter": "item", "values": values}}
+
+
+def _all(code: str) -> dict[str, Any]:
+    return {"code": code, "selection": {"filter": "all", "values": ["*"]}}
+
+
+def stat_tab(table: str, query: list[dict[str, Any]]) -> Request:
+    """A query of a STAT-TAB table, answered in json-stat2."""
+    body = json.dumps({"query": query, "response": {"format": "json-stat2"}})
+    return Request(
+        STAT_TAB.format(table=table), body.encode(), (("Content-Type", "application/json"),)
+    )
+
+
+def description(table: str) -> Request:
+    """A STAT-TAB table's description: its dimensions and their codes."""
+    return Request(STAT_TAB.format(table=table))
+
+
+def _people(nationalities: list[str], ages: list[str]) -> list[dict[str, Any]]:
+    return [
+        _all(PLACES),
+        _item("Bevölkerungstyp", ["1"]),
+        _item("Staatsangehörigkeit (Kategorie)", nationalities),
+        _item("Geschlecht", ["-99999"]),
+        _item("Alter", ages),
+    ]
+
+
+def population_totals() -> Request:
+    """The permanent resident population and its foreigners, every year."""
+    return stat_tab(POPULATION, [_all("Jahr"), *_people(["-99999", "2"], ["-99999"])])
+
+
+def population_ages(year: int, first: int, last: int) -> Request:
+    """The permanent resident population of a year by single year of age."""
+    ages = [str(age) for age in range(first, last + 1)]
+    return stat_tab(POPULATION, [_item("Jahr", [str(year)]), *_people(["-99999"], ages)])
+
+
+def election(year: int) -> Request:
+    """The votes of every party in a National Council election, per district and municipality."""
+    return stat_tab(
+        ELECTIONS,
+        [
+            _all("Bezirk (>>) / Gemeinde (......)"),
+            _item("Jahr", [str(year)]),
+            _all("Partei"),
+            _item("Ergebnisse", ["1"]),
+        ],
+    )
+
+
+def cattle() -> Request:
+    """The cattle of the farm structure survey, every year."""
+    return stat_tab(
+        FARMS,
+        [_item("Beobachtungseinheit", ["15"]), _all(PLACES), _item("Betriebssystem", ["0"]),
+         _all("Jahr")],
+    )  # fmt: skip
+
+
+def census() -> Request:
+    """The census of 2000: the inhabitants (economic residence) by main language."""
+    return stat_tab(
+        CENSUS_2000,
+        [_item("Wohnsitztyp", ["1"]), _all(PLACES),
+         _item("Staatsangehörigkeit (Kategorie)", ["0"]),
+         _item("Hauptsprache", ["0", "1", "2", "3", "4"])],
+    )  # fmt: skip
+
+
 def fetch_url(request: Request) -> bytes | None:
     """Download over HTTPS. HTTP 403 and 404 mean that there is no such file; other failures
     are tried again, then stop the run with the address."""
@@ -92,7 +203,9 @@ def fetch_url(request: Request) -> bytes | None:
         try:
             with urllib.request.urlopen(http, timeout=120) as answer:
                 content: bytes = answer.read()
-                return content
+            if request.address.startswith(STAT_TAB.split("{", 1)[0]):
+                time.sleep(STAT_TAB_PAUSE)
+            return content
         except urllib.error.HTTPError as error:
             if error.code in (403, 404):
                 return None
