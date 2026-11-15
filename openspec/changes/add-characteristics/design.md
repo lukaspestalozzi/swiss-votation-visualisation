@@ -251,10 +251,9 @@ Alternatives considered:
 - **The figures in each vote's page:** about 150 KB per page, repeated on every page.
 - **One file per year.**
 
-### 14. A panel beside the map, keeping the last municipality (Q)
+### 14. A panel beside the map, keeping the municipality last clicked (Q)
 
-The panel, headed "Merkmale der Gemeinde", shows the municipality last pointed at, clicked or
-tapped:
+The panel, headed "Merkmale der Gemeinde", shows the municipality last clicked or tapped:
 - **Its contents:** its name, then four groups headed with their dates:
   - "Bevölkerung Ende <year>": the inhabitants, the foreigners, the five ages, the density;
   - "Nationalratswahl <year>": the seven parties;
@@ -262,9 +261,10 @@ tapped:
   - "Fläche und Landwirtschaft": the area (2026) and the cattle (year).
 
   Then a line names the sources.
-- **When it changes:** it keeps the municipality while the pointer leaves the map, points at a
-  lake or moves to the panel, so its figures can be read. Before the first one, it asks the
-  visitor to point at a municipality.
+- **When it changes:** only with a click or a tap on a municipality. Pointing shows the box of
+  details on the map, as before, and leaves the panel as it is, so the pointer can cross the map
+  to the panel and its figures can be read. Before the first click, it asks the visitor to click
+  a municipality.
 - **Where it stands:** to the right of the map in a window at least 960 pixels wide, otherwise
   below it (a CSS grid with one media query). At 960 pixels the map keeps about 600 pixels of
   width beside a panel of about 20rem.
@@ -274,6 +274,10 @@ Alternatives considered:
 - **All characteristics in the box on the map:** about 16 lines more, covering much of the map.
 - **Five key figures in the box.**
 - **Switzerland as a whole while nothing is selected**, or **an empty panel.**
+- **The panel following the pointer**, as first decided. The first browser test showed that it
+  cannot be read: on the way from Zürich to the panel the pointer crosses other municipalities
+  (Gommiswald), and the panel shows the last one crossed. Q chose clicking on 2026-11-15.
+- **Pointing previews, a click pins.** More state, and a pinned panel needs a way to unpin.
 
 ### 15. How the values are written
 
@@ -365,8 +369,8 @@ and the file is served with the site.
 
 ### Performance budget
 
-- **Pointing:** 16 ms of main-thread work per frame, now with the panel's update (spec
-  `result-map`). Its 21 values are computed from one municipality's counts.
+- **Pointing and clicking:** 16 ms of main-thread work per frame, now with the panel's update
+  on a click (spec `result-map`). Its 21 values are computed from one municipality's counts.
 - **Loading:** `characteristics.json` is about 1.34 MB, 563 KB gzipped, loaded once per visit.
   The map does not wait for it (decision 13). Parsing it is not budgeted; the browser tests
   print its time.

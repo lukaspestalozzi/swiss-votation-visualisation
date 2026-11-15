@@ -81,7 +81,8 @@
     new Map(figures.figures.map(([number, yes, no]) => [number, [yes, no] as const])),
   );
 
-  // The municipality pointed at, or clicked or tapped, and the last one, which the panel keeps.
+  // The municipality pointed at, or clicked or tapped; and the one last clicked or tapped, which
+  // the panel shows (design of add-characteristics, decision 14).
   let selected = $state<number | null>(null);
   let last = $state<number | null>(null);
   const details = $derived.by(() => {
@@ -179,7 +180,7 @@
     const target = event.target;
     const number = target instanceof SVGPathElement ? target.dataset.number : undefined;
     selected = number === undefined ? null : Number(number);
-    if (selected !== null) last = selected;
+    if (event.type === 'click' && selected !== null) last = selected;
   }
 
   onMount(() => {

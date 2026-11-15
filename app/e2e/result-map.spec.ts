@@ -482,3 +482,142 @@ test('a press let go outside the map does not move it later', async ({ page }) =
   await page.mouse.move(box.x + box.width / 2, y, { steps: 10 });
   expect(await viewOf(page)).toEqual(before);
 });
+
+// The panel of characteristics beside the map (spec result-map); the figures are those of
+// investigations/characteristics.md.
+const panel = (page: Page) => page.locator('.panel');
+
+async function pointAt(page: Page, number: number): Promise<void> {
+  const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
+  await page.mouse.move(point.x, point.y);
+}
+
+async function clickAt(page: Page, number: number): Promise<void> {
+  const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
+  await page.mouse.click(point.x, point.y);
+}
+
+test('the panel shows the characteristics of the municipality clicked', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 261);
+  await expect(panel(page).getByRole('heading', { level: 3 })).toHaveText('Merkmale der Gemeinde');
+  await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+  await expect(panel(page).locator('h4')).toHaveText([
+    'Bevölkerung Ende 2015',
+    'Nationalratswahl 2015',
+    'Hauptsprache, Volkszählung 2000',
+    'Fläche und Landwirtschaft',
+  ]);
+  await expect(panel(page).locator('li')).toHaveText([
+    "Einwohner: 396'955",
+    'Ausländeranteil: 32.03%',
+    '0–17 Jahre: 15.37%',
+    '18–34 Jahre: 27.13%',
+    '35–49 Jahre: 25.41%',
+    '50–64 Jahre: 16.43%',
+    '65 Jahre und älter: 15.66%',
+    "Einwohner je km²: 4'320",
+    'FDP: 14.07%',
+    'Die Mitte (bis 2020 CVP und BDP): 5.77%',
+    'SP: 31.60%',
+    'SVP: 17.93%',
+    'GLP: 9.22%',
+    'Grüne: 10.66%',
+    'Übrige Parteien: 10.74%',
+    'Deutsch: 77.70%',
+    'Französisch: 2.13%',
+    'Italienisch: 4.70%',
+    'Rätoromanisch: 0.27%',
+    'Fläche (2026): 91.88 km²',
+    'Rinder je Einwohner (2015): 0.002',
+  ]);
+});
+
+test('the panel takes the figures that apply to the vote', async ({ page }) => {
+  await page.goto('votes/6850/');
+  await clickAt(page, 261);
+  await expect(panel(page).locator('h4')).toHaveText([
+    'Bevölkerung Ende 2025',
+    'Nationalratswahl 2023',
+    'Hauptsprache, Volkszählung 2000',
+    'Fläche und Landwirtschaft',
+  ]);
+});
+
+test('the density, the area and the cattle are written with their decimals', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 389);
+  await expect(panel(page).locator('li', { hasText: 'Einwohner je km²' })).toHaveText(
+    'Einwohner je km²: 80',
+  );
+  await expect(panel(page).locator('li', { hasText: 'Fläche' })).toHaveText(
+    'Fläche (2026): 0.65 km²',
+  );
+  await expect(panel(page).locator('li', { hasText: 'Rinder' })).toHaveText(
+    'Rinder je Einwohner (2015): 2.519',
+  );
+});
+
+test('a characteristic without a figure: "keine Angabe"', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 389);
+  await expect(panel(page).locator('.name')).toHaveText('Meienried (BE)');
+  await expect(panel(page).locator('li').first()).toHaveText('Einwohner: 52');
+  await expect(panel(page).locator('li', { hasText: 'keine Angabe' })).toHaveText([
+    'FDP: keine Angabe',
+    'Die Mitte (bis 2020 CVP und BDP): keine Angabe',
+    'SP: keine Angabe',
+    'SVP: keine Angabe',
+    'GLP: keine Angabe',
+    'Grüne: keine Angabe',
+    'Übrige Parteien: keine Angabe',
+  ]);
+});
+
+test('the panel names the sources of the characteristics', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 261);
+  await expect(panel(page).locator('.source')).toHaveText(
+    'Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000, ' +
+      'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).',
+  );
+});
+
+test('before clicking, the panel asks for a click on a municipality', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await expect(panel(page)).toContainText(
+    'Klicken Sie auf eine Gemeinde, um ihre Merkmale zu sehen.',
+  );
+  await expect(panel(page).locator('li')).toHaveCount(0);
+});
+
+test('the panel keeps the municipality clicked while the pointer crosses the map to it', async ({
+  page,
+}) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 261);
+  const box = await panel(page).boundingBox();
+  if (box === null) throw new Error('the panel is not on the screen');
+  // On its way the pointer crosses the municipalities east of Zürich.
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 10 });
+  await expect(details(page)).toBeEmpty();
+  await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+  await expect(panel(page).locator('li').first()).toHaveText("Einwohner: 396'955");
+});
+
+test('pointing at another municipality does not change the panel', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 261);
+  await pointAt(page, 351);
+  await expect(details(page).locator('.name')).toHaveText('Bern (BE)');
+  await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+});
+
+test('clicking another municipality shows it in the panel', async ({ page }) => {
+  await page.goto('votes/5960/');
+  await clickAt(page, 261);
+  await clickAt(page, 351);
+  await expect(panel(page).locator('.name')).toHaveText('Bern (BE)');
+  await expect(panel(page).locator('li').first()).toHaveText("Einwohner: 131'554");
+});
