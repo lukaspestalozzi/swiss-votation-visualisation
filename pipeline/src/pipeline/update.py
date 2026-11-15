@@ -33,6 +33,7 @@ from pipeline.characteristics import (
     read_elections,
     read_languages,
     read_population,
+    required_years,
 )
 from pipeline.checks import (
     CantonChange,
@@ -348,7 +349,7 @@ def _characteristics(
         address = download.CORRESPONDENCES.format(
             start=_register_date(date), end=_register_date(reference)
         )
-        name = f"correspondences_{date}.csv"
+        name = f"correspondences_{date}_to_{reference}.csv"
         content = downloads.answer(Request(address), name, f"no correspondences from {date}")
         successors[date] = read_correspondences(content.decode("utf-8-sig"), name)
 
@@ -366,7 +367,8 @@ def _characteristics(
 
     first_year = int(first_vote_day[:4]) - 1
     totals = cube(download.population_totals(), "population_totals.json", download.POPULATION)
-    years = [int(year) for year in totals.codes_of("Jahr") if int(year) >= first_year]
+    given = [int(year) for year in totals.codes_of("Jahr")]
+    years = required_years(given, first_year, "population_totals.json")
     ages = [
         cube(download.population_ages(year, first, last), f"population_ages_{year}_{first}.json",
              download.POPULATION)
@@ -391,7 +393,7 @@ def _characteristics(
 
     farms = read_cattle(cube(download.cattle(), "cattle.json", download.FARMS))
     cattle: dict[int, dict[int, int]] = {}
-    for year in sorted(year for year in farms if year >= first_year):
+    for year in required_years(farms, first_year, "cattle.json"):
         moved = onto(download.FARMS, {n: [head] for n, head in farms[year].items()}, "cattle")
         cattle[year] = {n: _given(counts)[0] for n, counts in moved.items()}
 

@@ -91,8 +91,8 @@ farm structure survey) divided by the inhabitants at the end of the same year.
 ### Requirement: The figures that apply to a vote
 
 For a vote, a characteristic SHALL take:
-- the population at the end of, and the cattle of, the last year before the vote day of which
-  the data file has figures;
+- the population at the end of the last year before the vote day of which the data file has
+  figures, and the cattle of the last such year of which it has the cattle and the population;
 - the party strengths of the last National Council election before the vote day;
 - the languages of the census of 2000;
 - the area of 2026.
@@ -120,6 +120,19 @@ For a vote, a characteristic SHALL take:
 - **GIVEN** a data file whose newest population and cattle are of 2025
 - **WHEN** the characteristics apply to a vote of 2027-03-07
 - **THEN** they take the population at the end of 2025 and the cattle of 2025
+
+#### Scenario: The cattle published before the population
+
+- **GIVEN** a data file whose newest cattle are of 2026 and whose newest population is of 2025
+- **WHEN** the characteristics apply to a vote of 2027-03-07
+- **THEN** they take the population at the end of 2025 and the cattle of 2025
+
+#### Scenario: The population published before the cattle
+
+- **GIVEN** a data file whose newest population is of 2025 and whose newest cattle are of 2024
+- **WHEN** the characteristics apply to a vote of 2026-03-08
+- **THEN** they take the population at the end of 2025, and the cattle of 2024 per inhabitant
+  at the end of 2024
 
 ### Requirement: Figures of an earlier list of municipalities
 
@@ -237,7 +250,8 @@ votes there.
 The update command SHALL write `app/static/data/characteristics.json` with, for each
 municipality of the list, the counts every characteristic is computed from, for every year from
 the one before the first vote day to the newest the sources give, and every election from the
-last before the first vote day. It SHALL hold no value that the sources do not give. The same
+last before the first vote day. It SHALL hold no value that the sources do not give. When a
+source lacks one of these years or elections, the update SHALL stop and name them. The same
 sources SHALL give the same bytes.
 
 #### Scenario: The years in the file
@@ -247,6 +261,13 @@ sources SHALL give the same bytes.
 - **THEN** the file holds the population at the end of, and the cattle of, each year from 2012
   to 2025, the elections of 2011, 2015, 2019 and 2023, the census of 2000 and the areas of 2026,
   for 2,110 municipalities
+
+#### Scenario: A year missing
+
+- **GIVEN** a table of the cattle that gives no figures of 2012
+- **WHEN** the update command runs
+- **THEN** it stops with "cattle.json: no figures of the years [2012]", and the data files stay
+  as they were
 
 #### Scenario: A second run changes nothing
 

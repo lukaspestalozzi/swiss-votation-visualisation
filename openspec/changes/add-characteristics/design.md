@@ -64,6 +64,10 @@ in spring meets this until then. The app chooses the years from those the file h
 function. A later run of the update that brings the new year changes those votes' figures, and
 nothing else needs to change.
 
+The cattle are counted per the inhabitants of their own year, so their year is the last of
+which the file has both the cattle and the population (the review of the pull request found the
+ratio mixing two years when one was published before the other).
+
 Alternatives considered:
 - **The newest figures for every vote.** The smallest data and the simplest code, but a vote of
   2013 would be filtered by figures of 2025 and the election of 2023. GLP and the Greens rose

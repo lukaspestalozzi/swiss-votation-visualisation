@@ -18,6 +18,7 @@ from pipeline.characteristics import (
     read_elections,
     read_languages,
     read_population,
+    required_years,
 )
 from pipeline.counts import SourceError
 from pipeline.register import read_register
@@ -293,3 +294,33 @@ def test_an_election_without_a_day_stops_the_run() -> None:
     message = "elections: the elections of \\[2027\\] have no day in the pipeline's ELECTION_DAYS"
     with pytest.raises(SourceError, match=f"^{message}"):
         election_years(table, "2013-03-03", "elections")
+
+
+def test_correspondences_without_a_change_are_an_empty_mapping() -> None:
+    # A table on the votes' own list: the register names no municipality that changed.
+    text = made_up.CORRESPONDENCES_HEADER + "\n"
+    assert read_correspondences(text, "correspondences_2026-01-01.csv") == {}
+
+
+def test_a_table_without_the_first_year_needed_stops_the_run() -> None:
+    message = "population_totals.json: no figures of the years \\[2012\\]"
+    with pytest.raises(SourceError, match=f"^{message}"):
+        required_years(range(2013, 2026), 2012, "population_totals.json")
+
+
+def test_a_year_missing_between_the_first_and_the_newest_stops_the_run() -> None:
+    with pytest.raises(SourceError, match=r"^cattle.json: no figures of the years \[2017\]"):
+        required_years([2014, 2015, 2016, 2018], 2015, "cattle.json")
+
+
+def test_the_years_needed_are_those_from_the_first_on() -> None:
+    assert required_years([2013, 2014, 2015, 2016], 2014, "cattle.json") == [2014, 2015, 2016]
+
+
+def test_an_election_missing_from_the_last_before_the_first_vote_on_stops_the_run() -> None:
+    message = r"^elections: no figures of the elections \[2011\]"
+    with pytest.raises(SourceError, match=message):
+        election_years([2015, 2019, 2023], "2013-03-03", "elections")
+    message = r"^elections: no figures of the elections \[2019\]"
+    with pytest.raises(SourceError, match=message):
+        election_years([2007, 2011, 2015, 2023], "2013-03-03", "elections")

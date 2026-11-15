@@ -33,6 +33,8 @@ export interface Counts {
   readonly languages: readonly number[];
   readonly hectares: number;
   readonly cattle: number;
+  // The inhabitants at the end of the cattle's year.
+  readonly cattleInhabitants: number;
 }
 
 // Where a characteristic's figures come from, which gives the date of its figures.
@@ -107,7 +109,10 @@ export const DEFINITIONS: readonly Definition[] = [
     define(name, 'percent', 'census', (c) => ({ part: c.languages[1 + i], whole: c.languages[0] })),
   ),
   define(AREA, 'km2', 'area', (c) => ({ part: c.hectares, whole: 100 })),
-  define(CATTLE, 'per-inhabitant', 'cattle', (c) => ({ part: c.cattle, whole: c.population[0] })),
+  define(CATTLE, 'per-inhabitant', 'cattle', (c) => ({
+    part: c.cattle,
+    whole: c.cattleInhabitants,
+  })),
 ];
 
 // The figures that apply to a vote (spec characteristics, "The figures that apply to a vote").
@@ -133,7 +138,11 @@ export function applyingTo(file: CharacteristicsFile, voteDate: string): Applyin
   if (election === undefined) throw new RangeError(`no election before ${voteDate}`);
   return {
     populationYear: lastYearBefore(file.population.years, voteDate),
-    cattleYear: lastYearBefore(file.cattle.years, voteDate),
+    // A year with the population too, whose inhabitants the cattle are counted per.
+    cattleYear: lastYearBefore(
+      file.cattle.years.filter((year) => file.population.years.includes(year)),
+      voteDate,
+    ),
     election,
   };
 }
@@ -146,12 +155,14 @@ export function countsOf(file: CharacteristicsFile, applying: Applying, number: 
   }
   const people = file.population.counts[file.population.years.indexOf(applying.populationYear)];
   const head = file.cattle.counts[file.cattle.years.indexOf(applying.cattleYear)];
+  const ofCattleYear = file.population.counts[file.population.years.indexOf(applying.cattleYear)];
   return {
     population: people[i],
     votes: applying.election.votes[i],
     languages: file.languages2000[i],
     hectares: file.area[i],
     cattle: head[i],
+    cattleInhabitants: ofCattleYear[i][0],
   };
 }
 
