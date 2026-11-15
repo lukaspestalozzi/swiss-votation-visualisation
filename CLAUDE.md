@@ -92,7 +92,7 @@ and checks them. Nothing imports it, and it does not use the calculation.
 | `pipeline/canton-changes.json` | The municipalities that changed canton, with their earlier canton and their last day there (Moutier, BE until 2025). |
 | `pipeline/src/pipeline/__init__.py` | The package; it holds only its description. |
 | `pipeline/src/pipeline/__main__.py` | The command line: `update`, with `--reuse-downloads`. |
-| `pipeline/src/pipeline/update.py` | The steps of a run: download, read, check, write into a new directory that replaces `app/static/data/` only when every check has passed; the two lists above; the report. |
+| `pipeline/src/pipeline/update.py` | The steps of a run: download, read, check, write into a new directory that replaces `app/static/data/` only when every check has passed and no vote of the data files would be lost; the two lists above; the report. |
 | `pipeline/src/pipeline/download.py` | The addresses of the three sources, the Federal Chancellery's SPARQL query, and the download with its retries. |
 | `pipeline/src/pipeline/counts.py` | `SourceError`, and the one function every count passes: a whole number from zero, or the run stops. |
 | `pipeline/src/pipeline/feed.py` | The reader of the BFS vote-day files: votes, kinds, titles, entries, and their checks. |

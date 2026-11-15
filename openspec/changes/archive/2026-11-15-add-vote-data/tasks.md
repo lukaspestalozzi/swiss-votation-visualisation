@@ -302,6 +302,25 @@ In `pipeline/src/pipeline/checks.py` and `tests/test_checks.py`, with
   was opened with the proposal and its description updated; the run of commit df03ead passed
   all three jobs.)
 
+## 10. After the review of PR #6
+
+Copilot's review of the pull request found five gaps after the change was archived; each was
+checked against the code and fixed in the same pull request.
+
+- [x] 10.1 A swap of the data directories that fails leaves the data files as they were, and a
+  `data.old` left by a stopped run is put back first (`pipeline/src/pipeline/update.py`).
+  Verify: the two new tests of `tests/test_update.py` failed before the fix and pass after it.
+- [x] 10.2 Each figure of the Chancellery's query has its own `OPTIONAL`, so that a result given
+  on one side only reaches the reader, which refuses it (`pipeline/src/pipeline/download.py`).
+  Verify: the live endpoint gives the same answer byte for byte; the data files are unchanged.
+- [x] 10.3 and 10.4 The app's data test holds its fixed figures for the first data only (votes
+  until 2026-09-27, the list of 2026-01-01). Verify: with a made-up vote of 2026-11-29 added the
+  tests pass; with vote 5960 removed they fail.
+- [x] 10.5 No vote is lost: the update stops when a vote of the data files is missing from the
+  sources (user decision, 2026-11-15; requirement "No vote is lost" of `vote-data`). Verify: the
+  new test of `tests/test_update.py` failed before the check and passes after it; the update on
+  the real downloads still passes.
+
 ## Workflow follow-up
 
 - Verify the change with the verify workflow, then archive it and set the status of #3 in

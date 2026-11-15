@@ -347,6 +347,9 @@ Alternatives considered:
    temporary directory is removed and the data files are untouched.
 5. Print what was added, what changed its validation, and what was left out.
 
+Before step 4, a vote that the data files hold and the sources no longer give stops the run: no
+update removes a vote (added after the review of PR #6; user decision, 2026-11-15).
+
 `--reuse-downloads` skips step 1 for files that are there (for development). The change the
 run makes is reviewed and merged as a pull request; `pipeline/README.md` gives the procedure.
 
