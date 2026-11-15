@@ -41,7 +41,7 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
 
   Verify: `uv run --directory pipeline --locked pytest` still passes 81, and
   `uv run --directory pipeline --locked mypy` passes.
-- [ ] 1.3 New module `pipeline/src/pipeline/boundaries.py` reads the register's municipalities
+- [x] 1.3 New module `pipeline/src/pipeline/boundaries.py` reads the register's municipalities
   against the list:
   - every number of the list once;
   - coordinates rounded to the metre, from the top left of the rectangle around the outline;
@@ -54,6 +54,15 @@ and `vote-data` (the record of the sources). Design: decisions 1 to 3, 11, 13 an
   - a number given twice stops, named.
 
   Verify: pytest 85 passed.
+
+  (As built: 85 passed.
+  - The test of a number given twice first failed for the right reason ("did not raise"). After
+    the code, its regex still failed: it expected "twice" before the number, and the message
+    reads "the number 1 twice". The regex was corrected.
+  - pyshp's types allow a record or a shape to be missing, and a field to be no whole number.
+    The reader stops on both, naming the source. These two guards have no test of their own.
+  - The made-up corners use only fractions of .4 and .6, so the test does not depend on Python
+    rounding .5 to the even neighbour.)
 - [ ] 1.4 The same module reads the cantons and the outline. Each of the 26 cantons is taken once,
   in the order of the constitution, and the outline keeps its outer rings only (design,
   decision 13). Write three tests, one at a time:
