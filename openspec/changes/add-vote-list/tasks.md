@@ -171,17 +171,20 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   `/data/votes/`); a vote's page requests nothing from other servers. Verify: `pnpm run
   test:e2e` reports all tests passed; with a temporary `<link rel="stylesheet"
   href="https://example.org/a.css">` in `app/src/app.html`, the requests test fails and names
-  `https://example.org`. (As built: six tests, each passed when written and was seen to fail, for its own
-  reason, against one build with six mutants: the canton's cell showing its yes share, no class
-  `greyed`, the tie-break question's sentence left out, the notes on differences left out, a
-  `fetch` of `/data/votes/5960.json` in the page, and that stylesheet, which the test names.)
+  `https://example.org`. (As built: six tests, each passed when written and was seen to fail, for
+  its own reason, against one build with six mutants: the canton's cell showing its yes share, no
+  class `greyed`, the tie-break question's sentence left out, the notes on differences left out,
+  a `fetch` of `/data/votes/5960.json` in the page, and that stylesheet, which the test names.)
 
 ## 8. The build fails where it must
 
-- [ ] 8.1 With `app/static/data/votes/5960.json` temporarily moved aside, `pnpm run build` fails
+- [x] 8.1 With `app/static/data/votes/5960.json` temporarily moved aside, `pnpm run build` fails
   and names the vote 5960; with `votes.json` temporarily holding no vote, it fails and names the
   list of votes. Verify: both builds exit with a status other than zero and print the name;
-  `git status --short` is clean afterwards.
+  `git status --short` is clean afterwards. (As built: without the file, the build exits with 1
+  and prints "vote 5960 of 2016-02-28 has no file of entries (app/static/data/votes/5960.json)";
+  with no vote, it exits with 1 and prints "the list of votes (app/static/data/votes.json) holds
+  no vote". Both files were put back, and the site built again.)
 
 ## 9. The project context and the documents
 
