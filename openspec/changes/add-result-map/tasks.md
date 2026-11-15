@@ -373,7 +373,7 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
     zooms by 2 per 300 pixels.
   - A press becomes a drag after 4 pixels and captures the pointer. After its release, pointing
     and clicking wait until the pointer moves from where it was let go.)
-- [ ] 4.6 Loading once, and failure: "Die Karte kann nicht geladen werden." in place of the map.
+- [x] 4.6 Loading once, and failure: "Die Karte kann nicht geladen werden." in place of the map.
   Write browser tests, one at a time:
   - from 5960 to the start page to 5670, `data/map.json` and `data/municipalities.json` are
     each requested once, and nothing under `/data/votes/`;
@@ -381,6 +381,10 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
     verdicts and the table of the cantons show.
 
   Verify: the browser tests give 37 passed.
+
+  (As built: 37, as planned. The test of loading once passed when written, since the loader of
+  4.1 lives in the component's module. It failed against a mutant that made a loader per map.
+  The test of a blocked file failed first and passes since the failure shows its message.)
 - [ ] 4.7 The budget (design, decision 10). A browser test adds the measuring script before the
   page loads, zooms in four times, drags, points at three municipalities, prints each frame's
   work, and fails above 16 ms. Verify:
