@@ -1,32 +1,52 @@
 <script lang="ts">
-  import { CANTONS, totalCantonalVotes } from 'calculation';
+  import { resolve } from '$app/paths';
+  import { TITLE } from '../lib/texts.ts';
+  import type { PageProps } from './$types';
+
+  let { data }: PageProps = $props();
 </script>
 
 <svelte:head>
-  <title>Popular Vote Explorer</title>
+  <title>{TITLE}</title>
 </svelte:head>
 
-<h1>Popular Vote Explorer</h1>
+<h1>{TITLE}</h1>
 
-<table>
-  <thead>
-    <tr>
-      <th scope="col">Canton</th>
-      <th scope="col">Cantonal votes</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each CANTONS as canton (canton.abbreviation)}
-      <tr>
-        <td>{canton.abbreviation}</td>
-        <td>{canton.cantonalVotes}</td>
-      </tr>
-    {/each}
-  </tbody>
-  <tfoot>
-    <tr>
-      <th scope="row">Total</th>
-      <td>{totalCantonalVotes(CANTONS)}</td>
-    </tr>
-  </tfoot>
-</table>
+{#each data.years as year (year.year)}
+  <section>
+    <h2>{year.year}</h2>
+    <ul>
+      {#each year.entries as entry (entry.id)}
+        <li>
+          <span>{entry.date}</span>
+          <a href={resolve('/votes/[id]', { id: String(entry.id) })}>{entry.title}</a>
+          <span>{entry.kind}</span>
+          <span>{entry.result}</span>
+          {#each entry.marks as mark (mark)}
+            <span class="mark">{mark}</span>
+          {/each}
+        </li>
+      {/each}
+    </ul>
+  </section>
+{/each}
+
+<style>
+  ul {
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    margin-bottom: 0.75rem;
+  }
+  li > * {
+    margin-right: 0.5rem;
+  }
+  a {
+    font-weight: bold;
+  }
+  .mark {
+    border: 1px solid;
+    padding: 0 0.25rem;
+  }
+</style>

@@ -124,22 +124,33 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
 
 ## 6. The pages
 
-- [ ] 6.1 The route `app/src/routes/votes/[id]/`: `+page.server.ts` (`entries()` for every id,
+- [x] 6.1 The route `app/src/routes/votes/[id]/`: `+page.server.ts` (`entries()` for every id,
   `load` with the vote's file through `import.meta.glob`, calling `vote-page.ts`) and
   `+page.svelte` (the heading, the head, the figures, the two verdicts side by side, the
   outcome, the table, the sources and notes, the link "Alle Abstimmungen"; greyed by a CSS
   class). Verify: `pnpm run build` writes 125 files `app/build/votes/<id>.html`;
   `app/build/votes/5960.html` contains "16½ : 6½" and "43.46%"; no file under `app/build/_app/`
   contains the row `[1,1398,999,982,432,550]`; the largest vote page with its `__data.json` is
-  below 30 kB.
-- [ ] 6.2 The start page: `app/src/routes/+page.server.ts` (the list from `vote-list.ts`) and
+  below 30 kB. (As built: SvelteKit 3 has removed `$lib`, so the routes import `src/lib` by
+  relative paths, like its modules and their tests. The vote's files are read through a `Map`,
+  as an index into the object of `import.meta.glob` is typed as never missing. `app/src/app.html`
+  declares `lang="de"`, as the screen is German. Measured: 125 pages; the row in no file under
+  `app/build/_app/` and, as a control, in `app/build/data/votes/5960.json`; the largest page,
+  5960, has 15,082 bytes with its `__data.json`.)
+- [x] 6.2 The start page: `app/src/routes/+page.server.ts` (the list from `vote-list.ts`) and
   `+page.svelte` (the heading "Popular Vote Explorer", a heading per year, the entries with their
   marks); the cantons table goes. Verify: `pnpm run build` passes; `app/build/index.html`
   contains 125 links to `/votes/`; the start page's HTML and `__data.json` together are below
-  150 kB; `pnpm run check` and `pnpm run lint` pass.
-- [ ] 6.3 Look at both pages in a browser at the width of a desktop and of a phone (screenshots
+  150 kB; `pnpm run check` and `pnpm run lint` pass. (As built: the links are written with
+  `resolve` of `$app/paths`, which the lint rule `svelte/no-navigation-without-resolve` asks for
+  and which writes them relative to the page (`./votes/6880`); so `vote-list.ts` no longer
+  writes the link, and its test of 5960 no longer checks it; the browser tests of 7.1 do.
+  Measured: 125 links; 73,618 bytes of HTML and 26,055 of `__data.json`.)
+- [x] 6.3 Look at both pages in a browser at the width of a desktop and of a phone (screenshots
   of `/` and `/votes/5960`, `/votes/6790`, `/votes/6823`). Verify: the pages read from top to
   bottom without overlapping text, and the two verdicts stand next to each other on the desktop.
+  (As built: at 1280 pixels and as an iPhone 13, the two verdicts have the same top on both widths,
+  no page scrolls sideways, and the greyed figure of 6790 is grey, rgb(128, 128, 128).)
 
 ## 7. The browser tests
 

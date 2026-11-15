@@ -55,7 +55,6 @@ test('the entry of a vote that failed', () => {
   expect(entry(5960)).toMatchObject({
     date: '28. Februar 2016',
     title: 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
-    href: '/votes/5960',
     kind: 'Volksinitiative',
     result: 'abgelehnt, 49.16% Ja',
   });

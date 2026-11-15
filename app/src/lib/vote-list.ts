@@ -15,7 +15,6 @@ export interface ListEntry {
   readonly id: number;
   readonly date: string;
   readonly title: string;
-  readonly href: string;
   readonly kind: string;
   // The official result: its verdict and yes share.
   readonly result: string;
@@ -48,7 +47,6 @@ function entryOf(vote: Vote): ListEntry {
     id: vote.id,
     date: formatDate(vote.date),
     title: vote.title.de,
-    href: `/votes/${String(vote.id)}`,
     kind: KINDS[vote.kind],
     result: resultOf(vote),
     marks: [
