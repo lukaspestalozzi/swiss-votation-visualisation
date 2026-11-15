@@ -30,13 +30,14 @@
     WHOLE_SWITZERLAND,
     ZOOM_IN,
     ZOOM_OUT,
+    mapLabel,
     mapSource,
     swissAbroadNotOnTheMap,
   } from '../../../lib/texts.ts';
 
   // The map of a vote (spec result-map): its figures are written into the page when the site is
   // built; the shapes and the names are loaded in the browser.
-  let { figures }: { figures: MapFigures } = $props();
+  let { figures, title }: { figures: MapFigures; title: string } = $props();
 
   let sources = $state<MapSources | null>(null);
   // The part of the map shown, as the SVG's view box; the whole of Switzerland at first.
@@ -208,9 +209,11 @@
       <!-- Pointing and clicking show a municipality's details; without a pointer the table of the
            cantons gives the figures, and reading a municipality's details without one is #10's
            (design of add-result-map, decision 20). -->
-      <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+      <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
       <svg
         {@attach wheelZoom}
+        role="img"
+        aria-label={mapLabel(title)}
         viewBox={view === null
           ? undefined
           : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}

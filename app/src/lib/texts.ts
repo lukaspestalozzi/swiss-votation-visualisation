@@ -111,3 +111,5 @@ export const ZOOM_IN = 'Vergrössern';
 export const ZOOM_OUT = 'Verkleinern';
 export const WHOLE_SWITZERLAND = 'Ganze Schweiz';
 export const MAP_FAILED = 'Die Karte kann nicht geladen werden.';
+export const mapLabel = (title: string): string =>
+  `Karte der Gemeinden: ${title}. Die Zahlen der Kantone stehen in der Tabelle unter der Karte.`;

@@ -10,6 +10,14 @@ test('the map of a vote: between the outcome and the table of the cantons', asyn
   const heading = page.getByRole('heading', { name: 'Karte der Gemeinden' });
   await expect(heading).toBeVisible();
   await expect(page.locator('.municipalities path')).toHaveCount(2110);
+  // To assistive technology the map is an image, named after the vote, that points to the table.
+  await expect(
+    page.getByRole('img', {
+      name:
+        'Karte der Gemeinden: Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe». ' +
+        'Die Zahlen der Kantone stehen in der Tabelle unter der Karte.',
+    }),
+  ).toBeVisible();
   // In the order of the page: the outcome, the map, the table.
   const order = await page.evaluate(() => {
     const at = (element: Element | null) =>

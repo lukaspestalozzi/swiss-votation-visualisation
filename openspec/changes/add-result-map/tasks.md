@@ -396,11 +396,19 @@ In `app/src/lib/map-data.ts`, `app/src/routes/votes/[id]/` and a new
   Zürich, Bern and Genève.
   - It measured 56 frames, the longest 5.5 ms, a wheel step; pointing took up to about 4 ms.
   - Against the mutant the four wheel frames took 23 to 26 ms, and the failure listed them.)
-- [ ] 4.8 The map's label for assistive technology: `role="img"` and a label that names the vote
+- [x] 4.8 The map's label for assistive technology: `role="img"` and a label that names the vote
   and points to the table of the cantons. Verify:
   - a browser test of 4.3 is extended to find the map by its role and label;
   - the browser tests give 38 passed;
   - `pnpm run lint` and `pnpm run check` pass.
+
+  (As built: 38, as planned.
+  - The extended test failed first; the label reads "Karte der Gemeinden: <title>. Die Zahlen
+    der Kantone stehen in der Tabelle unter der Karte."
+  - With the role `img`, Svelte's rule against handlers on a static element became the rule
+    against handlers on a non-interactive element. The ignore now names that rule and the one on
+    click handlers without key handlers; both were seen to be needed, under the comment that
+    justifies them.)
 
 ## 5. Documents and the whole
 
