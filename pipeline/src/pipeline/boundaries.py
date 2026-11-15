@@ -159,3 +159,41 @@ def read_lakes(content: bytes, frame: Frame, source: str) -> list[str]:
     if not lakes:
         raise SourceError(f"{source}: the set holds no lakes")
     return lakes
+
+
+@dataclass(frozen=True)
+class MapData:
+    """Everything `map.json` holds, but its reference date."""
+
+    frame: Frame
+    outline: str
+    municipalities: list[tuple[int, str]]
+    cantons: list[tuple[str, str]]
+    lakes: list[str]
+    lakes_set: int
+
+
+# A source's content and the name its messages give it.
+Named = tuple[bytes, str]
+
+
+def read_map(
+    *,
+    communes: Named,
+    cantons: Named,
+    country: Named,
+    lakes: Named,
+    listed: Iterable[int],
+    lakes_set: int,
+) -> MapData:
+    """The map from the register's three answers and a ThemaKart set, checked against the
+    numbers of the list of municipalities."""
+    outline = read_outline(*country)
+    return MapData(
+        frame=outline.frame,
+        outline=outline.path,
+        municipalities=read_municipalities(communes[0], listed, outline.frame, communes[1]),
+        cantons=read_cantons(cantons[0], outline.frame, cantons[1]),
+        lakes=read_lakes(lakes[0], outline.frame, lakes[1]),
+        lakes_set=lakes_set,
+    )

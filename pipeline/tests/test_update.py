@@ -7,7 +7,7 @@ import pytest
 
 from pipeline.__main__ import main
 from pipeline.counts import SourceError
-from pipeline.download import FEED, REGISTER, SPARQL, Request
+from pipeline.download import BOUNDARIES, FEED, REGISTER, SPARQL, THEMAKART, Request
 from pipeline.update import update
 
 TODAY = "2026-11-14"
@@ -28,7 +28,11 @@ class Sources:
         self.files: dict[str, bytes] = {
             SPARQL: json.dumps(chancellery or made_up.chancellery()).encode(),
             REGISTER.format(date="01-01-2026"): made_up.register().encode(),
+            THEMAKART: made_up.themakart(),
         }
+        for division in ("Commune", "Canton", "Country"):
+            address = BOUNDARIES.format(division=division, date="01-01-2026")
+            self.files[address] = made_up.boundaries(division)
         for day in DAYS:
             feed = made_up.feed_day(day)
             self.files[FEED.format(day=day.replace("-", ""))] = json.dumps(feed).encode()
@@ -48,11 +52,12 @@ def project(tmp_path: Path, canton_changes: list[dict[str, Any]] | None = None) 
     return directory
 
 
-def test_a_run_writes_the_four_kinds_of_data_files(tmp_path: Path) -> None:
+def test_a_run_writes_the_five_kinds_of_data_files(tmp_path: Path) -> None:
     data = tmp_path / "data"
     update(project(tmp_path), data, Sources(), TODAY)
     names = sorted(str(path.relative_to(data)) for path in data.rglob("*.json"))
     assert names == [
+        "map.json",
         "municipalities.json",
         "sources.json",
         "votes.json",

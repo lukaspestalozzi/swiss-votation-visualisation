@@ -4,6 +4,7 @@ from typing import Any
 
 import made_up
 
+from pipeline.boundaries import read_map
 from pipeline.chancellery import read_chancellery
 from pipeline.checks import CantonChange, check_entries, counted_for
 from pipeline.feed import CANTONS, read_day
@@ -36,7 +37,15 @@ def data() -> Data:
                     entries.without_result,
                 )
             )
-    return Data("2026-01-01", votes, municipalities, swiss_abroad, SOURCES)
+    shapes = read_map(
+        communes=(made_up.boundaries("Commune"), "communes"),
+        cantons=(made_up.boundaries("Canton"), "cantons"),
+        country=(made_up.boundaries("Country"), "country"),
+        lakes=(made_up.themakart(), "themakart"),
+        listed=[m.number for m in municipalities],
+        lakes_set=2026,
+    )
+    return Data("2026-01-01", votes, municipalities, swiss_abroad, SOURCES, shapes)
 
 
 def written(tmp_path: Path, name: str) -> Any:
@@ -143,7 +152,28 @@ def test_writing_twice_gives_the_same_bytes(tmp_path: Path) -> None:
         directory.mkdir()
         write_data(directory, data())
     files = sorted(path.relative_to(first) for path in first.rglob("*.json"))
-    assert len(files) == 6
+    assert len(files) == 7
     assert files == sorted(path.relative_to(second) for path in second.rglob("*.json"))
     for name in files:
         assert (first / name).read_bytes() == (second / name).read_bytes()
+
+
+def test_the_map(tmp_path: Path) -> None:
+    document = written(tmp_path, "map.json")
+    assert list(document) == [
+        "referenceDate", "lakesSet", "width", "height",
+        "municipalities", "cantons", "outline", "lakes",
+    ]  # fmt: skip
+    assert (document["referenceDate"], document["lakesSet"]) == ("2026-01-01", 2026)
+    assert (document["width"], document["height"]) == (280000, 120000)
+    assert [number for number, _ in document["municipalities"]] == [1, 2, 351, 389, 6711, 6831]
+    assert document["municipalities"][0] == [1, "M110000 9999l0 -999l1001 0l0 999z"]
+    assert [abbreviation for abbreviation, _ in document["cantons"]] == list(CANTONS)
+    assert document["outline"] == "M0 120000l0 -120000l280000 0l0 120000z"
+    assert document["lakes"] == [
+        "M275000 50000l0 -10000l10000 0l0 10000z",
+        "M210000 60000l0 -5000l5000 0l0 5000z",
+    ]
+    # One municipality, canton or lake per line, for a readable diff.
+    text = (tmp_path / "map.json").read_text(encoding="utf-8")
+    assert '\n    [1, "M110000 9999l0 -999l1001 0l0 999z"],\n' in text
