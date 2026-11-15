@@ -391,8 +391,9 @@ Reading a municipality's details without a pointer is #10's.
   (decision 10).
 - **Loading:** `map.json` is about 370 KB, 165 KB gzipped (GitHub Pages compresses JSON). It
   loads once per visit (decision 7).
-- **Drawing:** the first drawing of the map is measured by the browser tests and reported, not
-  bounded. Colouring once per page measured 5.2 ms.
+- **Drawing:** the first drawing of the map is neither bounded nor measured by the tests; the
+  budget covers the interactions. On the prototype, colouring all municipalities once took
+  5.2 ms.
 - **The pipeline:** a run downloads about 13 MB more and spends a few seconds more on reading.
 
 ## Risks / Trade-offs
