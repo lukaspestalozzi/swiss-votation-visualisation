@@ -13,6 +13,20 @@ export interface Entry {
   readonly no: number;
 }
 
+/** The outcome of one canton, from its entries that remain. */
+export interface CantonOutcome {
+  /** The abbreviation of the canton, for example `ZH`. */
+  readonly canton: string;
+  readonly yes: number;
+  readonly no: number;
+  /** The yes votes divided by the yes and no votes, from 0 to 1. With no valid vote there is none. */
+  readonly yesShare: number | undefined;
+  /** 1, or 0.5 for the six cantons with half a vote. */
+  readonly cantonalVotes: number;
+  /** More yes than no votes; a canton with as many yes as no votes counts against. */
+  readonly inFavour: boolean;
+}
+
 /** The result of a vote, calculated from the entries that remain. */
 export interface Result {
   readonly yes: number;
@@ -31,6 +45,8 @@ export interface Result {
   readonly majorityOfCantons: boolean;
   /** The verdict: the majority of voters and, where it is needed, the majority of cantons. */
   readonly passed: boolean;
+  /** Every canton with an entry, in the order of the Federal Constitution. */
+  readonly cantons: readonly CantonOutcome[];
 }
 
 /** A number of votes is a whole number from zero. */
@@ -71,13 +87,28 @@ export function calculateResult(entries: readonly Entry[], majorities: Majoritie
   }
 
   // Only a canton with an entry is in this map, so only such a canton has a cantonal vote.
+  const outcomes: CantonOutcome[] = [];
+  for (const { abbreviation } of CANTONS) {
+    const canton = cantons.get(abbreviation);
+    if (canton) {
+      const valid = canton.yes + canton.no;
+      outcomes.push({
+        canton: abbreviation,
+        yes: canton.yes,
+        no: canton.no,
+        yesShare: valid > 0 ? canton.yes / valid : undefined,
+        cantonalVotes: canton.cantonalVotes,
+        inFavour: canton.yes > canton.no,
+      });
+    }
+  }
   let cantonalVotesInFavour = 0;
   let cantonalVotesAgainst = 0;
-  for (const canton of cantons.values()) {
-    if (canton.yes > canton.no) {
-      cantonalVotesInFavour += canton.cantonalVotes;
+  for (const outcome of outcomes) {
+    if (outcome.inFavour) {
+      cantonalVotesInFavour += outcome.cantonalVotes;
     } else {
-      cantonalVotesAgainst += canton.cantonalVotes;
+      cantonalVotesAgainst += outcome.cantonalVotes;
     }
   }
 
@@ -94,5 +125,6 @@ export function calculateResult(entries: readonly Entry[], majorities: Majoritie
     majorityOfVoters,
     majorityOfCantons,
     passed: majorityOfVoters && (majorityOfCantons || majorities === 'voters'),
+    cantons: outcomes,
   };
 }
