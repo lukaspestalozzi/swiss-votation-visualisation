@@ -195,15 +195,21 @@ In `calculation/src/result.ts` and `calculation/src/result.test.ts` (spec `resul
   (the routes, the four modules of `src/lib/` and their tests, the two browser test files) and
   of `calculation` (the outcome of each canton). Verify: every file this change adds or removes
   is named or no longer named in the code map (`git diff --name-status origin/main` against
-  `CLAUDE.md`). (As built: every file added under `app/` and `calculation/` is named, `start-page.spec.ts` no
-  longer is, and `check_tie_break.py` is named next to the script of #3. The list of the specs
-  under "Where things are" gains `verdicts` and `vote-list` when the change is archived.)
+  `CLAUDE.md`). (As built: every file added under `app/` and `calculation/` is named,
+  `start-page.spec.ts` no longer is, and `check_tie_break.py` is named next to the script of #3.
+  The list of the specs under "Where things are" gains `verdicts` and `vote-list` when the change
+  is archived.)
 
 ## 10. Integration
 
-- [ ] 10.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`.
-- [ ] 10.2 Map each scenario of the four delta specs to the test or check that covers it, in the
-  pull request's description. Verify: the list has no scenario without a test or check.
+- [x] 10.1 Run `./scripts/verify-local.sh`. Verify: `All 11 steps passed`. (As built: the
+  calculation 41 tests, the app 37, the browser 12, the pipeline 81.)
+- [x] 10.2 Map each scenario of the four delta specs to the test or check that covers it, in the
+  pull request's description. Verify: the list has no scenario without a test or check. (As
+  built: the map showed that the browser test "a vote's page requests nothing from other
+  servers" did not follow the link back to the start page, as the scenario of `app-shell` says;
+  it does now, and a `fetch` of another origin made by the start page only was seen to make it
+  fail and name `https://example.org`.)
 - [ ] 10.3 Push the branch and update the pull request. Verify: the CI run shows `specs`, `build`
   and `pipeline` passed.
 
