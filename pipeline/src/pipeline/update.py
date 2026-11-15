@@ -131,12 +131,13 @@ class _Downloads:
         self.sources.append(Source(address, content, stated))
 
 
-def _previous(data: Path) -> dict[int, bool]:
-    """The votes of the data files as they are, with whether each is validated."""
+def _previous(data: Path) -> dict[int, tuple[str, bool]]:
+    """The votes of the data files as they are: each one's date, and whether it is validated."""
     path = data / "votes.json"
     if not path.exists():
         return {}
-    return {vote["id"]: vote["validated"] for vote in json.loads(path.read_text())["votes"]}
+    votes = json.loads(path.read_text(encoding="utf-8"))["votes"]
+    return {vote["id"]: (vote["date"], vote["validated"]) for vote in votes}
 
 
 def _put_back(data: Path) -> None:
@@ -226,6 +227,13 @@ def update(
     ]
 
     previous = _previous(data)
+    # A vote leaves the official record only by a broken source: no update removes one.
+    given = {vote.vote.id for vote in votes}
+    lost = [_named(i, date) for i, (date, _) in sorted(previous.items()) if i not in given]
+    if lost:
+        raise SourceError(
+            f"the sources no longer give these votes of the data files: {', '.join(lost)}"
+        )
     _replace(data, Data(reference, votes, municipalities, swiss_abroad, downloads.sources))
     return Report(
         reference_date=reference,
@@ -237,7 +245,9 @@ def update(
         newly_validated=[
             _named(vote.vote.id, vote.vote.date)
             for vote in votes
-            if vote.official.validated and previous.get(vote.vote.id) is False
+            if vote.official.validated
+            and vote.vote.id in previous
+            and not previous[vote.vote.id][1]
         ],
         left_out=[_named(vote.id, vote.date) for day in days for vote in day.left_out],
     )

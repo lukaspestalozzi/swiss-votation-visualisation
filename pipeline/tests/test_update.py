@@ -200,3 +200,20 @@ def test_the_data_files_of_a_run_stopped_between_its_two_moves_are_put_back(
         update(directory, data, Sources(), TODAY)
     assert snapshot(data) == before
     assert sorted(path.name for path in tmp_path.iterdir()) == ["data", "pipeline"]
+
+
+def test_a_vote_the_sources_no_longer_give_stops_the_update(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    partial = made_up.chancellery()
+    partial["results"]["bindings"].remove(made_up.official_of(partial, 6850))
+    status = main(["update"], fetch=Sources(partial), today=TODAY, project=directory, data=data)
+    assert status == 1
+    assert (
+        "the sources no longer give these votes of the data files: 6850 (2026-03-08)"
+        in capsys.readouterr().err
+    )
+    assert snapshot(data) == before
