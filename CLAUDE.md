@@ -16,14 +16,14 @@ each canton, and is tested against seven official votes; the pipeline writes the
 counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #7 of `docs/roadmap.md`,
+after every push to `main` whose checks pass. Changes #1 to #7 and 7a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
-`publish-site`, `add-result-map` and `add-characteristics`, are archived, and `openspec/specs/`
-holds their specs. Change 7a, `tighten-map-budget`, the look at performance after #7, is
-applied and not yet archived (`openspec/changes/`): one budget of 16 ms per frame for every
-input of the map. Four investigations are done: `investigations/data-sources.md`,
-`investigations/map-data.md`, `investigations/characteristics.md` and
-`investigations/performance.md`. Next: archiving 7a, then change #8, `add-limits`.
+`publish-site`, `add-result-map`, `add-characteristics` and `tighten-map-budget` (the look at
+performance after #7: one budget of 16 ms per frame for every input of the map), are archived,
+and `openspec/specs/` holds their specs. Four investigations are done:
+`investigations/data-sources.md`, `investigations/map-data.md`,
+`investigations/characteristics.md` and `investigations/performance.md`. Next: change #8,
+`add-limits`.
 `README.md` is the human-facing overview.
 
 ## Where things are
