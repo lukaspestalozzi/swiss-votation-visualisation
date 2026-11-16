@@ -515,6 +515,19 @@ The four suggestions are open:
 - the proposal calls the switch "Auslandschweizer mitzählen";
 - the label of "65 Jahre und älter" has no browser test, only a unit test of its range.
 
+## Archive
+
+`/openspec-archive-change` on 2026-11-16, after the verification. Q chose to sync the specs:
+- **New main specs:** `limits` (15 requirements) and `reading-guide` (10);
+- **`characteristics`:** "One definition per characteristic" modified;
+- **`result-map`:** "The legend" modified, and two requirements added;
+- **`verdicts`:** "The page holds its result" and "The table of the cantons" modified, and two
+  requirements added.
+
+Every requirement of the deltas was checked word for word against its main spec, and `openspec
+validate --all --strict` passes. `docs/roadmap.md` marks #8 done; `CLAUDE.md` names it archived
+and lists the two new specs.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`. The archive:
