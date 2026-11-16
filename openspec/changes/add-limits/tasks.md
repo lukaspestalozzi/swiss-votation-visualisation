@@ -410,10 +410,21 @@ and 23.
   - **The sources:** the list's date and the lakes' set come from `map.json` at build time,
     through `+page.server.ts`. The test also requests `data/sources.json` through the page's
     link.)
-- [ ] 7.2 The start page's link, and the vote page's link of 5.1 now leads to the guide. Write the
+- [x] 7.2 The start page's link, and the vote page's link of 5.1 now leads to the guide. Write the
   browser tests of "From the start page" and "The sentence on a vote's page". Verify: 101 passed,
   and the existing test that no page requests another server covers `/guide/` (add it to its
   list of pages if it names them; the note says which).
+
+  (As built: 102 browser tests. Both tests failed first, without the links.
+  - **The links** are `resolve('/guide')`, written `/swiss-votation-visualisation/guide`
+    without the final slash, as the start page's links to the votes are. The router opens
+    `/guide/`. The start page's test first looked for the `href` with a slash and was corrected.
+  - **The same-origin tests** name their pages: "all requests go to the site itself" in
+    `vote-list.spec.ts` now opens `/guide/` after the start page. It fails against a stylesheet
+    from another server put into the guide, a mutant built and undone.
+  - **One second run:** in the first whole run after the build, "the budget of dragging" passed
+    only on its second run. Two whole runs after it passed at once, the drag's longest frame
+    9.4 and 13.4 ms.)
 
 ## 8. Documentation and the whole
 

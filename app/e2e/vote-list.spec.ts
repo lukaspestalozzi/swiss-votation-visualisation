@@ -107,4 +107,7 @@ test('all requests go to the site itself', async ({ page }) => {
   page.on('request', (request) => origins.add(new URL(request.url()).origin));
   await page.goto('./', { waitUntil: 'networkidle' });
   expect([...origins]).toEqual([new URL(page.url()).origin]);
+  // The reading guide too (spec reading-guide).
+  await page.goto('guide/', { waitUntil: 'networkidle' });
+  expect([...origins]).toEqual([new URL(page.url()).origin]);
 });

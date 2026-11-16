@@ -110,3 +110,29 @@ test('the sources, with the dates of the data files of 2026-11-16', async ({ pag
   const response = await page.request.get((await record.getAttribute('href')) ?? '');
   expect(response.ok()).toBe(true);
 });
+
+test('the start page links to the guide below its heading', async ({ page }) => {
+  await page.goto('./');
+  const link = page.getByRole('link', { name: 'Lesehilfe und Quellen' });
+  const order = await page.evaluate(() => {
+    const at = (element: Element | null) =>
+      element ? [...document.querySelectorAll('*')].indexOf(element) : -1;
+    return [at(document.querySelector('h1')), at(document.querySelector('a[href$="/guide"]'))];
+  });
+  expect(order[0]).toBeLessThan(order[1] ?? -1);
+  await link.click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
+});
+
+test('the sentence at the limits, with its link to the guide', async ({ page }) => {
+  await page.goto('votes/5960/');
+  const limits = page.locator('.limits');
+  await expect(limits.locator('p').first()).toHaveText(
+    'Ein Gedankenexperiment: So wäre die Abstimmung ausgegangen, wenn nur die ausgewählten ' +
+      'Gemeinden abgestimmt hätten. Es zeigt nicht, wie einzelne Menschen gestimmt haben, und ist ' +
+      'keine Prognose. Lesehilfe und Quellen',
+  );
+  await limits.getByRole('link', { name: 'Lesehilfe und Quellen' }).click();
+  await expect(page).toHaveURL(/\/guide\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
+});
