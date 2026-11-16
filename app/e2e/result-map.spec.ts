@@ -419,34 +419,43 @@ async function measuredFrames(page: Page): Promise<{ type: string; work: number 
   return frames;
 }
 
-test('the budget: no frame after zooming, moving or pointing takes more than 16 ms', async ({
-  page,
-}) => {
-  await page.addInitScript(MEASURE_FRAMES);
-  await page.goto('votes/5960/');
-  await page.locator('.municipalities path').nth(2000).waitFor();
-  await expect(page.locator('.panel')).toContainText('Klicken Sie auf eine Gemeinde');
-  await page.locator('.map svg').scrollIntoViewIfNeeded();
-  const box = await page.locator('.map svg').boundingBox();
-  if (box === null) throw new Error('the map is not on the screen');
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-  await page.evaluate(() => {
-    (window as unknown as { __frames: unknown[] }).__frames = [];
+// A busy machine can stretch a frame of a page that meets the budget: the budget tests run once
+// more when they fail (design of tighten-map-budget, decision 7).
+test.describe(() => {
+  test.describe.configure({ retries: 1 });
+
+  test('the budget: no frame after zooming, moving or pointing takes more than 16 ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(MEASURE_FRAMES);
+    await page.goto('votes/5960/');
+    await page.locator('.municipalities path').nth(2000).waitFor();
+    await expect(page.locator('.panel')).toContainText('Klicken Sie auf eine Gemeinde');
+    await page.locator('.map svg').scrollIntoViewIfNeeded();
+    const box = await page.locator('.map svg').boundingBox();
+    if (box === null) throw new Error('the map is not on the screen');
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    // The first pointing at a municipality after the page has loaded (Sachseln, at the map's
+    // centre) is measured too (design of tighten-map-budget, decision 4).
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    for (let i = 0; i < 4; i += 1) {
+      await page.mouse.wheel(0, -300);
+      await page.waitForTimeout(50);
+    }
+    await drag(page, -120, 40);
+    for (const number of [261, 351, 6621]) {
+      await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
+      const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
+      await page.mouse.move(point.x, point.y, { steps: 5 });
+    }
+    const frames = await measuredFrames(page);
+    expect(frames[0]?.type).toBe('pointerover');
+    expect(frames.filter((f) => f.type === 'wheel')).toHaveLength(4);
+    expect(frames.length).toBeGreaterThan(10);
+    expect(frames.filter((f) => f.work > 16)).toEqual([]);
   });
-  for (let i = 0; i < 4; i += 1) {
-    await page.mouse.wheel(0, -300);
-    await page.waitForTimeout(50);
-  }
-  await drag(page, -120, 40);
-  for (const number of [261, 351, 6621]) {
-    await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
-    const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
-    await page.mouse.move(point.x, point.y, { steps: 5 });
-  }
-  const frames = await measuredFrames(page);
-  expect(frames.filter((f) => f.type === 'wheel')).toHaveLength(4);
-  expect(frames.length).toBeGreaterThan(10);
-  expect(frames.filter((f) => f.work > 16)).toEqual([]);
 });
 
 test('after a drag, a click on the spot where it ended shows the details', async ({ page }) => {
@@ -672,26 +681,34 @@ test('the map does not wait for the characteristics', async ({ page }) => {
   await expect(panel(page)).toContainText('Die Merkmale werden geladen …');
 });
 
-// Clicking a municipality fills the panel; its budget is relaxed to 50 ms per frame until
-// performance is revisited (design of add-characteristics, decision 20).
-test('the budget of clicking: no frame after clicking a municipality takes more than 50 ms', async ({
-  page,
-}) => {
-  await page.addInitScript(MEASURE_FRAMES);
-  await page.goto('votes/5960/');
-  await page.locator('.municipalities path').nth(2000).waitFor();
-  await expect(panel(page)).toContainText('Klicken Sie auf eine Gemeinde');
-  await page.evaluate(() => {
-    (window as unknown as { __frames: unknown[] }).__frames = [];
+// A busy machine can stretch a frame of a page that meets the budget: the budget tests run once
+// more when they fail (design of tighten-map-budget, decision 7).
+test.describe(() => {
+  test.describe.configure({ retries: 1 });
+
+  // Clicking a municipality fills the panel. The test clicks 50 ms after the pointer arrives, at a
+  // person's pace: a click within the same frame would be counted in the arrival's measurement
+  // (design of tighten-map-budget, decision 3).
+  test('the budget of clicking: no frame after clicking a municipality takes more than 16 ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(MEASURE_FRAMES);
+    await page.goto('votes/5960/');
+    await page.locator('.municipalities path').nth(2000).waitFor();
+    await expect(panel(page)).toContainText('Klicken Sie auf eine Gemeinde');
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    for (const number of [261, 351, 6621]) {
+      await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
+      const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
+      await page.mouse.move(point.x, point.y, { steps: 5 });
+      await page.waitForTimeout(50);
+      await page.mouse.click(point.x, point.y);
+    }
+    await expect(panel(page).locator('.name')).toHaveText('Genève (GE)');
+    const frames = await measuredFrames(page);
+    expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
+    expect(frames.filter((f) => f.work > 16)).toEqual([]);
   });
-  for (const number of [261, 351, 6621]) {
-    await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
-    const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
-    await page.mouse.move(point.x, point.y, { steps: 5 });
-    await page.mouse.click(point.x, point.y);
-  }
-  await expect(panel(page).locator('.name')).toHaveText('Genève (GE)');
-  const frames = await measuredFrames(page);
-  expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
-  expect(frames.filter((f) => f.work > 50)).toEqual([]);
 });

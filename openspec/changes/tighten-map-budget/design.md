@@ -39,7 +39,8 @@ See `proposal.md` for why. The current state:
 ## Decisions
 
 Q decided decisions 1, 4 and 5 on 2026-11-16, after the investigation, and the choices that
-decisions 2 and 3 follow from. Each is open to Q's review of this change.
+decisions 2 and 3 follow from; and decision 7 while the change was applied. Each is open to
+Q's review of this change.
 
 ### 1. Both fixes in one change: the app and the tests (Q)
 
@@ -122,6 +123,29 @@ Alternatives considered:
 Its relaxed budget goes. The archive keeps the decision as it was taken; this design and the
 investigation say why it no longer holds.
 
+### 7. One more measurement when a frame exceeds the budget (Q)
+
+Found while applying (`investigations/performance.md`, M9 and M10): with raw state, the two
+budget tests failed in about 3 runs of 100, mostly right after a build, which is when CI and
+`scripts/verify-local.sh` run the browser tests. In the one long frame traced, the main thread
+had a processor for 15.1 ms of 30.8 ms: the machine was busy, not the page. Otherwise the
+longest frame of a run had a median of 8.5 ms (zooming) and 5.6 ms (clicking).
+
+The two budget tests are run once more when they fail (Playwright's `retries: 1`, for these two
+tests only), and the spec says so. Two busy moments in a row are rare; a page that is slow,
+like the mutants that add 20 ms, fails both runs. Playwright marks a test that passed on its
+second run as flaky in its report, and each run prints its frames.
+
+Alternatives considered:
+- **Counting each frame's CPU time from a trace**, the spec's "work" exactly: more test code (a
+  reader of the trace in the browser tests), bound to Chromium, about a second slower per test,
+  and decision 3's reasons against a trace.
+- **Running the two tests alone**, one worker after the other browser tests, in
+  `package.json`, `scripts/verify-local.sh` and CI: more moving parts, and not shown to remove
+  the failures right after a build.
+- **Back to 50 ms for clicking, the first pointing unmeasured:** the budget would stay relaxed
+  although the page meets 16 ms.
+
 ### Tests
 
 - **Browser (Playwright):** the two budget tests as decision 4 says, each seen to fail against a
@@ -132,6 +156,7 @@ investigation say why it no longer holds.
 - The two tests run before the fix of decision 2 too, to see what they make of the deep state
   (M4 and M7: the first pointing over 16 ms in 1 to 3 runs of 20); and after it, repeated, to
   see them hold.
+- With one more run on failure (decision 7), each mutant must fail both runs.
 - **Unit tests:** none change. Raw state changes no value the page shows; the existing browser
   tests of the map and the panel check that.
 
@@ -144,7 +169,7 @@ None.
 16 ms of main-thread work per frame for every input the map takes: a zoom step, a move,
 pointing (the first after the page has loaded included) and clicking, which fills the panel
 (spec `result-map`). Measured by the browser tests, with 50 ms between a pointer's arrival and a
-click.
+click, and once more when a frame exceeds it (decision 7).
 
 ## Risks / Trade-offs
 
@@ -157,9 +182,12 @@ click.
   time goes.
 - **[A test with a pause measures less than a hurried user]** → A click within 2 ms of the
   pointer's arrival is not a person's pace, and its measurement is not the frame's (M2).
-- **[The one first pointing of 16.8 ms with raw state in M7]**, the first run of its browser,
-  right after a build and the server's start, not seen in 29 more runs → The repeated runs of
-  the tests in the tasks would show it again.
+- **[A page that is slow only sometimes passes on the second run]** → Playwright reports such a
+  test as flaky, and both runs print their frames; a frame over 16 ms in the first run of CI is
+  there to read.
+- **[The machine is busy for both runs]** and CI fails though the page is fast → The log of both
+  runs shows the frames; `investigations/performance/budget_tests_traced.spec.ts` shows whether
+  the main thread waited for a processor (M10).
 
 ## Migration Plan
 
