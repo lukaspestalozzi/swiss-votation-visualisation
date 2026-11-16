@@ -119,3 +119,12 @@ export function remainingUnder(
     })),
   );
 }
+
+/**
+ * Whether a limit sets anything aside: the value of a bound lies inside its track's values, the
+ * rule of the calculation's selection. A step away from an end whose value is still the end's
+ * sets nothing aside.
+ */
+export function isNarrowed({ track, lower, upper }: LimitSetting): boolean {
+  return valueAt(track, lower) > track.smallest || valueAt(track, upper) < track.largest;
+}

@@ -234,7 +234,7 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
   slider's `aria-valuetext` is its bound as written. "Entfernen" is named "Entfernen: <name>"
   for assistive technology, and the list's first option, "–", is no characteristic. The tests
   set a slider's step with `fill`, which sends `input` as a drag does; group 6 drags by pointer.)
-- [ ] 5.2 The selection and the switch: the page derives the remaining municipalities, the
+- [x] 5.2 The selection and the switch: the page derives the remaining municipalities, the
   entries, the result and the set aside. "Mit Ihrer Auswahl" stands beside the vote's result, and
   the table follows. Write the browser tests one at a time:
   - of `limits`: "Which municipalities remain" (the two scenarios with a vote), "The Swiss abroad"
@@ -243,6 +243,28 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
     "Back to the real cantons", and the five of "The result of the selection".
 
   Verify: 78 passed.
+
+  (As built: 76 browser tests, and 97 unit tests of the app.
+  - **Counts:** 11 tests for the 12 scenarios left. "Back to the real cantons" needs "Zurück zum
+    echten Ergebnis" and moves to 5.4. One test covers both "Switched off" of `limits` and
+    "Without the Swiss abroad" of `verdicts`.
+  - **Map:** the set-aside municipalities turn `#2c2c2c` here already, as these scenarios see
+    them on the map; 5.3 adds the legend and the details.
+  - **First failure:** the first test failed first, without "Mit Ihrer Auswahl"; the ten after it
+    passed when written.
+  - **Mutants**, each built and undone. Each of the ten fails against at least one:
+    - the map ignoring the set-aside: the three that look at the map;
+    - the switch ignored: the two without the Swiss abroad;
+    - the limits ignored in the result: the six with figures of a selection;
+    - a selection always applying: "a limit not moved";
+    - the table always the vote's own: the two with the table.
+  - **One test written wrong, then fixed:** "a limit not moved" failed because Playwright's
+    `toHaveText` takes no matcher for an entry of a list. The page was right.
+  - **`limits.ts`** gains `isNarrowed`, the calculation's rule from a limit's steps, with a unit
+    test that failed first. The page shows "Mit Ihrer Auswahl" while a limit is narrowed by it
+    or the switch is off.
+  - **The drag test** finds the slider's step by pointer, correcting the pointer while it is
+    pressed, as a pixel holds about two steps.)
 - [ ] 5.3 The map: set-aside municipalities in `#2c2c2c`, hatching kept, the legend's eleventh
   entry, the details' "Nicht in der Auswahl.". Write the browser tests of "The legend of a
   selection", "Set aside and kept", "Without a result and without a figure" and "Zürich set

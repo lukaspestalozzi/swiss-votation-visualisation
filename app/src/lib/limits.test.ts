@@ -7,7 +7,15 @@ import mapData from '../../static/data/map.json';
 import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
 import { DEFINITIONS, applyingTo, writeUnits, type Definition } from './characteristics.ts';
-import { STEPS, labelOf, remainingUnder, trackOf, valueAt, type Track } from './limits.ts';
+import {
+  STEPS,
+  isNarrowed,
+  labelOf,
+  remainingUnder,
+  trackOf,
+  valueAt,
+  type Track,
+} from './limits.ts';
 import { voteEntriesOf } from './result-map.ts';
 import type { CharacteristicsFile, MapFile, Municipalities, VoteFile, Votes } from './vote-data.ts';
 
@@ -219,4 +227,14 @@ test('2021-03-07, SVP up to 49.96%: NW has nothing left, Rüti bei Lyssach is se
     { track: trackFor('SVP', '2021-03-07'), lower: 0, upper: 594 },
   ]);
   expect(remaining.has(422)).toBe(false);
+});
+
+test('a limit is narrowed when a bound lies inside its values', () => {
+  const foreigners = trackFor('Ausländeranteil', '2016-02-28');
+  expect(isNarrowed({ track: foreigners, lower: 0, upper: STEPS })).toBe(false);
+  expect(isNarrowed({ track: foreigners, lower: 0, upper: 999 })).toBe(true);
+  expect(isNarrowed({ track: foreigners, lower: 1, upper: STEPS })).toBe(true);
+  // Step 1 of the inhabitants is still 31, the smallest value: nothing is set aside.
+  const inhabitants = trackFor('Einwohner', '2016-02-28');
+  expect(isNarrowed({ track: inhabitants, lower: 1, upper: STEPS })).toBe(false);
 });

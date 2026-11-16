@@ -41,6 +41,10 @@ export const LAKE_COLOUR = '#9fb8e8';
 // A municipality without a result: grey diagonal lines on white.
 export const HATCH_LINE = '#999999';
 export const HATCH_BACKGROUND = '#ffffff';
+// A municipality the selection sets aside (spec result-map, "A set-aside municipality"): the
+// only grey apart from the yes colours for a red-green colour vision deficiency
+// (investigations/limits.md, 6).
+export const SET_ASIDE_COLOUR = '#2c2c2c';
 
 /** The fill of a municipality with an entry. */
 export function colourOf(colouring: Colouring): string {
