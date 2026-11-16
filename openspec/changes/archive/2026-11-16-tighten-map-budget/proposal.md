@@ -28,6 +28,9 @@ This change is "7a" of `docs/roadmap.md`, the look at performance between #7 and
 - **The test of clicking clicks at a person's pace:** 50 ms after the pointer arrives on the
   municipality, as the test of zooming already waits 50 ms between the steps of the wheel. The
   design records why: a frame's measurement absorbs a click that follows within the same frame.
+- **A second run when a budget test fails** (Playwright's `retries: 1`, for the two budget
+  tests only). A busy machine can stretch a frame of a page that meets the budget; a slow page
+  fails both runs. Decided while applying (design, decision 7).
 - **The map's loaded files are not made deeply reactive.** The shapes and names, and the
   characteristics, are only ever replaced whole. Holding them as raw state removes the proxies
   that made the first pointing slow, and halves the script of every pointing.
@@ -43,8 +46,9 @@ None.
 ### Modified Capabilities
 
 - `result-map`: "The map's performance budget": one budget of 16 ms per frame for zooming,
-  moving, pointing and clicking, the first pointing after the page has loaded included, and the
-  pace of the inputs the browser tests measure.
+  moving, pointing and clicking, the first pointing after the page has loaded included, the
+  pace of the inputs the browser tests measure, and a second measurement when a frame exceeds
+  the budget.
 
 ## Non-goals
 
@@ -64,7 +68,7 @@ None.
   module changes, and no dependency is added.
 - **Browser tests** (`app/e2e/result-map.spec.ts`): the budget test of zooming, moving and
   pointing measures from before the first pointing; the test of clicking waits 50 ms before
-  each click and allows 16 ms.
+  each click and allows 16 ms; both run once more when they fail.
 - **Specs:** `result-map`, one modified requirement.
 - **Docs:** `docs/roadmap.md` (the row "7a"), `CLAUDE.md` (status and code map),
   `investigations/performance.md` (what the change did with its findings).

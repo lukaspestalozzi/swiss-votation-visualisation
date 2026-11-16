@@ -109,16 +109,19 @@ whose log prints each run's frames.
 ## Verification and review
 
 `/openspec-verify-change` on 2026-11-16 found no critical issue, two warnings and one
-suggestion; Q archived the change without changing them, and they stay open:
+suggestion. The change was archived first; Q then asked to fix them, and they are fixed:
 
-- The inputs Playwright sends without a pause, the click on "Ganze Schweiz" in both budget
-  tests and the press that starts the drag in the test of zooming, follow the pointer's arrival
-  without the 50 ms the spec names; the second run covers them (`investigations/performance.md`,
-  M9).
-- `proposal.md` does not name the second run on failure (design, decision 7), which the spec,
-  the design and these tasks do.
-- `CLAUDE.md` and the beginning of "How to reproduce" in `investigations/performance.md` count
-  two scripts in JavaScript and two in Python, without `budget_tests_traced.spec.ts`.
+- The inputs Playwright sent without a pause, the click on "Ganze Schweiz" in both budget
+  tests and the press that starts the drag in the test of zooming, followed the pointer's
+  arrival without the 50 ms the spec names. Now the pointer rests on "Ganze Schweiz" for 50 ms
+  before its click, and 50 ms at the drag's start before the press. Three times right after a
+  build, both tests 10 runs each: all 60 passed at their first run, no frame over 16 ms, the
+  longest frame of a run a median of 7.5 ms (zooming) and 5.2 ms (clicking). Before, 3 of 60
+  needed a second run, all on a step of the wheel, which the pauses do not touch. Both mutants
+  of 1.5 still fail both runs.
+- `proposal.md` now names the second run on failure.
+- `CLAUDE.md` and `investigations/performance.md` name `budget_tests_traced.spec.ts`, and "How
+  to reproduce" gives the commands of M9 and M10.
 
 Copilot's review of PR #11 found that `investigations/performance/windows.py` stopped on a run
 without a window over 16 ms; fixed, the run is reported as "none".
