@@ -274,8 +274,29 @@ with its two workers.
 
 ## Open
 
-- M7's one first pointing of 16.8 ms with `$state.raw`; the other 29 runs with it stayed at
-  6.6 ms or less.
+- M7's one first pointing of 16.8 ms with `$state.raw` came right after a build and the
+  server's start, the condition in which M9 and M10 found the machine busy; it was not traced.
 - How a test should measure a frame closely followed by another input. M3 shows that no task
   posted from the page ends at the frame's end then; leaving 50 ms between inputs, as the test
   of zooming does, avoids the case.
+
+## What became of it
+
+`tighten-map-budget`, row "7a" of `docs/roadmap.md`, took these findings (its design, decisions
+2 to 4 and 7):
+
+- **The map's two loaded files are raw state** (`$state.raw` in `ResultMap.svelte`), from M6 to
+  M8. With it, the first pointing took 3.5 to 9.8 ms in the budget tests, against 6.4 to 21.8 ms
+  before.
+- **One budget of 16 ms per frame** for zooming, moving, pointing and clicking. The test of
+  clicking waits 50 ms before each click (M2, M4), and the test of zooming, moving and pointing
+  measures the first pointing (M5).
+- **The budget tests run once more when they fail** (M9, M10). Right after a build, 3 of 60 runs
+  passed only on their second run, all of them the test of zooming, moving and pointing, with a
+  step of the wheel over 16 ms (16.1, 17.5 and 21.2 ms). A mutant that slows the first pointing
+  or a click by 20 ms fails both runs.
+
+The inputs Playwright sends without a pause, a click on "Ganze Schweiz" after the pointer
+arrives on it and the press that starts a drag, can still stretch the measurement of the frame
+before them (M9: 19.5 and 17.3 ms, once each); the second run covers them as it covers a busy
+machine.
