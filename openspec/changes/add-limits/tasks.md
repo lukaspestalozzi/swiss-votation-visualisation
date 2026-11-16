@@ -301,9 +301,14 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
   - **Counting:** the page counts the municipalities with an entry and those of them that
     remain; `Limits.svelte` writes the sentence, and shows the button while there is a limit or
     the switch is off.)
-- [ ] 5.5 The scenario "A bound is included" with made-up values is covered by 1.1, and "The
+- [x] 5.5 The scenario "A bound is included" with made-up values is covered by 1.1, and "The
   limits follow the definitions" of `characteristics` by one browser test: the list's 21 names in
   order, and the four logarithmic tracks, at step 500 not the linear middle. Verify: 89 passed.
+
+  (As built: 88 browser tests, one fewer than planned, the one 5.2 has fewer. The test reads each
+  track's step 500 from its slider's `aria-valuetext`: 3'508, 104, 11.85 km² and 0.090, and
+  30.55% for the foreigners, a linear track. It passed when written; with the area's track made
+  linear it reads "219.47 km²" and fails. The mutant was built and undone.)
 - [ ] 5.6 Look at `/votes/5960/` and `/votes/5950/` in the built site, in windows 1,280 and 800
   pixels wide: add two limits, drag, switch, reset; then the same with the keyboard alone.
   Verify: screenshots in the scratchpad show the section between the outcome and the map, "Mit
