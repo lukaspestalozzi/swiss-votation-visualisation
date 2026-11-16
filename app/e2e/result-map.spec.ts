@@ -290,11 +290,13 @@ test('the wheel zooms in around the point under the pointer', async ({ page }) =
 });
 
 // Drag the map from its centre by (dx, dy) pixels, in steps as a hand would.
-async function drag(page: Page, dx: number, dy: number) {
+async function drag(page: Page, dx: number, dy: number, pause = 0) {
   const box = await page.locator('.map svg').boundingBox();
   if (box === null) throw new Error('the map is not on the screen');
   const start = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   await page.mouse.move(start.x, start.y);
+  // A pause before the press, for the budget tests (design of tighten-map-budget, decision 3).
+  if (pause > 0) await page.waitForTimeout(pause);
   await page.mouse.down();
   await page.mouse.move(start.x + dx, start.y + dy, { steps: 10 });
   await page.mouse.up();
@@ -419,6 +421,16 @@ async function measuredFrames(page: Page): Promise<{ type: string; work: number 
   return frames;
 }
 
+/** "Ganze Schweiz" at a person's pace: the pointer rests on it 50 ms before the click, so that
+ * the click is not counted in the measurement of the pointer's arrival (design of
+ * tighten-map-budget, decision 3). */
+async function showWholeSwitzerland(page: Page) {
+  const button = page.getByRole('button', { name: 'Ganze Schweiz' });
+  await button.hover();
+  await page.waitForTimeout(50);
+  await button.click();
+}
+
 // A busy machine can stretch a frame of a page that meets the budget: the budget tests run once
 // more when they fail (design of tighten-map-budget, decision 7).
 test.describe(() => {
@@ -444,9 +456,9 @@ test.describe(() => {
       await page.mouse.wheel(0, -300);
       await page.waitForTimeout(50);
     }
-    await drag(page, -120, 40);
+    await drag(page, -120, 40, 50);
     for (const number of [261, 351, 6621]) {
-      await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
+      await showWholeSwitzerland(page);
       const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
       await page.mouse.move(point.x, point.y, { steps: 5 });
     }
@@ -700,7 +712,7 @@ test.describe(() => {
       (window as unknown as { __frames: unknown[] }).__frames = [];
     });
     for (const number of [261, 351, 6621]) {
-      await page.getByRole('button', { name: 'Ganze Schweiz' }).click();
+      await showWholeSwitzerland(page);
       const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
       await page.mouse.move(point.x, point.y, { steps: 5 });
       await page.waitForTimeout(50);
