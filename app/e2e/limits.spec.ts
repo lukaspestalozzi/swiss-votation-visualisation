@@ -129,8 +129,16 @@ test('the bounds do not cross: the lower one stops at the upper one', async ({ p
   await open(page, 'votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
-  await slider(page, 'Untere', 'Ausländeranteil').fill('1000');
-  await expect(slider(page, 'Untere', 'Ausländeranteil')).toHaveValue('327');
+  // The lower thumb dragged by pointer from the start of the track to its end.
+  const lower = slider(page, 'Untere', 'Ausländeranteil');
+  const box = await lower.boundingBox();
+  if (box === null) throw new Error('the slider has no box');
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + 10, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width - 10, y, { steps: 10 });
+  await page.mouse.up();
+  await expect(lower).toHaveValue('327');
   await expect(label(page, 'Ausländeranteil')).toHaveText(
     'Ausländeranteil (Ende 2015): von 19.98% bis 19.98%',
   );
@@ -619,4 +627,16 @@ test('a range closed at the end of its track reopens by pointer', async ({ page 
   await page.mouse.up();
   expect(Number(await lower.inputValue())).toBeLessThan(600);
   await expect(slider(page, 'Obere', 'Ausländeranteil')).toHaveValue('1000');
+});
+
+test("a step that keeps the end's value narrows nothing: inhabitants at step 1", async ({
+  page,
+}) => {
+  // investigations/limits.md, 5: step 1 of the inhabitants of 2016 is 31, the smallest value.
+  await open(page, 'votes/5960/');
+  await addLimit(page, 'Einwohner');
+  await slider(page, 'Untere', 'Einwohner').fill('1');
+  await expect(label(page, 'Einwohner')).toHaveText("Einwohner (Ende 2015): von 31 bis 396'955");
+  await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
+  await expect(page.locator('.municipalities [fill="#2c2c2c"]')).toHaveCount(0);
 });
