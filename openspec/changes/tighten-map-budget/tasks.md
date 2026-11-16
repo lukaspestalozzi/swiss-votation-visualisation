@@ -82,15 +82,15 @@ whose log prints each run's frames.
 
 ## 2. Documentation and the whole
 
-- [ ] 2.1 `investigations/performance.md` gains a section "What became of it": this change, the
+- [x] 2.1 `investigations/performance.md` gains a section "What became of it": this change, the
   decisions it took from the findings (raw state; 50 ms before a click; the first pointing
   measured; one more run on failure, from M9 and M10), and what the tests of 1.1 to 1.4
   showed. Verify: the section names `tighten-map-budget` and the numbers of 1.1 to 1.4.
-- [ ] 2.2 `docs/roadmap.md`: a row "7a", `tighten-map-budget`, between #7 and #8, with the
+- [x] 2.2 `docs/roadmap.md`: a row "7a", `tighten-map-budget`, between #7 and #8, with the
   capability `result-map`, what the change does, and "proposed" until it is archived; the
   investigations' list names `investigations/performance.md`. Verify: the row stands between
   #7 and #8, and #8 to #13 keep their numbers.
-- [ ] 2.3 Update `CLAUDE.md` for every file this branch adds or changes:
+- [x] 2.3 Update `CLAUDE.md` for every file this branch adds or changes:
   - the status (#7a, and what comes next);
   - "Where things are": the investigations' row names `performance.md` and its scripts in
     `performance/`, and the row of `eslint.config.js` says that ESLint leaves
@@ -101,8 +101,10 @@ whose log prints each run's frames.
 
   Verify: `grep -n "performance\|16 ms" CLAUDE.md` shows each of these, and no line still says
   50 ms for clicking.
-- [ ] 2.4 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
+- [x] 2.4 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 41 tests of the
   calculation, 80 of the app, 55 browser tests and 134 of the pipeline.
+
+  (As built: 11 of 11 steps passed: 41, 80, 55 browser tests, none on a second run, and 134.)
 
 ## Workflow follow-up
 
