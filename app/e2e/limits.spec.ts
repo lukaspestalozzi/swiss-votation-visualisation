@@ -388,3 +388,90 @@ test('the details of a set-aside municipality: its own figures, and that it is n
     'Nicht in der Auswahl.',
   ]);
 });
+
+const count = (page: Page) => page.locator('.limits .count');
+
+test('the number of municipalities that remain: all of them without a limit', async ({ page }) => {
+  await open(page, 'votes/5960/');
+  await expect(count(page)).toHaveText(
+    "In der Auswahl: 2'103 von 2'103 Gemeinden mit eigenem Ergebnis.",
+  );
+});
+
+test('the number of municipalities that remain under a limit', async ({ page }) => {
+  // investigations/limits.md, 5.
+  await open(page, 'votes/5960/');
+  await foreignersUpTo1998(page);
+  await expect(count(page)).toHaveText(
+    "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
+  );
+});
+
+test('the number of municipalities that remain: none', async ({ page }) => {
+  await open(page, 'votes/5960/');
+  await addLimit(page, 'Deutsch');
+  await addLimit(page, 'Französisch');
+  await slider(page, 'Untere', 'Deutsch').fill('1000');
+  await slider(page, 'Untere', 'Französisch').fill('1000');
+  await expect(count(page)).toHaveText('Keine Gemeinde mit eigenem Ergebnis ist übrig.');
+});
+
+test('back to the real result: no limit, the switch on, no selection, the legend of ten', async ({
+  page,
+}) => {
+  await open(page, 'votes/5960/');
+  const back = page.getByRole('button', { name: 'Zurück zum echten Ergebnis' });
+  await expect(back).toHaveCount(0);
+  await foreignersUpTo1998(page);
+  await addLimit(page, 'Einwohner');
+  await slider(page, 'Untere', 'Einwohner').fill('500');
+  await abroadSwitch(page).uncheck();
+  await expect(page.locator('.legend li')).toHaveCount(11);
+  await back.click();
+  await expect(page.locator('.limit')).toHaveCount(0);
+  await expect(abroadSwitch(page)).toBeChecked();
+  await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
+  await expect(page.locator('.municipalities [fill="#2c2c2c"]')).toHaveCount(0);
+  await expect(page.locator('.legend li')).toHaveCount(10);
+  await expect(back).toHaveCount(0);
+});
+
+test('back to the real cantons: the table of the vote again', async ({ page }) => {
+  await open(page, 'votes/5960/');
+  await foreignersUpTo1998(page);
+  await expect(page.locator('table caption')).toHaveText('Mit Ihrer Auswahl');
+  await page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }).click();
+  await expect(page.locator('table caption')).toHaveCount(0);
+  const bs = page.locator('table').getByRole('row', { name: /^BS / }).locator('th, td');
+  await expect(bs.nth(1)).toHaveText(/^\d+\.\d\d%$/);
+  await expect(bs.nth(2)).toHaveText('½');
+  await expect(bs.nth(3)).toHaveText(/^(Ja|Nein)$/);
+});
+
+test('limits belong to the page: another vote starts without them', async ({ page }) => {
+  await open(page, 'votes/5960/');
+  await foreignersUpTo1998(page);
+  await abroadSwitch(page).uncheck();
+  await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
+  await page.locator('a[href$="/votes/5670"], a[href$="/votes/5670/"]').first().click();
+  await expect(page.getByLabel('Merkmal hinzufügen')).toBeVisible();
+  await expect(page).toHaveURL(/\/votes\/5670\/?$/);
+  await expect(page.locator('.limit')).toHaveCount(0);
+  await expect(abroadSwitch(page)).toBeChecked();
+  await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
+});
+
+test('characteristics that cannot be loaded: no limits, and the rest of the page', async ({
+  page,
+}) => {
+  await page.route('**/data/characteristics.json', (route) => route.abort());
+  await page.goto('votes/5960/');
+  await expect(
+    page.locator('.limits').getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
+  ).toBeVisible();
+  await expect(page.getByLabel('Merkmal hinzufügen')).toHaveCount(0);
+  await expect(page.locator('.figures dd').first()).toHaveText("1'609'152");
+  await expect(page.locator('.verdict .word')).toHaveText(['Nein', 'Ja']);
+  await expect(page.locator('.municipalities path')).toHaveCount(2110);
+  await expect(page.locator('table tbody tr')).toHaveCount(26);
+});
