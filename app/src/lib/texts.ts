@@ -181,3 +181,4 @@ export const remainingCount = (remaining: string, all: string): string =>
   `In der Auswahl: ${remaining} von ${all} Gemeinden mit eigenem Ergebnis.`;
 export const NOTHING_REMAINS = 'Keine Gemeinde mit eigenem Ergebnis ist übrig.';
 export const BACK_TO_REAL = 'Zurück zum echten Ergebnis';
+export const ADD = 'Hinzufügen';

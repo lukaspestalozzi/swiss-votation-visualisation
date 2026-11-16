@@ -38,15 +38,24 @@ result. The page of a tie-break question SHALL show no such section.
 ### Requirement: Adding and removing a limit
 
 The list "Merkmal hinzufügen" SHALL offer, by the names the panel of characteristics gives them
-and in its order, each of the 21 characteristics that has no limit yet. Choosing one SHALL add
-its limit after those already added, with both bounds at the ends of its track. Each limit SHALL
-have a button "Entfernen" that removes it, after which the list offers its characteristic again.
+and in its order, each of the 21 characteristics that has no limit yet. Choosing one and pressing
+"Hinzufügen" SHALL add its limit after those already added, with both bounds at the ends of its
+track; choosing alone SHALL add nothing. Each limit SHALL have a button "Entfernen" that removes
+it, after which the list offers its characteristic again.
 
 #### Scenario: Adding a limit
 
-- **WHEN** a visitor opens `/votes/5960/` and chooses "Ausländeranteil" in "Merkmal hinzufügen"
+- **WHEN** a visitor opens `/votes/5960/`, chooses "Ausländeranteil" in "Merkmal hinzufügen" and
+  presses "Hinzufügen"
 - **THEN** the page shows the limit "Ausländeranteil (Ende 2015): von 0.00% bis 61.10%", and the
   list offers the other 20 characteristics but not "Ausländeranteil"
+
+#### Scenario: The keyboard only chooses
+
+- **WHEN** a visitor opens `/votes/5960/`, focuses "Merkmal hinzufügen" and presses the down arrow
+  key twice
+- **THEN** the page shows no limit and the list shows "Ausländeranteil"; pressing "Hinzufügen"
+  adds its limit
 
 #### Scenario: Removing it
 

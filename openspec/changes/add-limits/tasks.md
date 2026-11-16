@@ -309,11 +309,30 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
   track's step 500 from its slider's `aria-valuetext`: 3'508, 104, 11.85 km² and 0.090, and
   30.55% for the foreigners, a linear track. It passed when written; with the area's track made
   linear it reads "219.47 km²" and fails. The mutant was built and undone.)
-- [ ] 5.6 Look at `/votes/5960/` and `/votes/5950/` in the built site, in windows 1,280 and 800
+- [x] 5.6 Look at `/votes/5960/` and `/votes/5950/` in the built site, in windows 1,280 and 800
   pixels wide: add two limits, drag, switch, reset; then the same with the keyboard alone.
   Verify: screenshots in the scratchpad show the section between the outcome and the map, "Mit
   Ihrer Auswahl" beside the result at 1,280 and below it at 800, and the dark grey. The note
   names what was looked at.
+
+  (As built: looked at on 2026-11-16 with a script on the built site; screenshots in the
+  scratchpad, `look/`. In both widths the section stands between the outcome and the map, the
+  dark grey and the table "Mit Ihrer Auswahl" show, and `/votes/5950/` fails without the Swiss
+  abroad and returns.
+  - **The width:** "Mit Ihrer Auswahl" stands beside the result at 800 as at 1,280, two columns
+    of 384 pixels, which fit. Decision 9 of the design sets the break at 640; this task's "below
+    it at 800" was my error.
+  - **The keyboard found a defect.** An arrow key on the closed list changed its choice at once
+    in Chromium, and each change added a limit: two presses, two limits. Q chose, on 2026-11-16,
+    a button "Hinzufügen" beside the list. The spec's "Adding and removing a limit" says so and
+    gains the scenario "The keyboard only chooses"; decision 6 records it. Its browser test
+    failed first (two limits) and passes now; the tests add a limit with the button. 89
+    browser tests.
+  - **With the button, the keyboard alone works:**
+    1. the arrows choose and Tab reaches "Hinzufügen", where Enter adds;
+    2. each slider moves step by step with the arrows;
+    3. Tab reaches "Entfernen" and the switch, which Space changes;
+    4. Enter on "Zurück zum echten Ergebnis" returns.)
 
 ## 6. The budget of the limits
 
