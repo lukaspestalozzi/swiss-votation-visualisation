@@ -10,10 +10,13 @@
     TITLE,
     TURNOUT,
     YES_SHARE,
+    WITH_SELECTION,
     YES_VOTES,
   } from '../../../lib/texts.ts';
+  import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
-  import type { LimitSetting } from '../../../lib/limits.ts';
+  import { isNarrowed, remainingUnder, type LimitSetting } from '../../../lib/limits.ts';
+  import { judgedOf } from '../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
   import Limits from './Limits.svelte';
@@ -38,6 +41,34 @@
       },
     );
   });
+
+  // The municipalities that remain under the limits, once the characteristics are loaded.
+  const remaining = $derived(
+    characteristics === null ? null : remainingUnder(characteristics.municipalities, limits),
+  );
+  // A selection applies while a limit is narrowed or the Swiss abroad are not counted (spec
+  // verdicts, "The result of the selection").
+  const applies = $derived(!abroadCounted || limits.some(isNarrowed));
+  // The selection's result, as the page writes it, while a selection applies.
+  const selection = $derived.by(() => {
+    const { entries, majorities } = data;
+    if (!applies || remaining === null || entries === null || majorities === 'not-calculated') {
+      return null;
+    }
+    const kept = entriesThatRemain(entries.cantons, remaining, abroadCounted);
+    const cantons = entries.cantons
+      .filter((canton) => canton.municipalities.length > 0 || canton.abroad !== null)
+      .map((canton) => canton.canton);
+    return judgedOf(calculateResult(kept, majorities), majorities, cantons);
+  });
+  // The municipalities with an entry that the selection sets aside, dark grey on the map.
+  const aside = $derived.by((): ReadonlySet<number> => {
+    if (remaining === null || data.entries === null) return new Set();
+    const numbers = data.entries.cantons.flatMap((canton) =>
+      canton.municipalities.map(([number]) => number),
+    );
+    return new Set(numbers.filter((number) => !remaining.has(number)));
+  });
 </script>
 
 <svelte:head>
@@ -54,35 +85,68 @@
 
 {#if data.judged !== null}
   {@const judged = data.judged}
-  <dl class="figures">
-    <div>
-      <dt>{YES_VOTES}</dt>
-      <dd>{judged.yesVotes}</dd>
-    </div>
-    <div>
-      <dt>{NO_VOTES}</dt>
-      <dd>{judged.noVotes}</dd>
-    </div>
-    <div>
-      <dt>{YES_SHARE}</dt>
-      <dd>{judged.yesShare}</dd>
-    </div>
-    <div>
-      <dt>{TURNOUT}</dt>
-      <dd>{judged.turnout}</dd>
-    </div>
-  </dl>
+  <div class="results">
+    <div class="result">
+      <dl class="figures">
+        <div>
+          <dt>{YES_VOTES}</dt>
+          <dd>{judged.yesVotes}</dd>
+        </div>
+        <div>
+          <dt>{NO_VOTES}</dt>
+          <dd>{judged.noVotes}</dd>
+        </div>
+        <div>
+          <dt>{YES_SHARE}</dt>
+          <dd>{judged.yesShare}</dd>
+        </div>
+        <div>
+          <dt>{TURNOUT}</dt>
+          <dd>{judged.turnout}</dd>
+        </div>
+      </dl>
 
-  <div class="verdicts">
-    {#each judged.verdicts as verdict (verdict.heading)}
-      <section class="verdict">
-        <h2>{verdict.heading}</h2>
-        <p class="word">{verdict.verdict}</p>
-        <p class:greyed={verdict.greyed}>{verdict.figure}</p>
+      <div class="verdicts">
+        {#each judged.verdicts as verdict (verdict.heading)}
+          <section class="verdict">
+            <h2>{verdict.heading}</h2>
+            <p class="word">{verdict.verdict}</p>
+            <p class:greyed={verdict.greyed}>{verdict.figure}</p>
+          </section>
+        {/each}
+      </div>
+      <p class="outcome">{judged.outcome}</p>
+    </div>
+    {#if selection !== null}
+      <section class="result selection">
+        <h2>{WITH_SELECTION}</h2>
+        <dl class="figures">
+          <div>
+            <dt>{YES_VOTES}</dt>
+            <dd>{selection.yesVotes}</dd>
+          </div>
+          <div>
+            <dt>{NO_VOTES}</dt>
+            <dd>{selection.noVotes}</dd>
+          </div>
+          <div>
+            <dt>{YES_SHARE}</dt>
+            <dd>{selection.yesShare}</dd>
+          </div>
+        </dl>
+        <div class="verdicts">
+          {#each selection.verdicts as verdict (verdict.heading)}
+            <section class="verdict">
+              <h3>{verdict.heading}</h3>
+              <p class="word">{verdict.verdict}</p>
+              <p class:greyed={verdict.greyed}>{verdict.figure}</p>
+            </section>
+          {/each}
+        </div>
+        <p class="outcome">{selection.outcome}</p>
       </section>
-    {/each}
+    {/if}
   </div>
-  <p class="outcome">{judged.outcome}</p>
 
   {#if data.entries !== null}
     <Limits
@@ -92,10 +156,13 @@
       bind:limits
       bind:abroadCounted
     />
-    <ResultMap entries={data.entries} title={data.title} voteDate={data.voteDate} />
+    <ResultMap entries={data.entries} {aside} title={data.title} voteDate={data.voteDate} />
   {/if}
 
   <table>
+    {#if selection !== null}
+      <caption>{WITH_SELECTION}</caption>
+    {/if}
     <thead>
       <tr>
         <th scope="col">{CANTON}</th>
@@ -105,7 +172,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each judged.cantons as row (row.canton)}
+      {#each (selection ?? judged).cantons as row (row.canton)}
         <tr>
           <th scope="row">{row.canton}</th>
           <td>{row.yesShare}</td>
@@ -143,6 +210,21 @@
 {/if}
 
 <style>
+  /* The selection's result beside the vote's own from 640 pixels, below it otherwise (design of
+     add-limits, decision 9). */
+  .results {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .results {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  caption {
+    text-align: left;
+    font-weight: bold;
+  }
   .figures {
     display: flex;
     flex-wrap: wrap;

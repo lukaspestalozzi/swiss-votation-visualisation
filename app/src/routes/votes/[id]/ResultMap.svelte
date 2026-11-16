@@ -9,6 +9,7 @@
     HATCH_LINE,
     LAKE_COLOUR,
     LEGEND,
+    SET_ASIDE_COLOUR,
     colourOf,
     colouringOf,
     detailsOf,
@@ -29,8 +30,18 @@
 
   // The map of a vote (spec result-map): its entries are written into the page when the site is
   // built; the shapes and the names are loaded in the browser.
-  let { entries, title, voteDate }: { entries: VoteEntries; title: string; voteDate: string } =
-    $props();
+  let {
+    entries,
+    aside,
+    title,
+    voteDate,
+  }: {
+    entries: VoteEntries;
+    // The municipalities the selection sets aside (spec limits).
+    aside: ReadonlySet<number>;
+    title: string;
+    voteDate: string;
+  } = $props();
 
   // Each municipality's [number, yes, no], from the entries of every canton.
   const figures = $derived(entries.cantons.flatMap((canton) => canton.municipalities));
@@ -53,7 +64,7 @@
     new Map<number, string>([
       ...figures.map(([number, yes, no]): [number, string] => [
         number,
-        colourOf(colouringOf(yes, no)),
+        aside.has(number) ? SET_ASIDE_COLOUR : colourOf(colouringOf(yes, no)),
       ]),
       ...entries.withoutResult.map((number): [number, string] => [number, 'url(#hatch)']),
     ]),
