@@ -22,5 +22,6 @@ for path in sorted(glob.glob(sys.argv[1] + '/run-*.json')):
         click_inside = any(b['ts'] < c < o['ts'] for c in clicks)
         commit_after_click = any(c > max([x for x in clicks if b['ts'] < x < o['ts']] or [o['ts']]) and c < o['ts'] for c in commits)
         ok += click_inside and commit_after_click
+    span = f"{min(own):.1f} to {max(own):.1f} ms" if own else "none"
     print(f"{path.split('/')[-1]}: windows over 16 ms: {longs}, with a click and the click's frame inside: {ok}, "
-          f"own frame (to its first commit): {min(own):.1f} to {max(own):.1f} ms")
+          f"own frame (to its first commit): {span}")
