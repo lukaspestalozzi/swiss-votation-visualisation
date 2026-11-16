@@ -109,6 +109,10 @@ function breakdown(trace, id) {
   main.sort((a, b) => a.ts - b.ts || b.dur - a.dur);
   const self = new Map();
   const stack = [];
+  // The top-level tasks' wall time and the main thread's CPU time in them (`tdur`, the thread's
+  // own clock): much less CPU than wall time means the thread waited for a processor.
+  let wall = 0;
+  let cpu = 0;
   for (const e of main) {
     while (stack.length && stack[stack.length - 1].ts + stack[stack.length - 1].dur <= e.ts)
       stack.pop();
@@ -117,12 +121,16 @@ function breakdown(trace, id) {
     self.set(e.name, (self.get(e.name) ?? 0) + clipped);
     if (parent) {
       self.set(parent.name, (self.get(parent.name) ?? 0) - clipped);
+    } else if (e.tdur !== undefined && e.dur > 0) {
+      wall += clipped;
+      cpu += (e.tdur * clipped) / e.dur;
     }
     stack.push(e);
   }
   const busy = [...self.values()].reduce((a, b) => a + b, 0);
   return (
-    `busy ${(busy / 1000).toFixed(1)} of ${((end.ts - begin.ts) / 1000).toFixed(1)} ms: ` +
+    `busy ${(busy / 1000).toFixed(1)} of ${((end.ts - begin.ts) / 1000).toFixed(1)} ms ` +
+    `(top-level tasks: wall ${(wall / 1000).toFixed(1)}, cpu ${(cpu / 1000).toFixed(1)}): ` +
     [...self.entries()]
       .filter(([, us]) => us > 300)
       .sort((a, b) => b[1] - a[1])
