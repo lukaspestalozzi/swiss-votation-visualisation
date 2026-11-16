@@ -1,6 +1,7 @@
 // What the map of a vote shows (spec result-map): the colour of each municipality from its
 // yes and no votes, the legend, and the details of a municipality. The design of the change
 // add-result-map gives the reasons (decisions 5, 6, 8 and 12).
+import type { CantonEntries } from 'calculation';
 import { formatCount, formatShare } from './format.ts';
 import {
   LEGEND_TIE,
@@ -97,44 +98,46 @@ export function detailsOf(
   };
 }
 
-// What a vote's page holds for its map, written when the site is built.
-export interface MapFigures {
-  // Per municipality of the map with an entry: [number, yes votes, no votes], by number.
-  readonly figures: readonly (readonly [number, number, number])[];
+// What a vote's page holds for its map and its selection, written when the site is built
+// (design of add-limits, decision 20).
+export interface VoteEntries {
+  // Per canton in the order of the vote's file, the entries that count for it: its municipalities
+  // as [number, yes votes, no votes], and its Swiss abroad as [yes votes, no votes] where it counts
+  // them apart.
+  readonly cantons: readonly CantonEntries[];
   // The municipalities the vote's file names as without a result.
   readonly withoutResult: readonly number[];
-  // The number of the vote's entries of Swiss abroad, which are not on the map.
-  readonly swissAbroad: number;
 }
 
 /**
- * The figures of a vote for the map with the municipalities `onTheMap`; `swissAbroad` are the
- * numbers of the entries of Swiss abroad.
+ * The entries of a vote, checked against the map with the municipalities `onTheMap`;
+ * `swissAbroad` are the numbers of the entries of Swiss abroad.
  */
-export function mapFiguresOf(
+export function voteEntriesOf(
   file: VoteFile,
   onTheMap: readonly number[],
   swissAbroad: readonly number[],
-): MapFigures {
+): VoteEntries {
   const map = new Set(onTheMap);
   const abroadNumbers = new Set(swissAbroad);
-  const figures: [number, number, number][] = [];
-  let abroad = 0;
-  for (const rows of Object.values(file.entries)) {
+  const counted = new Set<number>(file.withoutResult);
+  const cantons = Object.entries(file.entries).map(([canton, rows]): CantonEntries => {
+    const municipalities: [number, number, number][] = [];
+    let abroad: [number, number] | null = null;
     for (const [number, , , , yes, no] of rows) {
       if (abroadNumbers.has(number)) {
-        abroad += 1;
+        abroad = [yes, no];
       } else if (map.has(number)) {
-        figures.push([number, yes, no]);
+        municipalities.push([number, yes, no]);
+        counted.add(number);
       } else {
         throw new Error(
           `vote ${String(file.id)}: the entry ${String(number)} is no municipality of the map`,
         );
       }
     }
-  }
-  figures.sort((a, b) => a[0] - b[0]);
-  const counted = new Set([...figures.map(([number]) => number), ...file.withoutResult]);
+    return { canton, municipalities, abroad };
+  });
   for (const number of onTheMap) {
     if (!counted.has(number)) {
       throw new Error(
@@ -143,5 +146,5 @@ export function mapFiguresOf(
       );
     }
   }
-  return { figures, withoutResult: [...file.withoutResult], swissAbroad: abroad };
+  return { cantons, withoutResult: [...file.withoutResult] };
 }

@@ -144,18 +144,33 @@ characteristic"). Design: decisions 5, 16, 17 and 22.
 Specs: `verdicts` (the modified "The page holds its result"), `result-map` (unchanged behaviour
 of the map). Design: decisions 20 and 21.
 
-- [ ] 3.1 In `result-map.ts`, `mapFiguresOf` becomes `voteEntriesOf`. Per canton it gives the
+- [x] 3.1 In `result-map.ts`, `mapFiguresOf` becomes `voteEntriesOf`. Per canton it gives the
   municipalities' `[number, yes, no]` and the Swiss abroad's `[yes, no]` or none, with the numbers
   without a result and the kind's `Majorities`, and keeps every check. Adapt its tests first,
   then the code: the existing three checks, and one new test that 5960's entries hold 12 Swiss
   abroad and the 2,103 municipalities. Verify: the app's unit tests pass, 1 more than before.
-- [ ] 3.2 `+page.server.ts` returns the entries. `ResultMap.svelte` takes them and flattens the
+
+  (As built: 89 app tests, 1 more. The adapted tests and the new one failed first, with no
+  function. `voteEntriesOf` gives `{ cantons, withoutResult }`, each canton a `CantonEntries` of
+  the calculation. The kind's `Majorities` belong to the vote, not to its file, so the page's
+  load function returns them beside the entries (3.2) instead of `voteEntriesOf`. The number of
+  Swiss abroad, which the map's sentence names, is that of the cantons with an entry of them.
+  The two tests of `vote-data.test.ts` that used `mapFiguresOf` use `voteEntriesOf`. The new
+  test also checks the 7 municipalities without a result and the 26 cantons.)
+- [x] 3.2 `+page.server.ts` returns the entries. `ResultMap.svelte` takes them and flattens the
   municipalities once for its colours, counts and details. The two loaders move to a module of
   the route, `loaders.ts`. Verify:
   - `pnpm run build && pnpm run test:e2e`: 55 passed, unchanged, among them "loading once" and
     the two budget tests;
   - the HTML of `/votes/5960/` is under 60 KB (`wc -c`);
   - the note gives its size.
+
+  (As built: 55 browser tests pass, "loading once" and the two budget tests among them; check
+  and lint pass after `svelte-kit sync`, which writes the load function's new types and runs on
+  every install. The HTML of `/votes/5960/` is 44,741 bytes, 16,188 gzipped; it was 43,533 and
+  15,855. The page's data holds `entries` (in place of `map`) and `majorities`; `ResultMap`
+  flattens the cantons' municipalities once, and counts the Swiss abroad for its sentence from
+  the cantons that have them.)
 
 ## 4. The result of the selection
 

@@ -1,9 +1,11 @@
 // A vote's page, written at build time for every vote of the list (spec verdicts): its result is
-// calculated here, so the page holds it and the browser loads no entries. For its map (spec
-// result-map) it holds each municipality's yes and no votes, checked against the map's data; the
-// browser loads the shapes themselves.
+// calculated here, so the page holds it and the browser loads no file of entries. For its map
+// (spec result-map) and its selection (spec limits) it holds each entry's canton, yes and no
+// votes, checked against the map's data, and the majorities the vote needs; the browser loads the
+// shapes themselves.
 import { error } from '@sveltejs/kit';
-import { mapFiguresOf } from '../../../lib/result-map.ts';
+import { majoritiesNeeded } from 'calculation';
+import { voteEntriesOf } from '../../../lib/result-map.ts';
 import type { MapFile, Municipalities, VoteFile, Votes } from '../../../lib/vote-data.ts';
 import { votePage } from '../../../lib/vote-page.ts';
 import mapData from '../../../../static/data/map.json';
@@ -31,8 +33,9 @@ export const load: PageServerLoad = async ({ params }) => {
   const file = loader === undefined ? undefined : await loader();
   const page = votePage(vote, file);
   // votePage has refused a vote without its file; a tie-break question gets no map.
-  const map =
-    file === undefined || page.judged === null ? null : mapFiguresOf(file, onTheMap, swissAbroad);
+  const entries =
+    file === undefined || page.judged === null ? null : voteEntriesOf(file, onTheMap, swissAbroad);
+  const majorities = majoritiesNeeded(vote.kind);
   // The vote's day decides which characteristics apply (spec characteristics).
-  return { ...page, map, voteDate: vote.date };
+  return { ...page, entries, majorities, voteDate: vote.date };
 };
