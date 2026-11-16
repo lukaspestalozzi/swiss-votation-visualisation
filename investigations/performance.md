@@ -16,8 +16,9 @@ style, layout, paint and garbage collection.
 
 The scripts are in `investigations/performance/`. The two in JavaScript run the global
 Playwright of the cloud image (1.63.0, the version `app/package.json` pins) against the built
-site; the two in Python read the traces with the standard library. The traces are some 10 MB each and stay outside
-the repository.
+site; the two in Python read the traces with the standard library; `budget_tests_traced.spec.ts`
+is a copy of the two budget tests with a trace, which the project's Playwright runs from
+`app/e2e/` (M10). The traces are some 10 MB each and stay outside the repository.
 
 ```sh
 pnpm run build
@@ -35,6 +36,15 @@ node investigations/performance/measure_clicks.cjs --runs 10 --pause 50 --thresh
 # app/src/routes/votes/[id]/ResultMap.svelte, and the file restored with git afterwards.
 (cd app && pnpm exec vite build --minify false && pnpm exec sirv build --port 4174) &
 node investigations/performance/profile_first_point.cjs --runs 5
+# M9: the budget tests themselves, right after a build, and with one worker or two.
+pnpm run build
+pnpm --filter app exec playwright test e2e/result-map.spec.ts -g "the budget" --repeat-each 10 --trace off
+pnpm --filter app exec playwright test e2e/result-map.spec.ts -g "the budget" --repeat-each 10 --workers 1 --trace off
+# M10: the budget tests with a trace, right after a build; the copy is removed afterwards.
+cp investigations/performance/budget_tests_traced.spec.ts app/e2e/zz-trace-spike.spec.ts
+pnpm run build
+TRACE_DIR=/path/outside/the/repository pnpm --filter app exec playwright test e2e/zz-trace-spike.spec.ts --repeat-each 10 --trace off
+rm app/e2e/zz-trace-spike.spec.ts
 ```
 
 | File | What |
@@ -297,6 +307,6 @@ with its two workers.
   or a click by 20 ms fails both runs.
 
 The inputs Playwright sends without a pause, a click on "Ganze Schweiz" after the pointer
-arrives on it and the press that starts a drag, can still stretch the measurement of the frame
-before them (M9: 19.5 and 17.3 ms, once each); the second run covers them as it covers a busy
-machine.
+arrives on it and the press that starts a drag, stretched the measurement of the frame before
+them (M9: 19.5 and 17.3 ms, once each). After the verification of the change, the budget tests
+rest the pointer 50 ms before both, as before a click on a municipality.
