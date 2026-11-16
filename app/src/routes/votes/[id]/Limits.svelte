@@ -3,6 +3,7 @@
   import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../lib/limits.ts';
   import {
     ABROAD_SWITCH,
+    ADD,
     ADD_LIMIT,
     BACK_TO_REAL,
     CHOOSE,
@@ -43,10 +44,13 @@
     ),
   );
 
-  function add(event: Event & { currentTarget: HTMLSelectElement }): void {
-    const select = event.currentTarget;
-    const definition = DEFINITIONS.find((candidate) => candidate.name === select.value);
-    select.value = '';
+  // The characteristic chosen in the list, whose limit "Hinzufügen" adds. The list only chooses:
+  // an arrow key changes a closed list's choice at once (Q, 2026-11-16).
+  let choice = $state('');
+
+  function add(): void {
+    const definition = DEFINITIONS.find((candidate) => candidate.name === choice);
+    choice = '';
     if (definition === undefined || file === null) return;
     const track = trackOf(definition, file, applyingTo(file, voteDate));
     limits = [...limits, { track, lower: 0, upper: STEPS }];
@@ -86,13 +90,14 @@
   {:else}
     <label>
       {ADD_LIMIT}
-      <select onchange={add}>
+      <select bind:value={choice}>
         <option value="">{CHOOSE}</option>
         {#each offered as definition (definition.name)}
           <option value={definition.name}>{definition.name}</option>
         {/each}
       </select>
     </label>
+    <button type="button" disabled={choice === ''} onclick={add}>{ADD}</button>
     {#each limits as limit, index (limit.track.definition.name)}
       {@const { track, lower, upper } = limit}
       {@const name = track.definition.name}

@@ -110,8 +110,14 @@ Alternatives considered:
 
 ### 6. The visitor adds the limits they need (Q)
 
-A list "Merkmal hinzufügen" offers the characteristics without a limit, in the panel's order. A
-limit is added at its full range, and removed with "Entfernen".
+A list "Merkmal hinzufügen" offers the characteristics without a limit, in the panel's order;
+choosing one and pressing "Hinzufügen" beside it adds its limit at its full range, and
+"Entfernen" removes it.
+
+The button came while applying (Q, 2026-11-16). At first, choosing in the list added the limit at
+once. In Chromium an arrow key on a closed list changes its choice at once, so a keyboard user
+browsing the list added every characteristic they passed. Alternatives considered then: a button
+per characteristic, 21 of them; keeping the list as it was.
 
 Alternatives considered:
 - **All 21 at once, in the panel's four groups:** nothing to discover, but a long column.

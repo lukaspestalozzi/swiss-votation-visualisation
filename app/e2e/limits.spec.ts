@@ -46,6 +46,7 @@ async function offered(page: Page): Promise<string[]> {
 /** Add the limit of a characteristic from the list. */
 async function addLimit(page: Page, name: string): Promise<void> {
   await page.getByLabel('Merkmal hinzufügen').selectOption({ label: name });
+  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
 }
 
 test('adding a limit: its label, and the list offers the others', async ({ page }) => {
@@ -516,4 +517,20 @@ test('the limits follow the definitions: their names in order, four logarithmic 
     await slider(page, 'Untere', name).fill('500');
     await expect(slider(page, 'Untere', name)).toHaveAttribute('aria-valuetext', middle);
   }
+});
+
+test('the keyboard on the list only moves the choice; "Hinzufügen" adds it', async ({ page }) => {
+  // Q, 2026-11-16: in Chromium an arrow key on a closed list changes its choice at once.
+  await open(page, 'votes/5960/');
+  const list = page.getByLabel('Merkmal hinzufügen');
+  await list.focus();
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await expect(page.locator('.limit')).toHaveCount(0);
+  await expect(list).toHaveValue('Ausländeranteil');
+  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Ausländeranteil (Ende 2015): von 0.00% bis 61.10%',
+  ]);
+  await expect(list).toHaveValue('');
 });
