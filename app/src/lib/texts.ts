@@ -182,3 +182,87 @@ export const remainingCount = (remaining: string, all: string): string =>
 export const NOTHING_REMAINS = 'Keine Gemeinde mit eigenem Ergebnis ist übrig.';
 export const BACK_TO_REAL = 'Zurück zum echten Ergebnis';
 export const ADD = 'Hinzufügen';
+
+// The reading guide (spec reading-guide).
+export const GUIDE_HEADING = 'Lesehilfe';
+export const GUIDE_LINK = 'Lesehilfe und Quellen';
+export interface GuideSection {
+  readonly heading: string;
+  readonly paragraphs: readonly string[];
+}
+export const GUIDE_SECTIONS: readonly GuideSection[] = [
+  {
+    heading: 'Das echte Ergebnis',
+    paragraphs: [
+      'Oben auf der Seite einer Abstimmung steht ihr amtliches Ergebnis. Es ist aus den Zahlen ' +
+        'der Gemeinden nach den Regeln der Bundesverfassung berechnet: dem Volksmehr und, wo die ' +
+        'Vorlage es braucht, dem Ständemehr.',
+      'Erst wenn Sie Gemeinden auswählen, steht daneben unter «Mit Ihrer Auswahl» ein zweites, ' +
+        'neu berechnetes Ergebnis. Das echte bleibt stehen.',
+    ],
+  },
+  {
+    heading: 'Gemeinden auswählen',
+    paragraphs: [
+      'Eine Grenze legt für ein Merkmal einen unteren und einen oberen Wert fest. Eine Gemeinde ' +
+        'bleibt nur, wenn sie innerhalb aller Grenzen liegt. Die anderen sind auf der Karte ' +
+        'dunkelgrau und zählen nicht.',
+      'Das Ergebnis wird berechnet, als hätten nur die übrigen Gemeinden abgestimmt, nach ' +
+        'denselben Regeln wie das echte. Ein Kanton, in dem keine Gemeinde übrig ist, hat keine ' +
+        'Standesstimme. Für das Ständemehr braucht es dann weniger Standesstimmen. Bleibt keine ' +
+        'Gemeinde übrig, ist die Vorlage abgelehnt.',
+    ],
+  },
+  {
+    heading: 'Was die Auswahl nicht zeigt',
+    paragraphs: [
+      'Die Auswahl behält oder streicht ganze Gemeinden mit allen ihren Stimmen. Eine Gemeinde ' +
+        'mit vielen über 65-Jährigen zählt mit allen ihren Stimmen, auch mit denen der Jüngeren.',
+      'Sie zeigt deshalb nicht, wie die Menschen mit einem Merkmal gestimmt haben, und nicht, wie ' +
+        'eine andere Abstimmung ausgehen würde. Die Auswahl ist keine Prognose.',
+    ],
+  },
+  {
+    heading: 'Auslandschweizerinnen und Auslandschweizer',
+    paragraphs: [
+      '11 oder 12 Kantone zählen die Stimmen ihrer Auslandschweizerinnen und Auslandschweizer ' +
+        'getrennt, 1.0% bis 1.6% der gültigen Stimmen. Sie wohnen in keiner Gemeinde, stehen ' +
+        'nicht auf der Karte und haben keine Merkmale.',
+      'Der Schalter «Auslandschweizerinnen und Auslandschweizer mitzählen» bestimmt, ob ihre ' +
+        'Stimmen in die Auswahl eingehen. Sie zählen nur in einem Kanton, in dem noch eine ' +
+        'Gemeinde übrig ist.',
+    ],
+  },
+  {
+    heading: 'Gemeinden ohne eigenes Ergebnis oder ohne Angabe',
+    paragraphs: [
+      'Einige wenige Gemeinden haben kein eigenes Ergebnis: Ihre Stimmen sind mit denen einer ' +
+        'anderen Gemeinde gezählt. Sie sind auf der Karte schraffiert, und eine Grenze ändert ' +
+        'durch sie keine Zahl.',
+      'Bei einigen kleinen Gemeinden des Kantons Bern fehlen die Parteistärken. Eine Gemeinde ' +
+        'ohne Angabe fällt weg, sobald die Grenze dieses Merkmals enger gestellt ist.',
+    ],
+  },
+  {
+    heading: 'Die Merkmale',
+    paragraphs: [
+      'Eine Abstimmung nimmt die Bevölkerung und die Rinder am Ende des letzten Jahres vor ihrem ' +
+        'Tag, die Parteistärken der letzten Nationalratswahl vor ihrem Tag, die Hauptsprachen der ' +
+        'Volkszählung 2000 und die Fläche von 2026.',
+      'Eine Grenze vergleicht die Werte so, wie sie bei der Gemeinde stehen. Die Grenzen von ' +
+        '«Einwohner», «Einwohner je km²», «Fläche» und «Rinder je Einwohner» wachsen von Schritt ' +
+        'zu Schritt um den gleichen Faktor, weil ihre Werte über mehrere Grössenordnungen reichen.',
+    ],
+  },
+];
+export const SOURCES_HEADING = 'Quellen';
+export const SOURCE_VOTES =
+  'Abstimmungsergebnisse: Bundesamt für Statistik (BFS), eidgenössische Volksabstimmungen, ' +
+  'Ergebnisse nach Gemeinden; Bundeskanzlei, erwahrte Ergebnisse im Bundesblatt.';
+export const sourceMap = (date: string, lakesSet: number): string =>
+  'Gemeinden und Karte: BFS, Amtliches Gemeindeverzeichnis der Schweiz und generalisierte ' +
+  `Gemeindegrenzen, Stand ${date}; BFS, ThemaKart ${String(lakesSet)} (Seen).`;
+export const SOURCE_CHARACTERISTICS =
+  'Merkmale: BFS, STATPOP; BFS, Nationalratswahlen; BFS, Volkszählung 2000; BFS, ' +
+  'Landwirtschaftliche Strukturerhebung; swisstopo, swissBOUNDARIES3D 2026.';
+export const SOURCES_FILE = 'Alle gelesenen Dateien und ihre Abfragen:';
