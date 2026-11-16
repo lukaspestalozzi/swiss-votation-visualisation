@@ -40,6 +40,7 @@ node investigations/performance/profile_first_point.cjs --runs 5
 | File | What |
 |------|------|
 | `measure_clicks.cjs` | The sequence of the browser test "the budget of clicking", repeated in fresh pages at 1,280 by 720 pixels, with the tests' measurement of a frame; each frame labelled with its input and target. Options: a trace that splits each long frame into the self time of each kind of event, another task to end a frame's measurement, a pause before each click, a new browser for each run. |
+| `budget_tests_traced.spec.ts` | The two budget tests of `tighten-map-budget` with a Chrome trace; for each frame over 16 ms its window, its busy time, and the main thread's CPU time against the wall time. Copied into `app/e2e/` to run, and deleted afterwards. |
 | `profile_first_point.cjs` | A profile of V8's sampler of the first pointing at a municipality, a later one, the first click and a later one: self time per function and inclusive time of the page's functions. |
 | `windows.py` | Each measurement window over 16 ms in the traces: whether a click and the click's frame lie inside it, and how long the window's own frame took. |
 | `timeline.py` | The main thread's events and the measurement's marks inside the longest window of one trace. |
@@ -211,6 +212,42 @@ Each is to be confirmed or ruled out by a measurement below.
 - **Means:** a first visit is not slower with `$state.raw`. M7's 16.8 ms did not recur; that
   run began right after a build and the server's start, and stays unexplained.
 
+### M9: the budget tests themselves, with raw state
+
+Measured while applying `tighten-map-budget`, with its two budget tests (the first pointing
+measured, 50 ms before each click, 16 ms) and the two files as `$state.raw`, run by Playwright
+with its two workers.
+
+- **What:** each test 10 runs (`--repeat-each 10`), then both together in batches of 20: with
+  one worker and with two (4 batches, no build just before), and right after `pnpm run build`
+  (3 batches); and the measuring script of M4 in two processes at once, traced (20 runs).
+- **Why:** each test failed once in its first 10 runs; to find the condition.
+- **Found:**
+  - Failures: right after a build 3 of 60 runs, in its first 10 runs 2 of 20 (the first right
+    after a build); without a build just before, 0 of 80, with one worker or two; the two
+    measuring processes at once, 0 of 20.
+  - The frames over 16 ms: a step of the wheel, 21.0 ms; the pointing after "Ganze Schweiz",
+    23.7 ms; four frames in a row of 20 to 30 ms; and two frames followed at once by an input
+    Playwright sends without a pause, the arrival on "Ganze Schweiz" before its click (19.5 ms)
+    and the move before the drag's press (17.3 ms).
+  - Otherwise the longest frame of a run: a median of 8.5 ms in the test of zooming and 5.6 ms
+    in the test of clicking; 12 frames of about 4,000 over 10 ms.
+- **Means:** the frames over 16 ms are rare and come when the machine has just been busy;
+  two browsers alone do not bring them.
+
+### M10: a trace of the budget tests right after a build
+
+- **What:** the two budget tests with a Chrome trace and marks around each frame
+  (`budget_tests_traced.spec.ts`), 4 batches of 20 runs, each right after `pnpm run build`.
+- **Why:** to tell for a long frame whether the page worked or waited for a processor (T-a of
+  the theories below M9: contention; or drawing, or garbage collection).
+- **Found:** 1 frame over 16 ms in 80 runs, the first pointing, 29.1 ms (the next frame, 22.3
+  ms, shares its window). In its window of 30.8 ms the main thread had a processor for
+  15.1 ms; `Commit`, where the main thread waits for the compositor's thread, took 8.7 ms
+  (0.1 to 0.4 ms otherwise).
+- **Means:** the main thread waited for a processor half of that frame: the machine was busy,
+  not the page. A measurement of wall time on a shared machine meets such frames now and then.
+
 ## Findings
 
 1. **The frames of 17 to 21 ms after a click are an artifact of the measurement**, not slow
@@ -230,6 +267,10 @@ Each is to be confirmed or ruled out by a measurement below.
 5. Not seen: a cost of the panel's style or layout (T2, T3), of "Ganze Schweiz" (T1), of the
    details box after the first (T7), or of garbage collection beyond the allocations of the
    proxies (T4).
+6. **With raw state, the budget tests fail now and then for the machine, not the page** (M9,
+   M10): about 3 runs in 100, mostly right after a build, the condition of CI and of
+   `scripts/verify-local.sh`. In the one traced, the main thread had a processor for half the
+   frame.
 
 ## Open
 
