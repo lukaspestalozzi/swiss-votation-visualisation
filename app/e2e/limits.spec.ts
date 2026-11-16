@@ -475,3 +475,45 @@ test('characteristics that cannot be loaded: no limits, and the rest of the page
   await expect(page.locator('.municipalities path')).toHaveCount(2110);
   await expect(page.locator('table tbody tr')).toHaveCount(26);
 });
+
+test('the limits follow the definitions: their names in order, four logarithmic tracks', async ({
+  page,
+}) => {
+  // Spec characteristics, "One definition per characteristic"; investigations/limits.md, 4.
+  await open(page, 'votes/5960/');
+  expect(await offered(page)).toEqual([
+    'Einwohner',
+    'Ausländeranteil',
+    '0–17 Jahre',
+    '18–34 Jahre',
+    '35–49 Jahre',
+    '50–64 Jahre',
+    '65 Jahre und älter',
+    'Einwohner je km²',
+    'FDP',
+    'Die Mitte (bis 2020 CVP und BDP)',
+    'SP',
+    'SVP',
+    'GLP',
+    'Grüne',
+    'Übrige Parteien',
+    'Deutsch',
+    'Französisch',
+    'Italienisch',
+    'Rätoromanisch',
+    'Fläche',
+    'Rinder je Einwohner',
+  ]);
+  // At step 500 a logarithmic track is far below its linear middle.
+  for (const [name, middle] of [
+    ['Einwohner', "3'508"],
+    ['Einwohner je km²', '104'],
+    ['Fläche', '11.85 km²'],
+    ['Rinder je Einwohner', '0.090'],
+    ['Ausländeranteil', '30.55%'],
+  ] as const) {
+    await addLimit(page, name);
+    await slider(page, 'Untere', name).fill('500');
+    await expect(slider(page, 'Untere', name)).toHaveAttribute('aria-valuetext', middle);
+  }
+});
