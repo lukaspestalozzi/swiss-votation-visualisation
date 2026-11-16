@@ -8,6 +8,9 @@ import ts from 'typescript-eslint';
 
 export default defineConfig(
   includeIgnoreFile(path.resolve(import.meta.dirname, '.gitignore')),
+  // The investigations' scripts are spikes outside the three modules (investigations/): Prettier
+  // formats them, the type-aware lint does not apply to them.
+  { ignores: ['investigations/'] },
   js.configs.recommended,
   ts.configs.strictTypeChecked,
   ts.configs.stylisticTypeChecked,
