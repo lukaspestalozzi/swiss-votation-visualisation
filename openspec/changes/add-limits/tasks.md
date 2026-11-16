@@ -26,7 +26,7 @@ applying, except to fix a bug, which the note names.
 In `calculation/`. Spec: `limits` ("Which municipalities remain", "The Swiss abroad"). Design:
 decisions 2, 3, 16 and 19.
 
-- [ ] 1.1 New module `calculation/src/selection.ts` with `remainingMunicipalities(numbers,
+- [x] 1.1 New module `calculation/src/selection.ts` with `remainingMunicipalities(numbers,
   limits)`, exported from `src/index.ts`. Write five tests in `selection.test.ts`, with made-up
   numbers, one at a time:
   - a bound is included: values 1,000, 2,000 and 3,001 under a limit from 1,000 to 3,000 keep
@@ -38,7 +38,17 @@ decisions 2, 3, 16 and 19.
 
   Verify: `pnpm --filter calculation exec vitest run`: 46 passed; `pnpm run check` passes (no
   DOM, no framework).
-- [ ] 1.2 `entriesThatRemain(cantons, remaining, abroadCounted)` in the same module. Write four
+
+  (As built: 47 passed, one more than planned. A limit with not one value per municipality now
+  throws a RangeError naming both counts, with its test, where a missing value would otherwise
+  have been set aside silently. The first and third tests failed first. The second, fourth and
+  fifth passed when written, so each was checked against a mutant:
+  - a municipality without a figure counted as within: the second fails;
+  - only the first limit applied: the fourth fails;
+  - nothing kept without a narrowed limit: the fifth and the third fail.
+
+  Each mutant was undone. `pnpm run check` passes.)
+- [x] 1.2 `entriesThatRemain(cantons, remaining, abroadCounted)` in the same module. Write four
   tests, one at a time:
   - with the switch on, a canton with a municipality left keeps its Swiss abroad;
   - a canton with none left loses them;
@@ -46,11 +56,25 @@ decisions 2, 3, 16 and 19.
   - a selection with nothing left gives no entry, and `calculateResult` over it fails the vote.
 
   Verify: 50 passed.
-- [ ] 1.3 One test with a named vote: the entries of 2015-06-14, number 595
+
+  (As built: 51 passed, the one more of 1.1. The first two failed first. The third and fourth
+  passed when written, so each was checked against a mutant:
+  - the switch ignored: the third fails;
+  - the Swiss abroad kept in a canton with nothing left: the fourth and the second fail.
+
+  Each mutant was undone. The type of a canton's entries is `CantonEntries`: its municipalities
+  as `[number, yes, no]`, its Swiss abroad as `[yes, no]` or `null`.)
+- [x] 1.3 One test with a named vote: the entries of 2015-06-14, number 595
   (`reference-votes.json`), all municipalities remaining, with the switch off. They give 1,107,734
   yes and 1,113,998 no votes, and the majority of voters not reached
   (`investigations/limits.md`, 5). Verify: 51 passed; with the switch on, the same test reads the
   official 1,128,522 and 1,124,873.
+
+  (As built: 52 passed, the one more of 1.1. The test reads both: the official result with the
+  switch on, the figures without the Swiss abroad with it off. It tells the Swiss abroad apart by
+  their BFS numbers from 9000 up, as the calculation cannot import the app's list. It passed when
+  written; with the switch ignored it fails, and the mutant was undone. ESLint, Prettier and
+  `tsc` pass on `calculation/src`.)
 
 ## 2. Values in units, and the tracks
 
