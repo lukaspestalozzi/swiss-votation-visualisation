@@ -2,7 +2,15 @@
 // the figures of investigations/characteristics.md.
 import { expect, test } from 'vitest';
 import characteristicsFile from '../../static/data/characteristics.json';
-import { DEFINITIONS, applyingTo, countsOf, type Quotient } from './characteristics.ts';
+import {
+  DEFINITIONS,
+  applyingTo,
+  countsOf,
+  written,
+  type Definition,
+  type Quotient,
+} from './characteristics.ts';
+import { formatCount, formatQuotient, formatShare } from './format.ts';
 import type { CharacteristicsFile } from './vote-data.ts';
 
 test('the 21 characteristics have their names, in the order of the spec', () => {
@@ -196,4 +204,47 @@ test('each definition gives the year of its figures', () => {
 test('a party without a list counts no votes: Zürich in 2023, Die Mitte its own', () => {
   const mitte = valuesOf(261, '2024-03-03')[9]; // the election of 2023
   expect(mitte).toEqual({ part: 265215, whole: 4292333 });
+});
+
+test('four characteristics have a logarithmic track, the others a linear one', () => {
+  // Design of add-limits, decision 5: the four whose values span several orders of magnitude.
+  expect(
+    DEFINITIONS.filter((definition) => definition.scale === 'logarithmic').map((d) => d.name),
+  ).toEqual(['Einwohner', 'Einwohner je km²', 'Fläche', 'Rinder je Einwohner']);
+  expect(DEFINITIONS.filter((definition) => definition.scale === 'linear')).toHaveLength(17);
+});
+
+// How the panel wrote a value before the change add-limits, which writes it through its units
+// (design of add-limits, decision 16); the two must give the same text.
+function oldWritten(definition: Definition, value: Quotient | null): string {
+  if (value === null) return 'keine Angabe';
+  switch (definition.unit) {
+    case 'count':
+      return formatCount(value.part);
+    case 'percent':
+      return formatShare(value.part, value.whole);
+    case 'per-km2':
+      return formatQuotient(value.part, value.whole, 0);
+    case 'km2':
+      return `${formatQuotient(value.part, value.whole, 2)} km²`;
+    case 'per-inhabitant':
+      return formatQuotient(value.part, value.whole, 3);
+  }
+}
+
+test('every value is written as before, for every municipality of two votes', () => {
+  const file = characteristicsFile as unknown as CharacteristicsFile;
+  let compared = 0;
+  for (const voteDate of ['2016-02-28', '2021-03-07']) {
+    const applying = applyingTo(file, voteDate);
+    for (const number of file.municipalities) {
+      const counts = countsOf(file, applying, number);
+      for (const definition of DEFINITIONS) {
+        const value = definition.value(counts);
+        expect(written(definition, value)).toBe(oldWritten(definition, value));
+        compared += 1;
+      }
+    }
+  }
+  expect(compared).toBe(2 * 2110 * 21);
 });

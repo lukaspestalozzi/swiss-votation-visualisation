@@ -152,3 +152,9 @@ export const characteristic = (name: string, value: string): string => `${name}:
 export const CHARACTERISTICS_SOURCES =
   'Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000, ' +
   'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).';
+
+// The limits (spec limits).
+export const populationDate = (year: number): string => `Ende ${String(year)}`;
+export const censusDate = (year: number): string => `Volkszählung ${String(year)}`;
+export const limitLabel = (name: string, date: string, lower: string, upper: string): string =>
+  `${name} (${date}): von ${lower} bis ${upper}`;
