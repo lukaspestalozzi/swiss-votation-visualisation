@@ -12,10 +12,32 @@
     YES_SHARE,
     YES_VOTES,
   } from '../../../lib/texts.ts';
+  import { onMount } from 'svelte';
+  import type { LimitSetting } from '../../../lib/limits.ts';
+  import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
+  import Limits from './Limits.svelte';
+  import { loadCharacteristics } from './loaders.ts';
   import ResultMap from './ResultMap.svelte';
 
   let { data }: PageProps = $props();
+
+  // The selection (spec limits): the limits and the switch for the Swiss abroad, for this page
+  // only (design of add-limits, decision 18). The characteristics are those the panel loads.
+  let limits = $state.raw<readonly LimitSetting[]>([]);
+  let abroadCounted = $state(true);
+  let characteristics = $state.raw<CharacteristicsFile | null>(null);
+  let characteristicsFailed = $state(false);
+  onMount(() => {
+    loadCharacteristics().then(
+      (loaded) => {
+        characteristics = loaded;
+      },
+      () => {
+        characteristicsFailed = true;
+      },
+    );
+  });
 </script>
 
 <svelte:head>
@@ -63,6 +85,13 @@
   <p class="outcome">{judged.outcome}</p>
 
   {#if data.entries !== null}
+    <Limits
+      file={characteristics}
+      failed={characteristicsFailed}
+      voteDate={data.voteDate}
+      bind:limits
+      bind:abroadCounted
+    />
     <ResultMap entries={data.entries} title={data.title} voteDate={data.voteDate} />
   {/if}
 
