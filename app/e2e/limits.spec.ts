@@ -2,6 +2,7 @@
 // map (spec result-map), against the built site. The figures are those of
 // investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
+import { MEASURE_FRAMES, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 
 /** Open a vote's page and wait until the limits can be used. */
@@ -533,6 +534,39 @@ test('the keyboard on the list only moves the choice; "Hinzufügen" adds it', as
     'Ausländeranteil (Ende 2015): von 0.00% bis 61.10%',
   ]);
   await expect(list).toHaveValue('');
+});
+
+// The budget of the limits (spec limits; design of add-limits, decision 8), measured as the map's
+// budget, and once more when a frame exceeds it, as a busy machine can stretch a frame.
+test.describe(() => {
+  test.describe.configure({ retries: 1 });
+
+  test('the budget of dragging: no frame while a bound is dragged takes more than 16 ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(MEASURE_FRAMES);
+    await open(page, 'votes/5960/');
+    await addLimit(page, 'Einwohner');
+    const lower = slider(page, 'Untere', 'Einwohner');
+    await lower.scrollIntoViewIfNeeded();
+    const box = await lower.boundingBox();
+    if (box === null) throw new Error('the slider has no box');
+    const y = box.y + box.height / 2;
+    const [left, right] = [box.x + 10, box.x + box.width - 10];
+    // The pointer rests on the thumb 50 ms before the press, as a person's does.
+    await page.mouse.move(left, y);
+    await page.waitForTimeout(50);
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    await page.mouse.down();
+    await page.mouse.move(right, y, { steps: 20 });
+    await page.mouse.move(left, y, { steps: 20 });
+    await page.mouse.up();
+    const frames = await measuredFrames(page);
+    expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
+    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+  });
 });
 
 test('a range closed at the end of its track reopens by pointer', async ({ page }) => {
