@@ -1,6 +1,7 @@
 // The limits on the characteristics (spec limits): a limit's track, made from its
 // characteristic's one definition. The design of the change add-limits gives the reasons
 // (decisions 5, 16 and 17).
+import { remainingMunicipalities } from 'calculation';
 import {
   countsAt,
   unitsOf,
@@ -90,5 +91,31 @@ export function labelOf(track: Track, lower: number, upper: number): string {
     track.date,
     writeUnits(definition, valueAt(track, lower)),
     writeUnits(definition, valueAt(track, upper)),
+  );
+}
+
+/** A limit as the page holds it: its track, and the steps of its lower and upper bound. */
+export interface LimitSetting {
+  readonly track: Track;
+  readonly lower: number;
+  readonly upper: number;
+}
+
+/**
+ * The numbers of the municipalities that remain under the limits (spec limits, "Which
+ * municipalities remain"), from the file's list `numbers`, in whose order every track holds its
+ * values. A limit with both bounds at the ends of its track sets nothing aside.
+ */
+export function remainingUnder(
+  numbers: readonly number[],
+  limits: readonly LimitSetting[],
+): Set<number> {
+  return remainingMunicipalities(
+    numbers,
+    limits.map(({ track, lower, upper }) => ({
+      values: track.values,
+      lower: valueAt(track, lower),
+      upper: valueAt(track, upper),
+    })),
   );
 }
