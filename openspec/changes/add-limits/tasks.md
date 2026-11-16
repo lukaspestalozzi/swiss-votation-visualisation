@@ -391,11 +391,25 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
 `app/src/routes/guide/`, `texts.ts`, the start page. Spec: `reading-guide`. Design: decision 11
 and 23.
 
-- [ ] 7.1 The page `/guide/` with its seven sections, the sentences the spec fixes, and the sources
+- [x] 7.1 The page `/guide/` with its seven sections, the sentences the spec fixes, and the sources
   from `map.json` at build time. Write the browser tests of "The page and its sections", "The
   official result first", "The rule in plain words", "Municipalities, not people", "The switch
   explained", "Without a figure", "The dates of the figures" and "The sources on 2026-11-16", one
   at a time. Verify: 99 passed; the page is in `app/build/swiss-votation-visualisation/guide/`.
+
+  (As built: 100 browser tests, one more than planned, the one of the review; the page is in
+  `app/build/swiss-votation-visualisation/guide/`. The tests are in `app/e2e/guide.spec.ts`.
+  - **Failed first:** the first, without a page.
+  - **The texts** are in `texts.ts`: the six sections as `GUIDE_SECTIONS`, and the sources.
+    "The rule in plain words" first passed against a sentence that went on after "keine
+    Standesstimme" with a semicolon. The text now ends there with a full stop, as the spec
+    quotes it; the test that asks for it failed against the old text.
+  - **Mutants** for the seven that passed when written, each built and undone:
+    - the sections without their paragraphs: the six that check a sentence;
+    - the lakes' year read one too high from the map's file: the sources.
+  - **The sources:** the list's date and the lakes' set come from `map.json` at build time,
+    through `+page.server.ts`. The test also requests `data/sources.json` through the page's
+    link.)
 - [ ] 7.2 The start page's link, and the vote page's link of 5.1 now leads to the guide. Write the
   browser tests of "From the start page" and "The sentence on a vote's page". Verify: 101 passed,
   and the existing test that no page requests another server covers `/guide/` (add it to its
