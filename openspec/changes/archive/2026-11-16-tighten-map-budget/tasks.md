@@ -106,6 +106,23 @@ whose log prints each run's frames.
 
   (As built: 11 of 11 steps passed: 41, 80, 55 browser tests, none on a second run, and 134.)
 
+## Verification and review
+
+`/openspec-verify-change` on 2026-11-16 found no critical issue, two warnings and one
+suggestion; Q archived the change without changing them, and they stay open:
+
+- The inputs Playwright sends without a pause, the click on "Ganze Schweiz" in both budget
+  tests and the press that starts the drag in the test of zooming, follow the pointer's arrival
+  without the 50 ms the spec names; the second run covers them (`investigations/performance.md`,
+  M9).
+- `proposal.md` does not name the second run on failure (design, decision 7), which the spec,
+  the design and these tasks do.
+- `CLAUDE.md` and the beginning of "How to reproduce" in `investigations/performance.md` count
+  two scripts in JavaScript and two in Python, without `budget_tests_traced.spec.ts`.
+
+Copilot's review of PR #11 found that `investigations/performance/windows.py` stopped on a run
+without a window over 16 ms; fixed, the run is reported as "none".
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change`, which merges the modified
