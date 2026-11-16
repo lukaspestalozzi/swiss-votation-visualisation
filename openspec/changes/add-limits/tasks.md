@@ -428,7 +428,7 @@ and 23.
 
 ## 8. Documentation and the whole
 
-- [ ] 8.1 `openspec/config.yaml`:
+- [x] 8.1 `openspec/config.yaml`:
   - hard constraint 3 gets the budget: 16 ms per frame while a limit is dragged, 50 ms per
     frame for a jump;
   - the glossary's "Set aside" says dark grey;
@@ -437,10 +437,21 @@ and 23.
 
   Verify: `openspec validate --all --strict` passes, and `openspec instructions proposal
   --change add-limits` shows the new text.
-- [ ] 8.2 `README.md`: what the site shows (the limits, the guide). `docs/roadmap.md`: #8's row
+
+  (As built: both. Hard constraint 3 names the 16 ms of a drag and the 50 ms of a jump and refers
+  to the design of the archived change.)
+- [x] 8.2 `README.md`: what the site shows (the limits, the guide). `docs/roadmap.md`: #8's row
   names the decisions and "proposed" until it is archived, and the investigations' list names
   `investigations/limits.md`. Verify: both name `add-limits` and `investigations/limits.md`.
-- [ ] 8.3 Update `CLAUDE.md` for every file this change adds, moves or changes:
+
+  (As built: the roadmap names both.
+  - **Roadmap:** #8's row describes the change as built, with `characteristics` among its
+    capabilities and "proposed" as its state. Its open decisions read "None left", as the
+    archived rows' do. The investigations' list gains "Limits".
+  - **README:** it describes the limits and the guide, but names no single change or
+    investigation, as before: it is the human overview, and names only the folders. So the
+    check's "both" holds for the roadmap only.)
+- [x] 8.3 Update `CLAUDE.md` for every file this change adds, moves or changes:
   - the status;
   - "Where things are": the investigations' row names `limits.md` and its scripts;
   - the code map: `selection.ts` and its test, `limits.ts` and its test, `Limits.svelte`,
@@ -450,9 +461,23 @@ and 23.
 
   Verify: `grep -n "selection.ts\|limits.ts\|Limits.svelte\|loaders.ts\|guide" CLAUDE.md` shows
   each, and no line names `mapFiguresOf`.
-- [ ] 8.4 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 51 tests of the
+
+  (As built: both. The status names the limits and the guide, says that #8 waits for its
+  verification and archive, and names five investigations.
+  - **New rows:** `selection.ts` and its test; `limits.ts` and its test; `Limits.svelte`;
+    `loaders.ts`; the guide's two route files; `limits.spec.ts`; `guide.spec.ts`; `frames.ts`;
+    `pointing.ts`.
+  - **Changed rows:** the start page; the vote page and its load function; `ResultMap.svelte`;
+    `format.ts`; `characteristics.ts`; `vote-page.ts`; `result-map.ts`; `vote-list.spec.ts`.)
+- [x] 8.4 Run `./scripts/verify-local.sh`. Verify: 11 of 11 steps pass, with 51 tests of the
   calculation, 96 of the app, 101 browser tests and 134 of the
   pipeline.
+
+  (As built: 11 of 11 steps pass: 52 tests of the calculation, 97 of the app, 102 browser tests
+  and 134 of the pipeline. Each test count is one more than planned:
+  - the calculation: the refused limit of 1.1;
+  - the app: `isNarrowed` of 5.2;
+  - the browser: the test from Copilot's review of PR #12.)
 
 ## Workflow follow-up
 

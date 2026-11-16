@@ -40,8 +40,10 @@ context: |
      the number of cantonal votes needed shrinks accordingly. When nothing remains, the vote
      has failed.
   3. Recalculates immediately. The map and both verdicts update while a limit is being dragged,
-     without a button. The budget in milliseconds is not decided; the change that adds the limits
-     sets it.
+     without a button. Each frame while a limit is dragged takes at most 16 ms of work on the main
+     thread, as the map's frames do; each frame after a jump (a limit added or removed, the switch
+     for the Swiss abroad, the return to the real result) at most 50 ms. The design of the
+     archived change add-limits gives the reasons.
   4. Public data, reproducible, private. Only public sources, each named. Every data file the
      app loads can be regenerated from them by the pipeline. No accounts and no tracking of
      users.
@@ -162,8 +164,9 @@ context: |
   - Limit: the lower or the upper bound the user sets on a characteristic. A municipality
     remains only if it lies within the limits of all characteristics at once.
   - Set aside: said of a municipality outside a limit. It is left out of the recalculation as
-    if it had never existed, and it is grey on the map.
-  - Selection: the municipalities that remain under the current limits.
+    if it had never existed, and it is dark grey on the map.
+  - Selection: the municipalities that remain under the current limits, and, while the switch
+    counts them, the Swiss abroad of each canton in which a municipality remains.
 
 rules:
   proposal:

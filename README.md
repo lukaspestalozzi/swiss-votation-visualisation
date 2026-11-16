@@ -9,7 +9,7 @@ from `main` after every push whose checks all pass, as the build its browser tes
 sets no cookie and loads nothing from other servers; GitHub, which hosts it, logs the IP
 addresses of visitors for security.
 
-Today it shows every vote and its result, without limits yet, in German:
+Today it shows every vote and its result, and recalculates it under limits, in German:
 
 - the start page lists the national votes since 2013 by year, each with its date, title, kind
   and official result, marked where the Federal Chancellery adds a note or the result is not
@@ -28,13 +28,22 @@ Today it shows every vote and its result, without limits yet, in German:
   the vote, the party strengths of the last National Council election before it, the shares of
   the four national languages in the census of 2000, its area, and its cattle per inhabitant.
   They come from the Federal Statistical Office's statistics and swisstopo, written by the
-  pipeline to `app/static/data/characteristics.json`; the limits on them come with #8;
+  pipeline to `app/static/data/characteristics.json`;
+- above the map, limits on these characteristics select municipalities: you add a limit for any
+  of them, set its lower and upper bound with two sliders, and a municipality remains only when
+  it lies within all limits. While you drag, the map greys out the others in dark grey, and the
+  result of the selection, "Mit Ihrer Auswahl", stands beside the real one, with both majorities
+  and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
+  count, and one button returns to the real result;
+- a page "Lesehilfe" (`/guide/`) explains that this is a thought experiment about whole
+  municipalities, not about people and not a forecast, and names every source;
 - the results come from the data of every vote per municipality, made from public sources by
   the pipeline (`pipeline/`) and committed in `app/static/data/` with the map's data; they
   reproduce the official result of each vote, apart from one difference of 200 no votes that the
   page names;
 - the calculation of a vote's result under the federal rules (`calculation/`), tested against
-  the official results, works them out when the site is built.
+  the official results, works them out when the site is built, and again in the browser for a
+  selection.
 
 `docs/roadmap.md` lists what comes next.
 
