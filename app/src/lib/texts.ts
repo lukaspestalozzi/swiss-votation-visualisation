@@ -159,3 +159,18 @@ export const populationDate = (year: number): string => `Ende ${String(year)}`;
 export const censusDate = (year: number): string => `Volkszählung ${String(year)}`;
 export const limitLabel = (name: string, date: string, lower: string, upper: string): string =>
   `${name} (${date}): von ${lower} bis ${upper}`;
+export const LIMITS_HEADING = 'Gemeinden auswählen';
+export const THOUGHT_EXPERIMENT =
+  'Ein Gedankenexperiment: So wäre die Abstimmung ausgegangen, wenn nur die ausgewählten ' +
+  'Gemeinden abgestimmt hätten. Es zeigt nicht, wie einzelne Menschen gestimmt haben, und ist ' +
+  'keine Prognose.';
+export const ADD_LIMIT = 'Merkmal hinzufügen';
+export const CHOOSE = '–';
+export const REMOVE_LIMIT = 'Entfernen';
+export const lowerBound = (name: string): string => `Untere Grenze: ${name}`;
+export const upperBound = (name: string): string => `Obere Grenze: ${name}`;
+export const ABROAD_SWITCH =
+  'Auslandschweizerinnen und Auslandschweizer mitzählen (in jedem Kanton, in dem eine Gemeinde ' +
+  'übrig ist)';
+export const LIMITS_FAILED = 'Ohne die Merkmale lassen sich keine Gemeinden auswählen.';
+export const removeLimit = (name: string): string => `${REMOVE_LIMIT}: ${name}`;

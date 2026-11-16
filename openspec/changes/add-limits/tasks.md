@@ -212,11 +212,28 @@ budget of the limits"), `verdicts` and `result-map` (their added and modified sc
 `reading-guide` ("The sentence at the limits", with the link to `/guide/` still leading nowhere
 until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
 
-- [ ] 5.1 The section: heading, sentence, "Merkmal hinzufügen", adding and removing, the two
+- [x] 5.1 The section: heading, sentence, "Merkmal hinzufügen", adding and removing, the two
   sliders with their names, `aria-valuetext` and crossing rule, the label. Write the browser tests
   of "The limits on a vote's page" (2), "Adding and removing a limit" (2), "The track of a limit"
   (2), "A logarithmic track", "The two bounds" (2) and "The label of a limit", one at a time.
   Verify: `pnpm run build && pnpm run test:e2e`: 65 passed.
+
+  (As built: 65 passed, in the new `app/e2e/limits.spec.ts`. The first and third failed first: no
+  section, then no limit shown. The other eight passed when written, and each fails against at
+  least one of five mutants, each built and undone:
+  - "Entfernen" does nothing: 4;
+  - the bounds may cross: 9;
+  - the two sliders' names swapped: 5 to 9;
+  - every vote takes the figures of 2016-02-28: 10;
+  - every track linear: 6 and 7;
+  - for 2, the heading put above the tie-break question's block.
+
+  The sentence is there, without its link: SvelteKit's typed `resolve` refuses `/guide/` until
+  the route exists, and 7.2 adds the link. `Limits.svelte` holds the list, the limits and the
+  switch; the page holds their state and loads the characteristics through `loaders.ts`. A
+  slider's `aria-valuetext` is its bound as written. "Entfernen" is named "Entfernen: <name>"
+  for assistive technology, and the list's first option, "–", is no characteristic. The tests
+  set a slider's step with `fill`, which sends `input` as a drag does; group 6 drags by pointer.)
 - [ ] 5.2 The selection and the switch: the page derives the remaining municipalities, the
   entries, the result and the set aside. "Mit Ihrer Auswahl" stands beside the vote's result, and
   the table follows. Write the browser tests one at a time:
