@@ -4,6 +4,7 @@
   import {
     ABROAD_SWITCH,
     ADD_LIMIT,
+    BACK_TO_REAL,
     CHOOSE,
     LIMITS_FAILED,
     LIMITS_HEADING,
@@ -22,12 +23,15 @@
     file,
     failed,
     voteDate,
+    count,
     limits = $bindable(),
     abroadCounted = $bindable(),
   }: {
     file: CharacteristicsFile | null;
     failed: boolean;
     voteDate: string;
+    // How many municipalities remain, as the section says it.
+    count: string;
     limits: readonly LimitSetting[];
     abroadCounted: boolean;
   } = $props();
@@ -63,6 +67,12 @@
 
   function remove(index: number): void {
     limits = limits.filter((_, i) => i !== index);
+  }
+
+  /** Back to the real result: no limit, and the Swiss abroad counted (spec limits). */
+  function backToReal(): void {
+    limits = [];
+    abroadCounted = true;
   }
 </script>
 
@@ -127,6 +137,10 @@
       <input type="checkbox" bind:checked={abroadCounted} />
       {ABROAD_SWITCH}
     </label>
+    <p class="count">{count}</p>
+    {#if limits.length > 0 || !abroadCounted}
+      <button type="button" onclick={backToReal}>{BACK_TO_REAL}</button>
+    {/if}
   {/if}
 </section>
 

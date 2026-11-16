@@ -280,10 +280,27 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
   - **A helper moved:** the browser tests' `pointIn` moved from `result-map.spec.ts` to
     `app/e2e/pointing.ts`, so that `limits.spec.ts` can point at Zürich too; the map's 41 tests
     pass with it.)
-- [ ] 5.4 The count, "Zurück zum echten Ergebnis", a fresh page per vote, and the characteristics
+- [x] 5.4 The count, "Zurück zum echten Ergebnis", a fresh page per vote, and the characteristics
   loading or failing. Write the browser tests of "The number of municipalities that remain" (3),
   "Back from a selection", "To another vote" and "The characteristics' file is missing", one at a
   time. Verify: 88 passed.
+
+  (As built: 87 browser tests, with the seven of this task: the six planned and "Back to the real
+  cantons" from 5.2. "Back from a selection" also checks the legend's ten entries again, the end
+  of 5.3's legend scenario.
+  - **Failed first:** the first count and the return to the real result.
+  - **Mutants** for the five that passed when written, each built and undone:
+    - the count ignoring the limits: the other two counts;
+    - the return clearing only the switch: "Back to the real cantons";
+    - the switch off when a page opens: "To another vote";
+    - the failure's message gone: the missing file.
+  - **A limit of the page's state:** SvelteKit keeps a page's component when it moves from one
+    vote straight to another under the same route, and its limits with it. No such link exists:
+    every way goes through the start page, which the test takes. A change that links votes
+    directly, such as #12, must reset them.
+  - **Counting:** the page counts the municipalities with an entry and those of them that
+    remain; `Limits.svelte` writes the sentence, and shows the button while there is a limit or
+    the switch is off.)
 - [ ] 5.5 The scenario "A bound is included" with made-up values is covered by 1.1, and "The
   limits follow the definitions" of `characteristics` by one browser test: the list's 21 names in
   order, and the four logarithmic tracks, at step 500 not the linear middle. Verify: 89 passed.

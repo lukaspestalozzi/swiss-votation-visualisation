@@ -6,16 +6,19 @@
     CANTONAL_VOTES,
     NO_VOTES,
     NOTE_HEADING,
+    NOTHING_REMAINS,
     SIDE,
     TITLE,
     TURNOUT,
     YES_SHARE,
     WITH_SELECTION,
     YES_VOTES,
+    remainingCount,
   } from '../../../lib/texts.ts';
   import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
   import { isNarrowed, remainingUnder, type LimitSetting } from '../../../lib/limits.ts';
+  import { formatCount } from '../../../lib/format.ts';
   import { judgedOf } from '../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
@@ -60,6 +63,16 @@
       .filter((canton) => canton.municipalities.length > 0 || canton.abroad !== null)
       .map((canton) => canton.canton);
     return judgedOf(calculateResult(kept, majorities), majorities, cantons);
+  });
+  // How many of the municipalities with an entry remain (spec limits, "The number of
+  // municipalities that remain").
+  const count = $derived.by(() => {
+    if (remaining === null || data.entries === null) return '';
+    const numbers = data.entries.cantons.flatMap((canton) => canton.municipalities);
+    const left = numbers.filter(([number]) => remaining.has(number)).length;
+    return left === 0
+      ? NOTHING_REMAINS
+      : remainingCount(formatCount(left), formatCount(numbers.length));
   });
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
   const aside = $derived.by((): ReadonlySet<number> => {
@@ -153,6 +166,7 @@
       file={characteristics}
       failed={characteristicsFailed}
       voteDate={data.voteDate}
+      {count}
       bind:limits
       bind:abroadCounted
     />
