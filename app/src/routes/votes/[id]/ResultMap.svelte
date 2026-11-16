@@ -47,13 +47,15 @@
   let { figures, title, voteDate }: { figures: MapFigures; title: string; voteDate: string } =
     $props();
 
-  let sources = $state<MapSources | null>(null);
+  // The loaded files are raw state: a new value replaces the old one whole, and nothing changes
+  // them inside, which spares the proxies of deep state (design of tighten-map-budget, decision 2).
+  let sources = $state.raw<MapSources | null>(null);
   // The part of the map shown, as the SVG's view box; the whole of Switzerland at first.
   let view = $state<View | null>(null);
   // Whether the shapes or the names could not be loaded.
   let failed = $state(false);
   // The characteristics, null until they are loaded, and whether they could not be.
-  let characteristics = $state<CharacteristicsFile | null>(null);
+  let characteristics = $state.raw<CharacteristicsFile | null>(null);
   let characteristicsFailed = $state(false);
 
   // The fill of each municipality by its number: its class, or the hatching without a result.
