@@ -361,9 +361,15 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
     - the page flattens the municipalities with an entry once.
   - **After it,** two series of ten runs with two workers, without a retry, all passed: longest
     frames 7.1 to 12.9 ms and 6.9 to 12.4 ms. The limits' and the map's browser tests pass.)
-- [ ] 6.2 Write the test "Jumps", with the inputs of its scenario, each after a pause of 50 ms;
+- [x] 6.2 Write the test "Jumps", with the inputs of its scenario, each after a pause of 50 ms;
   no frame over 50 ms. Verify: 10 passes in a row, as 6.1.
-- [ ] 6.3 Both in a `describe` with one retry, as the map's budget tests. Each is checked against
+
+  (As built: "the budget of jumps" in `limits.spec.ts`, with the inputs of the scenario as
+  amended in 5.1's place: a limit added with "Hinzufügen" twice, a bound moved to step 327, the
+  switch off and on, a limit removed, "Zurück zum echten Ergebnis". The pointer rests on each
+  control 50 ms before its click. Ten runs in a row with two workers, without a retry, all
+  passed; the longest frame per run was 9.2 to 17.2 ms, far under the 50 ms.)
+- [x] 6.3 Both in a `describe` with one retry, as the map's budget tests. Each is checked against
   its mutant, each mutant undone after its run:
   - a busy wait of 20 ms in the handler of a slider's `input`: "Dragging a bound" fails in both
     runs;
@@ -371,6 +377,14 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
 
   Verify: both fail as described; `git diff app/src` shows no mutant afterwards;
   `pnpm run test:e2e`: 91 passed.
+
+  (As built: both fail in both runs, and Playwright reports each "1 failed":
+  - a busy wait of 20 ms in `move`, the sliders' handler: the drag at 34.3 and 28.8 ms;
+  - one of 60 ms on the switch's `change`: the jumps at 63.6 and 62.9 ms.
+
+  `git diff app/src` shows nothing afterwards. `pnpm run test:e2e`: 92 passed, one more than
+  planned: the test that reopens a range closed at the end of its track, from Copilot's review
+  of PR #12.)
 
 ## 7. The reading guide
 

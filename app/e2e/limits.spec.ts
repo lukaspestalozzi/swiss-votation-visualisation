@@ -567,6 +567,38 @@ test.describe(() => {
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
     expect(frames.filter((f) => f.work > 16)).toEqual([]);
   });
+
+  test('the budget of jumps: no frame after a jump of the selection takes more than 50 ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(MEASURE_FRAMES);
+    await open(page, 'votes/5960/');
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    // Each control at a person's pace: the pointer rests on it 50 ms before the click.
+    const press = async (control: ReturnType<Page['getByRole']>) => {
+      await control.hover();
+      await page.waitForTimeout(50);
+      await control.click();
+    };
+    const add = page.getByRole('button', { name: 'Hinzufügen', exact: true });
+    await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
+    await press(add);
+    await page.waitForTimeout(50);
+    await slider(page, 'Obere', 'Ausländeranteil').fill('327');
+    await page.waitForTimeout(50);
+    await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Einwohner' });
+    await press(add);
+    await press(abroadSwitch(page));
+    await press(abroadSwitch(page));
+    await press(page.getByRole('button', { name: 'Entfernen: Einwohner' }));
+    await press(page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }));
+    await expect(page.locator('.limit')).toHaveCount(0);
+    const frames = await measuredFrames(page);
+    expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
+    expect(frames.filter((f) => f.work > 50)).toEqual([]);
+  });
 });
 
 test('a range closed at the end of its track reopens by pointer', async ({ page }) => {
