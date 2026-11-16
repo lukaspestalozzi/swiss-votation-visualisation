@@ -338,12 +338,29 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
 
 `app/e2e/`. Spec: `limits` ("The budget of the limits"). Design: decision 8 and "Tests".
 
-- [ ] 6.1 The measuring script of the map's budget tests also measures the frames after `input`
+- [x] 6.1 The measuring script of the map's budget tests also measures the frames after `input`
   and `change` events. Write the test "Dragging a bound": add "Einwohner", rest 50 ms on the
   lower thumb, press, drag across the whole track and back in 40 moves, release; no frame over
   16 ms. Verify: it passes 10 times in a row after a build
   (`pnpm --filter app exec playwright test -g "Dragging a bound" --repeat-each 10`); the note
   gives the longest frame of each run.
+
+  (As built: the test is "the budget of dragging" in `limits.spec.ts`, and the measuring script
+  moved to `app/e2e/frames.ts`, which both test files use.
+  - **The first series failed:** two workers, ten runs at a time. Longest frames 9.0 to 19.3
+    ms; one run failed its second measurement too. Investigated: `investigations/limits.md`,
+    answer 8, with `measure_drag.cjs` and `profile_drag.cjs`.
+    - With one worker the drag passes (8.3 to 11.1 ms); a second test at the same time
+      stretches the frames.
+    - Most of the page's own cost was Svelte building all 2,110 fills again at every step and
+      running the 2,110 paths' effects again.
+  - **Fixed, Q's choice on 2026-11-16** (repaint the changes, keep 16 ms):
+    - the map's fills hold the class colours only;
+    - an effect paints only the municipalities whose state changed, through a map from number
+      to path built once;
+    - the page flattens the municipalities with an entry once.
+  - **After it,** two series of ten runs with two workers, without a retry, all passed: longest
+    frames 7.1 to 12.9 ms and 6.9 to 12.4 ms. The limits' and the map's browser tests pass.)
 - [ ] 6.2 Write the test "Jumps", with the inputs of its scenario, each after a pause of 50 ms;
   no frame over 50 ms. Verify: 10 passes in a row, as 6.1.
 - [ ] 6.3 Both in a `describe` with one retry, as the map's budget tests. Each is checked against

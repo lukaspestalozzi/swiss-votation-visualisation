@@ -66,11 +66,34 @@
     new Map<number, string>([
       ...figures.map(([number, yes, no]): [number, string] => [
         number,
-        aside.has(number) ? SET_ASIDE_COLOUR : colourOf(colouringOf(yes, no)),
+        colourOf(colouringOf(yes, no)),
       ]),
       ...entries.withoutResult.map((number): [number, string] => [number, 'url(#hatch)']),
     ]),
   );
+
+  // The set-aside municipalities are painted apart from the colours above: only those whose state
+  // changed get a new fill, as building all 2,110 fills again at every step of a drag took most of
+  // a frame (investigations/limits.md, 8). The paths are found by their number once.
+  let group = $state<SVGGElement | null>(null);
+  let pathOf: ReadonlyMap<number, Element> | null = null;
+  let painted: ReadonlySet<number> = new Set();
+  $effect(() => {
+    if (group === null) return;
+    pathOf ??= new Map(
+      [...group.querySelectorAll('path[data-number]')].map((path) => [
+        Number(path.getAttribute('data-number')),
+        path,
+      ]),
+    );
+    for (const number of painted) {
+      if (!aside.has(number)) pathOf.get(number)?.setAttribute('fill', fills.get(number) ?? '');
+    }
+    for (const number of aside) {
+      if (!painted.has(number)) pathOf.get(number)?.setAttribute('fill', SET_ASIDE_COLOUR);
+    }
+    painted = aside;
+  });
 
   // The name and the canton of each municipality, by its number.
   const names = $derived(
@@ -283,7 +306,7 @@
           </defs>
           <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
           <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
-          <g class="municipalities">
+          <g class="municipalities" bind:this={group}>
             {#each map.municipalities as [number, path] (number)}
               <path d={path} data-number={number} fill={fills.get(number)} />
             {/each}

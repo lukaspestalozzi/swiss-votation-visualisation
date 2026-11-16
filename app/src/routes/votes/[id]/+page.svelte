@@ -64,23 +64,26 @@
       .map((canton) => canton.canton);
     return judgedOf(calculateResult(kept, majorities), majorities, cantons);
   });
+  // The numbers of the municipalities with an entry, flattened once, not at every step.
+  const withEntry = $derived(
+    data.entries === null
+      ? []
+      : data.entries.cantons.flatMap((canton) => canton.municipalities.map(([number]) => number)),
+  );
   // How many of the municipalities with an entry remain (spec limits, "The number of
   // municipalities that remain").
   const count = $derived.by(() => {
     if (remaining === null || data.entries === null) return '';
-    const numbers = data.entries.cantons.flatMap((canton) => canton.municipalities);
-    const left = numbers.filter(([number]) => remaining.has(number)).length;
+    let left = 0;
+    for (const number of withEntry) if (remaining.has(number)) left += 1;
     return left === 0
       ? NOTHING_REMAINS
-      : remainingCount(formatCount(left), formatCount(numbers.length));
+      : remainingCount(formatCount(left), formatCount(withEntry.length));
   });
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
   const aside = $derived.by((): ReadonlySet<number> => {
     if (remaining === null || data.entries === null) return new Set();
-    const numbers = data.entries.cantons.flatMap((canton) =>
-      canton.municipalities.map(([number]) => number),
-    );
-    return new Set(numbers.filter((number) => !remaining.has(number)));
+    return new Set(withEntry.filter((number) => !remaining.has(number)));
   });
 </script>
 

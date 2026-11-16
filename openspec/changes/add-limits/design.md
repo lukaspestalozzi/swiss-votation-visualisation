@@ -309,6 +309,13 @@ A new component `Limits.svelte` lays out the section and changes them. The page 
 - the set of set-aside numbers, which goes to `ResultMap` as a prop for the fills, the legend and
   the details.
 
+`ResultMap`'s fills hold the class colours only. An effect paints the set-aside municipalities
+apart: only those whose state changed get a new fill, through a map from number to path built
+once. At first every step built all 2,110 fills again and ran the paths' 2,110 effects again,
+which in the browser test took up to 19 ms with two workers. Q chose on 2026-11-16 to repaint
+only the changes and keep 16 ms (alternatives: raising the drag's budget to 25 ms; both).
+`investigations/limits.md`, answer 8, gives the measurements.
+
 Each loaded or computed structure is `$state.raw` or a `$derived` of plain values, without deep
 proxies (design of `tighten-map-budget`, decision 2).
 
@@ -389,9 +396,8 @@ None. The sliders are the browser's own, and the guide is a prerendered page of 
 ## Risks / Trade-offs
 
 - **[A drag over a dense part of a track changes hundreds of fills in one frame]** → The browser
-  test drags across the whole track of "Einwohner", the densest. If it fails, the fills move to
-  a class per path, toggled only for the municipalities whose state changed, without Svelte's
-  per-path effects.
+  test drags across the whole track of "Einwohner", the densest. It did miss with two workers,
+  and the fills now change only for the municipalities whose state changed (decision 21).
 - **[A click on a bare track does nothing]** → Decision 7. The thumbs and the keys work; a later
   change can replace the control.
 - **[The first touch of the switch turns vote 5950]** → Intended (decision 1). The guide names
