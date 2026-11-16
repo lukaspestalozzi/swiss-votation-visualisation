@@ -2,7 +2,7 @@
 // everything that shows or uses a characteristic takes its name, value and date from. Their
 // counts are those of characteristics.json; the design of the change add-characteristics gives
 // the reasons (decisions 1, 11 and 15).
-import { formatCount, formatQuotient, formatShare } from './format.ts';
+import { formatUnits, quotientUnits } from './format.ts';
 import {
   AGE_GROUPS,
   AREA,
@@ -51,10 +51,15 @@ export interface Quotient {
   readonly whole: number;
 }
 
+// The scale of a limit's track (design of add-limits, decision 5): equal differences from one
+// step to the next, or equal factors for values that span several orders of magnitude.
+export type Scale = 'linear' | 'logarithmic';
+
 export interface Definition {
   readonly name: string;
   readonly unit: Unit;
   readonly source: Source;
+  readonly scale: Scale;
   // The year of its figures, among those that apply to a vote.
   readonly year: (applying: Applying) => number;
   // Null where the municipality has no figure.
@@ -79,9 +84,10 @@ function define(
   name: string,
   unit: Unit,
   source: Source,
+  scale: Scale,
   value: (counts: Counts) => Quotient | null,
 ): Definition {
-  return { name, unit, source, year: YEAR_OF[source], value };
+  return { name, unit, source, scale, year: YEAR_OF[source], value };
 }
 
 const ofInhabitants = (i: number) => (c: Counts) => ({
@@ -97,19 +103,27 @@ function partyShare(i: number): (c: Counts) => Quotient | null {
 }
 
 export const DEFINITIONS: readonly Definition[] = [
-  define(INHABITANTS, 'count', 'population', (c) => ({ part: c.population[0], whole: 1 })),
-  define(FOREIGNERS, 'percent', 'population', ofInhabitants(1)),
-  ...AGE_GROUPS.map((name, i) => define(name, 'percent', 'population', ofInhabitants(2 + i))),
-  define(DENSITY, 'per-km2', 'population', (c) => ({
+  define(INHABITANTS, 'count', 'population', 'logarithmic', (c) => ({
+    part: c.population[0],
+    whole: 1,
+  })),
+  define(FOREIGNERS, 'percent', 'population', 'linear', ofInhabitants(1)),
+  ...AGE_GROUPS.map((name, i) =>
+    define(name, 'percent', 'population', 'linear', ofInhabitants(2 + i)),
+  ),
+  define(DENSITY, 'per-km2', 'population', 'logarithmic', (c) => ({
     part: 100 * c.population[0],
     whole: c.hectares,
   })),
-  ...PARTIES.map((name, i) => define(name, 'percent', 'election', partyShare(i))),
+  ...PARTIES.map((name, i) => define(name, 'percent', 'election', 'linear', partyShare(i))),
   ...LANGUAGES.map((name, i) =>
-    define(name, 'percent', 'census', (c) => ({ part: c.languages[1 + i], whole: c.languages[0] })),
+    define(name, 'percent', 'census', 'linear', (c) => ({
+      part: c.languages[1 + i],
+      whole: c.languages[0],
+    })),
   ),
-  define(AREA, 'km2', 'area', (c) => ({ part: c.hectares, whole: 100 })),
-  define(CATTLE, 'per-inhabitant', 'cattle', (c) => ({
+  define(AREA, 'km2', 'area', 'logarithmic', (c) => ({ part: c.hectares, whole: 100 })),
+  define(CATTLE, 'per-inhabitant', 'cattle', 'logarithmic', (c) => ({
     part: c.cattle,
     whole: c.cattleInhabitants,
   })),
@@ -153,6 +167,11 @@ export function countsOf(file: CharacteristicsFile, applying: Applying, number: 
   if (i < 0) {
     throw new RangeError(`the characteristics have no municipality ${String(number)}`);
   }
+  return countsAt(file, applying, i);
+}
+
+/** The counts of the municipality at index `i` of the file's list, as `countsOf` gives them. */
+export function countsAt(file: CharacteristicsFile, applying: Applying, i: number): Counts {
   const people = file.population.counts[file.population.years.indexOf(applying.populationYear)];
   const head = file.cattle.counts[file.cattle.years.indexOf(applying.cattleYear)];
   const ofCattleYear = file.population.counts[file.population.years.indexOf(applying.cattleYear)];
@@ -166,21 +185,48 @@ export function countsOf(file: CharacteristicsFile, applying: Applying, number: 
   };
 }
 
+// The decimals each unit is written with.
+const DECIMALS: Readonly<Record<Unit, number>> = {
+  count: 0,
+  percent: 2,
+  'per-km2': 0,
+  km2: 2,
+  'per-inhabitant': 3,
+};
+
+/**
+ * A value as the panel writes it, as a whole number of units of its last digit (design of
+ * add-limits, decision 16): 32.03% is 3203, 91.88 km² is 9188. A limit compares these numbers.
+ * None where the municipality has no figure, or where a value has no whole.
+ */
+export function unitsOf(definition: Definition, value: Quotient | null): number | null {
+  if (value === null || value.whole === 0) return null;
+  if (definition.unit === 'percent') {
+    if (value.part > value.whole) {
+      throw new RangeError(`${String(value.part)} is more than ${String(value.whole)}`);
+    }
+    return quotientUnits(100 * value.part, value.whole, DECIMALS.percent);
+  }
+  return quotientUnits(value.part, value.whole, DECIMALS[definition.unit]);
+}
+
+/** A number of units as the panel writes it: "keine Angabe" where there is no figure. */
+export function writeUnits(definition: Definition, units: number | null): string {
+  if (units === null) return NO_FIGURE;
+  const number = formatUnits(units, DECIMALS[definition.unit]);
+  switch (definition.unit) {
+    case 'percent':
+      return `${number}%`;
+    case 'km2':
+      return `${number} km²`;
+    default:
+      return number;
+  }
+}
+
 /** A value as the panel writes it: "keine Angabe" where there is no figure. */
 export function written(definition: Definition, value: Quotient | null): string {
-  if (value === null) return NO_FIGURE;
-  switch (definition.unit) {
-    case 'count':
-      return formatCount(value.part);
-    case 'percent':
-      return formatShare(value.part, value.whole);
-    case 'per-km2':
-      return formatQuotient(value.part, value.whole, 0);
-    case 'km2':
-      return `${formatQuotient(value.part, value.whole, 2)} km²`;
-    case 'per-inhabitant':
-      return formatQuotient(value.part, value.whole, 3);
-  }
+  return writeUnits(definition, unitsOf(definition, value));
 }
 
 // A group of the panel: its heading, and one line per characteristic.

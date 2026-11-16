@@ -5,6 +5,7 @@ import {
   formatDate,
   formatQuotient,
   formatShare,
+  formatUnits,
 } from './format.ts';
 
 test('a count is grouped by three with an apostrophe', () => {
@@ -58,4 +59,15 @@ test('a quotient with three decimals is rounded half away from zero', () => {
   expect(formatQuotient(850, 396955, 3)).toBe('0.002');
   expect(formatQuotient(1, 2000, 3)).toBe('0.001');
   expect(formatQuotient(1, 2001, 3)).toBe('0.000');
+});
+
+test('a whole number of units is written with its decimals, grouped like a count', () => {
+  // A limit's bound (design of add-limits, decision 16): 19.98%, 0.05, 1.000 and 396'955.
+  expect(formatUnits(1998, 2)).toBe('19.98');
+  expect(formatUnits(0, 2)).toBe('0.00');
+  expect(formatUnits(5, 2)).toBe('0.05');
+  expect(formatUnits(1000, 3)).toBe('1.000');
+  expect(formatUnits(396955, 0)).toBe("396'955");
+  expect(formatUnits(1234567, 2)).toBe("12'345.67");
+  expect(() => formatUnits(19.5, 2)).toThrow(RangeError);
 });

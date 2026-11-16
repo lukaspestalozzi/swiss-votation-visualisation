@@ -82,11 +82,16 @@ In `app/src/lib/`. Specs: `limits` ("The track of a limit", "A logarithmic track
 a limit", "One definition for a limit"), `characteristics` (the modified "One definition per
 characteristic"). Design: decisions 5, 16, 17 and 22.
 
-- [ ] 2.1 `format.ts`: a whole number of units written with its decimals, as `formatQuotient`
+- [x] 2.1 `format.ts`: a whole number of units written with its decimals, as `formatQuotient`
   writes them ("1998" with 2 decimals gives "19.98"). Write its test first, with the edges 0, 5,
   1,000 and 396,955. Verify: `pnpm --filter app exec vitest run src/lib/format.test.ts` passes,
   with 1 test more than before.
-- [ ] 2.2 `characteristics.ts`: each definition gains its scale ("linear" or "logarithmic"; four
+
+  (As built: `formatUnits(units, decimals)`; 9 tests of `format.ts` pass, 1 more, and the app's
+  81. The test failed first. `formatQuotient` now writes its rounded units through it, so the
+  two cannot differ, and its tests pass unchanged. Like the other functions it refuses a number
+  of units that is not whole from zero.)
+- [x] 2.2 `characteristics.ts`: each definition gains its scale ("linear" or "logarithmic"; four
   logarithmic) and the units of a value, by the rounding of `format.ts`. `written` writes those
   units. Write two tests, one at a time:
   - the scales of the 21 definitions;
@@ -95,7 +100,18 @@ characteristic"). Design: decisions 5, 16, 17 and 22.
 
   Verify: the app's unit tests pass, 2 more than before; the panel's browser tests still pass
   (`pnpm run build && pnpm run test:e2e`, 55).
-- [ ] 2.3 New module `limits.ts`: a limit's track from a definition, the file and the vote's
+
+  (As built: 83 app tests, 2 more than after 2.1; 55 browser tests; lint and check pass.
+  - The scales test failed first.
+  - The second test passed before and after the change of `written`, and fails against two
+    mutants: cattle with 2 decimals ("0.31" for "0.308") and a share with a factor of 10 for 100
+    ("1.28%" for "12.77%"). Both were undone.
+  - `format.ts` gains `quotientUnits`, the rounding `formatQuotient` already did, which
+    `formatQuotient` now uses.
+  - `characteristics.ts` gains `unitsOf` and `writeUnits`; `written` is the two together.
+  - One difference, for a case the data never holds: a value with no whole, such as a share of 0
+    inhabitants, was written "–" and is now "keine Angabe", a missing figure.)
+- [x] 2.3 New module `limits.ts`: a limit's track from a definition, the file and the vote's
   years (decision 17). Write four tests against `characteristics.json`, one at a time:
   - "Ausländeranteil" of 5960: ends 0.00% and 61.10%, steps 327 and 328 at 19.98% and 20.04%,
     step 999 at 61.04%;
@@ -105,9 +121,23 @@ characteristic"). Design: decisions 5, 16, 17 and 22.
     35.96%.
 
   Verify: 4 tests more pass.
-- [ ] 2.4 The label of a limit, "<name> (<date>): von … bis …". Write one test with the labels of
+
+  (As built: 87 app tests, 4 more. The first three failed first: no module; the linear middle
+  198'493 for 3'508; NaN on a track that starts at 0. The fourth passed when written, and fails,
+  with the three others, against a mutant that reads every track's values from "0–17 Jahre"; the
+  mutant was undone. A track keeps each municipality's units in the order of the file's list,
+  its smallest and largest value and its smallest above zero. `characteristics.ts` gains
+  `countsAt`, the counts by index, which `countsOf` now uses, so that a track does not look up
+  each of the 2,110 municipalities by number.)
+- [x] 2.4 The label of a limit, "<name> (<date>): von … bis …". Write one test with the labels of
   the spec's scenario "Labels of a vote" (6400: SVP, Italienisch, Fläche) and "Einwohner (Ende
   2015): von 3'508 bis 396'955". Verify: 1 test more passes.
+
+  (As built: 88 app tests, 1 more; lint and check pass. The test failed first; it also checks the
+  cattle's step 1, "von 0.000 bis 0.001". `labelOf(track, lower, upper)` takes the two steps; a
+  track keeps the date of its figures as the label writes it. The texts are in `texts.ts`: the
+  population's "Ende <year>", the census's "Volkszählung <year>", and the election's
+  "Nationalratswahl <year>", the panel's heading.)
 
 ## 3. The page holds its entries
 
