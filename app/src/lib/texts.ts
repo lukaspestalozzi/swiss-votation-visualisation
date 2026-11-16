@@ -58,6 +58,7 @@ export const MAJORITY_OF_CANTONS = 'Ständemehr';
 export const REACHED = 'Ja';
 export const NOT_REACHED = 'Nein';
 export const NOT_NEEDED = 'nicht nötig';
+export const NOTHING_LEFT = 'keine Gemeinde übrig';
 export const PASSED = 'Angenommen';
 export const FAILED = 'Abgelehnt';
 export const cantonalVotes = (inFavour: string, against: string): string =>

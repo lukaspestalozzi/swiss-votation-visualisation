@@ -3,7 +3,8 @@
 import { expect, test } from 'vitest';
 import votesFile from '../../static/data/votes.json';
 import type { Vote, VoteFile, Votes } from './vote-data.ts';
-import { votePage } from './vote-page.ts';
+import { calculateResult } from 'calculation';
+import { judgedOf, votePage } from './vote-page.ts';
 
 const listing = votesFile as Votes;
 const files = import.meta.glob<VoteFile>('../../static/data/votes/*.json', {
@@ -161,4 +162,14 @@ test('a vote without its file, or with an entry the calculation refuses, is an e
   // Made up: an entry of a canton that does not exist.
   const refused: VoteFile = { id: 5960, entries: { XX: [[1, 10, 5, 5, 3, 2]] }, withoutResult: [] };
   expect(() => votePage(voteOf(5960), refused)).toThrow(/vote 5960 of 2016-02-28/);
+});
+
+test('a canton of the vote with nothing left keeps its row, which says so', () => {
+  // Spec verdicts, "The cantons under a selection": only ZH remains of a vote of ZH, BE and OW.
+  const result = calculateResult([{ canton: 'ZH', yes: 60, no: 40 }], 'voters-and-cantons');
+  expect(judgedOf(result, 'voters-and-cantons', ['ZH', 'BE', 'OW']).cantons).toEqual([
+    { canton: 'ZH', yesShare: '60.00%', cantonalVotes: '1', side: 'Ja' },
+    { canton: 'BE', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
+    { canton: 'OW', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
+  ]);
 });

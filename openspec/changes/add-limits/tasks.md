@@ -177,15 +177,33 @@ of the map). Design: decisions 20 and 21.
 In `app/src/lib/`. Specs: `verdicts` ("The result of the selection", "The cantons under a
 selection", the modified "The table of the cantons"). Design: decisions 9, 10 and 21.
 
-- [ ] 4.1 In `vote-page.ts`, the part that writes figures, verdicts and the table from a
+- [x] 4.1 In `vote-page.ts`, the part that writes figures, verdicts and the table from a
   `Result` is shared by the build and the browser. A canton of the vote with nothing left gets
   "–", "keine Gemeinde übrig" and "–". Write the test of that row first. Verify: 1 test more
   passes, and the existing tests of `vote-page.ts` pass unchanged.
-- [ ] 4.2 The six selections of `investigations/limits.md`, 5, from the data files: the limits,
+
+  (As built: 90 app tests, 1 more; lint and check pass. The test failed first. `judgedOf(result,
+  majorities, cantonsOfVote)` gives a `ResultShown`: the figures, verdicts, outcome and table,
+  the table with a row for each canton of the vote in the order of the constitution. `Judged`,
+  the vote's own, is a `ResultShown` with its turnout, from `judgedOfRows`, the former
+  `judgedOf`. The existing tests pass unchanged. The text is `NOTHING_LEFT` in `texts.ts`.)
+- [x] 4.2 The six selections of `investigations/limits.md`, 5, from the data files: the limits,
   the units, `remainingMunicipalities`, `entriesThatRemain` and `calculateResult` give every
   figure of the table. That is the yes and no votes, the yes share to 0.0001 points, the
   cantonal votes, the verdict and the municipalities that remain. Write them as one test per
   row, one at a time, in `limits.test.ts`. Verify: 6 tests more pass.
+
+  (As built: 96 app tests, 6 more. The first failed first, without `remainingUnder` in
+  `limits.ts`, which turns each limit's track and steps into the calculation's `Limit`. The page
+  uses it too. The other five passed when written; each fails against at least one mutant:
+  - the upper bound one step higher: rows 3 and 6;
+  - the lower bound one step higher: rows 3, 5 and 6;
+  - the switch ignored: row 2;
+  - Italian reading the Romansh column: row 4, which neither bound mutant changes, as no
+    municipality lies between those steps.
+
+  Each mutant was undone. Row 6 also checks that Rüti bei Lyssach is set aside, and rows 3 and 6
+  that BS and NW have no cantonal vote.)
 
 ## 5. The limits on the page
 
