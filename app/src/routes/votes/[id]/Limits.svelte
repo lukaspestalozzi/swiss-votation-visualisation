@@ -110,6 +110,7 @@
             max={STEPS}
             step="1"
             value={lower}
+            style:z-index={lower === STEPS ? 1 : undefined}
             aria-label={lowerBound(name)}
             aria-valuetext={writeUnits(track.definition, valueAt(track, lower))}
             oninput={(event) => {
@@ -157,7 +158,9 @@
     margin: 0;
   }
   /* Two sliders laid over one track: the inputs take no pointer, their thumbs do, so that each
-     thumb can be dragged (design of add-limits, decision 7). */
+     thumb can be dragged (design of add-limits, decision 7). The upper one lies on top, except
+     when the lower one has reached the end of the track: both thumbs are there, and only the
+     lower one can still move. */
   .track {
     position: relative;
     height: 1.5rem;
