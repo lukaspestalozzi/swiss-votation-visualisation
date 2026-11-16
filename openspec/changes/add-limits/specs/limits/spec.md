@@ -145,11 +145,11 @@ the vote; no part of a limit SHALL take them from another characteristic.
 
 ### Requirement: Which municipalities remain
 
-A limit SHALL be narrowed when one of its bounds is not at its end of the track. A municipality
-SHALL remain when, for every narrowed limit, its value as the panel writes it lies within both
-bounds, each bound included. A narrowed limit SHALL set aside a municipality that has no figure
-for its characteristic. A limit with both bounds at their ends SHALL set nothing aside. A
-municipality's entry remains when the municipality remains.
+A limit SHALL be narrowed when the value of one of its bounds lies above the smallest or below the
+largest value of its track. A municipality SHALL remain when, for every narrowed limit, its value
+as the panel writes it lies within both bounds, each bound included. A narrowed limit SHALL set
+aside a municipality that has no figure for its characteristic; a limit that is not narrowed
+SHALL set nothing aside. A municipality's entry remains when the municipality remains.
 
 #### Scenario: A bound is included
 
@@ -170,6 +170,13 @@ municipality's entry remains when the municipality remains.
 - **WHEN** a visitor opens `/votes/5960/` and moves the lower bounds of "Deutsch" and
   "Französisch" each to step 1,000, 100.00% and 99.78%
 - **THEN** no municipality remains
+
+#### Scenario: A step that keeps the end's value
+
+- **WHEN** a visitor opens `/votes/5960/`, adds the limit "Einwohner" and moves its lower bound to
+  step 1, whose value is still 31, the smallest (`investigations/limits.md`, 5)
+- **THEN** the limit is not narrowed: the page shows no "Mit Ihrer Auswahl" and no municipality
+  in dark grey
 
 ### Requirement: The Swiss abroad
 

@@ -442,15 +442,17 @@ and 23.
   to the design of the archived change.)
 - [x] 8.2 `README.md`: what the site shows (the limits, the guide). `docs/roadmap.md`: #8's row
   names the decisions and "proposed" until it is archived, and the investigations' list names
-  `investigations/limits.md`. Verify: both name `add-limits` and `investigations/limits.md`.
+  `investigations/limits.md`. Verify: the roadmap names `add-limits` and
+  `investigations/limits.md`; the README describes the limits and the guide.
 
   (As built: the roadmap names both.
   - **Roadmap:** #8's row describes the change as built, with `characteristics` among its
     capabilities and "proposed" as its state. Its open decisions read "None left", as the
     archived rows' do. The investigations' list gains "Limits".
   - **README:** it describes the limits and the guide, but names no single change or
-    investigation, as before: it is the human overview, and names only the folders. So the
-    check's "both" holds for the roadmap only.)
+    investigation, as before: it is the human overview, and names only the folders. The check
+    first asked both files to name them; the verification found it met for the roadmap only, and
+    the check was corrected to what the README's convention allows.)
 - [x] 8.3 Update `CLAUDE.md` for every file this change adds, moves or changes:
   - the status;
   - "Where things are": the investigations' row names `limits.md` and its scripts;
@@ -478,6 +480,40 @@ and 23.
   - the calculation: the refused limit of 1.1;
   - the app: `isNarrowed` of 5.2;
   - the browser: the test from Copilot's review of PR #12.)
+
+## Verification and review
+
+**Copilot's review of PR #12** found two points while the change was being applied, both handled:
+- The PR's description still read as the proposal alone. It was rewritten with the state of the
+  tasks and the note that the PR is merged only when every task is done.
+- With the lower bound at step 1,000, both thumbs stood at the end of the track and the upper
+  slider took the pointer, so the range could not be opened again by pointer. The lower slider
+  now lies on top exactly then. The test "a range closed at the end of its track reopens by
+  pointer" failed first.
+
+**`/openspec-verify-change`** on 2026-11-16 found no critical issue, four warnings and four
+suggestions. Q asked to fix the warnings first; they are fixed:
+1. **What counts as narrowed.** The spec said a limit is narrowed when a bound "is not at its
+   end of the track", which reads as a step. The code asks whether a bound's value lies inside
+   the values, as design decisions 17 and 19 mean. They differ only where a step's value is
+   still the end's.
+   - The spec's "Which municipalities remain" now gives the value rule, and decision 17 says so.
+   - A new scenario, "A step that keeps the end's value" (step 1 of the inhabitants is 31),
+     has its browser test. It passed when written and fails against the step rule, which shows
+     two municipalities in dark grey.
+2. **The bounds do not cross.** The test set the lower bound's step with `fill`, where the
+   scenario drags it. It now drags the lower thumb by pointer to the end of the track. It stops
+   at step 327; without the clamp it reaches step 997.
+3. **Design decision 20** said `voteEntriesOf` also gives the vote's majorities. It now says
+   that the page's load function returns them, as built in 3.1.
+4. **Task 8.2's check** asked the README to name the change and the investigation, which its
+   convention does not. The check was corrected to what the README's convention allows.
+
+The four suggestions are open:
+- decision 7 does not name the lower slider on top at the end of the track;
+- the count and the set-aside are worked out in `+page.svelte`, not in `src/lib/`;
+- the proposal calls the switch "Auslandschweizer mitzählen";
+- the label of "65 Jahre und älter" has no browser test, only a unit test of its range.
 
 ## Workflow follow-up
 

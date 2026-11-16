@@ -241,7 +241,8 @@ outside a bound written "19.98%".
 
 A track's ends are the smallest and the largest value, in units, of the municipalities of the
 list with a figure, for the vote's figures. So at its ends a limit sets nothing aside, and
-"narrowed" means a bound away from its end.
+"narrowed" means a bound whose value lies inside them. A step away from an end whose value is
+still the end's, such as step 1 of the inhabitants (31), narrows nothing.
 - **Linear:** step *s* is `smallest + (largest − smallest)·s/1000`, rounded half up in whole
   numbers.
 - **Logarithmic:** `smallest·(largest/smallest)^(s/1000)`, rounded as `Math.floor(x + 0.5)`.
@@ -289,8 +290,10 @@ Alternatives considered:
 
 `mapFiguresOf` becomes `voteEntriesOf`, with the same checks against the map. Per canton in the
 order of the file, it gives the municipalities' `[number, yes, no]` and the Swiss abroad's
-`[yes, no]` or none, with the numbers without a result. It also gives the vote's kind of majority
-(`Majorities`), so that the browser can calculate.
+`[yes, no]` or none, with the numbers without a result. The page's load function returns them,
+and beside them the majorities the vote's kind needs (`Majorities`), so that the browser can
+calculate; the majorities belong to the vote, not to its file, so `voteEntriesOf` does not give
+them (task 3.1).
 - **The map** flattens the municipalities once for its colours, as `figures` did before.
 - **Size:** for 5960 the entries are 31,595 bytes (13,395 gzipped), where the map's figures were
   much the same. The page's HTML, 43.5 KB today, grows by a few KB.
