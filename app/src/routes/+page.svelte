@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { TITLE } from '../lib/texts.ts';
+  import { GUIDE_LINK, TITLE } from '../lib/texts.ts';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
@@ -11,6 +11,7 @@
 </svelte:head>
 
 <h1>{TITLE}</h1>
+<p><a href={resolve('/guide')}>{GUIDE_LINK}</a></p>
 
 {#each data.years as year (year.year)}
   <section>

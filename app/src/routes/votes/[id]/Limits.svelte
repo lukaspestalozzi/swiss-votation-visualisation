@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { DEFINITIONS, applyingTo, writeUnits } from '../../../lib/characteristics.ts';
   import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../lib/limits.ts';
   import {
@@ -7,6 +8,7 @@
     ADD_LIMIT,
     BACK_TO_REAL,
     CHOOSE,
+    GUIDE_LINK,
     LIMITS_FAILED,
     LIMITS_HEADING,
     PANEL_LOADING,
@@ -82,7 +84,7 @@
 
 <section class="limits">
   <h2>{LIMITS_HEADING}</h2>
-  <p>{THOUGHT_EXPERIMENT}</p>
+  <p>{THOUGHT_EXPERIMENT} <a href={resolve('/guide')}>{GUIDE_LINK}</a></p>
   {#if failed}
     <p>{LIMITS_FAILED}</p>
   {:else if file === null}
