@@ -4,6 +4,7 @@
 import type { CantonEntries } from 'calculation';
 import { formatCount, formatShare } from './format.ts';
 import {
+  LEGEND_SET_ASIDE,
   LEGEND_TIE,
   LEGEND_WITHOUT_RESULT,
   NO_VOTES,
@@ -73,6 +74,13 @@ export const LEGEND: readonly LegendEntry[] = [
   { label: LEGEND_TIE, fill: TIE_COLOUR },
   { label: LEGEND_WITHOUT_RESULT, fill: 'hatch' },
 ];
+
+// The legend's last entry while the selection sets a municipality aside (spec result-map, "The
+// legend").
+export const LEGEND_SET_ASIDE_ENTRY: LegendEntry = {
+  label: LEGEND_SET_ASIDE,
+  fill: SET_ASIDE_COLOUR,
+};
 
 // What pointing at a municipality shows: its name, then one line per figure.
 export interface Details {

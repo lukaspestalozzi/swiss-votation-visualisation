@@ -1,6 +1,7 @@
 // The map of a vote (spec result-map), against the built site. The municipal figures are those
 // of investigations/map-data.md.
 import { expect, test, type Page } from '@playwright/test';
+import { pointIn } from './pointing.ts';
 
 const municipality = (page: Page, number: number) =>
   page.locator(`.municipalities [data-number="${String(number)}"]`);
@@ -136,30 +137,6 @@ test('the Swiss abroad: eleven cantons in 2013', async ({ page }) => {
   await page.goto('votes/5670/');
   await expect(page.getByText(abroad(11), { exact: true })).toBeVisible();
 });
-
-// A point on the screen inside a shape of the map, where the shape is the topmost element. The
-// shape is scrolled into view first: outside the window no element is found at a point.
-async function pointIn(page: Page, selector: string): Promise<{ x: number; y: number }> {
-  await page.locator('.municipalities path').nth(2000).waitFor();
-  await page.locator(selector).scrollIntoViewIfNeeded();
-  return page.locator(selector).evaluate((element) => {
-    const path = element as SVGPathElement;
-    const box = path.getBBox();
-    const matrix = path.getScreenCTM();
-    if (matrix === null) throw new Error('the shape is not on the screen');
-    for (let i = 1; i < 40; i += 1) {
-      for (let j = 1; j < 40; j += 1) {
-        const inside = new DOMPoint(box.x + (box.width * i) / 40, box.y + (box.height * j) / 40);
-        if (!path.isPointInFill(inside)) continue;
-        const onScreen = inside.matrixTransform(matrix);
-        if (document.elementFromPoint(onScreen.x, onScreen.y) === path) {
-          return { x: onScreen.x, y: onScreen.y };
-        }
-      }
-    }
-    throw new Error('no point inside the shape is on top');
-  });
-}
 
 const details = (page: Page) => page.locator('.details');
 

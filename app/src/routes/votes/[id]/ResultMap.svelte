@@ -9,6 +9,7 @@
     HATCH_LINE,
     LAKE_COLOUR,
     LEGEND,
+    LEGEND_SET_ASIDE_ENTRY,
     SET_ASIDE_COLOUR,
     colourOf,
     colouringOf,
@@ -20,6 +21,7 @@
   import {
     MAP_FAILED,
     MAP_HEADING,
+    SET_ASIDE,
     WHOLE_SWITZERLAND,
     ZOOM_IN,
     ZOOM_OUT,
@@ -91,8 +93,12 @@
   const details = $derived.by(() => {
     const named = selected === null ? undefined : names.get(selected);
     if (selected === null || named === undefined) return null;
-    return detailsOf(named.name, named.canton, counts.get(selected) ?? null);
+    const shown = detailsOf(named.name, named.canton, counts.get(selected) ?? null);
+    // A municipality the selection sets aside says so after its own figures (spec result-map).
+    return aside.has(selected) ? { ...shown, lines: [...shown.lines, SET_ASIDE] } : shown;
   });
+  // The legend, which names the set-aside municipalities while there are any.
+  const legend = $derived(aside.size > 0 ? [...LEGEND, LEGEND_SET_ASIDE_ENTRY] : LEGEND);
   const lastName = $derived.by(() => {
     const named = last === null ? undefined : names.get(last);
     if (last === null || named === undefined) return null;
@@ -303,7 +309,7 @@
       />
     </div>
     <ul class="legend">
-      {#each LEGEND as entry (entry.label)}
+      {#each legend as entry (entry.label)}
         <li>
           {#if entry.fill === 'hatch'}
             <span

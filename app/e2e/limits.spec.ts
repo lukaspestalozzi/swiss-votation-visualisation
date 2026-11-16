@@ -2,6 +2,7 @@
 // map (spec result-map), against the built site. The figures are those of
 // investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
+import { pointIn } from './pointing.ts';
 
 /** Open a vote's page and wait until the limits can be used. */
 async function open(page: Page, path: string): Promise<void> {
@@ -335,4 +336,55 @@ test('nothing remains: no votes, no yes share, no cantonal vote, the vote fails'
   await expect(selection.locator('.verdict .word')).toHaveText(['Nein', 'Nein']);
   await expect(selection.locator('.verdict p:not(.word)')).toHaveText(['–', '0 : 0']);
   await expect(selection.locator('.outcome')).toHaveText('Abgelehnt');
+});
+
+test('the legend of a selection ends with the dark grey of the set-aside', async ({ page }) => {
+  await open(page, 'votes/5960/');
+  await expect(page.locator('.legend li')).toHaveCount(10);
+  await foreignersUpTo1998(page);
+  const entries = page.locator('.legend li');
+  await expect(entries).toHaveCount(11);
+  await expect(entries.nth(10)).toHaveText('Nicht in der Auswahl');
+  await expect(entries.nth(10).locator('.swatch')).toHaveCSS(
+    'background-color',
+    'rgb(44, 44, 44)', // #2c2c2c
+  );
+});
+
+test('set aside and kept: Zürich dark grey, Aeugst am Albis its colour, the hatching kept', async ({
+  page,
+}) => {
+  // investigations/limits.md, 3: Zürich 32.03%, Aeugst am Albis 12.77% foreigners.
+  await open(page, 'votes/5960/');
+  await foreignersUpTo1998(page);
+  await expect(municipality(page, 261)).toHaveAttribute('fill', '#2c2c2c');
+  await expect(municipality(page, 1)).toHaveAttribute('fill', '#fbbea3'); // no, class 1
+  await expect(page.locator('.municipalities [fill="url(#hatch)"]')).toHaveCount(7);
+});
+
+test('without a result and without a figure: Meienried stays hatched', async ({ page }) => {
+  // investigations/limits.md, 2: Meienried has neither a result nor a party figure in 2021.
+  await open(page, 'votes/6400/');
+  await addLimit(page, 'SVP');
+  await slider(page, 'Obere', 'SVP').fill('999');
+  await expect(municipality(page, 389)).toHaveAttribute('fill', 'url(#hatch)');
+  await expect(municipality(page, 422)).toHaveAttribute('fill', '#2c2c2c');
+});
+
+test('the details of a set-aside municipality: its own figures, and that it is not selected', async ({
+  page,
+}) => {
+  // investigations/map-data.md: Zürich in 2016.
+  await open(page, 'votes/5960/');
+  await foreignersUpTo1998(page);
+  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+  await page.mouse.move(zurich.x, zurich.y);
+  const details = page.locator('.details');
+  await expect(details.locator('.name')).toHaveText('Zürich (ZH)');
+  await expect(details.locator('li')).toHaveText([
+    'Ja-Anteil: 31.85%',
+    "Ja-Stimmen: 46'565",
+    "Nein-Stimmen: 99'614",
+    'Nicht in der Auswahl.',
+  ]);
 });

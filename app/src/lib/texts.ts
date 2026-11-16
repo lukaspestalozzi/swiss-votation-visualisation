@@ -175,3 +175,5 @@ export const ABROAD_SWITCH =
 export const LIMITS_FAILED = 'Ohne die Merkmale lassen sich keine Gemeinden auswählen.';
 export const removeLimit = (name: string): string => `${REMOVE_LIMIT}: ${name}`;
 export const WITH_SELECTION = 'Mit Ihrer Auswahl';
+export const LEGEND_SET_ASIDE = 'Nicht in der Auswahl';
+export const SET_ASIDE = 'Nicht in der Auswahl.';
