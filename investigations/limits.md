@@ -29,6 +29,10 @@ pnpm run build
 (cd app && pnpm exec sirv build --port 4174) &
 node investigations/limits/recolour.cjs
 node investigations/limits/render_set_aside.cjs /path/outside/the/repository
+node investigations/limits/measure_drag.cjs --runs 5 [--busy] [--trace /path/outside/the/repository]
+# profile_drag.cjs reads an unminified build: build with `pnpm exec vite build --minify false` in
+# app/, restart sirv, and run
+node investigations/limits/profile_drag.cjs --runs 5
 ```
 
 | File | What |
@@ -36,6 +40,8 @@ node investigations/limits/render_set_aside.cjs /path/outside/the/repository
 | `reference_selections.py` | The rules of the selection as the change proposes them, written apart from the app; the Swiss abroad over all votes; the gaps of the characteristics; the tracks and their steps; the results of six named selections; the ends of every track for the vote of 2016-02-28. |
 | `check_set_aside_grey.py` | The distance of greys from every colour of the map, with the measure of `map-data/check_colours.py`, whose functions it loads. |
 | `recolour.cjs` | The work of a frame in which 100, 1,000 or all 2,110 municipalities change their fill, set by the DOM directly. |
+| `measure_drag.cjs` | The frames of a drag of a limit, with a Chrome trace that splits the longest into the main thread's work; with `--busy`, beside a second drag at the same time. |
+| `profile_drag.cjs` | The functions that take the script time of a drag, from V8's profile, against an unminified build. |
 | `render_set_aside.cjs` | Four images of the map of 2016-02-28 with 817 municipalities set aside, in two greys, with normal vision and with deuteranopia as Chrome emulates it. |
 
 "Output" at the end of this file is what the two Python scripts printed on 2026-11-16; the
@@ -138,6 +144,45 @@ municipalities change their fill took 1.9 ms of work at the median (at most 2.6 
 runs of the script. These are floors: the app adds the work of Svelte, of the calculation and of
 the verdicts. A step of a drag changes few municipalities; a jump (back to the real result, a
 limit added or removed, the switch) can change them all.
+
+### 8. The frames of a drag, found while applying
+
+Found while applying task 6.1 of `add-limits`, on 2026-11-16: the browser test "the budget of
+dragging" drags the lower bound of "Einwohner" on `/votes/5960/` across its track and back in 40
+moves, and allows 16 ms of main-thread work per frame. Ten runs at once (`--repeat-each 10`) gave
+a longest frame per run from 9.0 to 19.3 ms; one run failed its second measurement too.
+
+**Facts**, measured with `measure_drag.cjs` and `profile_drag.cjs`:
+- **Two workers.** Playwright runs two workers on this machine of 4 processors. With one worker
+  (`--workers 1`), ten runs gave 8.3 to 11.1 ms, all passing.
+- **The page alone.** Alone, the longest frame of a drag is 8.3 to 12.4 ms, the median 4 ms.
+  With a second drag in another browser at the same time, the longest is 9.5 to 17.8 ms.
+- **The trace.** The longest frames are mostly script (`FunctionCall` 4.4 to 8.5 ms); drawing
+  them (paint, layout, layers, commit) takes 2 to 4 ms.
+- **The profile.** A drag costs 96 ms of script in its 40 steps. Svelte's update of derived
+  values and effects holds 72 ms of it, among which:
+  - the map's `fills`, built anew for all 2,110 municipalities at every step (8.6 ms of its
+    own);
+  - the 2,110 effects of the paths that read it (7 ms);
+  - Svelte's checks of what changed (about 18 ms).
+
+  The garbage collector takes 6.8 ms. The calculation (`calculateResult`, the selection) takes
+  about 4 ms.
+- **A spike** (undone): the class colours computed once, only the paths whose state changes
+  given a new fill, through a map from number to element, and the municipalities with an entry
+  flattened once instead of at every step. A drag then costs 52 ms of script. The longest frame
+  is 6.2 to 8.4 ms alone and 8.4 to 11.1 ms beside a second drag; the median falls to 3 ms. A
+  first try that found each path by `querySelector` cost more than it saved (63 ms of it).
+
+**Theories**, and what became of them:
+1. A second worker competing for the processor stretches the frames: confirmed. The misses
+   came only with two runs at once.
+2. Svelte's 2,110 fill effects at every step: confirmed, the largest single part.
+3. Drawing many changed fills: a part, 2 to 4 ms, not the cause.
+4. The calculation: refuted, about 4 ms per drag.
+5. Garbage collection from what each step allocates: a part, 6.8 ms per drag.
+6. The test's moves of about 50 steps each, larger than a person's: not tested; it makes each
+   step change more municipalities, so the test is the harder case.
 
 ## Not verified
 

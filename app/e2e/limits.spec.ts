@@ -534,3 +534,23 @@ test('the keyboard on the list only moves the choice; "Hinzufügen" adds it', as
   ]);
   await expect(list).toHaveValue('');
 });
+
+test('a range closed at the end of its track reopens by pointer', async ({ page }) => {
+  // Copilot's review of PR #12: both thumbs at step 1,000, the upper one on top.
+  await open(page, 'votes/5960/');
+  await addLimit(page, 'Ausländeranteil');
+  const lower = slider(page, 'Untere', 'Ausländeranteil');
+  await lower.fill('1000');
+  await expect(label(page, 'Ausländeranteil')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 61.10% bis 61.10%',
+  );
+  const box = await lower.boundingBox();
+  if (box === null) throw new Error('the slider has no box');
+  const y = box.y + box.height / 2;
+  await page.mouse.move(box.x + box.width - 10, y);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, y, { steps: 5 });
+  await page.mouse.up();
+  expect(Number(await lower.inputValue())).toBeLessThan(600);
+  await expect(slider(page, 'Obere', 'Ausländeranteil')).toHaveValue('1000');
+});
