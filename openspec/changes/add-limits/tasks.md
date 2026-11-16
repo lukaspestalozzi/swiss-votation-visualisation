@@ -265,10 +265,21 @@ until group 7). Design: decisions 1 to 4, 6, 7, 9 to 14, 18 and 21.
     or the switch is off.
   - **The drag test** finds the slider's step by pointer, correcting the pointer while it is
     pressed, as a pixel holds about two steps.)
-- [ ] 5.3 The map: set-aside municipalities in `#2c2c2c`, hatching kept, the legend's eleventh
+- [x] 5.3 The map: set-aside municipalities in `#2c2c2c`, hatching kept, the legend's eleventh
   entry, the details' "Nicht in der Auswahl.". Write the browser tests of "The legend of a
   selection", "Set aside and kept", "Without a result and without a figure" and "Zürich set
   aside", one at a time. Verify: 82 passed.
+
+  (As built: 80 browser tests, two fewer than planned, as 5.2 has two fewer.
+  - **Moved to 5.4:** the end of "The legend of a selection", the ten entries again after
+    "Zurück zum echten Ergebnis".
+  - **Failed first:** the legend's eleventh entry and the details' line. The two of the fills
+    passed when written: 5.2 colours the set-aside. Both fail against the map ignoring the
+    set-aside and against the hatching turning dark grey under a selection. Each mutant was
+    built and undone.
+  - **A helper moved:** the browser tests' `pointIn` moved from `result-map.spec.ts` to
+    `app/e2e/pointing.ts`, so that `limits.spec.ts` can point at Zürich too; the map's 41 tests
+    pass with it.)
 - [ ] 5.4 The count, "Zurück zum echten Ergebnis", a fresh page per vote, and the characteristics
   loading or failing. Write the browser tests of "The number of municipalities that remain" (3),
   "Back from a selection", "To another vote" and "The characteristics' file is missing", one at a
