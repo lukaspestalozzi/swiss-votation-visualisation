@@ -1,7 +1,7 @@
 // The map's logic (spec result-map). The municipal figures are those of
 // investigations/map-data.md, "Municipal figures".
 import { expect, test } from 'vitest';
-import { LEGEND, colourOf, colouringOf, detailsOf, mapFiguresOf } from './result-map.ts';
+import { LEGEND, colourOf, colouringOf, detailsOf, voteEntriesOf } from './result-map.ts';
 import type { VoteFile } from './vote-data.ts';
 
 test('named municipalities of 2016-02-28: the side and the class', () => {
@@ -97,26 +97,34 @@ const FILE: VoteFile = {
 };
 const SWISS_ABROAD = [9010];
 
-test('the figures of a vote for the map, when they fit it', () => {
-  expect(mapFiguresOf(FILE, [1, 2, 389], SWISS_ABROAD)).toEqual({
-    figures: [
-      [1, 432, 550],
-      [2, 2000, 2900],
+test('the entries of a vote per canton, when they fit the map', () => {
+  // Per canton its municipalities and its Swiss abroad apart, as the selection takes them
+  // (design of add-limits, decision 20).
+  expect(voteEntriesOf(FILE, [1, 2, 389], SWISS_ABROAD)).toEqual({
+    cantons: [
+      {
+        canton: 'ZH',
+        municipalities: [
+          [1, 432, 550],
+          [2, 2000, 2900],
+        ],
+        abroad: [3596, 4939],
+      },
+      { canton: 'BE', municipalities: [], abroad: null },
     ],
     withoutResult: [389],
-    swissAbroad: 1,
   });
 });
 
 test('a municipality of the map without figures is an error that names the vote', () => {
-  expect(() => mapFiguresOf(FILE, [1, 2, 261, 389], SWISS_ABROAD)).toThrow(
+  expect(() => voteEntriesOf(FILE, [1, 2, 261, 389], SWISS_ABROAD)).toThrow(
     /vote 5960: the municipality 261 of the map has no entry/,
   );
 });
 
 test('an entry that is no municipality of the map is an error that names the vote', () => {
   const file: VoteFile = { ...FILE, entries: { ...FILE.entries, BE: [[7999, 10, 8, 8, 4, 4]] } };
-  expect(() => mapFiguresOf(file, [1, 2, 389], SWISS_ABROAD)).toThrow(
+  expect(() => voteEntriesOf(file, [1, 2, 389], SWISS_ABROAD)).toThrow(
     /vote 5960: the entry 7999 is no municipality of the map/,
   );
 });

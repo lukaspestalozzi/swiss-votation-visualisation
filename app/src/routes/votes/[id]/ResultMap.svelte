@@ -1,22 +1,7 @@
-<script module lang="ts">
-  import { asset } from '$app/paths';
-  import { createCharacteristicsLoader, createMapLoader } from '../../../lib/map-data.ts';
-
-  // One loader for every vote's page, so the files are requested once per visit; the
-  // characteristics apart, so that the map does not wait for them.
-  const loadMap = createMapLoader(
-    { map: asset('data/map.json'), municipalities: asset('data/municipalities.json') },
-    (url) => fetch(url),
-  );
-  const loadCharacteristics = createCharacteristicsLoader(
-    asset('data/characteristics.json'),
-    (url) => fetch(url),
-  );
-</script>
-
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { MapSources } from '../../../lib/map-data.ts';
+  import { loadCharacteristics, loadMap } from './loaders.ts';
   import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
   import CharacteristicsPanel from './CharacteristicsPanel.svelte';
   import {
@@ -27,7 +12,7 @@
     colourOf,
     colouringOf,
     detailsOf,
-    type MapFigures,
+    type VoteEntries,
   } from '../../../lib/result-map.ts';
   import { formatDate } from '../../../lib/format.ts';
   import { moveBy, wholeView, zoomAround, type View } from '../../../lib/map-view.ts';
@@ -42,10 +27,15 @@
     swissAbroadNotOnTheMap,
   } from '../../../lib/texts.ts';
 
-  // The map of a vote (spec result-map): its figures are written into the page when the site is
+  // The map of a vote (spec result-map): its entries are written into the page when the site is
   // built; the shapes and the names are loaded in the browser.
-  let { figures, title, voteDate }: { figures: MapFigures; title: string; voteDate: string } =
+  let { entries, title, voteDate }: { entries: VoteEntries; title: string; voteDate: string } =
     $props();
+
+  // Each municipality's [number, yes, no], from the entries of every canton.
+  const figures = $derived(entries.cantons.flatMap((canton) => canton.municipalities));
+  // The entries of Swiss abroad, which are not on the map.
+  const swissAbroad = $derived(entries.cantons.filter((canton) => canton.abroad !== null).length);
 
   // The loaded files are raw state: a new value replaces the old one whole, and nothing changes
   // them inside, which spares the proxies of deep state (design of tighten-map-budget, decision 2).
@@ -61,11 +51,11 @@
   // The fill of each municipality by its number: its class, or the hatching without a result.
   const fills = $derived(
     new Map<number, string>([
-      ...figures.figures.map(([number, yes, no]): [number, string] => [
+      ...figures.map(([number, yes, no]): [number, string] => [
         number,
         colourOf(colouringOf(yes, no)),
       ]),
-      ...figures.withoutResult.map((number): [number, string] => [number, 'url(#hatch)']),
+      ...entries.withoutResult.map((number): [number, string] => [number, 'url(#hatch)']),
     ]),
   );
 
@@ -80,7 +70,7 @@
     ),
   );
   const counts = $derived(
-    new Map(figures.figures.map(([number, yes, no]) => [number, [yes, no] as const])),
+    new Map(figures.map(([number, yes, no]) => [number, [yes, no] as const])),
   );
 
   // The municipality pointed at, or clicked or tapped; and the one last clicked or tapped, which
@@ -318,8 +308,8 @@
       {/each}
     </ul>
     <p class="source">{mapSource(formatDate(map.referenceDate), map.lakesSet)}</p>
-    {#if figures.swissAbroad > 0}
-      <p>{swissAbroadNotOnTheMap(figures.swissAbroad)}</p>
+    {#if swissAbroad > 0}
+      <p>{swissAbroadNotOnTheMap(swissAbroad)}</p>
     {/if}
   {/if}
 </section>

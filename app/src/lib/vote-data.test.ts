@@ -7,7 +7,7 @@ import characteristicsFile from '../../static/data/characteristics.json';
 import mapData from '../../static/data/map.json';
 import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
-import { mapFiguresOf } from './result-map.ts';
+import { voteEntriesOf } from './result-map.ts';
 import type {
   CharacteristicsFile,
   MapFile,
@@ -174,7 +174,7 @@ test("every judged vote's figures fit the map", () => {
   for (const vote of judged) {
     const file = fileOf.get(vote.id);
     if (file === undefined) throw new Error(`vote ${String(vote.id)} has no file`);
-    expect(() => mapFiguresOf(file, onTheMap, swissAbroad)).not.toThrow();
+    expect(() => voteEntriesOf(file, onTheMap, swissAbroad)).not.toThrow();
   }
 });
 
@@ -182,10 +182,21 @@ test('the entries of Swiss abroad: 12 in 2016, 11 in 2013', () => {
   const abroadIn = (id: number): number => {
     const file = fileOf.get(id);
     if (file === undefined) throw new Error(`vote ${String(id)} has no file`);
-    return mapFiguresOf(file, onTheMap, swissAbroad).swissAbroad;
+    return voteEntriesOf(file, onTheMap, swissAbroad).cantons.filter((c) => c.abroad !== null)
+      .length;
   };
   expect(abroadIn(5960)).toBe(12);
   expect(abroadIn(5670)).toBe(11);
+});
+
+test('the page of 2016-02-28 holds 12 Swiss abroad and 2,103 municipalities with a result', () => {
+  const file = fileOf.get(5960);
+  if (file === undefined) throw new Error('vote 5960 has no file');
+  const { cantons, withoutResult } = voteEntriesOf(file, onTheMap, swissAbroad);
+  expect(cantons.filter((canton) => canton.abroad !== null)).toHaveLength(12);
+  expect(cantons.flatMap((canton) => canton.municipalities)).toHaveLength(2103);
+  expect(withoutResult).toHaveLength(7);
+  expect(cantons.map((canton) => canton.canton)).toHaveLength(26);
 });
 
 test('the characteristics are those of the municipalities of the list', () => {

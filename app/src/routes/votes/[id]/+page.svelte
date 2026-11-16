@@ -62,8 +62,8 @@
   </div>
   <p class="outcome">{judged.outcome}</p>
 
-  {#if data.map !== null}
-    <ResultMap figures={data.map} title={data.title} voteDate={data.voteDate} />
+  {#if data.entries !== null}
+    <ResultMap entries={data.entries} title={data.title} voteDate={data.voteDate} />
   {/if}
 
   <table>
