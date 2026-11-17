@@ -539,6 +539,21 @@ Q asked to fix them all. They are fixed:
 - 138 browser tests, none flaky;
 - 134 of the pipeline.
 
+## Archive
+
+`/openspec-archive-change` on 2026-11-17, after the verification and its fixes; Q's call of it
+stands for the review of the French and Italian texts the follow-up below waited for. Q chose to
+sync the specs:
+- **New main spec:** `interface-languages` (8 requirements, 31 scenarios);
+- **`app-shell`:** "The site is a set of static files" modified;
+- **`verdicts`:** "A page for every vote" and "What the sources say about the result" modified;
+- **`vote-list`:** "What an entry of the list shows" and "How dates and numbers are written"
+  modified.
+
+Every modified requirement was checked word for word against its main spec, and `openspec
+validate --all --strict` passes. `docs/roadmap.md` marks #9 done; `CLAUDE.md` names it archived
+and lists the new spec.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change` once Q has reviewed the French and
