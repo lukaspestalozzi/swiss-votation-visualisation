@@ -261,6 +261,17 @@ Design, decisions 5, 6 and 12.
   - One run of the whole suite of four ended with 106 passed and one failure whose name was
     lost. The next three passed 107. Q chose to go on and keep the full output of every run from
     now on.
+  - It recurred, named, in the next `verify-local.sh`. "The budget of dragging" failed its first
+    try with two frames over 16 ms (17.5 and 18.8 ms) and passed its retry. A copy of
+    `investigations/limits/measure_drag.cjs` measured the build before this change (e1641ee) and
+    this one (b934e2f):
+    - 30 drags alone: the same, the longest frame of a run 9.3 ms on average in both (at most
+      12.8 and 12.5 ms), the median frame 4.1 and 4.2 ms, none over 16 ms.
+    - 10 drags with a second browser dragging at the same time: over 16 ms in 6 runs before and
+      3 after.
+
+    So this change did not make a drag slower. The test's sensitivity to a busy machine was
+    there before. Q chose to note it and go on.
   - The browser tests: 107.
 - [ ] 4.3 Write the browser tests of the pages in French and Italian, in `languages.spec.ts`, one
   at a time. They cover these scenarios:
