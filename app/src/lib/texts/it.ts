@@ -24,7 +24,8 @@ export const it: Texts = {
     'dicembre',
   ],
   // The first day of a month as the Constitution's footnotes write it: "1°".
-  date: (day, month, year) => `${day === 1 ? '1°' : String(day)} ${month} ${String(year)}`,
+  // The day and the month joined by a non-breaking space, so that a line never parts them.
+  date: (day, month, year) => `${day === 1 ? '1°' : String(day)}\u00a0${month} ${String(year)}`,
   KINDS: {
     'mandatory-referendum': 'Referendum obbligatorio',
     'optional-referendum': 'Referendum facoltativo',

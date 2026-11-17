@@ -58,7 +58,7 @@ function entry(id: number) {
 
 test('the entry of a vote that failed', () => {
   expect(entry(5960)).toMatchObject({
-    date: '28. Februar 2016',
+    date: '28.\u00a0Februar 2016',
     title: 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
     kind: 'Volksinitiative',
     result: 'abgelehnt, 49.16% Ja',
@@ -67,7 +67,7 @@ test('the entry of a vote that failed', () => {
 
 test('the entry of a vote that passed', () => {
   expect(entry(6790)).toMatchObject({
-    date: '28. September 2025',
+    date: '28.\u00a0September 2025',
     kind: 'Fakultatives Referendum',
     result: 'angenommen, 50.39% Ja',
   });
@@ -76,7 +76,7 @@ test('the entry of a vote that passed', () => {
 test('the entry of the tie-break question shows its share for the initiative', () => {
   const tieBreak = entry(6823);
   expect(tieBreak).toMatchObject({
-    date: '8. März 2026',
+    date: '8.\u00a0März 2026',
     kind: 'Stichfrage',
     result: '37.36% für die Initiative',
   });
@@ -127,13 +127,13 @@ test("the list's entries in French and Italian", () => {
       .flatMap((year) => year.entries)
       .find((entry) => entry.id === id);
   expect(entryIn('fr', 5960)).toMatchObject({
-    date: '28 février 2016',
+    date: '28\u00a0février 2016',
     title: 'Initiative populaire «Pour le couple et la famille - Non à la pénalisation du mariage»',
     kind: 'Initiative populaire',
     result: 'rejeté, 49.16% de oui',
   });
   expect(entryIn('it', 5960)).toMatchObject({
-    date: '28 febbraio 2016',
+    date: '28\u00a0febbraio 2016',
     title:
       'Iniziativa popolare «Per il matrimonio e la famiglia - No agli svantaggi per le coppie sposate»',
     kind: 'Iniziativa popolare',

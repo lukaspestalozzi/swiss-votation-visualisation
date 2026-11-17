@@ -184,7 +184,7 @@ async function verdictsShown(page: Page) {
 test('the verdicts in French, with the Constitution\'s "voix des cantons"', async ({ page }) => {
   await page.goto('fr/votes/5960/');
   expect(await verdictsShown(page)).toEqual({
-    head: '28 février 2016 · Initiative populaire',
+    head: '28\u00a0février 2016 · Initiative populaire',
     figures: ['Oui', 'Non', 'Pourcentage de oui', 'Participation'],
     verdicts: ['Majorité du peuple', 'Majorité des cantons'],
     outcome: 'Rejeté',
@@ -195,7 +195,7 @@ test('the verdicts in French, with the Constitution\'s "voix des cantons"', asyn
 test('the verdicts in Italian', async ({ page }) => {
   await page.goto('it/votes/5960/');
   expect(await verdictsShown(page)).toEqual({
-    head: '28 febbraio 2016 · Iniziativa popolare',
+    head: '28\u00a0febbraio 2016 · Iniziativa popolare',
     figures: ['Sì', 'No', 'Percentuale di sì', 'Partecipazione'],
     verdicts: ['Maggioranza del popolo', 'Maggioranza dei Cantoni'],
     outcome: 'Respinto',
