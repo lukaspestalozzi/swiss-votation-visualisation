@@ -78,6 +78,15 @@ const slider = (page: Page, bound: 'Untere' | 'Obere', name: string) =>
 const label = (page: Page, name: string) =>
   page.locator('.limit .label').filter({ hasText: new RegExp(`^${name} \\(`) });
 
+test('the elderly are the elderly: the limit of 65 and over has their range', async ({ page }) => {
+  // Spec limits, "One definition for a limit"; investigations/limits.md, 5.
+  await open(page, 'votes/5960/');
+  await addLimit(page, '65 Jahre und älter');
+  await expect(page.locator('.limit .label')).toHaveText([
+    '65 Jahre und älter (Ende 2015): von 5.81% bis 36.16%',
+  ]);
+});
+
 test('a linear track: steps 327 and 328 of the foreigners', async ({ page }) => {
   await open(page, 'votes/5960/');
   await addLimit(page, 'Ausländeranteil');

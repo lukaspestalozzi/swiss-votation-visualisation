@@ -128,3 +128,24 @@ export function remainingUnder(
 export function isNarrowed({ track, lower, upper }: LimitSetting): boolean {
   return valueAt(track, lower) > track.smallest || valueAt(track, upper) < track.largest;
 }
+
+/**
+ * The municipalities with an entry, `withEntry`, that the selection sets aside: those not among
+ * the `remaining` (spec limits; dark grey on the map, spec result-map).
+ */
+export function setAsideOf(
+  withEntry: readonly number[],
+  remaining: ReadonlySet<number>,
+): Set<number> {
+  return new Set(withEntry.filter((number) => !remaining.has(number)));
+}
+
+/**
+ * How many of the municipalities with an entry, `withEntry`, remain (spec limits, "The number of
+ * municipalities that remain").
+ */
+export function remainingOf(withEntry: readonly number[], remaining: ReadonlySet<number>): number {
+  let left = 0;
+  for (const number of withEntry) if (remaining.has(number)) left += 1;
+  return left;
+}

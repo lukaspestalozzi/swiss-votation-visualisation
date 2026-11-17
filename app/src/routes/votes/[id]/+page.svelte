@@ -17,7 +17,13 @@
   } from '../../../lib/texts.ts';
   import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
-  import { isNarrowed, remainingUnder, type LimitSetting } from '../../../lib/limits.ts';
+  import {
+    isNarrowed,
+    remainingOf,
+    remainingUnder,
+    setAsideOf,
+    type LimitSetting,
+  } from '../../../lib/limits.ts';
   import { formatCount } from '../../../lib/format.ts';
   import { judgedOf } from '../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
@@ -74,8 +80,7 @@
   // municipalities that remain").
   const count = $derived.by(() => {
     if (remaining === null || data.entries === null) return '';
-    let left = 0;
-    for (const number of withEntry) if (remaining.has(number)) left += 1;
+    const left = remainingOf(withEntry, remaining);
     return left === 0
       ? NOTHING_REMAINS
       : remainingCount(formatCount(left), formatCount(withEntry.length));
@@ -83,7 +88,7 @@
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
   const aside = $derived.by((): ReadonlySet<number> => {
     if (remaining === null || data.entries === null) return new Set();
-    return new Set(withEntry.filter((number) => !remaining.has(number)));
+    return setAsideOf(withEntry, remaining);
   });
 </script>
 

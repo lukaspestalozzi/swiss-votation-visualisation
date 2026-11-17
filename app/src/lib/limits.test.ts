@@ -11,7 +11,9 @@ import {
   STEPS,
   isNarrowed,
   labelOf,
+  remainingOf,
   remainingUnder,
+  setAsideOf,
   trackOf,
   valueAt,
   type Track,
@@ -237,4 +239,14 @@ test('a limit is narrowed when a bound lies inside its values', () => {
   // Step 1 of the inhabitants is still 31, the smallest value: nothing is set aside.
   const inhabitants = trackFor('Einwohner', '2016-02-28');
   expect(isNarrowed({ track: inhabitants, lower: 1, upper: STEPS })).toBe(false);
+});
+
+test('the set-aside municipalities are those with an entry that do not remain', () => {
+  const aside = setAsideOf([12, 7, 30, 4], new Set([7, 4, 99]));
+  expect([...aside]).toEqual([12, 30]);
+});
+
+test('the count: how many of the municipalities with an entry remain', () => {
+  expect(remainingOf([12, 7, 30, 4], new Set([7, 4, 99]))).toBe(2);
+  expect(remainingOf([12, 30], new Set([7]))).toBe(0);
 });
