@@ -403,3 +403,96 @@ test('a validated vote in French and Italian: its reference in each', async ({ p
   await page.goto('it/votes/5670');
   await expect(page.getByText('Fonte: FF 2013 2619', { exact: true })).toBeVisible();
 });
+
+// The address without a language (spec interface-languages): the browser's preferred languages
+// are Playwright's locale, or the list an init script puts in their place.
+test.describe('a browser that prefers French', () => {
+  test.use({ locale: 'fr-CH' });
+
+  test("a vote's old address without the final slash opens its French page", async ({ page }) => {
+    await page.goto('votes/5960');
+    await expect(page).toHaveURL('fr/votes/5960/');
+  });
+
+  test('the address without a language opens the French start page', async ({ page }) => {
+    await page.goto('./');
+    await expect(page).toHaveURL('fr/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+  });
+});
+
+test.describe('a browser without scripts', () => {
+  test.use({ javaScriptEnabled: false, locale: 'fr-CH' });
+
+  test("the guide's old address opens the German guide", async ({ page }) => {
+    await page.goto('guide/');
+    await expect(page).toHaveURL('de/guide/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
+  });
+
+  test('the address without a language opens the German start page', async ({ page }) => {
+    await page.goto('./');
+    await expect(page).toHaveURL('de/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+  });
+});
+
+/** Make the browser prefer `languages`, in this order, before any page loads. */
+async function prefer(page: Page, languages: string[]): Promise<void> {
+  await page.addInitScript((list) => {
+    Object.defineProperty(navigator, 'languages', { get: () => list });
+  }, languages);
+}
+
+test('the first of the three among the preferred languages: Italian', async ({ page }) => {
+  await prefer(page, ['en-US', 'it-CH', 'de-CH']);
+  await page.goto('./');
+  await expect(page).toHaveURL('it/');
+});
+
+test.describe('a browser that prefers none of the three', () => {
+  test.use({ locale: 'en-US' });
+
+  test('the address without a language opens the German start page', async ({ page }) => {
+    await page.goto('./');
+    await expect(page).toHaveURL('de/');
+  });
+});
+
+test.describe('a browser that prefers German', () => {
+  test.use({ locale: 'de-CH' });
+
+  test("the built files served under the site's path: the German start page", async ({ page }) => {
+    // Spec app-shell, "The built files are served by a static file server".
+    await page.goto('./');
+    await expect(page).toHaveURL('de/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+  });
+
+  test('the choice is not remembered', async ({ page }) => {
+    await page.goto('./');
+    await expect(page).toHaveURL('de/');
+    await switchOf(page).getByRole('link', { name: 'Italiano' }).click();
+    await expect(page).toHaveURL(/\/it\/?$/);
+    await page.goto('./');
+    await expect(page).toHaveURL('de/');
+  });
+});
+
+// The addresses of before (spec interface-languages): a vote's and the guide's.
+test.describe('a browser that prefers Italian', () => {
+  test.use({ locale: 'it-CH' });
+
+  test("a vote's old address opens its Italian page", async ({ page }) => {
+    await page.goto('votes/5960/');
+    await expect(page).toHaveURL('it/votes/5960/');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Iniziativa popolare «Per il matrimonio e la famiglia - No agli svantaggi per le coppie sposate»',
+    );
+  });
+});
+
+test('an old address that names no vote: 404', async ({ page }) => {
+  const response = await page.goto('votes/9999/');
+  expect(response?.status()).toBe(404);
+});
