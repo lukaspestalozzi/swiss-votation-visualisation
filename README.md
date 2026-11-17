@@ -9,12 +9,19 @@ from `main` after every push whose checks all pass, as the build its browser tes
 sets no cookie and loads nothing from other servers; GitHub, which hosts it, logs the IP
 addresses of visitors for security.
 
-Today it shows every vote and its result, and recalculates it under limits, in German:
+Today it shows every vote and its result, and recalculates it under limits, in German, French
+and Italian:
 
+- every page is written in each language, under `/de/`, `/fr/` and `/it/`. The site's address
+  opens the start page in the first of the three among your browser's preferred languages, or in
+  German; a switch at the top of every page opens the same page in the other two. The addresses
+  from before the languages (`/votes/<id>/`, `/guide/`) still lead to their page the same way.
+  The texts use the Confederation's own terms, and a vote's title, reference and note are those
+  of the data in each language; places keep their one official name;
 - the start page lists the national votes since 2013 by year, each with its date, title, kind
   and official result, marked where the Federal Chancellery adds a note or the result is not
   validated yet;
-- each vote has its page (`/votes/<id>/`): the yes and no votes, the yes share and the turnout,
+- each vote has its page (`/de/votes/<id>/`): the yes and no votes, the yes share and the turnout,
   the majority of voters and the majority of cantons side by side, the outcome, and a table of
   the 26 cantons;
 - the page also shows a map of the 2,110 municipalities. Each is coloured by the side with more
@@ -35,7 +42,7 @@ Today it shows every vote and its result, and recalculates it under limits, in G
   result of the selection, "Mit Ihrer Auswahl", stands beside the real one, with both majorities
   and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
   count, and one button returns to the real result;
-- a page "Lesehilfe" (`/guide/`) explains that this is a thought experiment about whole
+- a page "Lesehilfe" (`/de/guide/`) explains that this is a thought experiment about whole
   municipalities, not about people and not a forecast, and names every source;
 - the results come from the data of every vote per municipality, made from public sources by
   the pipeline (`pipeline/`) and committed in `app/static/data/` with the map's data; they

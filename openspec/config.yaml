@@ -69,9 +69,13 @@ context: |
   - The pipeline: Python 3.13 with polars, run by uv, which pins the Python version and every
     package; ruff, mypy (strict) and pytest as its checks. The design of the archived change
     add-vote-data gives the reasons and the alternatives.
-  - The interface and the vote titles are in German until #9 adds French and Italian; every text
-    of the screen is in one module of the app (app/src/lib/texts.ts). The design of the archived
-    change add-vote-list gives the reasons and the alternatives.
+  - The interface and the vote titles are in German, French and Italian (decided in #9,
+    investigations/languages.md). Every page is written in each, under /de/, /fr/ and /it/; the
+    address without a language and the addresses of before open the page in the browser's
+    language, German without a match or without scripts. Every text of the screen is in one
+    module per language behind one type (app/src/lib/texts/), with the Confederation's terms.
+    The designs of the archived changes add-vote-list and add-interface-languages give the
+    reasons and the alternatives.
   - The site is published on GitHub Pages at
     https://lukaspestalozzi.github.io/swiss-votation-visualisation/, from CI, after every check of
     a push to main passed, as the build the browser tests checked; it is built for that path. The
@@ -81,9 +85,6 @@ context: |
     register of municipalities, with the lakes of the BFS ThemaKart set, written by the pipeline
     to app/static/data/map.json. Whether a library for zoom and move serves better is checked in
     #10. The design of the archived change add-result-map gives the reasons and the alternatives.
-  - Not decided, and asked in the design of the change that first needs it (docs/roadmap.md
-    names it): how the three interface languages are handled (until then the interface is
-    German, as above).
   - Found by the first investigation (investigations/data-sources.md): the public sources offer
     the results per municipality for every national vote since 2013, all on one list of
     municipalities, and the characteristics for matching years on other lists.

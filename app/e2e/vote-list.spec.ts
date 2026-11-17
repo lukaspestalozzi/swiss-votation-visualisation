@@ -21,7 +21,7 @@ test('a heading per year, from the newest to 2013, and an entry per vote', async
 }) => {
   const votes = await listedVotes(request);
   await page.goto('de/');
-  // The screen is German until #9.
+  // The German start page (spec interface-languages).
   await expect(page.locator('html')).toHaveAttribute('lang', 'de');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
   const years = await page.getByRole('heading', { level: 2 }).allTextContents();
