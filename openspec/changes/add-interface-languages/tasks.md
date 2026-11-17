@@ -506,6 +506,39 @@ Design, decisions 2 to 4.
   As built: 11 of 11 steps passed: 52 and 116 unit tests, 137 browser tests with none flaky,
   134 of the pipeline. The output is kept.
 
+## Verification and review
+
+**The counts after task 7.4.** Task 6.3, added later, made the app's unit tests 117. This
+section's browser test makes the browser tests 138.
+
+**Copilot's review of PR #13** found one point, rated low, and it was fixed (7b99c0a):
+- The Italian "Torna al risultato reale" was the informal imperative. The Italian texts address
+  the reader with the formal "Lei", and the other action labels are infinitives.
+- It now reads "Tornare al risultato reale". No other Italian text uses the informal form.
+
+**`/openspec-verify-change`** on 2026-11-17 found:
+- no critical issue;
+- every one of the 13 requirements implemented, and each of the 50 scenarios with its test;
+- one warning and three suggestions.
+
+Q asked to fix them all. They are fixed:
+1. **Decision 5** (the warning) named `[lang]/+layout.ts` and said that prerendering follows only
+   the entries. It now names `[lang]/+layout.server.ts`, which the pages' server loads read with
+   `parent()`, and says that prerendering follows the links too, as task 4.3 found.
+2. **The scenario "A date keeps its day with its month"** was checked at 800 pixels by a
+   screenshot only. A browser test now finds "1°" and "gennaio" on the same line of the Italian
+   guide at 800 pixels. It passed when written; against an ordinary space in Italian dates it
+   failed.
+3. **This file lagged the last two fixes.** This section records them.
+4. **The budget tests' sensitivity to a busy machine.** It is now change 9a of
+   `docs/roadmap.md`, `steady-budget-tests`, before #10, as Q chose. `CLAUDE.md` names it as the
+   next change.
+
+`./scripts/verify-local.sh` after the fixes: 11 of 11 steps, with:
+- 52 and 117 unit tests;
+- 138 browser tests, none flaky;
+- 134 of the pipeline.
+
 ## Workflow follow-up
 
 - `/openspec-verify-change`, then `/openspec-archive-change` once Q has reviewed the French and

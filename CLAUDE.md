@@ -29,8 +29,8 @@ performance after #7: one budget of 16 ms per frame for every input of the map) 
 `add-interface-languages`, is applied and in review (`openspec/changes/add-interface-languages/`).
 Six investigations are done: `investigations/data-sources.md`, `investigations/map-data.md`,
 `investigations/characteristics.md`, `investigations/performance.md`,
-`investigations/limits.md` and `investigations/languages.md`. Next: change #10,
-`add-small-screens`.
+`investigations/limits.md` and `investigations/languages.md`. Next: change 9a,
+`steady-budget-tests`, then #10, `add-small-screens`.
 `README.md` is the human-facing overview.
 
 ## Where things are

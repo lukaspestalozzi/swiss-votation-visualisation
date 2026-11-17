@@ -496,3 +496,32 @@ test('an old address that names no vote: 404', async ({ page }) => {
   const response = await page.goto('votes/9999/');
   expect(response?.status()).toBe(404);
 });
+
+test('a date keeps its day with its month on the line: the Italian guide, 800 pixels wide', async ({
+  page,
+}) => {
+  // Spec vote-list, "A date keeps its day with its month": the guide's sources name the list's
+  // date, 2026-01-01, where a line broke after "1°" before (task 6.1).
+  await page.setViewportSize({ width: 800, height: 900 });
+  await page.goto('it/guide/');
+  const tops = await page.evaluate(() => {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+      const text = node.textContent ?? '';
+      const day = text.indexOf('1°');
+      const month = text.indexOf('gennaio 2026', day);
+      if (day < 0 || month < 0) continue;
+      const topOf = (from: number, to: number): number => {
+        const range = document.createRange();
+        range.setStart(node, from);
+        range.setEnd(node, to);
+        const rect = range.getClientRects().item(0);
+        return rect === null ? Number.NaN : rect.top;
+      };
+      return [topOf(day, day + 2), topOf(month, month + 'gennaio'.length)];
+    }
+    return [];
+  });
+  expect(tops).toHaveLength(2);
+  expect(tops[0]).toBe(tops[1]);
+});
