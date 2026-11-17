@@ -403,7 +403,7 @@ Design, decisions 2 to 4.
 
 ## 6. Look and size
 
-- [ ] 6.1 Look at the built site, in windows 1,280 and 800 pixels wide:
+- [x] 6.1 Look at the built site, in windows 1,280 and 800 pixels wide:
   - `/fr/votes/5960/` and `/it/votes/5960/` with a selection;
   - `/fr/`;
   - `/it/guide/`.
@@ -412,11 +412,34 @@ Design, decisions 2 to 4.
   the panel. Fix what overflows.
 
   Verify: the screenshots were looked at, and the note names what was fixed, or "nothing".
-- [ ] 6.2 Measure the size and the time of `pnpm run build`, before (`main`) and after: the
+
+  As built: nothing was fixed.
+  - At both widths no element is wider than the window. The switch stands above the link back.
+  - The verdicts, the selection beside them, the table and the legend fit; at 800 pixels the
+    Italian headings "Maggioranza del popolo" and "Maggioranza dei Cantoni" wrap inside their
+    tiles.
+  - One finding, left for Q: at 800 pixels the Italian guide breaks "stato al 1° gennaio 2026"
+    between "1°" and "gennaio". A non-breaking space between the day and the month would keep
+    them together in every language, but would change every date the tests compare.
+- [x] 6.2 Measure the size and the time of `pnpm run build`, before (`main`) and after: the
   disk use of `app/build/swiss-votation-visualisation` and of its `*/votes/` directories.
 
   Verify: the note gives both, against `investigations/languages.md`, 8 (about 40 MB of vote
   pages).
+
+  As built, `main` (30dfcf9) in a worktree and this branch (fbc8cc8), each built three times on
+  this machine:
+
+  | | `main` | this branch |
+  |---|---|---|
+  | site on disk | 23 MB | 51 MB |
+  | vote pages | 14 MB (`votes/`) | 40 MB (14 MB under each of `de/`, `fr/`, `it/`) |
+  | redirect pages of the old addresses | – | 1 MB (`votes/`) |
+  | `data/` | 9.2 MB | 9.2 MB |
+  | `_app/` | 212 KB | 356 KB |
+  | build | 4.8 to 5.6 s | 7.6 to 8.6 s |
+
+  The vote pages are the 40 MB the investigation expected, well inside GitHub Pages' 1 GB.
 
 ## 7. Documentation and the whole
 
