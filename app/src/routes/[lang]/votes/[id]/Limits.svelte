@@ -1,9 +1,9 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { DEFINITIONS, applyingTo, nameOf, writeUnits } from '../../../lib/characteristics.ts';
-  import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../lib/limits.ts';
-  import type { Texts } from '../../../lib/texts/index.ts';
-  import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
+  import { DEFINITIONS, applyingTo, nameOf, writeUnits } from '../../../../lib/characteristics.ts';
+  import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../../lib/limits.ts';
+  import type { Texts } from '../../../../lib/texts/index.ts';
+  import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
 
   // The section with the limits (spec limits): the page holds the limits and the switch, and
   // recalculates from them (design of add-limits, decision 21).
@@ -71,7 +71,10 @@
 
 <section class="limits">
   <h2>{t.LIMITS_HEADING}</h2>
-  <p>{t.THOUGHT_EXPERIMENT} <a href={resolve('/guide')}>{t.GUIDE_LINK}</a></p>
+  <p>
+    {t.THOUGHT_EXPERIMENT}
+    <a href={resolve('/[lang]/guide', { lang: t.LANGUAGE })}>{t.GUIDE_LINK}</a>
+  </p>
   {#if failed}
     <p>{t.LIMITS_FAILED}</p>
   {:else if file === null}

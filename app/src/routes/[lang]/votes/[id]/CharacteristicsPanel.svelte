@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { applyingTo, countsOf, panelOf } from '../../../lib/characteristics.ts';
-  import type { Texts } from '../../../lib/texts/index.ts';
-  import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
+  import { applyingTo, countsOf, panelOf } from '../../../../lib/characteristics.ts';
+  import type { Texts } from '../../../../lib/texts/index.ts';
+  import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
 
   // The characteristics of the municipality last pointed at, clicked or tapped (spec result-map):
   // `file` is null while it loads; `name` is the municipality's name as its details write it.

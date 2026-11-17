@@ -7,7 +7,7 @@ const section = (page: Page, heading: string) =>
   page.locator('section').filter({ has: page.getByRole('heading', { name: heading }) });
 
 test('the page "Lesehilfe": its heading, the way back and its seven sections', async ({ page }) => {
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
   await expect(page.getByRole('link', { name: 'Alle Abstimmungen' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 2 })).toHaveText([
@@ -23,7 +23,7 @@ test('the page "Lesehilfe": its heading, the way back and its seven sections', a
 });
 
 test('the real result: the official result first', async ({ page }) => {
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   await expect(section(page, 'Das echte Ergebnis')).toContainText(
     'Oben auf der Seite einer Abstimmung steht ihr amtliches Ergebnis.',
   );
@@ -31,7 +31,7 @@ test('the real result: the official result first', async ({ page }) => {
 });
 
 test('how a selection works: the rule in plain words', async ({ page }) => {
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   const rule = section(page, 'Gemeinden auswählen');
   await expect(rule).toContainText(
     'Eine Gemeinde bleibt nur, wenn sie innerhalb aller Grenzen liegt.',
@@ -45,7 +45,7 @@ test('how a selection works: the rule in plain words', async ({ page }) => {
 test('what a selection does not show: municipalities, not people, and no forecast', async ({
   page,
 }) => {
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   const not = section(page, 'Was die Auswahl nicht zeigt');
   await expect(not).toContainText(
     'Eine Gemeinde mit vielen über 65-Jährigen zählt mit allen ihren Stimmen, auch mit denen der Jüngeren.',
@@ -57,7 +57,7 @@ test('the Swiss abroad explained: they count only where a municipality remains',
   page,
 }) => {
   // investigations/limits.md, 1.
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   const abroad = section(page, 'Auslandschweizerinnen und Auslandschweizer');
   await expect(abroad).toContainText('11 oder 12 Kantone');
   await expect(abroad).toContainText('1.0% bis 1.6% der gültigen Stimmen');
@@ -68,7 +68,7 @@ test('the Swiss abroad explained: they count only where a municipality remains',
 
 test('municipalities without a figure explained', async ({ page }) => {
   // investigations/limits.md, 2.
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   const without = section(page, 'Gemeinden ohne eigenes Ergebnis oder ohne Angabe');
   await expect(without).toContainText(
     'Eine Gemeinde ohne Angabe fällt weg, sobald die Grenze dieses Merkmals enger gestellt ist.',
@@ -79,7 +79,7 @@ test('municipalities without a figure explained', async ({ page }) => {
 test('the characteristics explained: the dates of their figures, the four logarithmic tracks', async ({
   page,
 }) => {
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   const characteristics = section(page, 'Die Merkmale');
   await expect(characteristics).toContainText('Volkszählung 2000');
   await expect(characteristics).toContainText('letzten Nationalratswahl vor ihrem Tag');
@@ -90,7 +90,7 @@ test('the characteristics explained: the dates of their figures, the four logari
 });
 
 test('the sources, with the dates of the data files of 2026-11-16', async ({ page }) => {
-  await page.goto('guide/');
+  await page.goto('de/guide/');
   const sources = section(page, 'Quellen');
   for (const name of [
     'Bundesamt für Statistik (BFS)',
@@ -112,7 +112,7 @@ test('the sources, with the dates of the data files of 2026-11-16', async ({ pag
 });
 
 test('the start page links to the guide below its heading', async ({ page }) => {
-  await page.goto('./');
+  await page.goto('de/');
   const link = page.getByRole('link', { name: 'Lesehilfe und Quellen' });
   const order = await page.evaluate(() => {
     const at = (element: Element | null) =>
@@ -125,7 +125,7 @@ test('the start page links to the guide below its heading', async ({ page }) => 
 });
 
 test('the sentence at the limits, with its link to the guide', async ({ page }) => {
-  await page.goto('votes/5960/');
+  await page.goto('de/votes/5960/');
   const limits = page.locator('.limits');
   await expect(limits.locator('p').first()).toHaveText(
     'Ein Gedankenexperiment: So wäre die Abstimmung ausgegangen, wenn nur die ausgewählten ' +
@@ -133,6 +133,6 @@ test('the sentence at the limits, with its link to the guide', async ({ page }) 
       'keine Prognose. Lesehilfe und Quellen',
   );
   await limits.getByRole('link', { name: 'Lesehilfe und Quellen' }).click();
-  await expect(page).toHaveURL(/\/guide\/$/);
+  await expect(page).toHaveURL(/\/de\/guide\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });

@@ -205,7 +205,7 @@ Design, decisions 9 to 11.
 
 Design, decisions 5, 6 and 12.
 
-- [ ] 4.1 The pages move under `src/routes/[lang]/`:
+- [x] 4.1 The pages move under `src/routes/[lang]/`:
   - `[lang]/+layout.ts` returns the language and answers 404 for any other;
   - each page names its entries: the three languages, and every pair of language and id;
   - every link is written by `resolve` with the page's language;
@@ -222,6 +222,19 @@ Design, decisions 5, 6 and 12.
   - `grep -nE "(goto|toHaveURL)\(" app/e2e/*.ts` lists no path without a language, apart from
     the test of an address that names no page;
   - `pnpm run test:e2e`: 104 pass.
+
+  As built:
+  - The layout's load is `[lang]/+layout.server.ts`, so that each page's server load takes the
+    language from it with `parent()`; the page's data holds it too. `isLanguage` in
+    `texts/index.ts` checks a segment.
+  - SvelteKit 3 has `Handle` in `@sveltejs/kit/hooks`, not in `@sveltejs/kit`.
+  - The build writes 125 pages under each of `de/votes/`, `fr/votes/` and `it/votes/`, with
+    `lang="fr"` in `fr/votes/5960/index.html`.
+  - The test of an address that names no page opens `de/votes/9999/` too, as the spec's reading
+    rule says; the old address without a language comes with 5.2.
+  - One check was not a `goto`: the same-origin test expected the start page's data at
+    `__data.json`, now `de/__data.json`. It failed first and passes since.
+  - `pnpm run test:e2e`: 104 passed.
 - [ ] 4.2 The switch at the top of every page, from the layout: "Deutsch", "Français",
   "Italiano", with `lang` and `hreflang`, the page's own language not a link and marked
   `aria-current`, the others with `data-sveltekit-reload`.

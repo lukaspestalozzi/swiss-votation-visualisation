@@ -1,6 +1,6 @@
 <script lang="ts">
   import { asset, resolve } from '$app/paths';
-  import { textsOf } from '../../lib/texts/index.ts';
+  import { textsOf } from '../../../lib/texts/index.ts';
   import type { PageProps } from './$types';
 
   // The reading guide (spec reading-guide): that a selection is a thought experiment, how it
@@ -13,7 +13,7 @@
   <title>{t.GUIDE_HEADING} – {t.TITLE}</title>
 </svelte:head>
 
-<nav><a href={resolve('/')}>{t.ALL_VOTES}</a></nav>
+<nav><a href={resolve('/[lang]', { lang: data.lang })}>{t.ALL_VOTES}</a></nav>
 <h1>{t.GUIDE_HEADING}</h1>
 {#each t.GUIDE_SECTIONS as section (section.heading)}
   <section>

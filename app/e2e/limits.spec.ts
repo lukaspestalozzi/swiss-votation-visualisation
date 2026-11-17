@@ -14,7 +14,7 @@ async function open(page: Page, path: string): Promise<void> {
 test('the section of a vote: between the outcome and the map, without a limit', async ({
   page,
 }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await expect(page.getByRole('heading', { name: 'Gemeinden auswählen' })).toBeVisible();
   const order = await page.evaluate(() => {
     const at = (element: Element | null) =>
@@ -34,7 +34,7 @@ test('the section of a vote: between the outcome and the map, without a limit', 
 });
 
 test('no limits for a tie-break question', async ({ page }) => {
-  await page.goto('votes/6823/');
+  await page.goto('de/votes/6823/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await expect(page.getByText('Gemeinden auswählen')).toHaveCount(0);
 });
@@ -51,7 +51,7 @@ async function addLimit(page: Page, name: string): Promise<void> {
 }
 
 test('adding a limit: its label, and the list offers the others', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   expect(await offered(page)).toHaveLength(21);
   await addLimit(page, 'Ausländeranteil');
   await expect(page.locator('.limit .label')).toHaveText([
@@ -63,7 +63,7 @@ test('adding a limit: its label, and the list offers the others', async ({ page 
 });
 
 test('removing a limit: the list offers all 21 again', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await page.getByRole('button', { name: 'Entfernen: Ausländeranteil' }).click();
   await expect(page.locator('.limit')).toHaveCount(0);
@@ -80,7 +80,7 @@ const label = (page: Page, name: string) =>
 
 test('the elderly are the elderly: the limit of 65 and over has their range', async ({ page }) => {
   // Spec limits, "One definition for a limit"; investigations/limits.md, 5.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, '65 Jahre und älter');
   await expect(page.locator('.limit .label')).toHaveText([
     '65 Jahre und älter (Ende 2015): von 5.81% bis 36.16%',
@@ -88,7 +88,7 @@ test('the elderly are the elderly: the limit of 65 and over has their range', as
 });
 
 test('a linear track: steps 327 and 328 of the foreigners', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await expect(label(page, 'Ausländeranteil')).toHaveText(
@@ -101,14 +101,14 @@ test('a linear track: steps 327 and 328 of the foreigners', async ({ page }) => 
 });
 
 test('a logarithmic track: the inhabitants from step 500', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Einwohner');
   await slider(page, 'Untere', 'Einwohner').fill('500');
   await expect(label(page, 'Einwohner')).toHaveText("Einwohner (Ende 2015): von 3'508 bis 396'955");
 });
 
 test('a logarithmic track from zero: the cattle at steps 1 and 500', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Rinder je Einwohner');
   await slider(page, 'Obere', 'Rinder je Einwohner').fill('1');
   await expect(label(page, 'Rinder je Einwohner')).toHaveText(
@@ -121,7 +121,7 @@ test('a logarithmic track from zero: the cattle at steps 1 and 500', async ({ pa
 });
 
 test('a step by key: the left arrow moves the upper bound one step', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').focus();
   await page.keyboard.press('ArrowLeft');
@@ -135,7 +135,7 @@ test('a step by key: the left arrow moves the upper bound one step', async ({ pa
 });
 
 test('the bounds do not cross: the lower one stops at the upper one', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   // The lower thumb dragged by pointer from the start of the track to its end.
@@ -156,7 +156,7 @@ test('the bounds do not cross: the lower one stops at the upper one', async ({ p
 test('the labels of a vote: the date of each characteristic, its bounds as the panel writes them', async ({
   page,
 }) => {
-  await open(page, 'votes/6400/');
+  await open(page, 'de/votes/6400/');
   for (const name of ['SVP', 'Italienisch', 'Fläche']) await addLimit(page, name);
   await expect(page.locator('.limit .label')).toHaveText([
     'SVP (Nationalratswahl 2019): von 0.00% bis 84.11%',
@@ -171,7 +171,7 @@ const abroadSwitch = (page: Page) =>
 
 test('without the Swiss abroad: the selection fails beside the real result', async ({ page }) => {
   // investigations/limits.md, 1 and 5; BBl 2015 6313.
-  await open(page, 'votes/5950/');
+  await open(page, 'de/votes/5950/');
   await abroadSwitch(page).uncheck();
   const selection = page.locator('.selection');
   await expect(selection.getByRole('heading', { name: 'Mit Ihrer Auswahl' })).toBeVisible();
@@ -192,7 +192,7 @@ test('a narrowed limit sets aside a municipality without a figure: Rüti bei Lys
   page,
 }) => {
   // investigations/limits.md, 2 and 5: 422 has a result and no party figure in 2019.
-  await open(page, 'votes/6400/');
+  await open(page, 'de/votes/6400/');
   await addLimit(page, 'SVP');
   await expect(municipality(page, 422)).not.toHaveAttribute('fill', '#2c2c2c');
   await slider(page, 'Obere', 'SVP').fill('999');
@@ -207,7 +207,7 @@ test('a narrowed limit sets aside a municipality without a figure: Rüti bei Lys
 test('several limits at once: German and French each from their last step leave nothing', async ({
   page,
 }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Deutsch');
   await addLimit(page, 'Französisch');
   await slider(page, 'Untere', 'Deutsch').fill('1000');
@@ -229,7 +229,7 @@ async function foreignersUpTo1998(page: Page): Promise<void> {
 
 test('a canton with nothing left loses its Swiss abroad: BS', async ({ page }) => {
   // investigations/limits.md, 5: 18 : 4½ in 25 cantons, the Swiss abroad of 11.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   const selection = page.locator('.selection');
   await expect(selection.locator('.verdict p:not(.word)').nth(1)).toHaveText('18 : 4½');
@@ -260,7 +260,7 @@ async function dragTo(page: Page, input: ReturnType<typeof slider>, from: number
 }
 
 test('recalculated while dragging, before the bound is let go', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   const upper = slider(page, 'Obere', 'Ausländeranteil');
   await dragTo(page, upper, 1000, 327);
@@ -275,7 +275,7 @@ test('the entries a selection needs are on the page: no file of entries is loade
 }) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
-  await open(page, 'votes/5950/');
+  await open(page, 'de/votes/5950/');
   await abroadSwitch(page).uncheck();
   await expect(page.locator('.selection .outcome')).toHaveText('Abgelehnt');
   await page.waitForLoadState('networkidle');
@@ -284,7 +284,7 @@ test('the entries a selection needs are on the page: no file of entries is loade
 
 test('the cantons of a selection: the table follows it, BS has nothing left', async ({ page }) => {
   // investigations/limits.md, 5.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   const table = page.locator('table');
   await expect(table.locator('caption')).toHaveText('Mit Ihrer Auswahl');
@@ -306,7 +306,7 @@ test('the cantons of a selection: the table follows it, BS has nothing left', as
 
 test('a limit not moved: no selection, the official result', async ({ page }) => {
   // investigations/limits.md, 5; BBl 2015 6313.
-  await open(page, 'votes/5950/');
+  await open(page, 'de/votes/5950/');
   await addLimit(page, 'Einwohner');
   await expect(page.locator('.limit')).toHaveCount(1);
   await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
@@ -318,7 +318,7 @@ test('a limit not moved: no selection, the official result', async ({ page }) =>
 
 test('a selection that turns the verdict: foreigners up to 19.98% in 2016', async ({ page }) => {
   // investigations/limits.md, 5.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   const selection = page.locator('.selection');
   await expect(selection.locator('.figures dd')).toHaveText(["733'402", "664'373", '52.47%']);
@@ -332,7 +332,7 @@ test('a selection that turns the verdict: foreigners up to 19.98% in 2016', asyn
 
 test('a selection on a logarithmic track: inhabitants from 3,508 in 2016', async ({ page }) => {
   // investigations/limits.md, 5.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Einwohner');
   await slider(page, 'Untere', 'Einwohner').fill('500');
   const selection = page.locator('.selection');
@@ -345,7 +345,7 @@ test('a selection on a logarithmic track: inhabitants from 3,508 in 2016', async
 test('nothing remains: no votes, no yes share, no cantonal vote, the vote fails', async ({
   page,
 }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Deutsch');
   await addLimit(page, 'Französisch');
   await slider(page, 'Untere', 'Deutsch').fill('1000');
@@ -358,7 +358,7 @@ test('nothing remains: no votes, no yes share, no cantonal vote, the vote fails'
 });
 
 test('the legend of a selection ends with the dark grey of the set-aside', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await expect(page.locator('.legend li')).toHaveCount(10);
   await foreignersUpTo1998(page);
   const entries = page.locator('.legend li');
@@ -374,7 +374,7 @@ test('set aside and kept: Zürich dark grey, Aeugst am Albis its colour, the hat
   page,
 }) => {
   // investigations/limits.md, 3: Zürich 32.03%, Aeugst am Albis 12.77% foreigners.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   await expect(municipality(page, 261)).toHaveAttribute('fill', '#2c2c2c');
   await expect(municipality(page, 1)).toHaveAttribute('fill', '#fbbea3'); // no, class 1
@@ -383,7 +383,7 @@ test('set aside and kept: Zürich dark grey, Aeugst am Albis its colour, the hat
 
 test('without a result and without a figure: Meienried stays hatched', async ({ page }) => {
   // investigations/limits.md, 2: Meienried has neither a result nor a party figure in 2021.
-  await open(page, 'votes/6400/');
+  await open(page, 'de/votes/6400/');
   await addLimit(page, 'SVP');
   await slider(page, 'Obere', 'SVP').fill('999');
   await expect(municipality(page, 389)).toHaveAttribute('fill', 'url(#hatch)');
@@ -394,7 +394,7 @@ test('the details of a set-aside municipality: its own figures, and that it is n
   page,
 }) => {
   // investigations/map-data.md: Zürich in 2016.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   const zurich = await pointIn(page, '.municipalities [data-number="261"]');
   await page.mouse.move(zurich.x, zurich.y);
@@ -411,7 +411,7 @@ test('the details of a set-aside municipality: its own figures, and that it is n
 const count = (page: Page) => page.locator('.limits .count');
 
 test('the number of municipalities that remain: all of them without a limit', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await expect(count(page)).toHaveText(
     "In der Auswahl: 2'103 von 2'103 Gemeinden mit eigenem Ergebnis.",
   );
@@ -419,7 +419,7 @@ test('the number of municipalities that remain: all of them without a limit', as
 
 test('the number of municipalities that remain under a limit', async ({ page }) => {
   // investigations/limits.md, 5.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   await expect(count(page)).toHaveText(
     "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
@@ -427,7 +427,7 @@ test('the number of municipalities that remain under a limit', async ({ page }) 
 });
 
 test('the number of municipalities that remain: none', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Deutsch');
   await addLimit(page, 'Französisch');
   await slider(page, 'Untere', 'Deutsch').fill('1000');
@@ -438,7 +438,7 @@ test('the number of municipalities that remain: none', async ({ page }) => {
 test('back to the real result: no limit, the switch on, no selection, the legend of ten', async ({
   page,
 }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   const back = page.getByRole('button', { name: 'Zurück zum echten Ergebnis' });
   await expect(back).toHaveCount(0);
   await foreignersUpTo1998(page);
@@ -456,7 +456,7 @@ test('back to the real result: no limit, the switch on, no selection, the legend
 });
 
 test('back to the real cantons: the table of the vote again', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   await expect(page.locator('table caption')).toHaveText('Mit Ihrer Auswahl');
   await page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }).click();
@@ -468,13 +468,13 @@ test('back to the real cantons: the table of the vote again', async ({ page }) =
 });
 
 test('limits belong to the page: another vote starts without them', async ({ page }) => {
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   await abroadSwitch(page).uncheck();
   await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
   await page.locator('a[href$="/votes/5670"], a[href$="/votes/5670/"]').first().click();
   await expect(page.getByLabel('Merkmal hinzufügen')).toBeVisible();
-  await expect(page).toHaveURL(/\/votes\/5670\/?$/);
+  await expect(page).toHaveURL(/\/de\/votes\/5670\/?$/);
   await expect(page.locator('.limit')).toHaveCount(0);
   await expect(abroadSwitch(page)).toBeChecked();
   await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
@@ -484,7 +484,7 @@ test('characteristics that cannot be loaded: no limits, and the rest of the page
   page,
 }) => {
   await page.route('**/data/characteristics.json', (route) => route.abort());
-  await page.goto('votes/5960/');
+  await page.goto('de/votes/5960/');
   await expect(
     page.locator('.limits').getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
   ).toBeVisible();
@@ -499,7 +499,7 @@ test('the limits follow the definitions: their names in order, four logarithmic 
   page,
 }) => {
   // Spec characteristics, "One definition per characteristic"; investigations/limits.md, 4.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   expect(await offered(page)).toEqual([
     'Einwohner',
     'Ausländeranteil',
@@ -539,7 +539,7 @@ test('the limits follow the definitions: their names in order, four logarithmic 
 
 test('the keyboard on the list only moves the choice; "Hinzufügen" adds it', async ({ page }) => {
   // Q, 2026-11-16: in Chromium an arrow key on a closed list changes its choice at once.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   const list = page.getByLabel('Merkmal hinzufügen');
   await list.focus();
   await page.keyboard.press('ArrowDown');
@@ -562,7 +562,7 @@ test.describe(() => {
     page,
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
-    await open(page, 'votes/5960/');
+    await open(page, 'de/votes/5960/');
     await addLimit(page, 'Einwohner');
     const lower = slider(page, 'Untere', 'Einwohner');
     await lower.scrollIntoViewIfNeeded();
@@ -589,7 +589,7 @@ test.describe(() => {
     page,
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
-    await open(page, 'votes/5960/');
+    await open(page, 'de/votes/5960/');
     await page.evaluate(() => {
       (window as unknown as { __frames: unknown[] }).__frames = [];
     });
@@ -620,7 +620,7 @@ test.describe(() => {
 
 test('a range closed at the end of its track reopens by pointer', async ({ page }) => {
   // Copilot's review of PR #12: both thumbs at step 1,000, the upper one on top.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   const lower = slider(page, 'Untere', 'Ausländeranteil');
   await lower.fill('1000');
@@ -642,7 +642,7 @@ test("a step that keeps the end's value narrows nothing: inhabitants at step 1",
   page,
 }) => {
   // investigations/limits.md, 5: step 1 of the inhabitants of 2016 is 31, the smallest value.
-  await open(page, 'votes/5960/');
+  await open(page, 'de/votes/5960/');
   await addLimit(page, 'Einwohner');
   await slider(page, 'Untere', 'Einwohner').fill('1');
   await expect(label(page, 'Einwohner')).toHaveText("Einwohner (Ende 2015): von 31 bis 396'955");

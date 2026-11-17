@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { textsOf } from '../lib/texts/index.ts';
+  import { textsOf } from '../../lib/texts/index.ts';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
@@ -12,7 +12,7 @@
 </svelte:head>
 
 <h1>{t.TITLE}</h1>
-<p><a href={resolve('/guide')}>{t.GUIDE_LINK}</a></p>
+<p><a href={resolve('/[lang]/guide', { lang: data.lang })}>{t.GUIDE_LINK}</a></p>
 
 {#each data.years as year (year.year)}
   <section>
@@ -21,7 +21,9 @@
       {#each year.entries as entry (entry.id)}
         <li>
           <span>{entry.date}</span>
-          <a href={resolve('/votes/[id]', { id: String(entry.id) })}>{entry.title}</a>
+          <a href={resolve('/[lang]/votes/[id]', { lang: data.lang, id: String(entry.id) })}
+            >{entry.title}</a
+          >
           <span>{entry.kind}</span>
           <span>{entry.result}</span>
           {#each entry.marks as mark (mark)}
