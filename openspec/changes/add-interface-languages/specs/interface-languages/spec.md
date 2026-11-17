@@ -123,6 +123,8 @@ the map's view are not carried over.
 - **WHEN** a visitor on `/de/votes/5960/` follows "Français"
 - **THEN** the browser shows `/fr/votes/5960/`, whose language is "fr" and whose heading is
   "Initiative populaire «Pour le couple et la famille - Non à la pénalisation du mariage»"
+- **AND** a server that does not add the final slash shows the same page at `/fr/votes/5960`, as
+  the `verdicts` capability's "A vote's address without the final slash" says
 
 #### Scenario: The switch on the start page and the guide
 

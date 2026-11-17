@@ -235,7 +235,7 @@ Design, decisions 5, 6 and 12.
   - One check was not a `goto`: the same-origin test expected the start page's data at
     `__data.json`, now `de/__data.json`. It failed first and passes since.
   - `pnpm run test:e2e`: 104 passed.
-- [ ] 4.2 The switch at the top of every page, from the layout: "Deutsch", "Français",
+- [x] 4.2 The switch at the top of every page, from the layout: "Deutsch", "Français",
   "Italiano", with `lang` and `hreflang`, the page's own language not a link and marked
   `aria-current`, the others with `data-sveltekit-reload`.
 
@@ -244,6 +244,24 @@ Design, decisions 5, 6 and 12.
   time.
 
   Verify: each fails first, then passes; the browser tests: 107.
+
+  As built:
+  - The switch is `src/routes/[lang]/+layout.svelte`; the names are `LANGUAGE_NAMES` in
+    `texts/index.ts`, the same on every page.
+  - Q chose, while applying, to build each link with `resolve` per route, typed as
+    `ResolvedPathname`, which the lint rule accepts. Q also chose to accept the address without
+    its final slash, which `resolve` leaves out. The tests and the scenario "From German to
+    French" accept both; decision 12 says so.
+  - "From German to French" failed first: no switch. The two others were written after the
+    switch, so they passed when written:
+    - "the switch on the start page and the guide" failed against the page's own language as a
+      link;
+    - "a selection stays behind" failed against links without `data-sveltekit-reload`, whose
+      navigation in the browser carried the limit over.
+  - One run of the whole suite of four ended with 106 passed and one failure whose name was
+    lost. The next three passed 107. Q chose to go on and keep the full output of every run from
+    now on.
+  - The browser tests: 107.
 - [ ] 4.3 Write the browser tests of the pages in French and Italian, in `languages.spec.ts`, one
   at a time. They cover these scenarios:
   - of `interface-languages`:

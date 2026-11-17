@@ -229,9 +229,18 @@ Alternatives considered:
 A `nav` at the top of every page names "Deutsch", "Français" and "Italiano", in this order:
 - each name has the `lang` of its language, and each link its `hreflang`;
 - the page's own language is plain text with `aria-current="page"`;
-- the other two link to the same page in their language. The address is the page's own with the
-  language segment replaced, so every page gets the switch from the layout, without knowing its
-  route.
+- the other two link to the same page in their language. The layout writes the switch for
+  every page.
+
+While applying, Q chose how a link is built:
+- The lint rule `svelte/no-navigation-without-resolve` refused the page's own address with its
+  language segment replaced, and a `resolve` over the page's route as a union does not
+  type-check.
+- So the switch resolves each of the three routes (the start page, the guide, a vote's page) by
+  name, typed. A route it does not know is an error, so a new route must be added there.
+- `resolve` writes no final slash. GitHub Pages adds it; the test's server shows the same page
+  without it (spec `verdicts`, "A vote's address without the final slash"). Q chose to accept
+  both forms rather than add the slash with a type assertion.
 
 Alternatives considered:
 - **The codes DE · FR · IT.** Shorter, but less clear.
