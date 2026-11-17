@@ -354,7 +354,7 @@ Design, decisions 2 to 4.
   - The tests run the script's text with `new Function`, typed in one helper, with the reason
     for the one disabled rule (`no-implied-eval`) beside it.
   - `pnpm run test`: 52 and 116.
-- [ ] 5.2 The root, `/guide/` and `/votes/<id>/` become pages that redirect:
+- [x] 5.2 The root, `/guide/` and `/votes/<id>/` become pages that redirect:
   - `csr = false`;
   - the script in the head;
   - a `<noscript>` meta refresh to the German page;
@@ -372,6 +372,34 @@ Design, decisions 2 to 4.
   - `grep -c "_app/immutable" app/build/swiss-votation-visualisation/votes/5960/index.html`
     gives 0;
   - the browser tests: 137.
+
+  As built:
+  - The three pages share `src/routes/Redirect.svelte`. Each page builds its three addresses
+    with `resolve`, and the script and the refresh add the final slash, so that GitHub Pages
+    need not redirect once more.
+  - The script's tag is built in the component's script, its closing tag in two parts: written
+    whole, it ends the block. `{@html}` carries the one disabled rule (`svelte/no-at-html-tags`)
+    with its reason.
+  - The check of `_app/immutable` gives 1, not 0. The one file is the component's own
+    stylesheet, for its three links. The page has one `<script>`, the inline one, and no
+    `script src` or `modulepreload`: it loads no script of the app, as decision 4 asks. The
+    check was broader than its aim.
+  - Failed first, then passed:
+    - the French browser at the root;
+    - the browser without scripts at the root, until the `<noscript>` refresh;
+    - the Italian browser at `/votes/5960/`, until the votes' redirect pages;
+    - the guide's old address without scripts, until the guide's.
+  - Passed when written, then failed against a mutant:
+    - Italian first among the preferred languages: the languages read from the last;
+    - none of the three: French as the fallback;
+    - the scenario of `app-shell`: the German address pointing to the French page;
+    - "the choice is not remembered": a script that reads a language stored by the switch;
+    - the old address without its slash: the French address pointing to the German page.
+  - "An old address that names no vote" has no mutant that builds: a redirect page for 9999
+    links to `/de/votes/9999`, which does not exist, and prerendering fails. Pointed at
+    `votes/5960/`, the test failed.
+  - The same-origin test starts at `./` and arrives at `de/`.
+  - The browser tests: 137.
 
 ## 6. Look and size
 

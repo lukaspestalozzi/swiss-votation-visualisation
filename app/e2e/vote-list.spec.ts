@@ -105,7 +105,10 @@ test('from the list to a vote and back', async ({ page }) => {
 test('all requests go to the site itself', async ({ page }) => {
   const origins = new Set<string>();
   page.on('request', (request) => origins.add(new URL(request.url()).origin));
-  await page.goto('de/', { waitUntil: 'networkidle' });
+  // From the address without a language, whose page redirects to the start page (spec
+  // interface-languages).
+  await page.goto('./', { waitUntil: 'networkidle' });
+  await expect(page).toHaveURL('de/');
   expect([...origins]).toEqual([new URL(page.url()).origin]);
   // The reading guide too (spec reading-guide).
   await page.goto('de/guide/', { waitUntil: 'networkidle' });
