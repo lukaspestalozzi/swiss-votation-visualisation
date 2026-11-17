@@ -12,6 +12,14 @@ import { it } from './it.ts';
 export type { Language };
 export const LANGUAGES: readonly Language[] = ['de', 'fr', 'it'];
 
+/** Each language by its name in itself, the same on every page (the switch, spec
+ * interface-languages, "Changing the language"). */
+export const LANGUAGE_NAMES: Readonly<Record<Language, string>> = {
+  de: 'Deutsch',
+  fr: 'Français',
+  it: 'Italiano',
+};
+
 /** Whether a segment of an address names a language of the site. */
 export function isLanguage(value: string): value is Language {
   return (LANGUAGES as readonly string[]).includes(value);
