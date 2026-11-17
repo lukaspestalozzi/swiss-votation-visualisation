@@ -131,3 +131,12 @@ test('an entry that is no municipality of the map is an error that names the vot
     /vote 5960: the entry 7999 is no municipality of the map/,
   );
 });
+
+test("Zürich's details in Italian: the same figures under Italian names", () => {
+  // Spec interface-languages, "The details of a municipality in Italian";
+  // investigations/map-data.md.
+  expect(detailsOf('Zürich', 'ZH', [46565, 99614], textsOf('it'))).toEqual({
+    name: 'Zürich (ZH)',
+    lines: ['Percentuale di sì: 31.85%', "Sì: 46'565", "No: 99'614"],
+  });
+});

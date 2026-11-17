@@ -3,11 +3,14 @@
 // of the figures, already written as the screen shows them (format.ts). A text missing in one
 // language is a type error.
 import type { Kind, Majorities } from 'calculation';
+import type { Language } from '../vote-data.ts';
 import { de } from './de.ts';
+import { fr } from './fr.ts';
+import { it } from './it.ts';
 
-/** The languages of the site. */
-export type Language = 'de';
-export const LANGUAGES: readonly Language[] = ['de'];
+/** The languages of the site: those of the data files. */
+export type { Language };
+export const LANGUAGES: readonly Language[] = ['de', 'fr', 'it'];
 
 /** A characteristic, by a key that is the same in every language (characteristics.ts). */
 export type CharacteristicKey =
@@ -161,7 +164,7 @@ export interface Texts {
   readonly SOURCES_FILE: string;
 }
 
-const TEXTS: Readonly<Record<Language, Texts>> = { de };
+const TEXTS: Readonly<Record<Language, Texts>> = { de, fr, it };
 
 /** The texts of a language. */
 export function textsOf(language: Language): Texts {

@@ -105,3 +105,40 @@ test('the marks of the entries', () => {
 test('a list of votes that holds no vote is an error that names it', () => {
   expect(() => voteList({ ...listing, votes: [] }, de)).toThrow(/the list of votes/);
 });
+
+test('a title missing in one language is an error that names the vote and the language', () => {
+  // Spec interface-languages, "A title missing in one language".
+  const withoutItalian = {
+    ...listing,
+    votes: listing.votes.map((vote) =>
+      vote.id === 5960 ? { ...vote, title: { ...vote.title, it: '' } } : vote,
+    ),
+  };
+  expect(() => voteList(withoutItalian, textsOf('it'))).toThrow(
+    'vote 5960 has no title in Italian',
+  );
+});
+
+test("the list's entries in French and Italian", () => {
+  // Spec interface-languages, "The list's verdicts"; spec vote-list, "The same vote in French and
+  // Italian".
+  const entryIn = (language: 'fr' | 'it', id: number) =>
+    voteList(listing, textsOf(language))
+      .flatMap((year) => year.entries)
+      .find((entry) => entry.id === id);
+  expect(entryIn('fr', 5960)).toMatchObject({
+    date: '28 février 2016',
+    title: 'Initiative populaire «Pour le couple et la famille - Non à la pénalisation du mariage»',
+    kind: 'Initiative populaire',
+    result: 'rejeté, 49.16% de oui',
+  });
+  expect(entryIn('it', 5960)).toMatchObject({
+    date: '28 febbraio 2016',
+    title:
+      'Iniziativa popolare «Per il matrimonio e la famiglia - No agli svantaggi per le coppie sposate»',
+    kind: 'Iniziativa popolare',
+    result: 'respinto, 49.16% di sì',
+  });
+  expect(entryIn('fr', 6790)?.result).toBe('accepté, 50.39% de oui');
+  expect(entryIn('it', 6790)?.result).toBe('accettato, 50.39% di sì');
+});

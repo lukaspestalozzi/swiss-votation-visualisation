@@ -46,6 +46,31 @@ export interface Votes {
   readonly votes: readonly Vote[];
 }
 
+// The languages by their names in English, for an error.
+const LANGUAGE_NAMES: Readonly<Record<Language, string>> = {
+  de: 'German',
+  fr: 'French',
+  it: 'Italian',
+};
+
+/**
+ * A vote's title, reference or note in a language (spec interface-languages, "The vote's texts
+ * in the page's language"). A text missing or empty in that language is an error that names the
+ * vote and the language, so that the build fails; the caller asks for a reference or a note only
+ * where the vote has one.
+ */
+export function voteText(
+  vote: Vote,
+  field: 'title' | 'reference' | 'note',
+  language: Language,
+): string {
+  const text = vote[field]?.[language];
+  if (text === undefined || text === '') {
+    throw new Error(`vote ${String(vote.id)} has no ${field} in ${LANGUAGE_NAMES[language]}`);
+  }
+  return text;
+}
+
 // One entry: [number, registered voters, ballots cast, valid ballots, yes votes, no votes].
 export type Row = readonly [number, number, number, number, number, number];
 

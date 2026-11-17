@@ -10,6 +10,8 @@ import {
 import { textsOf } from './texts/index.ts';
 
 const de = textsOf('de');
+const fr = textsOf('fr');
+const it = textsOf('it');
 
 test('a count is grouped by three with an apostrophe', () => {
   expect(formatCount(1609152)).toBe("1'609'152");
@@ -42,6 +44,21 @@ test('a date is written with the German name of its month', () => {
   expect(formatDate('2016-02-28', de)).toBe('28. Februar 2016');
   expect(formatDate('2026-03-08', de)).toBe('8. März 2026');
   expect(formatDate('2013-12-01', de)).toBe('1. Dezember 2013');
+});
+
+test('a date in each language', () => {
+  // Spec vote-list, "How dates and numbers are written".
+  const dates = ['2016-02-28', '2026-03-08'];
+  expect(dates.map((date) => formatDate(date, de))).toEqual(['28. Februar 2016', '8. März 2026']);
+  expect(dates.map((date) => formatDate(date, fr))).toEqual(['28 février 2016', '8 mars 2026']);
+  expect(dates.map((date) => formatDate(date, it))).toEqual(['28 febbraio 2016', '8 marzo 2026']);
+});
+
+test('the first day of a month: "1.", "1er" and "1°"', () => {
+  // Spec vote-list, as the Constitution's footnotes write it (investigations/languages.md, 6).
+  expect(formatDate('2008-06-01', de)).toBe('1. Juni 2008');
+  expect(formatDate('2008-06-01', fr)).toBe('1er juin 2008');
+  expect(formatDate('2008-06-01', it)).toBe('1° giugno 2008');
 });
 
 test('a quotient without decimals is grouped like a count', () => {
