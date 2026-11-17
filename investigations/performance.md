@@ -16,7 +16,8 @@ style, layout, paint and garbage collection.
 
 The scripts are in `investigations/performance/`. The two in JavaScript run the global
 Playwright of the cloud image (1.63.0, the version `app/package.json` pins) against the built
-site; the two in Python read the traces with the standard library; `budget_tests_traced.spec.ts`
+site; `windows.py` and `timeline.py` read the traces with the standard library, and
+`budget_tries.py` Playwright's JSON reports of the browser tests (M11); `budget_tests_traced.spec.ts`
 is a copy of the two budget tests with a trace, which the project's Playwright runs from
 `app/e2e/` (M10). The traces are some 10 MB each and stay outside the repository.
 
@@ -45,6 +46,11 @@ cp investigations/performance/budget_tests_traced.spec.ts app/e2e/zz-trace-spike
 pnpm run build
 TRACE_DIR=/path/outside/the/repository pnpm --filter app exec playwright test e2e/zz-trace-spike.spec.ts --repeat-each 10 --trace off
 rm app/e2e/zz-trace-spike.spec.ts
+# M11: the browser tests with two workers and with one, read from Playwright's JSON reports.
+PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/two.json pnpm --filter app exec playwright test --reporter=json --repeat-each 5 --workers 2
+PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/one.json pnpm --filter app exec playwright test --reporter=json --workers 1
+PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/alone.json pnpm --filter app exec playwright test --reporter=json -g "the budget" --repeat-each 10 --workers 1
+python3 -I investigations/performance/budget_tries.py /path/outside/the/repository/two.json /path/outside/the/repository/one.json /path/outside/the/repository/alone.json
 ```
 
 | File | What |
@@ -54,6 +60,7 @@ rm app/e2e/zz-trace-spike.spec.ts
 | `profile_first_point.cjs` | A profile of V8's sampler of the first pointing at a municipality, a later one, the first click and a later one: self time per function and inclusive time of the page's functions. |
 | `windows.py` | Each measurement window over 16 ms in the traces: whether a click and the click's frame lie inside it, and how long the window's own frame took. |
 | `timeline.py` | The main thread's events and the measurement's marks inside the longest window of one trace. |
+| `budget_tries.py` | Per budget test in Playwright's JSON reports: its first tries, how many failed, its retries, and the median and largest of the longest frame of a first try, from the line that `app/e2e/frames.ts` prints. |
 
 The numbers below are what these printed on 2026-11-16, on the cloud machine with 4
 processors. A trace adds work of its own: traced frames are a few ms longer or shorter than
@@ -258,6 +265,37 @@ with its two workers.
 - **Means:** the main thread waited for a processor half of that frame: the machine was busy,
   not the page. A measurement of wall time on a shared machine meets such frames now and then.
 
+### M11: the browser tests with two workers and with one
+
+Measured on 2026-11-17 while proposing `steady-budget-tests` (row "9a" of `docs/roadmap.md`), on
+the build of `main` at a50ac21, not right after a build, and read with `budget_tries.py`.
+
+- **What:** the whole suite of 138 browser tests five times with Playwright's two workers
+  (`--repeat-each 5`), once with one worker (`--workers 1`), and the four budget tests alone,
+  ten times each with one worker.
+- **Why:** while #9 was applied, the budget of dragging failed one try with frames of 17.5 and
+  18.8 ms, and the map's budget of zooming, moving and pointing one with 19.5 ms; each passed its
+  second try. `investigations/limits.md` had found a drag over 16 ms in 3 to 6 of 10 runs beside
+  a second drag. To know what one worker gives the budget tests and what it costs the suite.
+- **Found:**
+  - Time: the suite took 158 s for five passes with two workers, about 32 s a pass, and 54 s
+    with one worker. The 40 runs of the budget tests alone took 65 s.
+  - Failures: none, in 20 first tries of the budget tests beside the other tests, in 4 in the
+    suite with one worker, and in 40 alone.
+  - The longest frame of a first try, its median and its largest, in ms:
+
+    | Budget test | Two workers, 5 tries | Alone, 10 tries |
+    |-------------|----------------------|-----------------|
+    | dragging a bound (16 ms) | 12.5, 14.8 | 8.2, 14.0 |
+    | zooming, moving, pointing (16 ms) | 10.0, 11.1 | 8.2, 12.9 |
+    | clicking (16 ms) | 5.9, 7.9 | 4.3, 9.9 |
+    | jumps (50 ms) | 11.2, 16.2 | 9.4, 12.2 |
+
+    In the suite with one worker, once each: 9.3, 12.1, 6.6 and 10.5 ms.
+- **Means:** a test running beside them lengthens the budget tests' longest frames by 2 to 4 ms
+  in the median, the drag's the most, whose longest frames then come within 1 to 3.5 ms of its
+  budget. One worker costs the suite about 20 s. Alone, a drag still reached 14.0 ms once in ten.
+
 ## Findings
 
 1. **The frames of 17 to 21 ms after a click are an artifact of the measurement**, not slow
@@ -281,6 +319,9 @@ with its two workers.
    M10): about 3 runs in 100, mostly right after a build, the condition of CI and of
    `scripts/verify-local.sh`. In the one traced, the main thread had a processor for half the
    frame.
+7. **A test running beside a budget test narrows its margin** (M11): with two workers the
+   longest frame of a drag had a median of 12.5 ms, alone 8.2 ms. The suite takes about 32 s
+   with two workers and 54 s with one.
 
 ## Open
 
