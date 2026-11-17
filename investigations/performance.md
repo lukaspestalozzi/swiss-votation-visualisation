@@ -316,6 +316,10 @@ Measured on 2026-11-17 while applying `steady-budget-tests`, with `workers: 1` i
   - No budget test failed its first try. The longest frame of each first try, in the three
     runs: dragging a bound 6.7, 8.6 and 8.8 ms; zooming, moving and pointing 6.7, 9.3 and
     8.3 ms; clicking 5.0, 4.8 and 4.9 ms; jumps 10.4, 8.4 and 9.6 ms.
+  - In CI, on the pull request of the change (commit fc9639a): "Running 138 tests using 1
+    worker", 138 passed in 51.7 s, the budget tests' longest frames 4.3 to 9.3 ms. The step
+    "Browser tests" took 52 s, against 29 s on `main` with two workers (run 88, 138 passed in
+    28.3 s).
 - **Means:** with one worker, the drag's longest frame (median 8.6 ms) is where M11 found it
   alone (8.2 ms), not beside another test (12.5 ms). Three runs are too few to show whether the
   busy moments of M9 and M10 still come right after a build.

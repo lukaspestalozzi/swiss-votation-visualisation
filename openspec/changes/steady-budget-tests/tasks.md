@@ -61,7 +61,8 @@ budget test's first tries, failures, retries and longest frames.
 
 - After the push, the pull request's CI: its build job prints "Running 138 tests using 1
   worker", and the step "Browser tests" takes longer than the 29 s of run 88 on `main` with two
-  workers. Write its time into M12 of `investigations/performance.md`.
+  workers. Write its time into M12 of `investigations/performance.md`. (Done: on fc9639a,
+  "Running 138 tests using 1 worker", 138 passed in 51.7 s; the step took 52 s.)
 - Verify the change (`/openspec-verify-change`), then archive it: the roadmap's row "9a" done,
   its capabilities `result-map` (the budget of the limits follows the map's measurement), and
   `CLAUDE.md`'s status naming the change archived.
