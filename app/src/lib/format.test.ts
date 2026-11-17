@@ -41,24 +41,33 @@ test('cantonal votes are written with a half as ½', () => {
 });
 
 test('a date is written with the German name of its month', () => {
-  expect(formatDate('2016-02-28', de)).toBe('28. Februar 2016');
-  expect(formatDate('2026-03-08', de)).toBe('8. März 2026');
-  expect(formatDate('2013-12-01', de)).toBe('1. Dezember 2013');
+  expect(formatDate('2016-02-28', de)).toBe('28.\u00a0Februar 2016');
+  expect(formatDate('2026-03-08', de)).toBe('8.\u00a0März 2026');
+  expect(formatDate('2013-12-01', de)).toBe('1.\u00a0Dezember 2013');
 });
 
 test('a date in each language', () => {
   // Spec vote-list, "How dates and numbers are written".
   const dates = ['2016-02-28', '2026-03-08'];
-  expect(dates.map((date) => formatDate(date, de))).toEqual(['28. Februar 2016', '8. März 2026']);
-  expect(dates.map((date) => formatDate(date, fr))).toEqual(['28 février 2016', '8 mars 2026']);
-  expect(dates.map((date) => formatDate(date, it))).toEqual(['28 febbraio 2016', '8 marzo 2026']);
+  expect(dates.map((date) => formatDate(date, de))).toEqual([
+    '28.\u00a0Februar 2016',
+    '8.\u00a0März 2026',
+  ]);
+  expect(dates.map((date) => formatDate(date, fr))).toEqual([
+    '28\u00a0février 2016',
+    '8\u00a0mars 2026',
+  ]);
+  expect(dates.map((date) => formatDate(date, it))).toEqual([
+    '28\u00a0febbraio 2016',
+    '8\u00a0marzo 2026',
+  ]);
 });
 
 test('the first day of a month: "1.", "1er" and "1°"', () => {
   // Spec vote-list, as the Constitution's footnotes write it (investigations/languages.md, 6).
-  expect(formatDate('2008-06-01', de)).toBe('1. Juni 2008');
-  expect(formatDate('2008-06-01', fr)).toBe('1er juin 2008');
-  expect(formatDate('2008-06-01', it)).toBe('1° giugno 2008');
+  expect(formatDate('2008-06-01', de)).toBe('1.\u00a0Juni 2008');
+  expect(formatDate('2008-06-01', fr)).toBe('1er\u00a0juin 2008');
+  expect(formatDate('2008-06-01', it)).toBe('1°\u00a0giugno 2008');
 });
 
 test('a quotient without decimals is grouped like a count', () => {
@@ -90,4 +99,12 @@ test('a whole number of units is written with its decimals, grouped like a count
   expect(formatUnits(396955, 0)).toBe("396'955");
   expect(formatUnits(1234567, 2)).toBe("12'345.67");
   expect(() => formatUnits(19.5, 2)).toThrow(RangeError);
+});
+
+test('a date keeps its day with its month: a non-breaking space between them', () => {
+  // Q, 2026-11-17: at 800 pixels the Italian guide broke "1° gennaio 2026" after "1°".
+  expect(formatDate('2026-01-01', de)).toBe('1. Januar 2026');
+  expect(formatDate('2026-01-01', fr)).toBe('1er janvier 2026');
+  expect(formatDate('2026-01-01', it)).toBe('1° gennaio 2026');
+  expect(formatDate('2016-02-28', fr)).toBe('28 février 2016');
 });

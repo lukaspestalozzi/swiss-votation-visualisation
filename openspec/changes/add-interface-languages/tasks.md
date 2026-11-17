@@ -420,7 +420,8 @@ Design, decisions 2 to 4.
     tiles.
   - One finding, left for Q: at 800 pixels the Italian guide breaks "stato al 1° gennaio 2026"
     between "1°" and "gennaio". A non-breaking space between the day and the month would keep
-    them together in every language, but would change every date the tests compare.
+    them together in every language, but would change every date the tests compare. Q chose to
+    fix it: task 6.3.
 - [x] 6.2 Measure the size and the time of `pnpm run build`, before (`main`) and after: the
   disk use of `app/build/swiss-votation-visualisation` and of its `*/votes/` directories.
 
@@ -440,6 +441,25 @@ Design, decisions 2 to 4.
   | build | 4.8 to 5.6 s | 7.6 to 8.6 s |
 
   The vote pages are the 40 MB the investigation expected, well inside GitHub Pages' 1 GB.
+
+- [x] 6.3 A date keeps its day with its month (Q, after 6.1): each language's date joins them with
+  a non-breaking space. Write the unit test of the scenario "A date keeps its day with its month"
+  (spec `vote-list`) first, then the dates; the tests that compare a date exactly take the space.
+
+  Verify:
+  - the test fails first, then passes;
+  - the screenshot of the Italian guide's sources at 800 pixels shows "1° gennaio 2026" whole;
+  - `pnpm run test`: 52 and 117; the browser tests: 137.
+
+  As built:
+  - The test failed first ("1. Januar 2026" with an ordinary space), then passed.
+  - Unit tests that compare a date exactly took the space: three in `format.test.ts`, five in
+    `vote-list.test.ts`, one in `vote-page.test.ts`.
+  - Two browser tests compare the raw text of a vote's head; they took it too. The others pass
+    unchanged, since `toHaveText` reads any run of white space as one.
+  - The screenshot shows "1° gennaio 2026" moved whole to the next line.
+  - `./scripts/verify-local.sh`: 11 of 11 steps, after Prettier had wrapped two lines of
+    `format.test.ts`: 52 and 117 unit tests, 137 browser tests, 134 of the pipeline.
 
 ## 7. Documentation and the whole
 

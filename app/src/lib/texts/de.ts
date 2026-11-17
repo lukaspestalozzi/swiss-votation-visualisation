@@ -21,7 +21,8 @@ export const de: Texts = {
     'November',
     'Dezember',
   ],
-  date: (day, month, year) => `${String(day)}. ${month} ${String(year)}`,
+  // The day and the month joined by a non-breaking space, so that a line never parts them.
+  date: (day, month, year) => `${String(day)}.\u00a0${month} ${String(year)}`,
   KINDS: {
     'mandatory-referendum': 'Obligatorisches Referendum',
     'optional-referendum': 'Fakultatives Referendum',

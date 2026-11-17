@@ -30,7 +30,7 @@ function page(id: number) {
 test('the head of a vote', () => {
   expect(page(5960)).toMatchObject({
     title: 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
-    date: '28. Februar 2016',
+    date: '28.\u00a0Februar 2016',
     kind: 'Volksinitiative',
     majoritiesNeeded: 'Braucht das Volksmehr und das Ständemehr.',
   });

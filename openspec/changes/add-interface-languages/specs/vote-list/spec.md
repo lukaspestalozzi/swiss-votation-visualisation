@@ -71,6 +71,13 @@ vote SHALL be written "½" ("16½"). Numbers SHALL read the same in every langua
 - **THEN** they read "28. Februar 2016" and "8. März 2026" in German, "28 février 2016" and "8 mars
   2026" in French, "28 febbraio 2016" and "8 marzo 2026" in Italian
 
+#### Scenario: A date keeps its day with its month
+
+- **WHEN** a date is written in any of the three languages
+- **THEN** its day and its month are joined by a non-breaking space (U+00A0), so that a line never
+  breaks between them: "1° gennaio 2026" stays whole where the Italian guide names its sources in
+  a window 800 pixels wide
+
 #### Scenario: The first day of a month
 
 - **WHEN** the date 2008-06-01 is written

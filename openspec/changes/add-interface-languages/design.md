@@ -187,7 +187,9 @@ are now: "1'609'152", "49.16%", "16½". Each language writes its date:
 - Italian: "28 febbraio 2016", "1° giugno 2008".
 
 The French and Italian forms of the first day are those of the Constitution's footnotes
-(`investigations/languages.md`, 6). `format.ts` keeps the parsing and the check of a date; the
+(`investigations/languages.md`, 6). In every language a non-breaking space joins the day and the
+month, so that a line never parts them (Q, after task 6.1 found "1° gennaio 2026" broken at 800
+pixels). `format.ts` keeps the parsing and the check of a date; the
 texts of a language write the day, the month and the year.
 
 Alternative considered: **each language's own number format** (French "1 609 152", "49,16 %").
