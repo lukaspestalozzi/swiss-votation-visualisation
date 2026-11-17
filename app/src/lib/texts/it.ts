@@ -169,7 +169,7 @@ export const it: Texts = {
   remainingCount: (remaining, all) =>
     `Nella selezione: ${remaining} dei ${all} Comuni con un risultato proprio.`,
   NOTHING_REMAINS: 'Non rimane nessun Comune con un risultato proprio.',
-  BACK_TO_REAL: 'Torna al risultato reale',
+  BACK_TO_REAL: 'Tornare al risultato reale',
   ADD: 'Aggiungere',
 
   // The reading guide (spec reading-guide).
