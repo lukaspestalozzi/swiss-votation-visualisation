@@ -443,17 +443,22 @@ Design, decisions 2 to 4.
 
 ## 7. Documentation and the whole
 
-- [ ] 7.1 `openspec/config.yaml`:
+- [x] 7.1 `openspec/config.yaml`:
   - the texts are one module per language in `app/src/lib/texts/`;
   - the item "how the three interface languages are handled" leaves "Not decided", for a line
     naming this change.
 
   Verify: `openspec validate --all --strict` passes.
-- [ ] 7.2 `README.md`: the three languages and their addresses. `docs/roadmap.md`: #9's row says
+- [x] 7.2 `README.md`: the three languages and their addresses. `docs/roadmap.md`: #9's row says
   what it delivers, and the investigation `languages.md` joins the list of investigations.
 
   Verify: both read as the specs say, and the roadmap names the investigation.
-- [ ] 7.3 Update `CLAUDE.md` for every file this change adds, moves or changes:
+
+  As built:
+  - The roadmap's row of #9 is "applied, in review" until the archive.
+  - A comment of `vote-list.spec.ts`, "The screen is German until #9", now names the German
+    start page.
+- [x] 7.3 Update `CLAUDE.md` for every file this change adds, moves or changes:
   - `app/src/lib/texts/` and `languages.ts`;
   - `src/hooks.server.ts` and `app.html`'s `lang`;
   - the routes under `[lang]` and the three pages that redirect;
@@ -463,12 +468,23 @@ Design, decisions 2 to 4.
 
   Verify: every file of `git diff --stat main` under `app/`, `investigations/` and
   `openspec/specs/` is named in the code map or the "Where things are" table.
-- [ ] 7.4 Run `./scripts/verify-local.sh`.
+
+  As built:
+  - Every file of `git diff --name-only origin/main` under these is named in CLAUDE.md, apart
+    from `src/lib/texts.ts`, which is gone.
+  - The script of `investigations/languages/` is named through its directory, as the other
+    investigations' scripts are.
+  - `openspec/specs/` changes at the archive.
+  - The status names #9 as applied and in review, and #10 as next.
+- [x] 7.4 Run `./scripts/verify-local.sh`.
 
   Verify: 11 of 11 steps pass, with:
   - 52 tests of the calculation and 116 of the app;
   - 137 browser tests;
   - 134 of the pipeline.
+
+  As built: 11 of 11 steps passed: 52 and 116 unit tests, 137 browser tests with none flaky,
+  134 of the pipeline. The output is kept.
 
 ## Workflow follow-up
 
