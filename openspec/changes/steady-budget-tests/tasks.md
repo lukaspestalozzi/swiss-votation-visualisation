@@ -8,12 +8,14 @@ budget test's first tries, failures, retries and longest frames.
 
 ## 1. The browser tests one at a time
 
-- [ ] 1.1 One worker (spec `result-map`, scenario "No other test beside a budget test"; design,
+- [x] 1.1 One worker (spec `result-map`, scenario "No other test beside a budget test"; design,
   decision 1). `app/playwright.config.ts` sets `workers: 1`, with a comment that says why and
   cites this change's design. The four budget tests keep `retries: 1` (decision 2); no test
   changes. Verify: `pnpm run build`, then `pnpm run test:e2e` prints "Running 138 tests using 1
   worker" and "138 passed"; write down its time, expected about 54 s
   (`investigations/performance.md`, M11).
+
+  (As built: "Running 138 tests using 1 worker", "138 passed (48.3s)".)
 - [ ] 1.2 The measurement after the change, right after a build, the condition of CI and of
   `scripts/verify-local.sh` (M9, M10). Three times: `pnpm run build`, then the whole suite with
   a report and no `--workers` on the command line. Verify: each run prints "using 1 worker"
