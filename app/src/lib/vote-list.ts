@@ -1,14 +1,6 @@
 // The start page's list of votes (spec vote-list): what each entry shows, grouped by year.
 import { formatDate, formatShare } from './format.ts';
-import {
-  KINDS,
-  LIST_FAILED,
-  LIST_PASSED,
-  listResult,
-  listTieBreak,
-  MARK_NOTE,
-  MARK_PROVISIONAL,
-} from './texts.ts';
+import type { Texts } from './texts/index.ts';
 import type { Vote, Votes } from './vote-data.ts';
 
 export interface ListEntry {
@@ -26,7 +18,7 @@ export interface ListYear {
   readonly entries: readonly ListEntry[];
 }
 
-export function voteList(listing: Votes): ListYear[] {
+export function voteList(listing: Votes, t: Texts): ListYear[] {
   if (listing.votes.length === 0) {
     throw new Error('the list of votes (app/static/data/votes.json) holds no vote');
   }
@@ -37,29 +29,29 @@ export function voteList(listing: Votes): ListYear[] {
   for (const vote of newestFirst) {
     const year = vote.date.slice(0, 4);
     if (years.at(-1)?.year !== year) years.push({ year, entries: [] });
-    years.at(-1)?.entries.push(entryOf(vote));
+    years.at(-1)?.entries.push(entryOf(vote, t));
   }
   return years;
 }
 
-function entryOf(vote: Vote): ListEntry {
+function entryOf(vote: Vote, t: Texts): ListEntry {
   return {
     id: vote.id,
-    date: formatDate(vote.date),
+    date: formatDate(vote.date, t),
     title: vote.title.de,
-    kind: KINDS[vote.kind],
-    result: resultOf(vote),
+    kind: t.KINDS[vote.kind],
+    result: resultOf(vote, t),
     marks: [
-      ...(vote.note === null ? [] : [MARK_NOTE]),
-      ...(vote.validated ? [] : [MARK_PROVISIONAL]),
+      ...(vote.note === null ? [] : [t.MARK_NOTE]),
+      ...(vote.validated ? [] : [t.MARK_PROVISIONAL]),
     ],
   };
 }
 
-function resultOf(vote: Vote): string {
+function resultOf(vote: Vote, t: Texts): string {
   const { yes, no, passed } = vote.result;
   const yesShare = formatShare(yes, yes + no);
-  if (vote.kind === 'tie-break-question') return listTieBreak(yesShare);
+  if (vote.kind === 'tie-break-question') return t.listTieBreak(yesShare);
   if (passed === null) throw new Error(`vote ${String(vote.id)} has no verdict`);
-  return listResult(passed ? LIST_PASSED : LIST_FAILED, yesShare);
+  return t.listResult(passed ? t.LIST_PASSED : t.LIST_FAILED, yesShare);
 }

@@ -1,20 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import {
-    ALL_VOTES,
-    CANTON,
-    CANTONAL_VOTES,
-    NO_VOTES,
-    NOTE_HEADING,
-    NOTHING_REMAINS,
-    SIDE,
-    TITLE,
-    TURNOUT,
-    YES_SHARE,
-    WITH_SELECTION,
-    YES_VOTES,
-    remainingCount,
-  } from '../../../lib/texts.ts';
+  import { textsOf } from '../../../lib/texts/index.ts';
   import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
   import {
@@ -33,6 +19,7 @@
   import ResultMap from './ResultMap.svelte';
 
   let { data }: PageProps = $props();
+  const t = $derived(textsOf(data.lang));
 
   // The selection (spec limits): the limits and the switch for the Swiss abroad, for this page
   // only (design of add-limits, decision 18). The characteristics are those the panel loads.
@@ -68,7 +55,7 @@
     const cantons = entries.cantons
       .filter((canton) => canton.municipalities.length > 0 || canton.abroad !== null)
       .map((canton) => canton.canton);
-    return judgedOf(calculateResult(kept, majorities), majorities, cantons);
+    return judgedOf(calculateResult(kept, majorities), majorities, cantons, t);
   });
   // The numbers of the municipalities with an entry, flattened once, not at every step.
   const withEntry = $derived(
@@ -82,8 +69,8 @@
     if (remaining === null || data.entries === null) return '';
     const left = remainingOf(withEntry, remaining);
     return left === 0
-      ? NOTHING_REMAINS
-      : remainingCount(formatCount(left), formatCount(withEntry.length));
+      ? t.NOTHING_REMAINS
+      : t.remainingCount(formatCount(left), formatCount(withEntry.length));
   });
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
   const aside = $derived.by((): ReadonlySet<number> => {
@@ -93,10 +80,10 @@
 </script>
 
 <svelte:head>
-  <title>{data.title} – {TITLE}</title>
+  <title>{data.title} – {t.TITLE}</title>
 </svelte:head>
 
-<nav><a href={resolve('/')}>{ALL_VOTES}</a></nav>
+<nav><a href={resolve('/')}>{t.ALL_VOTES}</a></nav>
 
 <h1>{data.title}</h1>
 <p>{data.date} · {data.kind}</p>
@@ -110,19 +97,19 @@
     <div class="result">
       <dl class="figures">
         <div>
-          <dt>{YES_VOTES}</dt>
+          <dt>{t.YES_VOTES}</dt>
           <dd>{judged.yesVotes}</dd>
         </div>
         <div>
-          <dt>{NO_VOTES}</dt>
+          <dt>{t.NO_VOTES}</dt>
           <dd>{judged.noVotes}</dd>
         </div>
         <div>
-          <dt>{YES_SHARE}</dt>
+          <dt>{t.YES_SHARE}</dt>
           <dd>{judged.yesShare}</dd>
         </div>
         <div>
-          <dt>{TURNOUT}</dt>
+          <dt>{t.TURNOUT}</dt>
           <dd>{judged.turnout}</dd>
         </div>
       </dl>
@@ -140,18 +127,18 @@
     </div>
     {#if selection !== null}
       <section class="result selection">
-        <h2>{WITH_SELECTION}</h2>
+        <h2>{t.WITH_SELECTION}</h2>
         <dl class="figures">
           <div>
-            <dt>{YES_VOTES}</dt>
+            <dt>{t.YES_VOTES}</dt>
             <dd>{selection.yesVotes}</dd>
           </div>
           <div>
-            <dt>{NO_VOTES}</dt>
+            <dt>{t.NO_VOTES}</dt>
             <dd>{selection.noVotes}</dd>
           </div>
           <div>
-            <dt>{YES_SHARE}</dt>
+            <dt>{t.YES_SHARE}</dt>
             <dd>{selection.yesShare}</dd>
           </div>
         </dl>
@@ -171,6 +158,7 @@
 
   {#if data.entries !== null}
     <Limits
+      {t}
       file={characteristics}
       failed={characteristicsFailed}
       voteDate={data.voteDate}
@@ -178,19 +166,19 @@
       bind:limits
       bind:abroadCounted
     />
-    <ResultMap entries={data.entries} {aside} title={data.title} voteDate={data.voteDate} />
+    <ResultMap {t} entries={data.entries} {aside} title={data.title} voteDate={data.voteDate} />
   {/if}
 
   <table>
     {#if selection !== null}
-      <caption>{WITH_SELECTION}</caption>
+      <caption>{t.WITH_SELECTION}</caption>
     {/if}
     <thead>
       <tr>
-        <th scope="col">{CANTON}</th>
-        <th scope="col">{YES_SHARE}</th>
-        <th scope="col">{CANTONAL_VOTES}</th>
-        <th scope="col">{SIDE}</th>
+        <th scope="col">{t.CANTON}</th>
+        <th scope="col">{t.YES_SHARE}</th>
+        <th scope="col">{t.CANTONAL_VOTES}</th>
+        <th scope="col">{t.SIDE}</th>
       </tr>
     </thead>
     <tbody>
@@ -226,7 +214,7 @@
 {/if}
 {#if data.note !== null}
   <section>
-    <h2>{NOTE_HEADING}</h2>
+    <h2>{t.NOTE_HEADING}</h2>
     <p>{data.note}</p>
   </section>
 {/if}

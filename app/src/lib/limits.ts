@@ -4,13 +4,14 @@
 import { remainingMunicipalities } from 'calculation';
 import {
   countsAt,
+  nameOf,
   unitsOf,
   writeUnits,
   type Applying,
   type Definition,
   type Source,
 } from './characteristics.ts';
-import { censusDate, electionHeading, limitLabel, populationDate } from './texts.ts';
+import type { Texts } from './texts/index.ts';
 import type { CharacteristicsFile } from './vote-data.ts';
 
 /** The steps of a track, from 0 at its smallest value to STEPS at its largest. */
@@ -19,8 +20,8 @@ export const STEPS = 1000;
 /** The track of a limit for a vote. */
 export interface Track {
   readonly definition: Definition;
-  // The date of its figures, as its label writes it: "Ende 2015", "Nationalratswahl 2019".
-  readonly date: string;
+  // The year of its figures, whose date its label writes: "Ende 2015", "Nationalratswahl 2019".
+  readonly year: number;
   // Each municipality's value as the panel writes it, in units of its last digit, in the order of
   // the file's list; null without a figure.
   readonly values: readonly (number | null)[];
@@ -49,17 +50,16 @@ export function trackOf(
     if (value > largest) largest = value;
     if (value > 0 && value < aboveZero) aboveZero = value;
   }
-  const date = DATE_OF[definition.source](definition.year(applying));
-  return { definition, date, values, smallest, largest, aboveZero };
+  return { definition, year: definition.year(applying), values, smallest, largest, aboveZero };
 }
 
 // The date of a characteristic's figures, by its source, as a limit's label writes it.
-const DATE_OF: Readonly<Record<Source, (year: number) => string>> = {
-  population: populationDate,
-  election: electionHeading,
-  census: censusDate,
-  area: (year) => String(year),
-  cattle: (year) => String(year),
+const DATE_OF: Readonly<Record<Source, (t: Texts, year: number) => string>> = {
+  population: (t, year) => t.populationDate(year),
+  election: (t, year) => t.electionHeading(year),
+  census: (t, year) => t.censusDate(year),
+  area: (_, year) => String(year),
+  cattle: (_, year) => String(year),
 };
 
 /**
@@ -84,13 +84,13 @@ export function valueAt(track: Track, step: number): number {
  * The label of a limit with its bounds at the steps `lower` and `upper`: "Ausländeranteil (Ende
  * 2015): von 0.00% bis 19.98%" (spec limits, "The label of a limit").
  */
-export function labelOf(track: Track, lower: number, upper: number): string {
+export function labelOf(track: Track, lower: number, upper: number, t: Texts): string {
   const { definition } = track;
-  return limitLabel(
-    definition.name,
-    track.date,
-    writeUnits(definition, valueAt(track, lower)),
-    writeUnits(definition, valueAt(track, upper)),
+  return t.limitLabel(
+    nameOf(definition, t),
+    DATE_OF[definition.source](t, track.year),
+    writeUnits(definition, valueAt(track, lower), t),
+    writeUnits(definition, valueAt(track, upper), t),
   );
 }
 

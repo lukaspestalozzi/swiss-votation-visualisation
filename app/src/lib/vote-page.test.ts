@@ -4,9 +4,11 @@ import { expect, test } from 'vitest';
 import votesFile from '../../static/data/votes.json';
 import type { Vote, VoteFile, Votes } from './vote-data.ts';
 import { calculateResult } from 'calculation';
+import { textsOf } from './texts/index.ts';
 import { judgedOf, votePage } from './vote-page.ts';
 
 const listing = votesFile as Votes;
+const de = textsOf('de');
 const files = import.meta.glob<VoteFile>('../../static/data/votes/*.json', {
   eager: true,
   import: 'default',
@@ -20,7 +22,7 @@ function voteOf(id: number): Vote {
 }
 
 function page(id: number) {
-  return votePage(voteOf(id), fileOf.get(id));
+  return votePage(voteOf(id), fileOf.get(id), de);
 }
 
 test('the head of a vote', () => {
@@ -100,7 +102,7 @@ test('a canton without valid votes shows no yes share', () => {
     entries: { ZH: [[261, 100, 60, 60, 40, 20]], UR: [[1201, 10, 0, 0, 0, 0]] },
     withoutResult: [],
   };
-  expect(votePage(voteOf(5960), file).judged?.cantons).toEqual([
+  expect(votePage(voteOf(5960), file, de).judged?.cantons).toEqual([
     { canton: 'ZH', yesShare: '66.67%', cantonalVotes: '1', side: 'Ja' },
     { canton: 'UR', yesShare: '–', cantonalVotes: '1', side: 'Nein' },
   ]);
@@ -158,16 +160,16 @@ test('a vote whose entries add up to the validated result has no note on it', ()
 });
 
 test('a vote without its file, or with an entry the calculation refuses, is an error that names it', () => {
-  expect(() => votePage(voteOf(5960), undefined)).toThrow(/vote 5960 of 2016-02-28/);
+  expect(() => votePage(voteOf(5960), undefined, de)).toThrow(/vote 5960 of 2016-02-28/);
   // Made up: an entry of a canton that does not exist.
   const refused: VoteFile = { id: 5960, entries: { XX: [[1, 10, 5, 5, 3, 2]] }, withoutResult: [] };
-  expect(() => votePage(voteOf(5960), refused)).toThrow(/vote 5960 of 2016-02-28/);
+  expect(() => votePage(voteOf(5960), refused, de)).toThrow(/vote 5960 of 2016-02-28/);
 });
 
 test('a canton of the vote with nothing left keeps its row, which says so', () => {
   // Spec verdicts, "The cantons under a selection": only ZH remains of a vote of ZH, BE and OW.
   const result = calculateResult([{ canton: 'ZH', yes: 60, no: 40 }], 'voters-and-cantons');
-  expect(judgedOf(result, 'voters-and-cantons', ['ZH', 'BE', 'OW']).cantons).toEqual([
+  expect(judgedOf(result, 'voters-and-cantons', ['ZH', 'BE', 'OW'], de).cantons).toEqual([
     { canton: 'ZH', yesShare: '60.00%', cantonalVotes: '1', side: 'Ja' },
     { canton: 'BE', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
     { canton: 'OW', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },

@@ -1,28 +1,14 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { DEFINITIONS, applyingTo, writeUnits } from '../../../lib/characteristics.ts';
+  import { DEFINITIONS, applyingTo, nameOf, writeUnits } from '../../../lib/characteristics.ts';
   import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../lib/limits.ts';
-  import {
-    ABROAD_SWITCH,
-    ADD,
-    ADD_LIMIT,
-    BACK_TO_REAL,
-    CHOOSE,
-    GUIDE_LINK,
-    LIMITS_FAILED,
-    LIMITS_HEADING,
-    PANEL_LOADING,
-    REMOVE_LIMIT,
-    THOUGHT_EXPERIMENT,
-    lowerBound,
-    removeLimit,
-    upperBound,
-  } from '../../../lib/texts.ts';
+  import type { Texts } from '../../../lib/texts/index.ts';
   import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
 
   // The section with the limits (spec limits): the page holds the limits and the switch, and
   // recalculates from them (design of add-limits, decision 21).
   let {
+    t,
     file,
     failed,
     voteDate,
@@ -30,6 +16,7 @@
     limits = $bindable(),
     abroadCounted = $bindable(),
   }: {
+    t: Texts;
     file: CharacteristicsFile | null;
     failed: boolean;
     voteDate: string;
@@ -51,7 +38,7 @@
   let choice = $state('');
 
   function add(): void {
-    const definition = DEFINITIONS.find((candidate) => candidate.name === choice);
+    const definition = DEFINITIONS.find((candidate) => nameOf(candidate, t) === choice);
     choice = '';
     if (definition === undefined || file === null) return;
     const track = trackOf(definition, file, applyingTo(file, voteDate));
@@ -83,28 +70,28 @@
 </script>
 
 <section class="limits">
-  <h2>{LIMITS_HEADING}</h2>
-  <p>{THOUGHT_EXPERIMENT} <a href={resolve('/guide')}>{GUIDE_LINK}</a></p>
+  <h2>{t.LIMITS_HEADING}</h2>
+  <p>{t.THOUGHT_EXPERIMENT} <a href={resolve('/guide')}>{t.GUIDE_LINK}</a></p>
   {#if failed}
-    <p>{LIMITS_FAILED}</p>
+    <p>{t.LIMITS_FAILED}</p>
   {:else if file === null}
-    <p>{PANEL_LOADING}</p>
+    <p>{t.PANEL_LOADING}</p>
   {:else}
     <label>
-      {ADD_LIMIT}
+      {t.ADD_LIMIT}
       <select bind:value={choice}>
-        <option value="">{CHOOSE}</option>
-        {#each offered as definition (definition.name)}
-          <option value={definition.name}>{definition.name}</option>
+        <option value="">{t.CHOOSE}</option>
+        {#each offered as definition (definition.key)}
+          <option value={nameOf(definition, t)}>{nameOf(definition, t)}</option>
         {/each}
       </select>
     </label>
-    <button type="button" disabled={choice === ''} onclick={add}>{ADD}</button>
-    {#each limits as limit, index (limit.track.definition.name)}
+    <button type="button" disabled={choice === ''} onclick={add}>{t.ADD}</button>
+    {#each limits as limit, index (limit.track.definition.key)}
       {@const { track, lower, upper } = limit}
-      {@const name = track.definition.name}
+      {@const name = nameOf(track.definition, t)}
       <div class="limit">
-        <p class="label">{labelOf(track, lower, upper)}</p>
+        <p class="label">{labelOf(track, lower, upper, t)}</p>
         <div class="track">
           <input
             type="range"
@@ -113,8 +100,8 @@
             step="1"
             value={lower}
             style:z-index={lower === STEPS ? 1 : undefined}
-            aria-label={lowerBound(name)}
-            aria-valuetext={writeUnits(track.definition, valueAt(track, lower))}
+            aria-label={t.lowerBound(name)}
+            aria-valuetext={writeUnits(track.definition, valueAt(track, lower), t)}
             oninput={(event) => {
               move(index, 'lower', event.currentTarget);
             }}
@@ -125,8 +112,8 @@
             max={STEPS}
             step="1"
             value={upper}
-            aria-label={upperBound(name)}
-            aria-valuetext={writeUnits(track.definition, valueAt(track, upper))}
+            aria-label={t.upperBound(name)}
+            aria-valuetext={writeUnits(track.definition, valueAt(track, upper), t)}
             oninput={(event) => {
               move(index, 'upper', event.currentTarget);
             }}
@@ -134,20 +121,20 @@
         </div>
         <button
           type="button"
-          aria-label={removeLimit(name)}
+          aria-label={t.removeLimit(name)}
           onclick={() => {
             remove(index);
-          }}>{REMOVE_LIMIT}</button
+          }}>{t.REMOVE_LIMIT}</button
         >
       </div>
     {/each}
     <label class="switch">
       <input type="checkbox" bind:checked={abroadCounted} />
-      {ABROAD_SWITCH}
+      {t.ABROAD_SWITCH}
     </label>
     <p class="count">{count}</p>
     {#if limits.length > 0 || !abroadCounted}
-      <button type="button" onclick={backToReal}>{BACK_TO_REAL}</button>
+      <button type="button" onclick={backToReal}>{t.BACK_TO_REAL}</button>
     {/if}
   {/if}
 </section>

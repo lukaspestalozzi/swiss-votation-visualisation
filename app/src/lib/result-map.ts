@@ -3,16 +3,7 @@
 // add-result-map gives the reasons (decisions 5, 6, 8 and 12).
 import type { CantonEntries } from 'calculation';
 import { formatCount, formatShare } from './format.ts';
-import {
-  LEGEND_SET_ASIDE,
-  LEGEND_TIE,
-  LEGEND_WITHOUT_RESULT,
-  NO_VOTES,
-  WITHOUT_RESULT,
-  YES_SHARE,
-  YES_VOTES,
-  legendClass,
-} from './texts.ts';
+import type { Texts } from './texts/index.ts';
 import type { VoteFile } from './vote-data.ts';
 
 export type Side = 'yes' | 'no';
@@ -61,26 +52,29 @@ export interface LegendEntry {
 const STEPS = [1, 2, 3, 4] as const;
 const from = (step: Step): number => 40 + 10 * step;
 
-/** From the clearest no to the clearest yes, then a tie and the hatching. */
-export const LEGEND: readonly LegendEntry[] = [
-  ...[...STEPS].reverse().map((step) => ({
-    label: legendClass(false, from(step)),
-    fill: colourOf({ side: 'no', step }),
-  })),
-  ...STEPS.map((step) => ({
-    label: legendClass(true, from(step)),
-    fill: colourOf({ side: 'yes', step }),
-  })),
-  { label: LEGEND_TIE, fill: TIE_COLOUR },
-  { label: LEGEND_WITHOUT_RESULT, fill: 'hatch' },
-];
+/** The legend: from the clearest no to the clearest yes, then a tie and the hatching. */
+export function legendOf(t: Texts): readonly LegendEntry[] {
+  return [
+    ...[...STEPS].reverse().map((step) => ({
+      label: t.legendClass(false, from(step)),
+      fill: colourOf({ side: 'no', step }),
+    })),
+    ...STEPS.map((step) => ({
+      label: t.legendClass(true, from(step)),
+      fill: colourOf({ side: 'yes', step }),
+    })),
+    { label: t.LEGEND_TIE, fill: TIE_COLOUR },
+    { label: t.LEGEND_WITHOUT_RESULT, fill: 'hatch' },
+  ];
+}
 
-// The legend's last entry while the selection sets a municipality aside (spec result-map, "The
-// legend").
-export const LEGEND_SET_ASIDE_ENTRY: LegendEntry = {
-  label: LEGEND_SET_ASIDE,
-  fill: SET_ASIDE_COLOUR,
-};
+/**
+ * The legend's last entry while the selection sets a municipality aside (spec result-map, "The
+ * legend").
+ */
+export function legendSetAsideOf(t: Texts): LegendEntry {
+  return { label: t.LEGEND_SET_ASIDE, fill: SET_ASIDE_COLOUR };
+}
 
 // What pointing at a municipality shows: its name, then one line per figure.
 export interface Details {
@@ -96,16 +90,17 @@ export function detailsOf(
   name: string,
   canton: string,
   figures: readonly [number, number] | null,
+  t: Texts,
 ): Details {
   const title = name.endsWith(`(${canton})`) ? name : `${name} (${canton})`;
-  if (figures === null) return { name: title, lines: [WITHOUT_RESULT] };
+  if (figures === null) return { name: title, lines: [t.WITHOUT_RESULT] };
   const [yes, no] = figures;
   return {
     name: title,
     lines: [
-      `${YES_SHARE}: ${formatShare(yes, yes + no)}`,
-      `${YES_VOTES}: ${formatCount(yes)}`,
-      `${NO_VOTES}: ${formatCount(no)}`,
+      t.characteristic(t.YES_SHARE, formatShare(yes, yes + no)),
+      t.characteristic(t.YES_VOTES, formatCount(yes)),
+      t.characteristic(t.NO_VOTES, formatCount(no)),
     ],
   };
 }

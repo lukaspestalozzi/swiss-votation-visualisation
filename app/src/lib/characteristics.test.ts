@@ -6,15 +6,19 @@ import {
   DEFINITIONS,
   applyingTo,
   countsOf,
+  nameOf,
   written,
   type Definition,
   type Quotient,
 } from './characteristics.ts';
 import { formatCount, formatQuotient, formatShare } from './format.ts';
+import { textsOf } from './texts/index.ts';
 import type { CharacteristicsFile } from './vote-data.ts';
 
+const de = textsOf('de');
+
 test('the 21 characteristics have their names, in the order of the spec', () => {
-  expect(DEFINITIONS.map((definition) => definition.name)).toEqual([
+  expect(DEFINITIONS.map((definition) => nameOf(definition, de))).toEqual([
     'Einwohner',
     'Ausländeranteil',
     '0–17 Jahre',
@@ -98,7 +102,7 @@ test('the cattle per inhabitant count the inhabitants of the cattle year', () =>
   const applying = applyingTo(file, '2026-03-08');
   expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2024]);
   const cattle = DEFINITIONS[20];
-  expect(cattle.name).toBe('Rinder je Einwohner');
+  expect(nameOf(cattle, de)).toBe('Rinder je Einwohner');
   expect(cattle.value(countsOf(file, applying, 1))).toEqual({ part: 5, whole: 10 });
 });
 
@@ -209,7 +213,9 @@ test('a party without a list counts no votes: Zürich in 2023, Die Mitte its own
 test('four characteristics have a logarithmic track, the others a linear one', () => {
   // Design of add-limits, decision 5: the four whose values span several orders of magnitude.
   expect(
-    DEFINITIONS.filter((definition) => definition.scale === 'logarithmic').map((d) => d.name),
+    DEFINITIONS.filter((definition) => definition.scale === 'logarithmic').map((d) =>
+      nameOf(d, de),
+    ),
   ).toEqual(['Einwohner', 'Einwohner je km²', 'Fläche', 'Rinder je Einwohner']);
   expect(DEFINITIONS.filter((definition) => definition.scale === 'linear')).toHaveLength(17);
 });
@@ -241,7 +247,7 @@ test('every value is written as before, for every municipality of two votes', ()
       const counts = countsOf(file, applying, number);
       for (const definition of DEFINITIONS) {
         const value = definition.value(counts);
-        expect(written(definition, value)).toBe(oldWritten(definition, value));
+        expect(written(definition, value, de)).toBe(oldWritten(definition, value));
         compared += 1;
       }
     }

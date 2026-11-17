@@ -1,8 +1,11 @@
 // The map's logic (spec result-map). The municipal figures are those of
 // investigations/map-data.md, "Municipal figures".
 import { expect, test } from 'vitest';
-import { LEGEND, colourOf, colouringOf, detailsOf, voteEntriesOf } from './result-map.ts';
+import { colourOf, colouringOf, detailsOf, legendOf, voteEntriesOf } from './result-map.ts';
+import { textsOf } from './texts/index.ts';
 import type { VoteFile } from './vote-data.ts';
+
+const de = textsOf('de');
 
 test('named municipalities of 2016-02-28: the side and the class', () => {
   expect(colouringOf(432, 550)).toEqual({ side: 'no', step: 1 }); // Aeugst am Albis, 56.0% no
@@ -49,7 +52,7 @@ test('the colours of the classes, from class 1 to class 4, and of a tie', () => 
 });
 
 test('the legend: the ten entries in order, each with its colour or the hatching', () => {
-  expect(LEGEND).toEqual([
+  expect(legendOf(de)).toEqual([
     { label: 'Nein: 80% und mehr', fill: '#934319' },
     { label: 'Nein: 70–80%', fill: '#c2673b' },
     { label: 'Nein: 60–70%', fill: '#e5946f' },
@@ -64,18 +67,18 @@ test('the legend: the ten entries in order, each with its colour or the hatching
 });
 
 test('the details of a municipality: its name with its canton, its share and its votes', () => {
-  expect(detailsOf('Zürich', 'ZH', [46565, 99614])).toEqual({
+  expect(detailsOf('Zürich', 'ZH', [46565, 99614], de)).toEqual({
     name: 'Zürich (ZH)',
     lines: ['Ja-Anteil: 31.85%', "Ja-Stimmen: 46'565", "Nein-Stimmen: 99'614"],
   });
 });
 
 test('a name that already ends with its canton keeps it once', () => {
-  expect(detailsOf('Benken (ZH)', 'ZH', [210, 201]).name).toBe('Benken (ZH)');
+  expect(detailsOf('Benken (ZH)', 'ZH', [210, 201], de).name).toBe('Benken (ZH)');
 });
 
 test('a municipality without a result says why it has no figures', () => {
-  expect(detailsOf('Meienried', 'BE', null)).toEqual({
+  expect(detailsOf('Meienried', 'BE', null, de)).toEqual({
     name: 'Meienried (BE)',
     lines: ['Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.'],
   });

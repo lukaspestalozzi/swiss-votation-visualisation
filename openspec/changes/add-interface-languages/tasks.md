@@ -54,7 +54,7 @@ Q chose to do these first (design, decision 14).
 
 Design, decisions 7 and 8. The screen does not change in this group.
 
-- [ ] 2.1 `src/lib/texts.ts` becomes `src/lib/texts/`:
+- [x] 2.1 `src/lib/texts.ts` becomes `src/lib/texts/`:
   - `index.ts` holds the type `Language` (only `'de'` until 3.1), the `Texts` interface and
     `textsOf(language)`;
   - `de.ts` holds today's texts as one `Texts` object;
@@ -65,7 +65,15 @@ Design, decisions 7 and 8. The screen does not change in this group.
   - `pnpm run check`: 0 errors;
   - `pnpm run test`: 52 and 99 pass;
   - `git grep -n "lib/texts.ts" app/src` shows nothing.
-- [ ] 2.2 Every function of `src/lib/` that writes a text takes the `Texts` as a parameter:
+
+  As built, together with 2.2 and 2.3, since every module's imports change in both:
+  - `Texts` keeps the names of today's constants as its properties (`t.YES_VOTES`), so each
+    changed line is easy to trace, and it names its own `LANGUAGE`.
+  - The characteristics' names are one record, `CHARACTERISTIC`, by the key of 2.2.
+  - A date keeps the language's `MONTHS`, and the language's `date` writes day, month and year.
+    `format.ts` takes the month's name with the check it already had, so no month outside 1 to
+    12 reaches a language.
+- [x] 2.2 Every function of `src/lib/` that writes a text takes the `Texts` as a parameter:
   - `vote-list.ts`, `vote-page.ts`;
   - `result-map.ts` (legend and details);
   - `characteristics.ts`: a key per definition, its name from the texts;
@@ -77,11 +85,30 @@ Design, decisions 7 and 8. The screen does not change in this group.
   Verify:
   - `pnpm run check` and `pnpm run lint`: 0 issues;
   - `pnpm run test`: 52 and 99 pass, with no expected text changed.
-- [ ] 2.3 The routes and components take the texts of the page's language: `'de'` from each
+
+  As built:
+  - A track keeps the year of its figures instead of the written date, and `labelOf` writes the
+    date in the language of the texts, so a track and the selection are the same in every
+    language.
+  - The legend became `legendOf(t)` and `legendSetAsideOf(t)`.
+  - A line of a municipality's details is written with the texts' "name: value" (`characteristic`),
+    the same in German.
+  - The vote's title, reference and note are still taken in German; 3.4 takes them by language.
+- [x] 2.3 The routes and components take the texts of the page's language: `'de'` from each
   page's data, `textsOf` in the component or as a prop.
 
   Verify:
   - `pnpm run build && pnpm run test:e2e`: 104 pass, with no expected text changed.
+
+  As built:
+  - Each page's `load` returns `lang`, and the page takes `textsOf(data.lang)`.
+  - `Limits.svelte`, `ResultMap.svelte` and `CharacteristicsPanel.svelte` take the texts as the
+    prop `t`.
+  - The first run failed one test: "the keyboard on the list only moves the choice" read the
+    list's value `foreigners`, the key, where it expects "Ausländeranteil". Q chose to keep a
+    characteristic's name, in the page's language, as the value of its option, and the test
+    unchanged; the page finds the definition by that name.
+  - 104 passed then.
 
 ## 3. French and Italian texts
 
