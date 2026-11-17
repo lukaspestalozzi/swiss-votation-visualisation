@@ -132,6 +132,9 @@ So a pointer or a finger drags a thumb, and a click on the bare track moves noth
 - **Names:** `aria-label` "Untere Grenze: <name>" and "Obere Grenze: <name>".
 - **Read-out:** `aria-valuetext` gives the bound as written, not the step.
 - **Crossing:** on `input`, a bound moved past the other is set back to the other's step.
+- **The end of the track:** with the lower bound at step 1,000, both thumbs stand at the end,
+  and the lower slider lies on top, so that the range can be opened again by pointer (found by
+  Copilot's review of PR #12; added to this decision after the archive, see the tasks).
 - **No dependency.**
 
 Alternatives considered:

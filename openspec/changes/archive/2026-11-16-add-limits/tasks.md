@@ -509,11 +509,16 @@ suggestions. Q asked to fix the warnings first; they are fixed:
 4. **Task 8.2's check** asked the README to name the change and the investigation, which its
    convention does not. The check was corrected to what the README's convention allows.
 
-The four suggestions are open:
+The four suggestions were left open at the archive:
 - decision 7 does not name the lower slider on top at the end of the track;
 - the count and the set-aside are worked out in `+page.svelte`, not in `src/lib/`;
 - the proposal calls the switch "Auslandschweizer mitzählen";
 - the label of "65 Jahre und älter" has no browser test, only a unit test of its range.
+
+On 2026-11-17, after the archive, Q decided:
+- The first and the third are fixed here, in the archive: decision 7 names the lower slider on
+  top, and the proposal gives the switch the name of the spec.
+- The second and the fourth are the first tasks of `add-interface-languages`, the next change.
 
 ## Archive
 

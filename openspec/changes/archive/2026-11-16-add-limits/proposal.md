@@ -35,7 +35,7 @@ Swiss abroad and with a municipality that has no result of its own.
     within both bounds, bounds included.
   - A narrowed limit sets aside a municipality without a figure: the party strengths of 5 to 7
     small Bern municipalities. A limit at its full range sets nothing aside.
-  - A switch, "Auslandschweizer mitzählen", on by default, counts the Swiss abroad of a canton
+  - A switch, "Auslandschweizerinnen und Auslandschweizer mitzählen", on by default, counts the Swiss abroad of a canton
     while at least one of its municipalities remains. So a canton whose municipalities are all set
     aside has no cantonal vote, as hard constraint 2 says. Switched off, no Swiss abroad count.
   - A sentence says how many municipalities with a result of their own remain.
