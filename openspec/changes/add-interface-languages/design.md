@@ -101,9 +101,12 @@ Alternatives considered:
 ### 5. Routes under `[lang]`, a language checked in its layout
 
 The pages move to `src/routes/[lang]/` (`+page`, `guide/`, `votes/[id]/`):
-- `[lang]/+layout.ts` returns the language from `load`;
-- any other value is a 404 (`error(404)`), which prerendering never meets, since it follows only
-  the entries;
+- `[lang]/+layout.server.ts` returns the language from `load`; it is the layout's server load, so
+  that each page's server load takes the language from it with `parent()` (as built in 4.1);
+- any other value is a 404 (`error(404)`). Prerendering never meets one: it follows the pages'
+  entries and their links, and every link names one of the three languages. It follows the
+  links too, as task 4.3 found: a vote left out of the Italian entries is written anyway,
+  through the switch;
 - each page names its `entries`, which SvelteKit takes from a page, not from a layout: the start
   page and the guide the three languages, a vote every pair of language and id.
 
