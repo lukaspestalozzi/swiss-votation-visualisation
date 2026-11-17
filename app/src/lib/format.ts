@@ -1,7 +1,7 @@
 // Dates and numbers as the screen writes them (spec vote-list, "How dates and numbers are
 // written"). These functions do not use the locale data of the machine or the browser, so a page
 // reads the same wherever it is built or shown.
-import { MONTHS } from './texts.ts';
+import type { Texts } from './texts/index.ts';
 
 /** A whole number from zero, its digits grouped by three with an apostrophe: 1'609'152. */
 export function formatCount(count: number): string {
@@ -89,12 +89,15 @@ export function formatCantonalVotes(cantonalVotes: number): string {
   return whole === 0 ? '½' : `${String(whole)}½`;
 }
 
-/** A date of the data files (2016-02-28) as day, German month and year: 28. Februar 2016. */
-export function formatDate(date: string): string {
+/**
+ * A date of the data files (2016-02-28) as day, month and year in the language of `t`:
+ * 28. Februar 2016.
+ */
+export function formatDate(date: string, t: Texts): string {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
-  const month = match ? MONTHS[Number(match[2]) - 1] : undefined;
+  const month = match ? t.MONTHS[Number(match[2]) - 1] : undefined;
   if (!match || month === undefined) {
     throw new RangeError(`${date} is not a date of the form 2016-02-28`);
   }
-  return `${String(Number(match[3]))}. ${month} ${match[1]}`;
+  return t.date(Number(match[3]), month, Number(match[1]));
 }

@@ -7,6 +7,9 @@ import {
   formatShare,
   formatUnits,
 } from './format.ts';
+import { textsOf } from './texts/index.ts';
+
+const de = textsOf('de');
 
 test('a count is grouped by three with an apostrophe', () => {
   expect(formatCount(1609152)).toBe("1'609'152");
@@ -36,9 +39,9 @@ test('cantonal votes are written with a half as ½', () => {
 });
 
 test('a date is written with the German name of its month', () => {
-  expect(formatDate('2016-02-28')).toBe('28. Februar 2016');
-  expect(formatDate('2026-03-08')).toBe('8. März 2026');
-  expect(formatDate('2013-12-01')).toBe('1. Dezember 2013');
+  expect(formatDate('2016-02-28', de)).toBe('28. Februar 2016');
+  expect(formatDate('2026-03-08', de)).toBe('8. März 2026');
+  expect(formatDate('2013-12-01', de)).toBe('1. Dezember 2013');
 });
 
 test('a quotient without decimals is grouped like a count', () => {

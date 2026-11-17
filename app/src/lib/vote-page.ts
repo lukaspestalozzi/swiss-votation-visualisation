@@ -8,26 +8,7 @@ import {
   type Result,
 } from 'calculation';
 import { formatCantonalVotes, formatCount, formatDate, formatShare } from './format.ts';
-import {
-  cantonalVotes,
-  FAILED,
-  forTheCounterProposal,
-  forTheInitiative,
-  KINDS,
-  knownDifference,
-  MAJORITIES_NEEDED,
-  MAJORITY_OF_CANTONS,
-  MAJORITY_OF_VOTERS,
-  NOT_NEEDED,
-  NOTHING_LEFT,
-  NOT_REACHED,
-  PASSED,
-  PROVISIONAL,
-  REACHED,
-  SOURCE,
-  TIE_BREAK_NOT_JUDGED,
-  tieBreakCantons,
-} from './texts.ts';
+import type { Texts } from './texts/index.ts';
 import type { Row, Vote, VoteFile } from './vote-data.ts';
 
 // A majority: its heading, whether it is reached, and its yes share or cantonal votes.
@@ -91,7 +72,7 @@ export interface VotePage {
 // The entries of a vote's file, each with the canton it counts for.
 type Rows = readonly { readonly canton: string; readonly row: Row }[];
 
-export function votePage(vote: Vote, file: VoteFile | undefined): VotePage {
+export function votePage(vote: Vote, file: VoteFile | undefined, t: Texts): VotePage {
   const name = `vote ${String(vote.id)} of ${vote.date}`;
   if (file === undefined) {
     throw new Error(
@@ -104,19 +85,19 @@ export function votePage(vote: Vote, file: VoteFile | undefined): VotePage {
   const majorities = majoritiesNeeded(vote.kind);
   return {
     title: vote.title.de,
-    date: formatDate(vote.date),
-    kind: KINDS[vote.kind],
-    majoritiesNeeded: majorities === 'not-calculated' ? null : MAJORITIES_NEEDED[majorities],
-    judged: majorities === 'not-calculated' ? null : judgedOfRows(name, rows, majorities),
-    tieBreak: vote.kind === 'tie-break-question' ? tieBreakOf(vote) : null,
-    source: vote.reference === null ? null : SOURCE + vote.reference.de,
-    provisional: vote.validated ? null : PROVISIONAL,
+    date: formatDate(vote.date, t),
+    kind: t.KINDS[vote.kind],
+    majoritiesNeeded: majorities === 'not-calculated' ? null : t.MAJORITIES_NEEDED[majorities],
+    judged: majorities === 'not-calculated' ? null : judgedOfRows(name, rows, majorities, t),
+    tieBreak: vote.kind === 'tie-break-question' ? tieBreakOf(vote, t) : null,
+    source: vote.reference === null ? null : t.SOURCE + vote.reference.de,
+    provisional: vote.validated ? null : t.PROVISIONAL,
     note: vote.note === null ? null : vote.note.de,
-    differences: vote.validated ? differencesOf(vote, rows) : [],
+    differences: vote.validated ? differencesOf(vote, rows, t) : [],
   };
 }
 
-function differencesOf(vote: Vote, rows: Rows): string[] {
+function differencesOf(vote: Vote, rows: Rows, t: Texts): string[] {
   let yes = 0;
   let no = 0;
   for (const { row } of rows) {
@@ -131,7 +112,7 @@ function differencesOf(vote: Vote, rows: Rows): string[] {
     .filter(([, official, summed]) => official !== summed)
     .map(([count, official, summed]) => {
       if (vote.reference === null) throw new Error(`vote ${String(vote.id)} has no reference`);
-      return knownDifference(
+      return t.knownDifference(
         formatCount(official),
         count,
         vote.reference.de,
@@ -141,23 +122,23 @@ function differencesOf(vote: Vote, rows: Rows): string[] {
     });
 }
 
-function tieBreakOf(vote: Vote): TieBreak {
+function tieBreakOf(vote: Vote, t: Texts): TieBreak {
   const { yes, no, cantonalVotesInFavour, cantonalVotesAgainst } = vote.result;
   if (cantonalVotesInFavour === null || cantonalVotesAgainst === null) {
     throw new Error(`the tie-break question ${String(vote.id)} has no cantons`);
   }
   return {
-    initiative: forTheInitiative(formatCount(yes), formatShare(yes, yes + no)),
-    counterProposal: forTheCounterProposal(formatCount(no), formatShare(no, yes + no)),
-    cantons: tieBreakCantons(
+    initiative: t.forTheInitiative(formatCount(yes), formatShare(yes, yes + no)),
+    counterProposal: t.forTheCounterProposal(formatCount(no), formatShare(no, yes + no)),
+    cantons: t.tieBreakCantons(
       formatCantonalVotes(cantonalVotesInFavour),
       formatCantonalVotes(cantonalVotesAgainst),
     ),
-    notJudged: TIE_BREAK_NOT_JUDGED,
+    notJudged: t.TIE_BREAK_NOT_JUDGED,
   };
 }
 
-function judgedOfRows(name: string, rows: Rows, majorities: Majorities): Judged {
+function judgedOfRows(name: string, rows: Rows, majorities: Majorities, t: Texts): Judged {
   let result: Result;
   try {
     result = calculateResult(
@@ -175,7 +156,7 @@ function judgedOfRows(name: string, rows: Rows, majorities: Majorities): Judged 
     cast += row[2];
   }
   const cantons = [...new Set(rows.map(({ canton }) => canton))];
-  return { ...judgedOf(result, majorities, cantons), turnout: formatShare(cast, registered) };
+  return { ...judgedOf(result, majorities, cantons, t), turnout: formatShare(cast, registered) };
 }
 
 /**
@@ -187,6 +168,7 @@ export function judgedOf(
   result: Result,
   majorities: Majorities,
   cantonsOfVote: readonly string[],
+  t: Texts,
 ): ResultShown {
   const yesShare = formatShare(result.yes, result.yes + result.no);
   const cantonsNeeded = majorities === 'voters-and-cantons';
@@ -198,33 +180,42 @@ export function judgedOf(
     yesShare,
     verdicts: [
       {
-        heading: MAJORITY_OF_VOTERS,
-        verdict: result.majorityOfVoters ? REACHED : NOT_REACHED,
+        heading: t.MAJORITY_OF_VOTERS,
+        verdict: result.majorityOfVoters ? t.REACHED : t.NOT_REACHED,
         figure: yesShare,
         greyed: false,
       },
       {
-        heading: MAJORITY_OF_CANTONS,
-        verdict: !cantonsNeeded ? NOT_NEEDED : result.majorityOfCantons ? REACHED : NOT_REACHED,
-        figure: cantonalVotes(
+        heading: t.MAJORITY_OF_CANTONS,
+        verdict: !cantonsNeeded
+          ? t.NOT_NEEDED
+          : result.majorityOfCantons
+            ? t.REACHED
+            : t.NOT_REACHED,
+        figure: t.cantonalVotes(
           formatCantonalVotes(result.cantonalVotesInFavour),
           formatCantonalVotes(result.cantonalVotesAgainst),
         ),
         greyed: !cantonsNeeded,
       },
     ],
-    outcome: result.passed ? PASSED : FAILED,
+    outcome: result.passed ? t.PASSED : t.FAILED,
     cantons: CANTONS.filter(({ abbreviation }) => ofVote.has(abbreviation)).map(
       ({ abbreviation }): CantonRow => {
         const outcome = outcomes.get(abbreviation);
         if (outcome === undefined) {
-          return { canton: abbreviation, yesShare: '–', cantonalVotes: NOTHING_LEFT, side: '–' };
+          return {
+            canton: abbreviation,
+            yesShare: '–',
+            cantonalVotes: t.NOTHING_LEFT,
+            side: '–',
+          };
         }
         return {
           canton: abbreviation,
           yesShare: formatShare(outcome.yes, outcome.yes + outcome.no),
           cantonalVotes: formatCantonalVotes(outcome.cantonalVotes),
-          side: outcome.inFavour ? REACHED : NOT_REACHED,
+          side: outcome.inFavour ? t.REACHED : t.NOT_REACHED,
         };
       },
     ),

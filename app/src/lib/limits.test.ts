@@ -6,7 +6,7 @@ import characteristicsFile from '../../static/data/characteristics.json';
 import mapData from '../../static/data/map.json';
 import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
-import { DEFINITIONS, applyingTo, writeUnits, type Definition } from './characteristics.ts';
+import { DEFINITIONS, applyingTo, nameOf, writeUnits, type Definition } from './characteristics.ts';
 import {
   STEPS,
   isNarrowed,
@@ -19,12 +19,14 @@ import {
   type Track,
 } from './limits.ts';
 import { voteEntriesOf } from './result-map.ts';
+import { textsOf } from './texts/index.ts';
 import type { CharacteristicsFile, MapFile, Municipalities, VoteFile, Votes } from './vote-data.ts';
 
 const file = characteristicsFile as unknown as CharacteristicsFile;
+const de = textsOf('de');
 
 function definitionNamed(name: string): Definition {
-  const definition = DEFINITIONS.find((candidate) => candidate.name === name);
+  const definition = DEFINITIONS.find((candidate) => nameOf(candidate, de) === name);
   if (definition === undefined) throw new Error(`there is no characteristic ${name}`);
   return definition;
 }
@@ -36,7 +38,7 @@ function trackFor(name: string, voteDate: string): Track {
 
 /** The value of a step, as the panel writes it. */
 function at(track: Track, step: number): string {
-  return writeUnits(track.definition, valueAt(track, step));
+  return writeUnits(track.definition, valueAt(track, step), de);
 }
 
 test('a linear track: the foreigners of 2016-02-28', () => {
@@ -74,7 +76,7 @@ test('a track has the range of its own characteristic: the elderly are the elder
 test('the label of a limit names its characteristic, the date of its figures and its bounds', () => {
   // Spec limits, "The label of a limit", and investigations/limits.md, 4 and 5.
   const label = (name: string, voteDate: string, lower: number, upper: number): string =>
-    labelOf(trackFor(name, voteDate), lower, upper);
+    labelOf(trackFor(name, voteDate), lower, upper, de);
   expect(label('SVP', '2021-03-07', 0, STEPS)).toBe(
     'SVP (Nationalratswahl 2019): von 0.00% bis 84.11%',
   );

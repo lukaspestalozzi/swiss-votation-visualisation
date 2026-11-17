@@ -2,16 +2,21 @@
 // The figures are those of investigations/data-sources.md and of the data files of 2026-11-14.
 import { expect, test } from 'vitest';
 import votesFile from '../../static/data/votes.json';
+import { textsOf } from './texts/index.ts';
 import type { Votes } from './vote-data.ts';
 import { voteList } from './vote-list.ts';
 
 const listing = votesFile as Votes;
+const de = textsOf('de');
 // The data files of 2026-11-14 end with this vote day; a later update adds votes after it.
 const FIRST_DATA_UNTIL = '2026-09-27';
-const years = voteList({
-  ...listing,
-  votes: listing.votes.filter((vote) => vote.date <= FIRST_DATA_UNTIL),
-});
+const years = voteList(
+  {
+    ...listing,
+    votes: listing.votes.filter((vote) => vote.date <= FIRST_DATA_UNTIL),
+  },
+  de,
+);
 
 test('the years run from 2026 to 2013 and hold 125 votes', () => {
   expect(years.map((year) => year.year)).toEqual([
@@ -98,5 +103,5 @@ test('the marks of the entries', () => {
 });
 
 test('a list of votes that holds no vote is an error that names it', () => {
-  expect(() => voteList({ ...listing, votes: [] })).toThrow(/the list of votes/);
+  expect(() => voteList({ ...listing, votes: [] }, de)).toThrow(/the list of votes/);
 });

@@ -1,17 +1,18 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { GUIDE_LINK, TITLE } from '../lib/texts.ts';
+  import { textsOf } from '../lib/texts/index.ts';
   import type { PageProps } from './$types';
 
   let { data }: PageProps = $props();
+  const t = $derived(textsOf(data.lang));
 </script>
 
 <svelte:head>
-  <title>{TITLE}</title>
+  <title>{t.TITLE}</title>
 </svelte:head>
 
-<h1>{TITLE}</h1>
-<p><a href={resolve('/guide')}>{GUIDE_LINK}</a></p>
+<h1>{t.TITLE}</h1>
+<p><a href={resolve('/guide')}>{t.GUIDE_LINK}</a></p>
 
 {#each data.years as year (year.year)}
   <section>

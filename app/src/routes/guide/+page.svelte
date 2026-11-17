@@ -1,30 +1,21 @@
 <script lang="ts">
   import { asset, resolve } from '$app/paths';
-  import {
-    ALL_VOTES,
-    GUIDE_HEADING,
-    GUIDE_SECTIONS,
-    SOURCE_CHARACTERISTICS,
-    SOURCE_VOTES,
-    SOURCES_FILE,
-    SOURCES_HEADING,
-    TITLE,
-    sourceMap,
-  } from '../../lib/texts.ts';
+  import { textsOf } from '../../lib/texts/index.ts';
   import type { PageProps } from './$types';
 
   // The reading guide (spec reading-guide): that a selection is a thought experiment, how it
   // works, and the sources of everything the site shows.
   let { data }: PageProps = $props();
+  const t = $derived(textsOf(data.lang));
 </script>
 
 <svelte:head>
-  <title>{GUIDE_HEADING} – {TITLE}</title>
+  <title>{t.GUIDE_HEADING} – {t.TITLE}</title>
 </svelte:head>
 
-<nav><a href={resolve('/')}>{ALL_VOTES}</a></nav>
-<h1>{GUIDE_HEADING}</h1>
-{#each GUIDE_SECTIONS as section (section.heading)}
+<nav><a href={resolve('/')}>{t.ALL_VOTES}</a></nav>
+<h1>{t.GUIDE_HEADING}</h1>
+{#each t.GUIDE_SECTIONS as section (section.heading)}
   <section>
     <h2>{section.heading}</h2>
     {#each section.paragraphs as paragraph (paragraph)}
@@ -33,11 +24,11 @@
   </section>
 {/each}
 <section>
-  <h2>{SOURCES_HEADING}</h2>
-  <p>{SOURCE_VOTES}</p>
-  <p>{sourceMap(data.mapDate, data.lakesSet)}</p>
-  <p>{SOURCE_CHARACTERISTICS}</p>
-  <p>{SOURCES_FILE} <a href={asset('data/sources.json')}>data/sources.json</a></p>
+  <h2>{t.SOURCES_HEADING}</h2>
+  <p>{t.SOURCE_VOTES}</p>
+  <p>{t.sourceMap(data.mapDate, data.lakesSet)}</p>
+  <p>{t.SOURCE_CHARACTERISTICS}</p>
+  <p>{t.SOURCES_FILE} <a href={asset('data/sources.json')}>data/sources.json</a></p>
 </section>
 
 <style>

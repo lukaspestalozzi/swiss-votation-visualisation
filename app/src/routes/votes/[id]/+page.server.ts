@@ -6,6 +6,7 @@
 import { error } from '@sveltejs/kit';
 import { majoritiesNeeded } from 'calculation';
 import { voteEntriesOf } from '../../../lib/result-map.ts';
+import { textsOf, type Language } from '../../../lib/texts/index.ts';
 import type { MapFile, Municipalities, VoteFile, Votes } from '../../../lib/vote-data.ts';
 import { votePage } from '../../../lib/vote-page.ts';
 import mapData from '../../../../static/data/map.json';
@@ -31,11 +32,12 @@ export const load: PageServerLoad = async ({ params }) => {
   if (vote === undefined) error(404, `there is no vote ${params.id}`);
   const loader = files.get(`../../../../static/data/votes/${params.id}.json`);
   const file = loader === undefined ? undefined : await loader();
-  const page = votePage(vote, file);
+  const lang: Language = 'de';
+  const page = votePage(vote, file, textsOf(lang));
   // votePage has refused a vote without its file; a tie-break question gets no map.
   const entries =
     file === undefined || page.judged === null ? null : voteEntriesOf(file, onTheMap, swissAbroad);
   const majorities = majoritiesNeeded(vote.kind);
   // The vote's day decides which characteristics apply (spec characteristics).
-  return { ...page, entries, majorities, voteDate: vote.date };
+  return { ...page, lang, entries, majorities, voteDate: vote.date };
 };

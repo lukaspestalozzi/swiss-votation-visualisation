@@ -3,23 +3,7 @@
 // counts are those of characteristics.json; the design of the change add-characteristics gives
 // the reasons (decisions 1, 11 and 15).
 import { formatUnits, quotientUnits } from './format.ts';
-import {
-  AGE_GROUPS,
-  AREA,
-  CATTLE,
-  DENSITY,
-  FOREIGNERS,
-  INHABITANTS,
-  LAND_HEADING,
-  LANGUAGES,
-  NO_FIGURE,
-  PARTIES,
-  characteristic,
-  electionHeading,
-  languagesHeading,
-  ofYear,
-  populationHeading,
-} from './texts.ts';
+import type { CharacteristicKey, Texts } from './texts/index.ts';
 import type { CharacteristicsFile, Election } from './vote-data.ts';
 
 // The counts of one municipality that apply to a vote.
@@ -56,7 +40,8 @@ export interface Quotient {
 export type Scale = 'linear' | 'logarithmic';
 
 export interface Definition {
-  readonly name: string;
+  // The same in every language; its name is the texts' (nameOf).
+  readonly key: CharacteristicKey;
   readonly unit: Unit;
   readonly source: Source;
   readonly scale: Scale;
@@ -81,13 +66,13 @@ const YEAR_OF: Readonly<Record<Source, (applying: Applying) => number>> = {
 };
 
 function define(
-  name: string,
+  key: CharacteristicKey,
   unit: Unit,
   source: Source,
   scale: Scale,
   value: (counts: Counts) => Quotient | null,
 ): Definition {
-  return { name, unit, source, scale, year: YEAR_OF[source], value };
+  return { key, unit, source, scale, year: YEAR_OF[source], value };
 }
 
 const ofInhabitants = (i: number) => (c: Counts) => ({
@@ -102,32 +87,42 @@ function partyShare(i: number): (c: Counts) => Quotient | null {
       : { part: c.votes[i], whole: c.votes.reduce((sum, votes) => sum + votes, 0) };
 }
 
+// The age groups, the parties and the main languages, in the order of their counts.
+const AGE_GROUPS = ['age-0-17', 'age-18-34', 'age-35-49', 'age-50-64', 'age-65'] as const;
+const PARTIES = ['fdp', 'centre', 'sp', 'svp', 'glp', 'greens', 'other-parties'] as const;
+const LANGUAGES = ['german', 'french', 'italian', 'romansh'] as const;
+
 export const DEFINITIONS: readonly Definition[] = [
-  define(INHABITANTS, 'count', 'population', 'logarithmic', (c) => ({
+  define('inhabitants', 'count', 'population', 'logarithmic', (c) => ({
     part: c.population[0],
     whole: 1,
   })),
-  define(FOREIGNERS, 'percent', 'population', 'linear', ofInhabitants(1)),
-  ...AGE_GROUPS.map((name, i) =>
-    define(name, 'percent', 'population', 'linear', ofInhabitants(2 + i)),
+  define('foreigners', 'percent', 'population', 'linear', ofInhabitants(1)),
+  ...AGE_GROUPS.map((key, i) =>
+    define(key, 'percent', 'population', 'linear', ofInhabitants(2 + i)),
   ),
-  define(DENSITY, 'per-km2', 'population', 'logarithmic', (c) => ({
+  define('density', 'per-km2', 'population', 'logarithmic', (c) => ({
     part: 100 * c.population[0],
     whole: c.hectares,
   })),
-  ...PARTIES.map((name, i) => define(name, 'percent', 'election', 'linear', partyShare(i))),
-  ...LANGUAGES.map((name, i) =>
-    define(name, 'percent', 'census', 'linear', (c) => ({
+  ...PARTIES.map((key, i) => define(key, 'percent', 'election', 'linear', partyShare(i))),
+  ...LANGUAGES.map((key, i) =>
+    define(key, 'percent', 'census', 'linear', (c) => ({
       part: c.languages[1 + i],
       whole: c.languages[0],
     })),
   ),
-  define(AREA, 'km2', 'area', 'logarithmic', (c) => ({ part: c.hectares, whole: 100 })),
-  define(CATTLE, 'per-inhabitant', 'cattle', 'logarithmic', (c) => ({
+  define('area', 'km2', 'area', 'logarithmic', (c) => ({ part: c.hectares, whole: 100 })),
+  define('cattle', 'per-inhabitant', 'cattle', 'logarithmic', (c) => ({
     part: c.cattle,
     whole: c.cattleInhabitants,
   })),
 ];
+
+/** The name of a characteristic in the language of `t`. */
+export function nameOf(definition: Definition, t: Texts): string {
+  return t.CHARACTERISTIC[definition.key];
+}
 
 // The figures that apply to a vote (spec characteristics, "The figures that apply to a vote").
 export interface Applying {
@@ -211,8 +206,8 @@ export function unitsOf(definition: Definition, value: Quotient | null): number 
 }
 
 /** A number of units as the panel writes it: "keine Angabe" where there is no figure. */
-export function writeUnits(definition: Definition, units: number | null): string {
-  if (units === null) return NO_FIGURE;
+export function writeUnits(definition: Definition, units: number | null, t: Texts): string {
+  if (units === null) return t.NO_FIGURE;
   const number = formatUnits(units, DECIMALS[definition.unit]);
   switch (definition.unit) {
     case 'percent':
@@ -225,8 +220,8 @@ export function writeUnits(definition: Definition, units: number | null): string
 }
 
 /** A value as the panel writes it: "keine Angabe" where there is no figure. */
-export function written(definition: Definition, value: Quotient | null): string {
-  return writeUnits(definition, unitsOf(definition, value));
+export function written(definition: Definition, value: Quotient | null, t: Texts): string {
+  return writeUnits(definition, unitsOf(definition, value), t);
 }
 
 // A group of the panel: its heading, and one line per characteristic.
@@ -240,13 +235,14 @@ export interface PanelGroup {
  * a municipality beside the map"): each characteristic in the order of its definition, under the
  * heading of its figures' date; the area and the cattle name their years on their own lines.
  */
-export function panelOf(counts: Counts, applying: Applying): readonly PanelGroup[] {
+export function panelOf(counts: Counts, applying: Applying, t: Texts): readonly PanelGroup[] {
   const of = (...sources: Source[]): readonly Definition[] =>
     DEFINITIONS.filter((definition) => sources.includes(definition.source));
   const lines = (definitions: readonly Definition[], withYear: boolean): readonly string[] =>
     definitions.map((definition) => {
-      const name = withYear ? ofYear(definition.name, definition.year(applying)) : definition.name;
-      return characteristic(name, written(definition, definition.value(counts)));
+      const name = nameOf(definition, t);
+      const named = withYear ? t.ofYear(name, definition.year(applying)) : name;
+      return t.characteristic(named, written(definition, definition.value(counts), t));
     });
   const yearOf = (definitions: readonly Definition[]): number =>
     definitions[0]?.year(applying) ?? Number.NaN;
@@ -257,9 +253,9 @@ export function panelOf(counts: Counts, applying: Applying): readonly PanelGroup
     of('area', 'cattle'),
   ];
   return [
-    { heading: populationHeading(yearOf(population)), lines: lines(population, false) },
-    { heading: electionHeading(yearOf(election)), lines: lines(election, false) },
-    { heading: languagesHeading(yearOf(census)), lines: lines(census, false) },
-    { heading: LAND_HEADING, lines: lines(land, true) },
+    { heading: t.populationHeading(yearOf(population)), lines: lines(population, false) },
+    { heading: t.electionHeading(yearOf(election)), lines: lines(election, false) },
+    { heading: t.languagesHeading(yearOf(census)), lines: lines(census, false) },
+    { heading: t.LAND_HEADING, lines: lines(land, true) },
   ];
 }

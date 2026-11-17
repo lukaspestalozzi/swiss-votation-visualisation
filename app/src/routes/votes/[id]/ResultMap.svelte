@@ -8,36 +8,28 @@
     HATCH_BACKGROUND,
     HATCH_LINE,
     LAKE_COLOUR,
-    LEGEND,
-    LEGEND_SET_ASIDE_ENTRY,
     SET_ASIDE_COLOUR,
     colourOf,
     colouringOf,
     detailsOf,
+    legendOf,
+    legendSetAsideOf,
     type VoteEntries,
   } from '../../../lib/result-map.ts';
   import { formatDate } from '../../../lib/format.ts';
   import { moveBy, wholeView, zoomAround, type View } from '../../../lib/map-view.ts';
-  import {
-    MAP_FAILED,
-    MAP_HEADING,
-    SET_ASIDE,
-    WHOLE_SWITZERLAND,
-    ZOOM_IN,
-    ZOOM_OUT,
-    mapLabel,
-    mapSource,
-    swissAbroadNotOnTheMap,
-  } from '../../../lib/texts.ts';
+  import type { Texts } from '../../../lib/texts/index.ts';
 
   // The map of a vote (spec result-map): its entries are written into the page when the site is
   // built; the shapes and the names are loaded in the browser.
   let {
+    t,
     entries,
     aside,
     title,
     voteDate,
   }: {
+    t: Texts;
     entries: VoteEntries;
     // The municipalities the selection sets aside (spec limits).
     aside: ReadonlySet<number>;
@@ -116,16 +108,16 @@
   const details = $derived.by(() => {
     const named = selected === null ? undefined : names.get(selected);
     if (selected === null || named === undefined) return null;
-    const shown = detailsOf(named.name, named.canton, counts.get(selected) ?? null);
+    const shown = detailsOf(named.name, named.canton, counts.get(selected) ?? null, t);
     // A municipality the selection sets aside says so after its own figures (spec result-map).
-    return aside.has(selected) ? { ...shown, lines: [...shown.lines, SET_ASIDE] } : shown;
+    return aside.has(selected) ? { ...shown, lines: [...shown.lines, t.SET_ASIDE] } : shown;
   });
   // The legend, which names the set-aside municipalities while there are any.
-  const legend = $derived(aside.size > 0 ? [...LEGEND, LEGEND_SET_ASIDE_ENTRY] : LEGEND);
+  const legend = $derived(aside.size > 0 ? [...legendOf(t), legendSetAsideOf(t)] : legendOf(t));
   const lastName = $derived.by(() => {
     const named = last === null ? undefined : names.get(last);
     if (last === null || named === undefined) return null;
-    return detailsOf(named.name, named.canton, null).name;
+    return detailsOf(named.name, named.canton, null, t).name;
   });
 
   function showWholeSwitzerland(): void {
@@ -237,9 +229,9 @@
 </script>
 
 <section class="map">
-  <h2>{MAP_HEADING}</h2>
+  <h2>{t.MAP_HEADING}</h2>
   {#if failed}
-    <p>{MAP_FAILED}</p>
+    <p>{t.MAP_FAILED}</p>
   {/if}
   {#if sources !== null}
     {@const map = sources.map}
@@ -258,19 +250,19 @@
         <div class="zoom">
           <button
             type="button"
-            aria-label={ZOOM_IN}
+            aria-label={t.ZOOM_IN}
             onclick={() => {
               zoom(2);
             }}>+</button
           >
           <button
             type="button"
-            aria-label={ZOOM_OUT}
+            aria-label={t.ZOOM_OUT}
             onclick={() => {
               zoom(0.5);
             }}>−</button
           >
-          <button type="button" onclick={showWholeSwitzerland}>{WHOLE_SWITZERLAND}</button>
+          <button type="button" onclick={showWholeSwitzerland}>{t.WHOLE_SWITZERLAND}</button>
         </div>
         <!-- Pointing and clicking show a municipality's details; without a pointer the table of the
            cantons gives the figures, and reading a municipality's details without one is #10's
@@ -279,7 +271,7 @@
         <svg
           {@attach wheelZoom}
           role="img"
-          aria-label={mapLabel(title)}
+          aria-label={t.mapLabel(title)}
           viewBox={view === null
             ? undefined
             : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}
@@ -324,6 +316,7 @@
         </svg>
       </div>
       <CharacteristicsPanel
+        {t}
         file={characteristics}
         failed={characteristicsFailed}
         number={last}
@@ -347,9 +340,9 @@
         </li>
       {/each}
     </ul>
-    <p class="source">{mapSource(formatDate(map.referenceDate), map.lakesSet)}</p>
+    <p class="source">{t.mapSource(formatDate(map.referenceDate, t), map.lakesSet)}</p>
     {#if swissAbroad > 0}
-      <p>{swissAbroadNotOnTheMap(swissAbroad)}</p>
+      <p>{t.swissAbroadNotOnTheMap(swissAbroad)}</p>
     {/if}
   {/if}
 </section>
