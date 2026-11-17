@@ -1,6 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { textsOf } from '../../../lib/texts/index.ts';
+  import { textsOf } from '../../../../lib/texts/index.ts';
   import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
   import {
@@ -9,10 +9,10 @@
     remainingUnder,
     setAsideOf,
     type LimitSetting,
-  } from '../../../lib/limits.ts';
-  import { formatCount } from '../../../lib/format.ts';
-  import { judgedOf } from '../../../lib/vote-page.ts';
-  import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
+  } from '../../../../lib/limits.ts';
+  import { formatCount } from '../../../../lib/format.ts';
+  import { judgedOf } from '../../../../lib/vote-page.ts';
+  import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
   import Limits from './Limits.svelte';
   import { loadCharacteristics } from './loaders.ts';
@@ -83,7 +83,7 @@
   <title>{data.title} – {t.TITLE}</title>
 </svelte:head>
 
-<nav><a href={resolve('/')}>{t.ALL_VOTES}</a></nav>
+<nav><a href={resolve('/[lang]', { lang: data.lang })}>{t.ALL_VOTES}</a></nav>
 
 <h1>{data.title}</h1>
 <p>{data.date} · {data.kind}</p>

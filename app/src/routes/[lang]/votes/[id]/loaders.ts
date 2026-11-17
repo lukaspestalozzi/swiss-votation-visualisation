@@ -3,7 +3,7 @@
 // apart, which the map does not wait for and the panel and the limits share (design of
 // add-limits, decision 21).
 import { asset } from '$app/paths';
-import { createCharacteristicsLoader, createMapLoader } from '../../../lib/map-data.ts';
+import { createCharacteristicsLoader, createMapLoader } from '../../../../lib/map-data.ts';
 
 export const loadMap = createMapLoader(
   { map: asset('data/map.json'), municipalities: asset('data/municipalities.json') },

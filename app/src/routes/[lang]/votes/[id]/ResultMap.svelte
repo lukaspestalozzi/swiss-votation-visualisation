@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { MapSources } from '../../../lib/map-data.ts';
+  import type { MapSources } from '../../../../lib/map-data.ts';
   import { loadCharacteristics, loadMap } from './loaders.ts';
-  import type { CharacteristicsFile } from '../../../lib/vote-data.ts';
+  import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import CharacteristicsPanel from './CharacteristicsPanel.svelte';
   import {
     HATCH_BACKGROUND,
@@ -15,10 +15,10 @@
     legendOf,
     legendSetAsideOf,
     type VoteEntries,
-  } from '../../../lib/result-map.ts';
-  import { formatDate } from '../../../lib/format.ts';
-  import { moveBy, wholeView, zoomAround, type View } from '../../../lib/map-view.ts';
-  import type { Texts } from '../../../lib/texts/index.ts';
+  } from '../../../../lib/result-map.ts';
+  import { formatDate } from '../../../../lib/format.ts';
+  import { moveBy, wholeView, zoomAround, type View } from '../../../../lib/map-view.ts';
+  import type { Texts } from '../../../../lib/texts/index.ts';
 
   // The map of a vote (spec result-map): its entries are written into the page when the site is
   // built; the shapes and the names are loaded in the browser.

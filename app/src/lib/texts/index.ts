@@ -12,6 +12,11 @@ import { it } from './it.ts';
 export type { Language };
 export const LANGUAGES: readonly Language[] = ['de', 'fr', 'it'];
 
+/** Whether a segment of an address names a language of the site. */
+export function isLanguage(value: string): value is Language {
+  return (LANGUAGES as readonly string[]).includes(value);
+}
+
 /** A characteristic, by a key that is the same in every language (characteristics.ts). */
 export type CharacteristicKey =
   | 'inhabitants'
