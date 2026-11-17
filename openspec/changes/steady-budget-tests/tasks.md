@@ -16,23 +16,34 @@ budget test's first tries, failures, retries and longest frames.
   (`investigations/performance.md`, M11).
 
   (As built: "Running 138 tests using 1 worker", "138 passed (48.3s)".)
-- [ ] 1.2 The measurement after the change, right after a build, the condition of CI and of
+- [x] 1.2 The measurement after the change, right after a build, the condition of CI and of
   `scripts/verify-local.sh` (M9, M10). Three times: `pnpm run build`, then the whole suite with
   a report and no `--workers` on the command line. Verify: each run prints "using 1 worker"
   and "138 passed"; `budget_tries.py` over the three reports prints the four budget tests with
   3 first tries each; write down what it prints, every first try that failed with its frames
   included. Expected: the drag's longest frame near M11's runs alone (median 8.2 ms), not near
   its runs beside another test (12.5 ms).
-- [ ] 1.3 The investigation records it. `investigations/performance.md` gets M12, "the browser
+
+  (As built: each run printed "Running 138 tests using 1 worker"; 138 passed, none flaky or
+  failed, in 49, 49 and 50 s. `budget_tries.py` prints each report apart, so one first try of
+  each budget test per report, three in all; none failed, none was retried. The longest frame
+  of each first try, in the three runs: dragging 6.7, 8.6 and 8.8 ms; zooming, moving and
+  pointing 6.7, 9.3 and 8.3 ms; clicking 5.0, 4.8 and 4.9 ms; jumps 10.4, 8.4 and 9.6 ms. The
+  drag's median, 8.6 ms, is near M11's runs alone.)
+- [x] 1.3 The investigation records it. `investigations/performance.md` gets M12, "the browser
   tests with one worker, right after a build", with what task 1.2 found and its commands in
   "How to reproduce", and its "What became of it" a paragraph on `steady-budget-tests` (row
   "9a" of `docs/roadmap.md`): one worker from M11 and M12, the second try kept from M9 and M10.
   Verify: M12's commands in "How to reproduce" are the ones task 1.2 ran, and every figure M12
   cites is in what `budget_tries.py` printed there.
 
+  (As built: also a finding 8. Every number of M12 from its own runs is in what
+  `budget_tries.py` printed; the others are the date, the one worker, and M11's 12.5 and
+  8.2 ms, cited as M11's.)
+
 ## 2. Docs and the whole
 
-- [ ] 2.1 `CLAUDE.md`: in the code map, the row of `app/playwright.config.ts` says the browser
+- [x] 2.1 `CLAUDE.md`: in the code map, the row of `app/playwright.config.ts` says the browser
   tests run one at a time; in "Build and verify", the row of `pnpm run test:e2e` says so too;
   in "Where things are", the row of `investigations/` names `budget_tries.py` among the scripts
   of `performance/`, which reads Playwright's JSON reports. Verify:
@@ -40,6 +51,11 @@ budget test's first tries, failures, retries and longest frames.
   `git diff --stat main` lists only `app/playwright.config.ts`, `investigations/performance.md`,
   `investigations/performance/budget_tries.py`, `CLAUDE.md` and this change's files;
   `./scripts/verify-local.sh` passes its 11 steps.
+
+  (As built: the grep shows lines 43, 134 and 214. The local `main` of the cloud machine still
+  pointed at the merge of PR #1, so `git diff --stat main` listed 371 files; against
+  `origin/main` (a50ac21) it lists the nine files named. `./scripts/verify-local.sh`: "All 11
+  steps passed", the browser tests "Running 138 tests using 1 worker", 138 passed in 51.2 s.)
 
 ## Workflow follow-up
 
