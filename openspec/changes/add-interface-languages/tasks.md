@@ -114,7 +114,7 @@ Design, decisions 7 and 8. The screen does not change in this group.
 
 Design, decisions 9 to 11.
 
-- [ ] 3.1 `Language` becomes `'de' | 'fr' | 'it'`, and `fr.ts` and `it.ts` hold every text:
+- [x] 3.1 `Language` becomes `'de' | 'fr' | 'it'`, and `fr.ts` and `it.ts` hold every text:
   - the terms of `investigations/languages.md` as decision 11 chose them;
   - the guide in full;
   - French with "vous" and no space before a colon; Italian with "Lei";
@@ -123,19 +123,42 @@ Design, decisions 9 to 11.
   Verify:
   - `pnpm run check`: 0 errors;
   - a mutant that deletes one text from `it.ts` makes `pnpm run check` fail and name it.
-- [ ] 3.2 The unit test "no untranslated string": no string of `fr` or `it` equals `de`'s, apart
+
+  As built:
+  - `pnpm run check`: 0 errors.
+  - The mutant without `TURNOUT` in `it.ts` failed: "Property 'TURNOUT' is missing in type".
+  - Italian capitalises "Comune" and "Cantone", as the Confederation's Italian does ("Elenco
+    ufficiale dei Comuni"). "popolo" stays lower case, as the Chancellery's "Maggioranza del
+    popolo e dei Cantoni".
+  - The date of each language is plain ("28 février 2016"); 3.3 adds the first day of a month,
+    its test first.
+  - Choices of words that no source fixes, for Q's review:
+    - the column "Seite": "Résultat", "Esito";
+    - the list's verdict: "rejeté, 49.16% de oui", "respinto, 49.16% di sì".
+- [x] 3.2 The unit test "no untranslated string": no string of `fr` or `it` equals `de`'s, apart
   from a list of names in the test ("Popular Vote Explorer" and the like).
 
   Verify:
   - it passes;
   - it fails against a mutant: a German text copied into `fr.ts`.
-- [ ] 3.3 Dates per language. Write the unit tests of the scenarios "A date in each language" and
+
+  As built: `src/lib/texts/texts.test.ts` compares every string by its path. The list holds only
+  the working title and the dash of an empty choice. It passed when written; against "Merkmale
+  der Gemeinde" copied into `fr.ts` it failed and named `PANEL_HEADING`. `pnpm run test`: 52 and
+  100.
+- [x] 3.3 Dates per language. Write the unit tests of the scenarios "A date in each language" and
   "The first day of a month" (spec `vote-list`), then each language's function.
 
   Verify:
   - both fail first, then pass;
   - `pnpm run test`: 52 and 102.
-- [ ] 3.4 The vote's texts by language: one function gives a vote's title, reference or note in a
+
+  As built:
+  - "A date in each language" passed when written, since 3.1 had brought the months. Against a
+    mutant, the French date written with the German full stop after the day, it failed.
+  - "The first day of a month" failed first ("1 juin 2008"), then passed with "1er" and "1°".
+  - `pnpm run test`: 52 and 102.
+- [x] 3.4 The vote's texts by language: one function gives a vote's title, reference or note in a
   language. It throws, naming the vote and the language, when the text is missing or empty. The
   list and the vote's page use it.
 
@@ -144,7 +167,17 @@ Design, decisions 9 to 11.
   - a list whose vote 5960 has no Italian title throws, naming 5960 and Italian.
 
   Verify: both fail first, then pass.
-- [ ] 3.5 Unit tests of the terms, through the functions and the data files, one at a time:
+
+  As built:
+  - `voteText(vote, field, language)` is in `vote-data.ts`, beside the types it reads.
+    `texts/index.ts` takes its `Language` from there, so the site's languages are the data's.
+  - The test of 5960 in French and Italian (in `vote-page.test.ts`) failed first, showing the
+    German title, and then passed.
+  - The test of the missing Italian title (in `vote-list.test.ts`, through the list as the
+    build calls it) was written after the function, so it passed when written. Against a
+    mutant that no longer refuses an empty text, it failed.
+  - `pnpm run test`: 52 and 104.
+- [x] 3.5 Unit tests of the terms, through the functions and the data files, one at a time:
   - the entries of 5960 and 6790 in French and Italian (scenarios "The list's verdicts" and "The
     same vote in French and Italian");
   - the six kinds in both;
@@ -156,6 +189,17 @@ Design, decisions 9 to 11.
   Verify:
   - 6 tests, each seen to fail against a mutant of its term, since the texts exist from 3.1;
   - `pnpm run test`: 52 and 110.
+
+  As built: each test passed when written and failed against one changed term, put into
+  `fr.ts` or `it.ts` and removed again:
+  - the list: "accettata" for "accettato";
+  - the kinds: "Domanda sussidiaria" for "Domanda risolutiva";
+  - the verdicts: "Votes des cantons" for "Voix des cantons";
+  - the provisional result: "convalidato" for "accertato";
+  - Zürich's details: "Quota di sì" for "Percentuale di sì";
+  - the parties: "Alleanza del Centro" for "Il Centro".
+
+  `pnpm run test`: 52 and 110.
 
 ## 4. A page in each language
 

@@ -9,7 +9,7 @@ import {
 } from 'calculation';
 import { formatCantonalVotes, formatCount, formatDate, formatShare } from './format.ts';
 import type { Texts } from './texts/index.ts';
-import type { Row, Vote, VoteFile } from './vote-data.ts';
+import { voteText, type Row, type Vote, type VoteFile } from './vote-data.ts';
 
 // A majority: its heading, whether it is reached, and its yes share or cantonal votes.
 export interface Verdict {
@@ -84,15 +84,15 @@ export function votePage(vote: Vote, file: VoteFile | undefined, t: Texts): Vote
   );
   const majorities = majoritiesNeeded(vote.kind);
   return {
-    title: vote.title.de,
+    title: voteText(vote, 'title', t.LANGUAGE),
     date: formatDate(vote.date, t),
     kind: t.KINDS[vote.kind],
     majoritiesNeeded: majorities === 'not-calculated' ? null : t.MAJORITIES_NEEDED[majorities],
     judged: majorities === 'not-calculated' ? null : judgedOfRows(name, rows, majorities, t),
     tieBreak: vote.kind === 'tie-break-question' ? tieBreakOf(vote, t) : null,
-    source: vote.reference === null ? null : t.SOURCE + vote.reference.de,
+    source: vote.reference === null ? null : t.SOURCE + voteText(vote, 'reference', t.LANGUAGE),
     provisional: vote.validated ? null : t.PROVISIONAL,
-    note: vote.note === null ? null : vote.note.de,
+    note: vote.note === null ? null : voteText(vote, 'note', t.LANGUAGE),
     differences: vote.validated ? differencesOf(vote, rows, t) : [],
   };
 }
@@ -115,7 +115,7 @@ function differencesOf(vote: Vote, rows: Rows, t: Texts): string[] {
       return t.knownDifference(
         formatCount(official),
         count,
-        vote.reference.de,
+        voteText(vote, 'reference', t.LANGUAGE),
         formatCount(Math.abs(summed - official)),
         summed > official,
       );

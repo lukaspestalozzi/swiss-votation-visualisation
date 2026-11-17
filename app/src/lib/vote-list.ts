@@ -1,7 +1,7 @@
 // The start page's list of votes (spec vote-list): what each entry shows, grouped by year.
 import { formatDate, formatShare } from './format.ts';
 import type { Texts } from './texts/index.ts';
-import type { Vote, Votes } from './vote-data.ts';
+import { voteText, type Vote, type Votes } from './vote-data.ts';
 
 export interface ListEntry {
   readonly id: number;
@@ -38,7 +38,7 @@ function entryOf(vote: Vote, t: Texts): ListEntry {
   return {
     id: vote.id,
     date: formatDate(vote.date, t),
-    title: vote.title.de,
+    title: voteText(vote, 'title', t.LANGUAGE),
     kind: t.KINDS[vote.kind],
     result: resultOf(vote, t),
     marks: [

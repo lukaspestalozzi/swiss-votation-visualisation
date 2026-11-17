@@ -254,3 +254,26 @@ test('every value is written as before, for every municipality of two votes', ()
   }
   expect(compared).toBe(2 * 2110 * 21);
 });
+
+test('the parties in French and Italian, after STAT-TAB and the party register', () => {
+  // Spec interface-languages, "The parties"; investigations/languages.md, 4.
+  const parties = DEFINITIONS.filter((definition) => definition.source === 'election');
+  expect(parties.map((definition) => nameOf(definition, textsOf('fr')))).toEqual([
+    'PLR',
+    "Le Centre (jusqu'en 2020 PDC et PBD)",
+    'PS',
+    'UDC',
+    'PVL',
+    'Verts',
+    'Autres partis',
+  ]);
+  expect(parties.map((definition) => nameOf(definition, textsOf('it')))).toEqual([
+    'PLR',
+    'Il Centro (fino al 2020 PPD e PBD)',
+    'PS',
+    'UDC',
+    'PVL',
+    'I Verdi',
+    'Altri partiti',
+  ]);
+});

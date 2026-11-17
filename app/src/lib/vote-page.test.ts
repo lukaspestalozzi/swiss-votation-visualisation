@@ -9,6 +9,8 @@ import { judgedOf, votePage } from './vote-page.ts';
 
 const listing = votesFile as Votes;
 const de = textsOf('de');
+const fr = textsOf('fr');
+const it = textsOf('it');
 const files = import.meta.glob<VoteFile>('../../static/data/votes/*.json', {
   eager: true,
   import: 'default',
@@ -174,4 +176,59 @@ test('a canton of the vote with nothing left keeps its row, which says so', () =
     { canton: 'BE', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
     { canton: 'OW', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
   ]);
+});
+
+test('the annulled vote in French and Italian: its title, reference and note in each', () => {
+  // Spec interface-languages, "The vote's texts in the page's language".
+  const inFrench = votePage(voteOf(5960), fileOf.get(5960), fr);
+  expect(inFrench.title).toBe(
+    'Initiative populaire «Pour le couple et la famille - Non à la pénalisation du mariage»',
+  );
+  expect(inFrench.source).toBe('Source: FF 2019 4421');
+  expect(inFrench.note).toMatch(/^Par arrêts du 10 avril 2019/);
+  const inItalian = votePage(voteOf(5960), fileOf.get(5960), it);
+  expect(inItalian.title).toBe(
+    'Iniziativa popolare «Per il matrimonio e la famiglia - No agli svantaggi per le coppie sposate»',
+  );
+  expect(inItalian.source).toBe('Fonte: FF 2019 3843');
+  expect(inItalian.note).toMatch(/^Con sentenze del 10 aprile 2019/);
+});
+
+test('the verdicts of 5960 in French and Italian, with the terms of the Confederation', () => {
+  // Spec interface-languages, "The verdicts in French" and "The verdicts in Italian".
+  const shown = (language: 'fr' | 'it') => {
+    const t = textsOf(language);
+    const { kind, judged } = votePage(voteOf(5960), fileOf.get(5960), t);
+    return {
+      kind,
+      figures: [t.YES_SHARE, t.TURNOUT],
+      verdicts: judged?.verdicts.map((verdict) => verdict.heading),
+      outcome: judged?.outcome,
+      column: t.CANTONAL_VOTES,
+    };
+  };
+  expect(shown('fr')).toEqual({
+    kind: 'Initiative populaire',
+    figures: ['Pourcentage de oui', 'Participation'],
+    verdicts: ['Majorité du peuple', 'Majorité des cantons'],
+    outcome: 'Rejeté',
+    column: 'Voix des cantons',
+  });
+  expect(shown('it')).toEqual({
+    kind: 'Iniziativa popolare',
+    figures: ['Percentuale di sì', 'Partecipazione'],
+    verdicts: ['Maggioranza del popolo', 'Maggioranza dei Cantoni'],
+    outcome: 'Respinto',
+    column: 'Voti dei Cantoni',
+  });
+});
+
+test('a result not validated yet, in French and Italian: "validé" and "accertato"', () => {
+  // Spec interface-languages, "A result not validated yet"; the data files of 2026-11-14.
+  expect(votePage(voteOf(6850), fileOf.get(6850), fr).provisional).toBe(
+    'Résultat provisoire: pas encore validé par le Conseil fédéral.',
+  );
+  expect(votePage(voteOf(6850), fileOf.get(6850), it).provisional).toBe(
+    'Risultato provvisorio: non ancora accertato dal Consiglio federale.',
+  );
 });
