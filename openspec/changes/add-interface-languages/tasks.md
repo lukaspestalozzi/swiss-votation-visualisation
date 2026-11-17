@@ -273,7 +273,7 @@ Design, decisions 5, 6 and 12.
     So this change did not make a drag slower. The test's sensitivity to a busy machine was
     there before. Q chose to note it and go on.
   - The browser tests: 107.
-- [ ] 4.3 Write the browser tests of the pages in French and Italian, in `languages.spec.ts`, one
+- [x] 4.3 Write the browser tests of the pages in French and Italian, in `languages.spec.ts`, one
   at a time. They cover these scenarios:
   - of `interface-languages`:
     - "The three pages of a vote", which counts the built pages with Node's `fs`;
@@ -293,6 +293,34 @@ Design, decisions 5, 6 and 12.
   Verify:
   - each test fails first or against a mutant, and passes;
   - the browser tests: 107 + 20 = 127.
+
+  As built:
+  - The texts and pages existed, so every test passed when written. Each was then run against a
+    mutant, built and removed again by a helper in the scratchpad, and failed:
+    - the three pages: the hook writing "de" on every page, and a site without Italian;
+    - the start page and the guide: the hook writing "de" except for Italian;
+    - Zürich's details: "Voti no" for "No";
+    - the selection: the French names of the foreigners and of 0–17 swapped;
+    - the verdicts: "Majorité des Cantons", "Respinta";
+    - the list: "oui" without "de";
+    - the provisional result: "confirmé" for "validé";
+    - the parties: "Les Vert-e-s";
+    - the Swiss abroad: another Italian switch;
+    - the sources: another name of the register;
+    - the annulled vote: another heading of the note; the note taken in German;
+    - the BFS's title: the kind "Domanda sussidiaria";
+    - the two names: a name "translated" to its second half outside German;
+    - the cantons: their order reversed outside German;
+    - the list's entry: its link to the German page;
+    - the French page's head: "Février";
+    - the references: taken in German.
+  - "A language that has no page" has no mutant, since the build cannot write a page for another
+    language: the layout refuses it. Pointed at `fr/` instead of `en/`, the test failed.
+  - "The three pages of a vote" counts the pages by requesting each vote of the site's
+    `data/votes.json` in each language, not with Node's `fs`, whose types the project does not
+    have. A first mutant, a language left out of the votes' entries, passed: prerendering
+    follows the switch's links and writes the pages anyway.
+  - The browser tests: 127.
 
 ## 5. Addresses without a language
 
