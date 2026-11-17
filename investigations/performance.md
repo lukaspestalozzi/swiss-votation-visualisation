@@ -51,6 +51,11 @@ PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/two.json pnpm --filter 
 PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/one.json pnpm --filter app exec playwright test --reporter=json --workers 1
 PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/alone.json pnpm --filter app exec playwright test --reporter=json -g "the budget" --repeat-each 10 --workers 1
 python3 -I investigations/performance/budget_tries.py /path/outside/the/repository/two.json /path/outside/the/repository/one.json /path/outside/the/repository/alone.json
+# M12: the browser tests with the one worker of app/playwright.config.ts, each run right after a
+# build; three times, with N = 1, 2 and 3.
+pnpm run build
+PLAYWRIGHT_JSON_OUTPUT_NAME=/path/outside/the/repository/after-build-N.json pnpm --filter app exec playwright test --reporter=json
+python3 -I investigations/performance/budget_tries.py /path/outside/the/repository/after-build-1.json /path/outside/the/repository/after-build-2.json /path/outside/the/repository/after-build-3.json
 ```
 
 | File | What |
@@ -296,6 +301,25 @@ the build of `main` at a50ac21, not right after a build, and read with `budget_t
   in the median, the drag's the most, whose longest frames then come within 1 to 3.5 ms of its
   budget. One worker costs the suite about 20 s. Alone, a drag still reached 14.0 ms once in ten.
 
+### M12: the browser tests with one worker, right after a build
+
+Measured on 2026-11-17 while applying `steady-budget-tests`, with `workers: 1` in
+`app/playwright.config.ts`, and read with `budget_tries.py`.
+
+- **What:** three times `pnpm run build`, then at once the whole suite, with no `--workers` on
+  the command line.
+- **Why:** right after a build is when CI and `scripts/verify-local.sh` run the browser tests,
+  and when M9 and M10 found the machine busy.
+- **Found:**
+  - Each run printed "Running 138 tests using 1 worker"; 138 passed, none flaky or failed, in
+    49, 49 and 50 s.
+  - No budget test failed its first try. The longest frame of each first try, in the three
+    runs: dragging a bound 6.7, 8.6 and 8.8 ms; zooming, moving and pointing 6.7, 9.3 and
+    8.3 ms; clicking 5.0, 4.8 and 4.9 ms; jumps 10.4, 8.4 and 9.6 ms.
+- **Means:** with one worker, the drag's longest frame (median 8.6 ms) is where M11 found it
+  alone (8.2 ms), not beside another test (12.5 ms). Three runs are too few to show whether the
+  busy moments of M9 and M10 still come right after a build.
+
 ## Findings
 
 1. **The frames of 17 to 21 ms after a click are an artifact of the measurement**, not slow
@@ -322,6 +346,8 @@ the build of `main` at a50ac21, not right after a build, and read with `budget_t
 7. **A test running beside a budget test narrows its margin** (M11): with two workers the
    longest frame of a drag had a median of 12.5 ms, alone 8.2 ms. The suite takes about 32 s
    with two workers and 54 s with one.
+8. **With one worker the budget tests keep their margin right after a build** (M12): the
+   longest frame of a drag was 6.7 to 8.8 ms in three runs, and the suite took about 49 s.
 
 ## Open
 
@@ -351,3 +377,12 @@ The inputs Playwright sends without a pause, a click on "Ganze Schweiz" after th
 arrives on it and the press that starts a drag, stretched the measurement of the frame before
 them (M9: 19.5 and 17.3 ms, once each). After the verification of the change, the budget tests
 rest the pointer 50 ms before both, as before a click on a municipality.
+
+`steady-budget-tests`, row "9a" of `docs/roadmap.md`, took M11 and M12 (its design, decisions 1
+and 2):
+
+- **The browser tests run one at a time** (`workers: 1` in `app/playwright.config.ts`), so no
+  test runs beside a budget test (M11). The suite takes about 49 s instead of about 32 s; right
+  after a build, the drag's longest frame was 6.7 to 8.8 ms (M12).
+- **The budget tests still run once more when they fail**, for the busy moments right after a
+  build that came with no second test running (M9, M10).
