@@ -25,7 +25,7 @@ script there is not changed while applying, except to fix a bug, which the note 
 
 Q chose to do these first (design, decision 14).
 
-- [ ] 1.1 The count and the set-aside move from `src/routes/votes/[id]/+page.svelte` into
+- [x] 1.1 The count and the set-aside move from `src/routes/votes/[id]/+page.svelte` into
   `src/lib/limits.ts`, as two functions of the remaining municipalities and the municipalities
   with an entry:
   - the set-aside ones;
@@ -38,7 +38,7 @@ Q chose to do these first (design, decision 14).
   - `pnpm --filter app exec vitest run src/lib/limits.test.ts` passes with the two new tests;
   - `pnpm run test`: 52 and 99;
   - `pnpm run build && pnpm run test:e2e`: the 38 tests of `limits.spec.ts` still pass.
-- [ ] 1.2 Write the browser test of the scenario "The elderly are the elderly" (spec `limits`) in
+- [x] 1.2 Write the browser test of the scenario "The elderly are the elderly" (spec `limits`) in
   `limits.spec.ts`, on `votes/5960/`.
 
   Verify:
@@ -46,6 +46,9 @@ Q chose to do these first (design, decision 14).
   - it fails against a mutant: the limit of "65 Jahre und älter" built from the definition of
     "0–17 Jahre";
   - the browser tests: 104.
+
+  As built: the test passed when written, since the code was right. Against the mutant, put into
+  `Limits.svelte`'s `add` and removed again, it failed on the label. The browser tests: 104.
 
 ## 2. The texts behind one type, in German
 
