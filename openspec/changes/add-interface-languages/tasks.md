@@ -326,7 +326,7 @@ Design, decisions 5, 6 and 12.
 
 Design, decisions 2 to 4.
 
-- [ ] 5.1 `src/lib/languages.ts` builds the script of a page that redirects, for the address of
+- [x] 5.1 `src/lib/languages.ts` builds the script of a page that redirects, for the address of
   its page in a language.
 
   Write its unit tests: run the script's very text with a fake `navigator` and `location`. The
@@ -339,6 +339,21 @@ Design, decisions 2 to 4.
   - the target is called with `replace`, not set as `href`.
 
   Verify: they fail first, then pass; `pnpm run test`: 52 and 116.
+
+  As built:
+  - `redirectScript` takes the page's three addresses, which the page builds with `resolve`
+    when the site is built, and writes them into the script. So the script neither parses a
+    path nor knows the site's base.
+  - The first test failed first: no module. The five others passed when written and failed
+    against their mutants:
+    - the preferred languages read from the last;
+    - French as the fallback;
+    - a language read without `String`, which fails on a browser that names none;
+    - the first two letters for the part before "-";
+    - `href` set instead of `replace`.
+  - The tests run the script's text with `new Function`, typed in one helper, with the reason
+    for the one disabled rule (`no-implied-eval`) beside it.
+  - `pnpm run test`: 52 and 116.
 - [ ] 5.2 The root, `/guide/` and `/votes/<id>/` become pages that redirect:
   - `csr = false`;
   - the script in the head;
