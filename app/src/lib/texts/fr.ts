@@ -4,6 +4,9 @@
 import type { Texts } from './index.ts';
 
 const REMOVE_LIMIT = 'Retirer';
+const WITH_SELECTION = 'Avec votre sélection';
+const MAJORITY_OF_VOTERS = 'Majorité du peuple';
+const MAJORITY_OF_CANTONS = 'Majorité des cantons';
 
 export const fr: Texts = {
   LANGUAGE: 'fr',
@@ -54,8 +57,8 @@ export const fr: Texts = {
   TURNOUT: 'Participation',
 
   // A vote's page: the verdicts.
-  MAJORITY_OF_VOTERS: 'Majorité du peuple',
-  MAJORITY_OF_CANTONS: 'Majorité des cantons',
+  MAJORITY_OF_VOTERS,
+  MAJORITY_OF_CANTONS,
   REACHED: 'Oui',
   NOT_REACHED: 'Non',
   NOT_NEEDED: 'pas nécessaire',
@@ -164,7 +167,11 @@ export const fr: Texts = {
     'commune)',
   LIMITS_FAILED: 'Sans les caractéristiques, aucune commune ne peut être choisie.',
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
-  WITH_SELECTION: 'Avec votre sélection',
+  WITH_SELECTION,
+  selectionBar: (outcome, voters, cantons) => [
+    `${WITH_SELECTION}: ${outcome}`,
+    `${MAJORITY_OF_VOTERS}: ${voters} · ${MAJORITY_OF_CANTONS}: ${cantons}`,
+  ],
   LEGEND_SET_ASIDE: 'Pas dans la sélection',
   SET_ASIDE: 'Pas dans la sélection.',
   remainingCount: (remaining, all) =>

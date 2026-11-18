@@ -207,7 +207,7 @@ decisions 10 and 11.
 Spec `small-screens`, "The selection's result at the bottom of a narrow window"; design,
 decisions 1 and 2.
 
-- [ ] 5.1 The texts. `selectionBar` in `src/lib/texts/`: from the outcome and the two verdict
+- [x] 5.1 The texts. `selectionBar` in `src/lib/texts/`: from the outcome and the two verdict
   words, the bar's two lines, in German, French and Italian, typed in `Texts`. A unit test in
   `texts.test.ts` with the scenarios' lines: "Mit Ihrer Auswahl: Angenommen", "Volksmehr: Ja ·
   Ständemehr: Ja", "Avec votre sélection: Accepté", "Majorité du peuple: Oui · Majorité des
@@ -215,7 +215,13 @@ decisions 1 and 2.
 
   Verify: `pnpm --filter app exec vitest run src/lib/texts/texts.test.ts` passes; `pnpm run
   check` passes; `pnpm run test`: 52 and 122.
-- [ ] 5.2 The bar. Tests of "While dragging on a phone", "The box in view" and "No selection, or a
+
+  (As built: it failed with "selectionBar is not a function". The headings it repeats, "Mit Ihrer
+  Auswahl", "Volksmehr" and "Ständemehr" and theirs in French and Italian, are now constants of
+  each language's file, as `REMOVE_LIMIT` was, so that the function and the boxes write the same
+  words. The test also holds the scenario "A majority that is not needed". `pnpm run test`: 52 and
+  122.)
+- [x] 5.2 The bar. Tests of "While dragging on a phone", "The box in view" and "No selection, or a
   wide window" in `small-screens.spec.ts`, written and run one at a time; each fails first while
   there is no bar, apart from the third, which passes. Then `SelectionBar.svelte` at the end of
   the vote's page: sticky at the bottom, shown while a selection applies and the box is not
@@ -223,12 +229,24 @@ decisions 1 and 2.
 
   Verify: each, run alone, passes; "No selection, or a wide window" fails against a mutant
   without the media query, and passes again without it.
-- [ ] 5.3 The bar's other scenarios. Tests of "A majority that is not needed", "In French" and
+
+  (As built: "While dragging on a phone" failed with no bar. The bar came after it, so "The box
+  in view" passed when written; it fails against a mutant whose observer never reports the box
+  wholly in view. With that mutant and the one without the media query, the first passed and the
+  second and third failed; without them the three pass. The bar stands last on the vote's page,
+  after the notes; the box is bound by `bind:this`.)
+- [x] 5.3 The bar's other scenarios. Tests of "A majority that is not needed", "In French" and
   "The end of the page", written and run one at a time. They pass when written, with 5.1's texts
   and 5.2's bar.
 
   Verify: each, run alone, passes; "The end of the page" fails against a mutant with
   `position: fixed` in place of `sticky`, and passes again without it.
+
+  (As built: the three passed when written. "The end of the page" failed at first with the bar
+  sticky: the test scrolled to the end before the bar had come, and a bar that comes then makes
+  the page longer, its end one scroll further. The test now waits for the bar, as the scenario's
+  visitor sees it, and then passes in five runs of five; with `position: fixed` it fails, the last
+  line 29 pixels below the bar's top, and passes again without it. The file's 13 tests pass.)
 
 ## 6. The budget of fingers
 

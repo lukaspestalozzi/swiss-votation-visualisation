@@ -61,3 +61,19 @@ test("the six kinds of vote in French and Italian, the Chancellery's terms", () 
     'Domanda risolutiva',
   ]);
 });
+
+test("the bar's two lines, in German and French", () => {
+  // Spec small-screens, "The selection's result at the bottom of a narrow window".
+  expect(textsOf('de').selectionBar('Angenommen', 'Ja', 'Ja')).toEqual([
+    'Mit Ihrer Auswahl: Angenommen',
+    'Volksmehr: Ja · Ständemehr: Ja',
+  ]);
+  expect(textsOf('de').selectionBar('Abgelehnt', 'Nein', 'nicht nötig')).toEqual([
+    'Mit Ihrer Auswahl: Abgelehnt',
+    'Volksmehr: Nein · Ständemehr: nicht nötig',
+  ]);
+  expect(textsOf('fr').selectionBar('Accepté', 'Oui', 'Oui')).toEqual([
+    'Avec votre sélection: Accepté',
+    'Majorité du peuple: Oui · Majorité des cantons: Oui',
+  ]);
+});
