@@ -220,6 +220,13 @@
 {/if}
 
 <style>
+  /* A word too long for its line breaks, hyphenated where the browser knows the page's language
+     (spec small-screens; design of add-small-screens, decision 6). */
+  h1,
+  .verdict {
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
   /* The selection's result beside the vote's own from 640 pixels, below it otherwise (design of
      add-limits, decision 9). */
   .results {
@@ -252,6 +259,17 @@
   .verdict {
     border: 1px solid;
     padding: 0 1rem;
+  }
+  /* In a narrow window the boxes keep side by side with less padding and a smaller heading, so
+     that "Maggioranza dei Cantoni" wraps between its words without hyphenation (design of
+     add-small-screens, decision 6). */
+  @media (max-width: 639.98px) {
+    .verdict {
+      padding: 0 0.5rem;
+    }
+    .verdict h2 {
+      font-size: 1.25rem;
+    }
   }
   .word,
   .outcome {
