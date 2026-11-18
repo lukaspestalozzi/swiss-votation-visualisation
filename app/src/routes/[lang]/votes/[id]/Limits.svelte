@@ -204,4 +204,51 @@
     outline: 2px solid #1a5fb4;
     outline-offset: 2px;
   }
+  /* On a touch screen the list, the buttons and the switch take at least 44 × 44 pixels; the
+     switch by its label, whose text toggles it too (spec small-screens; design of
+     add-small-screens, decision 10). */
+  @media (pointer: coarse) {
+    select,
+    button {
+      min-width: 44px;
+      min-height: 44px;
+    }
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      min-height: 44px;
+    }
+    .switch input {
+      flex: none;
+      width: 24px;
+      height: 24px;
+      margin: 0;
+    }
+    /* Each thumb takes a 44-pixel square whose border is transparent, so that the dot a visitor
+       sees keeps its size, its white ring drawn inside; the track is as tall. */
+    .track {
+      height: 44px;
+    }
+    .track input::-webkit-slider-thumb {
+      width: 44px;
+      height: 44px;
+      border: 13px solid transparent;
+      background-clip: padding-box;
+      box-shadow: inset 0 0 0 2px #ffffff;
+    }
+    .track input::-moz-range-thumb {
+      width: 44px;
+      height: 44px;
+      border: 13px solid transparent;
+      background-clip: padding-box;
+      box-shadow: inset 0 0 0 2px #ffffff;
+    }
+    .track input:focus-visible::-webkit-slider-thumb {
+      outline-offset: -11px;
+    }
+    .track input:focus-visible::-moz-range-thumb {
+      outline-offset: -11px;
+    }
+  }
 </style>

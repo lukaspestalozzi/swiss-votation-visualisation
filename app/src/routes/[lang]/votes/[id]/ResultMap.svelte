@@ -312,15 +312,72 @@
     {@const map = sources.map}
     <div class="beside">
       <div class="frame">
-        <div class="details" aria-live="polite">
-          {#if details !== null}
-            <p class="name">{details.name}</p>
-            <ul>
-              {#each details.lines as line (line)}
-                <li>{line}</li>
+        <div class="picture">
+          <div class="details" aria-live="polite">
+            {#if details !== null}
+              <p class="name">{details.name}</p>
+              <ul>
+                {#each details.lines as line (line)}
+                  <li>{line}</li>
+                {/each}
+              </ul>
+            {/if}
+          </div>
+          <!-- Pointing, clicking and tapping show a municipality's details (spec result-map); keyboards
+             and screen readers read the table of the cantons (design of add-result-map, decision 20). -->
+          <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+          <svg
+            {@attach wheelZoom}
+            role="img"
+            aria-label={t.mapLabel(title)}
+            viewBox={view === null
+              ? undefined
+              : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}
+            onpointerover={pointUnlessDragged}
+            onclick={pointUnlessDragged}
+            onpointerdown={down}
+            onpointermove={drag}
+            onpointerup={up}
+            onpointercancel={cancel}
+            onpointerleave={() => (selected = null)}
+          >
+            <defs>
+              <!-- In metres of the map: a line every 1.5 km, a third of it wide. -->
+              <pattern
+                id="hatch"
+                width="1500"
+                height="1500"
+                patternUnits="userSpaceOnUse"
+                patternTransform="rotate(45)"
+              >
+                <rect width="1500" height="1500" fill={HATCH_BACKGROUND} />
+                <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
+              </pattern>
+            </defs>
+            <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
+            <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
+            <g class="municipalities" bind:this={group}>
+              {#each map.municipalities as [number, path] (number)}
+                <path d={path} data-number={number} fill={fills.get(number)} />
               {/each}
-            </ul>
-          {/if}
+            </g>
+            <g class="lakes">
+              {#each map.lakes as path, i (i)}
+                <path d={path} fill={LAKE_COLOUR} />
+              {/each}
+            </g>
+            <g class="cantons">
+              {#each map.cantons as [canton, path] (canton)}
+                <path d={path} data-canton={canton} />
+              {/each}
+            </g>
+            {#if outlined !== null}
+              <g class="outlined">
+                <path class="halo" d={outlined} />
+                <path class="line" d={outlined} />
+              </g>
+            {/if}
+          </svg>
         </div>
         <div class="zoom">
           <button
@@ -339,62 +396,6 @@
           >
           <button type="button" onclick={showWholeSwitzerland}>{t.WHOLE_SWITZERLAND}</button>
         </div>
-        <!-- Pointing and clicking show a municipality's details; without a pointer the table of the
-           cantons gives the figures, and reading a municipality's details without one is #10's
-           (design of add-result-map, decision 20). -->
-        <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-        <svg
-          {@attach wheelZoom}
-          role="img"
-          aria-label={t.mapLabel(title)}
-          viewBox={view === null
-            ? undefined
-            : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}
-          onpointerover={pointUnlessDragged}
-          onclick={pointUnlessDragged}
-          onpointerdown={down}
-          onpointermove={drag}
-          onpointerup={up}
-          onpointercancel={cancel}
-          onpointerleave={() => (selected = null)}
-        >
-          <defs>
-            <!-- In metres of the map: a line every 1.5 km, a third of it wide. -->
-            <pattern
-              id="hatch"
-              width="1500"
-              height="1500"
-              patternUnits="userSpaceOnUse"
-              patternTransform="rotate(45)"
-            >
-              <rect width="1500" height="1500" fill={HATCH_BACKGROUND} />
-              <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
-            </pattern>
-          </defs>
-          <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
-          <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
-          <g class="municipalities" bind:this={group}>
-            {#each map.municipalities as [number, path] (number)}
-              <path d={path} data-number={number} fill={fills.get(number)} />
-            {/each}
-          </g>
-          <g class="lakes">
-            {#each map.lakes as path, i (i)}
-              <path d={path} fill={LAKE_COLOUR} />
-            {/each}
-          </g>
-          <g class="cantons">
-            {#each map.cantons as [canton, path] (canton)}
-              <path d={path} data-canton={canton} />
-            {/each}
-          </g>
-          {#if outlined !== null}
-            <g class="outlined">
-              <path class="halo" d={outlined} />
-              <path class="line" d={outlined} />
-            </g>
-          {/if}
-        </svg>
       </div>
       <CharacteristicsPanel
         {t}
@@ -441,10 +442,12 @@
       align-items: start;
     }
   }
-  .frame {
+  .frame,
+  .picture {
     position: relative;
   }
-  /* The details of the municipality pointed at, at the top left: nothing moves with the mouse. */
+  /* The details of the municipality pointed at, at the map's top left: nothing moves with the
+     mouse. */
   .details {
     position: absolute;
     top: 0;
@@ -459,6 +462,28 @@
     right: 0;
     display: flex;
     gap: 0.25rem;
+  }
+  /* On a touch screen each button takes at least 44 × 44 pixels (spec small-screens; design of
+     add-small-screens, decision 10). */
+  @media (pointer: coarse) {
+    .zoom button {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+  /* Below 640 pixels the zoom buttons stand in a row above the map, aligned to the right, and hide
+     none of it (spec small-screens; design of add-small-screens, decision 11). */
+  @media (max-width: 639.98px) {
+    .frame {
+      display: flex;
+      flex-direction: column;
+    }
+    .zoom {
+      position: static;
+      order: -1;
+      justify-content: flex-end;
+      margin-bottom: 0.25rem;
+    }
   }
   .details:empty {
     display: none;
