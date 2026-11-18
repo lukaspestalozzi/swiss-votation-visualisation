@@ -57,6 +57,27 @@ budget test's first tries, failures, retries and longest frames.
   `origin/main` (a50ac21) it lists the nine files named. `./scripts/verify-local.sh`: "All 11
   steps passed", the browser tests "Running 138 tests using 1 worker", 138 passed in 51.2 s.)
 
+## Verification
+
+**`/openspec-verify-change`** on 2026-11-18 found:
+- no critical issue and no warning;
+- the one modified requirement implemented, and its three scenarios handled;
+- one suggestion: no test kept the one worker, so a later change could remove it unnoticed.
+
+Q asked to fix it. A browser test in `app/e2e/result-map.spec.ts`, "the browser tests run one at
+a time: the configuration asks for one worker", checks `workers` in `app/playwright.config.ts`.
+It checks the configuration, not the run, so that a measurement may still ask for two workers on
+the command line, as M11's commands do. The verification had checked that such a flag still
+overrides the configuration: "Running 4 tests using 2 workers". The test passed when written;
+with `workers: 2` in the configuration it failed ("Expected: 1", "Received: 2").
+
+`./scripts/verify-local.sh` after the fix: 11 of 11 steps, with 52 and 117 unit tests, 139
+browser tests on 1 worker, none flaky, in 48.0 s, and 134 of the pipeline.
+
+Not changed: the scenarios of "The map's performance budget" name `/votes/5960/`, where the
+tests open `/de/votes/5960/` since #9. The modified requirement keeps its text whole; the
+addresses of the specs are a matter for another change.
+
 ## Workflow follow-up
 
 - After the push, the pull request's CI: its build job prints "Running 138 tests using 1

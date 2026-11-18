@@ -37,7 +37,9 @@ See `proposal.md` for why. The current state:
 `app/playwright.config.ts` sets `workers: 1`. Every way the tests run reads it:
 `pnpm run test:e2e`, `scripts/verify-local.sh` and CI, which call it, and a direct
 `pnpm --filter app exec playwright test`. A run that names `--workers` on the command line, as
-M11 does to measure two, overrides it. No test and no script changes.
+M11 does to measure two, overrides it. No test and no script changes. One browser test, added
+after the verification, checks that the configuration asks for one worker, so that the setting
+cannot go unnoticed.
 
 Why: the cause the measurements show is a second test at the same time, not the page.
 - With two workers, the longest frame of a drag had a median of 12.5 ms and reached 14.8 ms in
