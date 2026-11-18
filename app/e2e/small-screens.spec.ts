@@ -133,6 +133,114 @@ test.describe('on a phone', () => {
   });
 });
 
+// The bar with the selection's result (spec small-screens, "The selection's result at the bottom
+// of a narrow window"; design of add-small-screens, decisions 1 and 2). The figures are those of
+// investigations/limits.md, 5.
+const bar = (page: Page) => page.locator('.selection-bar');
+
+/**
+ * On a vote's page, the limit of the share of foreigners with its upper bound at step 327, and
+ * the slider in the middle of the window.
+ */
+async function foreignersUpTo1998(
+  page: Page,
+  path = 'de/votes/5960/',
+  labels = { list: 'Merkmal hinzufügen', add: 'Hinzufügen', name: 'Ausländeranteil' },
+) {
+  await page.goto(path);
+  await page.getByLabel(labels.list).selectOption(labels.name);
+  await page.getByRole('button', { name: labels.add, exact: true }).click();
+  const upper = page.getByRole('slider').last();
+  await upper.fill('327');
+  await upper.evaluate((slider) => {
+    slider.scrollIntoView({ block: 'center' });
+  });
+}
+
+test.describe('the bar on a phone', () => {
+  test.use(phone);
+
+  test('while a limit is dragged, the bar at the bottom shows the selection', async ({ page }) => {
+    await foreignersUpTo1998(page);
+    await expect(bar(page).locator('p')).toHaveText([
+      'Mit Ihrer Auswahl: Angenommen',
+      'Volksmehr: Ja · Ständemehr: Ja',
+    ]);
+    // At the bottom of the window.
+    const box = await bar(page).boundingBox();
+    const height = await page.evaluate(() => innerHeight);
+    expect(Math.abs((box?.y ?? NaN) + (box?.height ?? NaN) - height)).toBeLessThanOrEqual(1);
+  });
+
+  test('with the box "Mit Ihrer Auswahl" wholly in the window there is no bar', async ({
+    page,
+  }) => {
+    await foreignersUpTo1998(page);
+    await expect(bar(page)).toBeVisible();
+    await page.locator('.selection').evaluate((box) => {
+      box.scrollIntoView({ block: 'center' });
+    });
+    await expect(bar(page)).toBeHidden();
+  });
+
+  test('no bar without a selection, nor in a window 1,280 pixels wide', async ({
+    page,
+    browser,
+  }) => {
+    await foreignersUpTo1998(page);
+    await expect(bar(page)).toBeVisible();
+    await page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }).click();
+    await expect(bar(page)).toBeHidden();
+    const wide = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+    await foreignersUpTo1998(wide);
+    await expect(wide.getByRole('heading', { name: 'Mit Ihrer Auswahl' })).toHaveCount(1);
+    await expect(bar(wide)).toBeHidden();
+    await wide.close();
+  });
+
+  test('a majority that is not needed: the bar says so', async ({ page }) => {
+    await page.goto('de/votes/5950/');
+    const abroad = page.getByRole('checkbox');
+    await abroad.uncheck();
+    await abroad.evaluate((box) => {
+      box.scrollIntoView({ block: 'center' });
+    });
+    await expect(bar(page).locator('p')).toHaveText([
+      'Mit Ihrer Auswahl: Abgelehnt',
+      'Volksmehr: Nein · Ständemehr: nicht nötig',
+    ]);
+  });
+
+  test('in French', async ({ page }) => {
+    await foreignersUpTo1998(page, 'fr/votes/5960/', {
+      list: 'Ajouter une caractéristique',
+      add: 'Ajouter',
+      name: 'Part des étrangers',
+    });
+    await expect(bar(page).locator('p')).toHaveText([
+      'Avec votre sélection: Accepté',
+      'Majorité du peuple: Oui · Majorité des cantons: Oui',
+    ]);
+  });
+
+  test('at the end of the page the bar hides none of it', async ({ page }) => {
+    await foreignersUpTo1998(page);
+    // The bar is shown before the page scrolls to its end: a bar that comes later makes the page
+    // longer, and the end is then one more scroll away.
+    await expect(bar(page)).toBeVisible();
+    await page.evaluate(() => {
+      scrollTo(0, document.documentElement.scrollHeight);
+    });
+    await expect(bar(page)).toBeVisible();
+    // The page's last line, the element before the bar, lies above it.
+    const [lastBottom, barTop] = await bar(page).evaluate((element) => [
+      element.previousElementSibling?.getBoundingClientRect().bottom ?? NaN,
+      element.getBoundingClientRect().top,
+    ]);
+    expect(lastBottom).toBeLessThanOrEqual(barTop);
+  });
+});
+
 test.describe('on a touch screen 360 pixels wide', () => {
   test.use({ ...phone, viewport: { width: 360, height: 780 } });
 

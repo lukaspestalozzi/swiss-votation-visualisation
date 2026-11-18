@@ -159,6 +159,13 @@ export interface Texts {
   readonly LIMITS_FAILED: string;
   readonly removeLimit: (name: string) => string;
   readonly WITH_SELECTION: string;
+  // The bar with the selection's result at the bottom of a narrow window (spec small-screens): its
+  // two lines, from the outcome and the words of the two majorities.
+  readonly selectionBar: (
+    outcome: string,
+    voters: string,
+    cantons: string,
+  ) => readonly [string, string];
   readonly LEGEND_SET_ASIDE: string;
   readonly SET_ASIDE: string;
   readonly remainingCount: (remaining: string, all: string) => string;

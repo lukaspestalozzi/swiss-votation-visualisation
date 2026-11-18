@@ -17,6 +17,7 @@
   import Limits from './Limits.svelte';
   import { loadCharacteristics } from './loaders.ts';
   import ResultMap from './ResultMap.svelte';
+  import SelectionBar from './SelectionBar.svelte';
 
   let { data }: PageProps = $props();
   const t = $derived(textsOf(data.lang));
@@ -72,6 +73,9 @@
       ? t.NOTHING_REMAINS
       : t.remainingCount(formatCount(left), formatCount(withEntry.length));
   });
+  // The box "Mit Ihrer Auswahl", which the bar at the bottom of a narrow window repeats while it is
+  // not wholly on the screen (spec small-screens).
+  let selectionBox = $state<HTMLElement | null>(null);
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
   const aside = $derived.by((): ReadonlySet<number> => {
     if (remaining === null || data.entries === null) return new Set();
@@ -126,7 +130,7 @@
       <p class="outcome">{judged.outcome}</p>
     </div>
     {#if selection !== null}
-      <section class="result selection">
+      <section class="result selection" bind:this={selectionBox}>
         <h2>{t.WITH_SELECTION}</h2>
         <dl class="figures">
           <div>
@@ -218,6 +222,8 @@
     <p>{data.note}</p>
   </section>
 {/if}
+
+<SelectionBar {t} {selection} box={selectionBox} />
 
 <style>
   /* A word too long for its line breaks, hyphenated where the browser knows the page's language

@@ -4,6 +4,9 @@
 import type { Texts } from './index.ts';
 
 const REMOVE_LIMIT = 'Rimuovere';
+const WITH_SELECTION = 'Con la Sua selezione';
+const MAJORITY_OF_VOTERS = 'Maggioranza del popolo';
+const MAJORITY_OF_CANTONS = 'Maggioranza dei Cantoni';
 
 export const it: Texts = {
   LANGUAGE: 'it',
@@ -54,8 +57,8 @@ export const it: Texts = {
   TURNOUT: 'Partecipazione',
 
   // A vote's page: the verdicts.
-  MAJORITY_OF_VOTERS: 'Maggioranza del popolo',
-  MAJORITY_OF_CANTONS: 'Maggioranza dei Cantoni',
+  MAJORITY_OF_VOTERS,
+  MAJORITY_OF_CANTONS,
   REACHED: 'Sì',
   NOT_REACHED: 'No',
   NOT_NEEDED: 'non necessaria',
@@ -163,7 +166,11 @@ export const it: Texts = {
     "Contare le Svizzere e gli Svizzeri all'estero (in ogni Cantone in cui rimane un Comune)",
   LIMITS_FAILED: 'Senza le caratteristiche non è possibile scegliere Comuni.',
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
-  WITH_SELECTION: 'Con la Sua selezione',
+  WITH_SELECTION,
+  selectionBar: (outcome, voters, cantons) => [
+    `${WITH_SELECTION}: ${outcome}`,
+    `${MAJORITY_OF_VOTERS}: ${voters} · ${MAJORITY_OF_CANTONS}: ${cantons}`,
+  ],
   LEGEND_SET_ASIDE: 'Non nella selezione',
   SET_ASIDE: 'Non nella selezione.',
   remainingCount: (remaining, all) =>
