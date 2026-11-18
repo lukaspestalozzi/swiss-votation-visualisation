@@ -208,7 +208,7 @@ Spec `result-map`, "The budget of fingers"; design, decision 12.
 - Push, open the pull request, and watch its CI: the browser tests "Running 162 tests using 1
   worker".
 - Verify the change (`/openspec-verify-change`), then archive it: the roadmap's row 10 done, its
-  capabilities `small-screens` and `result-map`; `CLAUDE.md`'s status names it archived and v1
-  complete.
+  capabilities `small-screens` and `result-map`; `CLAUDE.md`'s status names it archived and 10a,
+  `add-site-style`, as the next.
 - After the merge, Q checks the published site by hand on a phone (design, Migration Plan, 3);
   what fails there becomes a small change of its own.
