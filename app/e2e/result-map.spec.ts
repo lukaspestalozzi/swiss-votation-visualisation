@@ -1,6 +1,7 @@
 // The map of a vote (spec result-map), against the built site. The municipal figures are those
 // of investigations/map-data.md.
 import { expect, test, type Page } from '@playwright/test';
+import config from '../playwright.config.ts';
 import { MEASURE_FRAMES, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 
@@ -369,6 +370,13 @@ async function showWholeSwitzerland(page: Page) {
   await page.waitForTimeout(50);
   await button.click();
 }
+
+// No other test runs beside a budget test (scenario "No other test beside a budget test"; design
+// of steady-budget-tests, decision 1). The configuration is checked, not the run, so that a
+// measurement may still ask for more workers (investigations/performance.md, M11).
+test('the browser tests run one at a time: the configuration asks for one worker', () => {
+  expect(config.workers).toBe(1);
+});
 
 // A busy machine can stretch a frame of a page that meets the budget: the budget tests run once
 // more when they fail (design of tighten-map-budget, decision 7).
