@@ -78,6 +78,15 @@ Not changed: the scenarios of "The map's performance budget" name `/votes/5960/`
 tests open `/de/votes/5960/` since #9. The modified requirement keeps its text whole; the
 addresses of the specs are a matter for another change.
 
+## Archive
+
+`/openspec-archive-change` on 2026-11-18, after the verification and its fix. Q chose to sync the
+specs: in `result-map`, "The map's performance budget" modified, its body measured "one test at
+a time" and its new scenario "No other test beside a budget test". The requirement was checked
+word for word against the delta, and `openspec validate --all --strict` passes.
+`docs/roadmap.md` marks 9a done, with `result-map` as its only capability; `CLAUDE.md` names
+the change archived and #10 as the next.
+
 ## Workflow follow-up
 
 - After the push, the pull request's CI: its build job prints "Running 138 tests using 1
@@ -86,4 +95,5 @@ addresses of the specs are a matter for another change.
   "Running 138 tests using 1 worker", 138 passed in 51.7 s; the step took 52 s.)
 - Verify the change (`/openspec-verify-change`), then archive it: the roadmap's row "9a" done,
   its capabilities `result-map` (the budget of the limits follows the map's measurement), and
-  `CLAUDE.md`'s status naming the change archived.
+  `CLAUDE.md`'s status naming the change archived. (Done: verified on 2026-11-18, archived the
+  same day; see "Verification" and "Archive".)

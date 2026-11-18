@@ -21,15 +21,15 @@ each canton, and is tested against seven official votes; the pipeline writes the
 counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #9 and 7a of `docs/roadmap.md`,
+after every push to `main` whose checks pass. Changes #1 to #9, 7a and 9a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
 `publish-site`, `add-result-map`, `add-characteristics`, `tighten-map-budget` (the look at
-performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`
-and `add-interface-languages`, are archived, and `openspec/specs/` holds their specs.
+performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`,
+`add-interface-languages` and `steady-budget-tests` (the browser tests one at a time, so that no
+test runs beside a budget test), are archived, and `openspec/specs/` holds their specs.
 Six investigations are done: `investigations/data-sources.md`, `investigations/map-data.md`,
 `investigations/characteristics.md`, `investigations/performance.md`,
-`investigations/limits.md` and `investigations/languages.md`. Next: change 9a,
-`steady-budget-tests`, then #10, `add-small-screens`.
+`investigations/limits.md` and `investigations/languages.md`. Next: #10, `add-small-screens`.
 `README.md` is the human-facing overview.
 
 ## Where things are
