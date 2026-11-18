@@ -284,8 +284,9 @@ municipality.
 Each frame the browser draws after a zoom step, a move of the map, pointing at a municipality
 (the first time after the page has loaded included) or clicking one, which fills the panel,
 SHALL take at most 16 ms of work on the page's main thread: the handling of the input and the
-drawing that follows. The browser tests measure it with 50 ms between a pointer's arrival and a
-click, as a person leaves, and once more when a frame exceeds it, as their machine may be busy.
+drawing that follows. The browser tests measure it one test at a time, with 50 ms between a
+pointer's arrival and a click, as a person leaves, and once more when a frame exceeds it, as
+their machine may be busy.
 
 #### Scenario: Zooming, moving and pointing
 
@@ -303,6 +304,12 @@ click, as a person leaves, and once more when a frame exceeds it, as their machi
   waiting 50 ms
 - **THEN** no frame after these inputs took more than 16 ms of work on the main thread, in the
   first measurement or, when a frame exceeded it, in the second
+
+#### Scenario: No other test beside a budget test
+
+- **WHEN** the browser tests run, by `pnpm run test:e2e`, in `scripts/verify-local.sh` or in CI
+- **THEN** they run one test at a time, so no other test runs while a budget test measures, the
+  budget tests of the limits included
 
 ### Requirement: The characteristics of a municipality beside the map
 
