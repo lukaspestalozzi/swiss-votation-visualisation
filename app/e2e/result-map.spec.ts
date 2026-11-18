@@ -2,6 +2,7 @@
 // of investigations/map-data.md.
 import { expect, test, type Page } from '@playwright/test';
 import config from '../playwright.config.ts';
+import { fingersOn, phone } from './fingers.ts';
 import { MEASURE_FRAMES, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 
@@ -306,6 +307,112 @@ test('dragging past the western edge stops at it', async ({ page }) => {
   const view = await viewOf(page);
   // The centre of the view is on the western edge of the rectangle around Switzerland, x = 0.
   expect(view.x + view.width / 2).toBeCloseTo(0, 6);
+});
+
+// Fingers on the map, on a phone (spec result-map, "Zoom" and "Moving the map"; design of
+// add-small-screens, decisions 8, 9 and 13).
+test.describe('on a phone', () => {
+  test.use(phone);
+
+  /** The map's box on the screen, scrolled into view, at the given number of zoom steps. */
+  async function mapAt(page: Page, zoomSteps: number) {
+    await page.goto('de/votes/5960/');
+    await page.locator('.municipalities path').nth(2000).waitFor();
+    for (let i = 0; i < zoomSteps; i += 1) {
+      await page.getByRole('button', { name: 'Vergrössern' }).tap();
+    }
+    await page.locator('.map svg').scrollIntoViewIfNeeded();
+    const box = await page.locator('.map svg').boundingBox();
+    if (box === null) throw new Error('the map is not on the screen');
+    return box;
+  }
+
+  test('one finger moves the map, and the page does not scroll', async ({ page }) => {
+    const box = await mapAt(page, 4);
+    const before = await viewOf(page);
+    const scrolled = await page.evaluate(() => scrollY);
+    const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    await (await fingersOn(page)).move([centre], [{ x: centre.x - 100, y: centre.y }]);
+    const after = await viewOf(page);
+    // 100 pixels to the left: the area 100 pixels further east, within a pixel.
+    const unitsPerPixel = before.width / box.width;
+    expect(Math.abs(after.x - before.x - 100 * unitsPerPixel)).toBeLessThanOrEqual(unitsPerPixel);
+    expect(after.y).toBeCloseTo(before.y, 6);
+    expect(await page.evaluate(() => scrollY)).toBe(scrolled);
+    await expect(details(page).locator('.name')).toHaveCount(0);
+  });
+
+  test('two fingers moved apart zoom in around the point midway between them', async ({ page }) => {
+    await mapAt(page, 0);
+    const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+    const inMap = await toMap(page, zurich);
+    const before = await viewOf(page);
+    await (
+      await fingersOn(page)
+    ).move(
+      [
+        { x: zurich.x - 50, y: zurich.y },
+        { x: zurich.x + 50, y: zurich.y },
+      ],
+      [
+        { x: zurich.x - 100, y: zurich.y },
+        { x: zurich.x + 100, y: zurich.y },
+      ],
+    );
+    const after = await viewOf(page);
+    // Half as wide and half as high, within a pixel: a finger's point on a phone is a fraction of
+    // its screen's pixels, so the fingers' distances are 100 and 200 within a fraction.
+    const box = await page.locator('.map svg').boundingBox();
+    const unitsPerPixel = after.width / (box?.width ?? NaN);
+    expect(Math.abs(after.width - before.width / 2)).toBeLessThanOrEqual(unitsPerPixel);
+    expect(Math.abs(after.height - before.height / 2)).toBeLessThanOrEqual(unitsPerPixel);
+    // Zürich stays midway between the fingers, within a pixel.
+    const at = await toScreen(page, inMap);
+    expect(Math.abs(at.x - zurich.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(at.y - zurich.y)).toBeLessThanOrEqual(1);
+  });
+
+  test('two fingers moved together at the whole of Switzerland keep it whole', async ({ page }) => {
+    const box = await mapAt(page, 0);
+    const whole = await viewOf(page);
+    const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    await (
+      await fingersOn(page)
+    ).move(
+      [
+        { x: centre.x - 100, y: centre.y },
+        { x: centre.x + 100, y: centre.y },
+      ],
+      [
+        { x: centre.x - 50, y: centre.y },
+        { x: centre.x + 50, y: centre.y },
+      ],
+    );
+    expect(await viewOf(page)).toEqual(whole);
+  });
+
+  test('two fingers moved together move the map, as wide as before', async ({ page }) => {
+    const box = await mapAt(page, 4);
+    const before = await viewOf(page);
+    const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    await (
+      await fingersOn(page)
+    ).move(
+      [
+        { x: centre.x - 50, y: centre.y },
+        { x: centre.x + 50, y: centre.y },
+      ],
+      [
+        { x: centre.x - 110, y: centre.y },
+        { x: centre.x - 10, y: centre.y },
+      ],
+    );
+    const after = await viewOf(page);
+    // 60 pixels to the left: the area 60 pixels further east, as wide as before, within a pixel.
+    const unitsPerPixel = before.width / box.width;
+    expect(Math.abs(after.x - before.x - 60 * unitsPerPixel)).toBeLessThanOrEqual(unitsPerPixel);
+    expect(Math.abs(after.width - before.width)).toBeLessThanOrEqual(unitsPerPixel);
+  });
 });
 
 test('a drag that ends on a municipality shows no details', async ({ page }) => {

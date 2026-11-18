@@ -17,7 +17,15 @@
     type VoteEntries,
   } from '../../../../lib/result-map.ts';
   import { formatDate } from '../../../../lib/format.ts';
-  import { moveBy, wholeView, zoomAround, type View } from '../../../../lib/map-view.ts';
+  import {
+    moveBy,
+    pinchFrom,
+    wholeView,
+    zoomAround,
+    type Fingers,
+    type Point,
+    type View,
+  } from '../../../../lib/map-view.ts';
   import type { Texts } from '../../../../lib/texts/index.ts';
 
   // The map of a vote (spec result-map): its entries are written into the page when the site is
@@ -157,9 +165,38 @@
   let press: { x: number; y: number; view: View; moved: boolean } | null = null;
   // After a drag, its release selects nothing, until the pointer moves from where it was let go.
   let released: { x: number; y: number } | null = null;
+  // The pointers pressed on the map, by their id, where each is now: one drags, two pinch, a third
+  // is ignored (design of add-small-screens, decision 9). Replaced whole, never changed inside:
+  // nothing on the screen follows it, as nothing follows `press`.
+  let pressed: ReadonlyMap<number, Point> = new Map();
 
-  function down(event: PointerEvent): void {
-    if (view === null || event.button !== 0) return;
+  /** The pressed pointers with `id` at `point`, or without `id`. */
+  function pressedWith(id: number, point: Point | null): ReadonlyMap<number, Point> {
+    const others = [...pressed].filter(([other]) => other !== id);
+    return new Map(point === null ? others : [...others, [id, point]]);
+  }
+  // A pinch: the view and both fingers when the second touched.
+  let pinch: (Fingers & { view: View }) | null = null;
+
+  /** The two pressed pointers, in pixels from the map's top left corner. */
+  function fingersOn(svg: SVGSVGElement): Fingers {
+    const box = svg.getBoundingClientRect();
+    const points = [...pressed.values()].map((p) => ({ x: p.x - box.left, y: p.y - box.top }));
+    if (points.length !== 2) throw new Error('a pinch needs two fingers');
+    const [a, b] = points;
+    return { a, b };
+  }
+
+  function down(event: PointerEvent & { currentTarget: SVGSVGElement }): void {
+    if (view === null || event.button !== 0 || pressed.size === 2) return;
+    pressed = pressedWith(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (pressed.size === 2) {
+      // A second finger makes the gesture a pinch at once; like a drag, it selects nothing.
+      pinch = { ...fingersOn(event.currentTarget), view };
+      press = null;
+      selected = null;
+      return;
+    }
     press = { x: event.clientX, y: event.clientY, view, moved: false };
     // A new press ends the last drag's hold: its own click counts unless it becomes a drag.
     released = null;
@@ -167,6 +204,18 @@
 
   function drag(event: PointerEvent & { currentTarget: SVGSVGElement }): void {
     // A press let go outside the map, before it became a drag, sent no release here.
+    if ((event.buttons & 1) === 0) {
+      if (pressed.has(event.pointerId)) pressed = pressedWith(event.pointerId, null);
+    } else if (pressed.has(event.pointerId)) {
+      pressed = pressedWith(event.pointerId, { x: event.clientX, y: event.clientY });
+    }
+    if (pinch !== null) {
+      if (pressed.size === 2 && sources !== null) {
+        const svg = event.currentTarget;
+        view = pinchFrom(pinch, fingersOn(svg), svg.getBoundingClientRect().width, sources.map);
+      }
+      return;
+    }
     if (press !== null && (event.buttons & 1) === 0) press = null;
     if (press === null || sources === null) {
       if (released !== null && (event.clientX !== released.x || event.clientY !== released.y)) {
@@ -189,7 +238,26 @@
   }
 
   function up(event: PointerEvent): void {
+    pressed = pressedWith(event.pointerId, null);
+    if (pinch !== null) {
+      // One of two fingers lifted: the other goes on as a drag from where it is, and the release
+      // selects nothing.
+      pinch = null;
+      press = null;
+      if (pressed.size === 1 && view !== null) {
+        const [left] = [...pressed.values()];
+        press = { ...left, view, moved: true };
+      }
+      released = { x: event.clientX, y: event.clientY };
+      return;
+    }
     if (press?.moved === true) released = { x: event.clientX, y: event.clientY };
+    press = null;
+  }
+
+  function cancel(event: PointerEvent): void {
+    pressed = pressedWith(event.pointerId, null);
+    pinch = null;
     press = null;
   }
 
@@ -280,7 +348,7 @@
           onpointerdown={down}
           onpointermove={drag}
           onpointerup={up}
-          onpointercancel={() => (press = null)}
+          onpointercancel={cancel}
           onpointerleave={() => (selected = null)}
         >
           <defs>
@@ -420,9 +488,13 @@
     vertical-align: middle;
     border: 1px solid #767676;
   }
+  /* Fingers on the map are the map's: the browser neither scrolls nor zooms the page for them, and
+     passes every move on (spec result-map, "Moving the map"; design of add-small-screens,
+     decision 8). */
   svg {
     display: block;
     width: 100%;
     height: auto;
+    touch-action: none;
   }
 </style>

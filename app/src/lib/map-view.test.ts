@@ -1,7 +1,7 @@
 // The view of the map (spec result-map, "Zoom" and "Moving the map"), on a made-up map 1000 by
 // 600 units.
 import { expect, test } from 'vitest';
-import { moveBy, wholeView, zoomAround } from './map-view.ts';
+import { moveBy, pinchFrom, wholeView, zoomAround } from './map-view.ts';
 
 const MAP = { width: 1000, height: 600 };
 
@@ -43,4 +43,36 @@ test('a drag past the western edge stops with the centre of the view on it', () 
   const view = zoomAround(wholeView(MAP), 2, { x: 500, y: 300 }, MAP);
   // Dragged far to the right: the view moves west until its centre is at the edge, x = 0.
   expect(moveBy(view, 10000, 0, 500, MAP)).toEqual({ x: -250, y: 150, width: 500, height: 300 });
+});
+
+test('two fingers moved apart to twice their distance zoom in by 2 around their midpoint', () => {
+  // The map shown 500 pixels wide: at the whole of Switzerland a pixel is 2 units. The fingers'
+  // midpoint, pixel (200, 100), is the point (400, 200) of the map.
+  const start = { view: wholeView(MAP), a: { x: 150, y: 100 }, b: { x: 250, y: 100 } };
+  const now = { a: { x: 100, y: 100 }, b: { x: 300, y: 100 } };
+  const view = pinchFrom(start, now, 500, MAP);
+  expect(view).toEqual({ x: 200, y: 100, width: 500, height: 300 });
+  // The point stays under the midpoint: pixel 200 is unit 200 + 200 × 500 / 500 = 400.
+  expect(view.x + (200 * view.width) / 500).toBe(400);
+});
+
+test('two fingers moved together move the view by their shift, at the same width', () => {
+  // At 4×, the map 500 pixels wide shows 250 units: a pixel is half a unit.
+  const view = zoomAround(wholeView(MAP), 4, { x: 500, y: 300 }, MAP);
+  const start = { view, a: { x: 200, y: 100 }, b: { x: 300, y: 100 } };
+  const now = { a: { x: 140, y: 100 }, b: { x: 240, y: 100 } };
+  // Moved 60 pixels to the left: the area 30 units further east, as wide as before.
+  expect(pinchFrom(start, now, 500, MAP)).toEqual({ x: 405, y: 225, width: 250, height: 150 });
+});
+
+test('two fingers moved together at the whole of Switzerland keep the whole of Switzerland', () => {
+  const start = { view: wholeView(MAP), a: { x: 150, y: 100 }, b: { x: 350, y: 100 } };
+  const now = { a: { x: 200, y: 100 }, b: { x: 300, y: 100 } };
+  expect(pinchFrom(start, now, 500, MAP)).toEqual(wholeView(MAP));
+});
+
+test('two fingers moved apart beyond 16 times stop at a sixteenth of the width', () => {
+  const start = { view: wholeView(MAP), a: { x: 245, y: 100 }, b: { x: 255, y: 100 } };
+  const now = { a: { x: 0, y: 100 }, b: { x: 500, y: 100 } };
+  expect(pinchFrom(start, now, 500, MAP).width).toBe(MAP.width / 16);
 });

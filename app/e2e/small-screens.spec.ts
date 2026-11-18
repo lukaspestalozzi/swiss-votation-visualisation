@@ -1,12 +1,8 @@
 // The site in a narrow window and on a touch screen (spec small-screens), against the built site.
 // The widths and sizes are those of investigations/small-screens.md.
-import { devices, expect, test, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { phone } from './fingers.ts';
 import { pointIn } from './pointing.ts';
-
-// A phone: Playwright's Pixel 7, touch and a mobile viewport, in the tests' Chromium, without the
-// device's choice of browser (design of add-small-screens, decision 13).
-const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = devices['Pixel 7'];
-const phone = { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch };
 
 /** The width of the page, which is the window's when nothing reaches past it. */
 const pageWidth = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth);
