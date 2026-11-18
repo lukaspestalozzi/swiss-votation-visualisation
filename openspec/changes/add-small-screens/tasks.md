@@ -29,7 +29,7 @@ are sent by `app/e2e/fingers.ts`.
 
 Spec `small-screens`, "Every page fits a window 360 pixels wide"; design, decisions 5, 6 and 14.
 
-- [ ] 1.1 The longest word. Create `app/e2e/small-screens.spec.ts` with a test of the scenario
+- [x] 1.1 The longest word. Create `app/e2e/small-screens.spec.ts` with a test of the scenario
   "The longest word of a title": `/de/votes/6400/` in a window 360 pixels wide, the page's
   `scrollWidth` at most 360, and its heading holding the whole title. Seen to fail: 532. Then the
   page's headings and the verdict boxes break a long word (`hyphens: auto`,
@@ -37,7 +37,12 @@ Spec `small-screens`, "Every page fits a window 360 pixels wide"; design, decisi
 
   Verify: the test, run alone, passes; `investigations/small-screens/widths.cjs 360` against the
   new build lists no German page.
-- [ ] 1.2 The verdicts in Italian. A test of the scenario, on a phone 360 pixels wide: the limit
+
+  (As built: the test failed with 532 and passed with the rule on `h1` and `.verdict` of the
+  vote's page. `widths.cjs 360` then printed "0 of 381 pages wider than 360 px": no Italian page
+  either. The tests' Chromium has an Italian hyphenation dictionary, and broke "Maggio-ranza" in
+  the verdict boxes; see 1.2.)
+- [x] 1.2 The verdicts in Italian. A test of the scenario, on a phone 360 pixels wide: the limit
   "Quota di stranieri" added, its upper bound at step 327, a tap on Zürich; the page at most 360
   pixels wide, and the two boxes side by side (the top of "Maggioranza dei Cantoni" level with
   that of "Maggioranza del popolo"), for the vote and under "Con la Sua selezione". Seen to fail:
@@ -46,12 +51,23 @@ Spec `small-screens`, "Every page fits a window 360 pixels wide"; design, decisi
 
   Verify: the test, run alone, passes; `widths.cjs 360` prints "0 of 381 pages wider than 360
   px". Write the chosen size into a note "As built".
-- [ ] 1.3 The other pages. A test of the scenario "The other pages": the start page, the guide
+
+  (As built: after 1.1 the test passed when written, by the hyphenation of "Maggio-ranza". With
+  a mutant without hyphenation (`hyphens: manual`), as in a browser without the dictionary, it
+  failed with 364; the width is checked before the tap, as on a page wider than the window the
+  tap missed Zürich. Below 640 pixels the boxes then got a padding of 0 0.5rem, and the vote's
+  headings 1.25rem: with the mutant the test passed, and the headings wrapped between their
+  words, two lines each. Without the mutant: the two tests pass, and `widths.cjs 360`, against
+  a server started after the build, prints "0 of 381 pages wider than 360 px".)
+- [x] 1.3 The other pages. A test of the scenario "The other pages": the start page, the guide
   and `votes/6823/` in each language, and `/fr/votes/5960/`, each at most 360 pixels wide. It
   passes when written (investigation, 1).
 
   Verify: the test, run alone, passes; with a temporary rule `ul { width: 400px; }` in the start
   page's styles it fails naming `/de/`, and without it passes again.
+
+  (As built: it passed when written; with the rule it failed with "de/", 408; without it the
+  file's three tests pass.)
 
 ## 2. Fingers move and zoom the map
 
