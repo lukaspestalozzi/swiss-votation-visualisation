@@ -159,12 +159,18 @@ click does"; design, decisions 3 and 4.
 Spec `small-screens`, "Controls for a finger" and "The zoom buttons in a narrow window"; design,
 decisions 10 and 11.
 
-- [ ] 4.1 The zoom buttons. Tests of "A phone" and "A computer" in `small-screens.spec.ts`,
+- [x] 4.1 The zoom buttons. Tests of "A phone" and "A computer" in `small-screens.spec.ts`,
   written and run one at a time. "A phone" fails first: the buttons lie over the map. Then, below
   640 pixels, the buttons stand in a row above the map.
 
   Verify: each, run alone, passes; the tests of zooming in `result-map.spec.ts` still pass.
-- [ ] 4.2 The controls. A test of "The controls on a phone": with one limit, the eight controls
+
+  (As built: "A phone" failed with the buttons' bottom 21 pixels below the map's top. The box of
+  details and the map now stand in a box of their own, `.picture`, so that the box of details
+  stays at the map's top left when the buttons move above it, before it in the column. "A
+  computer" passed when written, and failed against a mutant with the narrow rule at every width.
+  The ten tests of zooming, the wheel and dragging pass.)
+- [x] 4.2 The controls. A test of "The controls on a phone": with one limit, the eight controls
   named other than the thumbs, each at least 44 × 44 pixels on the screen (the switch by its
   label). Seen to fail: 24 × 21 and smaller (investigation, 5). Then the rules under
   `(pointer: coarse)` in `ResultMap.svelte` and `Limits.svelte` (design, decision 10). The
@@ -173,7 +179,13 @@ decisions 10 and 11.
   Verify: the test, run alone, passes; `investigations/small-screens/targets.cjs` against the new
   build prints, for the Pixel 7, every control at least 44 pixels tall and, for the computer, the
   sizes of before.
-- [ ] 4.3 The thumbs. A test of "A thumb beside the finger" on a phone: a press 20 pixels to the
+
+  (As built: the test failed with each control too small in one or both directions, and passes
+  with the rules. `targets.cjs`, against a server started after the build, prints for the Pixel 7
+  the list and the six buttons 44 pixels tall, "+" and "−" 44 × 44; it measures the switch by its
+  box, now 24 × 24 in a label at least 44 pixels tall, which the test measures, and the track,
+  still 24 pixels tall until 4.3. For the computer it prints the sizes of before.)
+- [x] 4.3 The thumbs. A test of "A thumb beside the finger" on a phone: a press 20 pixels to the
   left of the upper thumb's centre and a move 100 pixels to the left; the upper bound below 327,
   the lower at 0. Seen to fail: a press beside a 17.6-pixel thumb takes nothing. Then, under
   `(pointer: coarse)`, each thumb a 44-pixel square with a transparent border and the track 44
@@ -181,6 +193,14 @@ decisions 10 and 11.
 
   Verify: the test and 4.2's, run alone, pass; `pnpm --filter app exec playwright test
   e2e/limits.spec.ts` passes whole.
+
+  (As built: the track's height is checked in this test, before the press, not in 4.2's; it
+  failed there first, 24. The press is the mouse's on the phone's emulation, as this browser
+  moves no native slider for a finger; the thumb's centre is placed as a 44-pixel thumb's. The
+  rules under `(pointer: coarse)` stand at the end of the styles, after those they change; the
+  dot keeps 18 pixels with its white ring drawn inside. With a mutant thumb of 1.1rem on the
+  44-pixel track the test failed, the bound left at 327; without it the test and 4.2's pass, and
+  `limits.spec.ts` passes whole, 39.)
 
 ## 5. The bar with the selection's result
 
