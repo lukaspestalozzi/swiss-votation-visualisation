@@ -2,7 +2,7 @@
 
 ## Why
 
-`openspec/config.yaml` asks for an app that is usable on a phone, and v1 ends with it. Change
+`openspec/config.yaml` asks for an app that is usable on a phone, and v1 includes it. Change
 #10 of `docs/roadmap.md`, `add-small-screens`, is implemented here. It settles what the roadmap
 leaves open for it:
 - the layout;
