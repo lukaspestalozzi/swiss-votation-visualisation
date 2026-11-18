@@ -73,7 +73,7 @@ Spec `small-screens`, "Every page fits a window 360 pixels wide"; design, decisi
 
 Spec `result-map`, "Zoom" and "Moving the map"; design, decisions 7, 8, 9 and 13.
 
-- [ ] 2.1 `pinchFrom` in `app/src/lib/map-view.ts`: the view from the view and both fingers'
+- [x] 2.1 `pinchFrom` in `app/src/lib/map-view.ts`: the view from the view and both fingers'
   points when the second touched, and both points now, in pixels on a map shown so many pixels
   wide; built on `zoomAround` and `moveBy`. Four unit tests in `map-view.test.ts`, written and
   run one at a time (design, Tests):
@@ -84,7 +84,12 @@ Spec `result-map`, "Zoom" and "Moving the map"; design, decisions 7, 8, 9 and 13
 
   Verify: `pnpm --filter app exec vitest run src/lib/map-view.test.ts` passes with the four new
   tests; `pnpm run test`: 52 and 121.
-- [ ] 2.2 One finger. Create `app/e2e/fingers.ts`: `fingersOn(page)` opens a CDP session and
+
+  (As built: the first failed with "pinchFrom is not a function", and passed with the zoom; the
+  second failed with x 375 for 405, and passed with the move. The third and fourth passed when
+  written, as `zoomAround` keeps the limits; with a mutant that zooms without them both failed,
+  and passed again without it. `pnpm run test`: 52 and 121.)
+- [x] 2.2 One finger. Create `app/e2e/fingers.ts`: `fingersOn(page)` opens a CDP session and
   sends touch points by `Input.dispatchTouchEvent`, each finger with its id, moved in steps of 10
   pixels with an animation frame between steps. In `result-map.spec.ts`, a test of "Moving with a
   finger" on a phone: zoomed in four times, one finger 100 pixels to the left; the view box 100
@@ -92,7 +97,11 @@ Spec `result-map`, "Zoom" and "Moving the map"; design, decisions 7, 8, 9 and 13
   (investigation, 3). Then the map's SVG gets `touch-action: none`.
 
   Verify: the test, run alone, passes.
-- [ ] 2.3 Two fingers zoom. A test of "Zooming with two fingers" on a phone: two fingers 100
+
+  (As built: `fingers.ts` also holds the phone, Playwright's Pixel 7 without its choice of
+  browser, which `small-screens.spec.ts` now imports. The test failed 4,404 units, 80 pixels,
+  short: the map moved 20 pixels. With `touch-action: none` it passes.)
+- [x] 2.3 Two fingers zoom. A test of "Zooming with two fingers" on a phone: two fingers 100
   pixels apart, Zürich midway, moved apart to 200 pixels; the view box half as wide and half as
   high, Zürich midway within one pixel. Seen to fail: today the map moves and does not zoom
   (investigation, 3). Then the map keeps the pointers pressed on it, and two make a pinch with
@@ -100,12 +109,22 @@ Spec `result-map`, "Zoom" and "Moving the map"; design, decisions 7, 8, 9 and 13
 
   Verify: the test, run alone, passes; the existing tests of zooming and dragging in
   `result-map.spec.ts` still pass.
-- [ ] 2.4 The limits and the move of two fingers. Tests of "Two fingers at the limits" and "Two
+
+  (As built: it failed with the width of the whole of Switzerland, 348,832 for 174,416. With the
+  pinch the width was 174,415.98: the Pixel 7 places a finger at fractions of its screen's
+  pixels, so the test takes half the width and height within one pixel, as Zürich's place. A
+  release after a pinch selects nothing, and a cancelled pointer ends the pinch. The whole of
+  `result-map.spec.ts`: 44 passed.)
+- [x] 2.4 The limits and the move of two fingers. Tests of "Two fingers at the limits" and "Two
   fingers moving together", on a phone, written and run one at a time. Both pass when written, as
   `pinchFrom`'s limits and shift are unit-tested.
 
   Verify: each, run alone, passes; with `pinchFrom` temporarily skipping its `moveBy`, "Two
   fingers moving together" fails, and passes again without the mutant.
+
+  (As built: both passed when written; the move is checked within one pixel, the width too. With
+  the mutant, "Two fingers moving together" failed on its shift; without it the four tests on a
+  phone pass.)
 
 ## 3. A tap, and the outline
 

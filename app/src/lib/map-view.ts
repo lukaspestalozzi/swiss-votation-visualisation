@@ -48,6 +48,39 @@ export function moveBy(view: View, dx: number, dy: number, pixelsWide: number, m
   );
 }
 
+/** Two fingers on the map, in pixels from its top left corner. */
+export interface Fingers {
+  readonly a: Point;
+  readonly b: Point;
+}
+
+/**
+ * The view while two fingers pinch (design of add-small-screens, decision 9): the view when the
+ * second finger touched, zoomed by the ratio of the fingers' distances around the point that was
+ * then midway between them, then moved by the shift of their midpoint, on a map shown
+ * `pixelsWide` pixels wide. Taken from the start, not step by step, so that rounding does not
+ * drift.
+ */
+export function pinchFrom(
+  start: Fingers & { readonly view: View },
+  now: Fingers,
+  pixelsWide: number,
+  map: Size,
+): View {
+  const distance = ({ a, b }: Fingers): number => Math.hypot(b.x - a.x, b.y - a.y);
+  const midpoint = ({ a, b }: Fingers): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+  const unitsPerPixel = start.view.width / pixelsWide;
+  const from = midpoint(start);
+  const point = {
+    x: start.view.x + from.x * unitsPerPixel,
+    y: start.view.y + from.y * unitsPerPixel,
+  };
+  const factor = distance(start) === 0 ? 1 : distance(now) / distance(start);
+  const to = midpoint(now);
+  const zoomed = zoomAround(start.view, factor, point, map);
+  return moveBy(zoomed, to.x - from.x, to.y - from.y, pixelsWide, map);
+}
+
 /** The view moved so that its centre lies inside the map's rectangle. */
 function withinMap(view: View, map: Size): View {
   const clamp = (value: number, low: number, high: number): number =>
