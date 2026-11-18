@@ -172,13 +172,9 @@ test('clicking a municipality shows its details, without pointing first', async 
   await expect(details(page).locator('li').first()).toHaveText('Ja-Anteil: 27.61%');
 });
 
-test('pointing at a lake shows no details', async ({ page }) => {
-  await page.goto('de/votes/5960/');
-  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
-  await page.mouse.move(zurich.x, zurich.y);
-  await expect(details(page).locator('.name')).toHaveText('Zürich (ZH)');
-  // The lakes have no names in the data: the Zürichsee is the lake nearest to Zürich, measured
-  // in the map's own coordinates, which do not change as the page scrolls.
+// The lakes have no names in the data: the Zürichsee is the lake nearest to Zürich, measured in
+// the map's own coordinates, which do not change as the page scrolls. A point inside it.
+async function zurichsee(page: Page): Promise<{ x: number; y: number }> {
   const nearest = await page.evaluate(() => {
     const centre = (element: Element | null) => {
       if (!(element instanceof SVGGraphicsElement)) throw new Error('no shape');
@@ -192,7 +188,15 @@ test('pointing at a lake shows no details', async ({ page }) => {
     });
     return distances.indexOf(Math.min(...distances));
   });
-  const lake = await pointIn(page, `.lakes path >> nth=${String(nearest)}`);
+  return pointIn(page, `.lakes path >> nth=${String(nearest)}`);
+}
+
+test('pointing at a lake shows no details', async ({ page }) => {
+  await page.goto('de/votes/5960/');
+  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+  await page.mouse.move(zurich.x, zurich.y);
+  await expect(details(page).locator('.name')).toHaveText('Zürich (ZH)');
+  const lake = await zurichsee(page);
   await page.mouse.move(lake.x, lake.y);
   await expect(details(page).locator('.name')).toHaveCount(0);
 });
@@ -412,6 +416,32 @@ test.describe('on a phone', () => {
     const unitsPerPixel = before.width / box.width;
     expect(Math.abs(after.x - before.x - 60 * unitsPerPixel)).toBeLessThanOrEqual(unitsPerPixel);
     expect(Math.abs(after.width - before.width)).toBeLessThanOrEqual(unitsPerPixel);
+  });
+
+  // A tap is a click (spec result-map, "A tap does what a click does").
+  test('tapping Zürich shows its details and its characteristics, and outlines it', async ({
+    page,
+  }) => {
+    await mapAt(page, 0);
+    const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+    await page.touchscreen.tap(zurich.x, zurich.y);
+    await expect(details(page).locator('.name')).toHaveText('Zürich (ZH)');
+    await expect(details(page).locator('li').first()).toHaveText('Ja-Anteil: 31.85%');
+    await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+    await expect(panel(page).locator('li').first()).toHaveText("Einwohner: 396'955");
+    await expectOutlined(page, 261);
+  });
+
+  test('tapping a lake shows no details, and keeps the panel and the outline', async ({ page }) => {
+    await mapAt(page, 0);
+    const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+    await page.touchscreen.tap(zurich.x, zurich.y);
+    await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+    const lake = await zurichsee(page);
+    await page.touchscreen.tap(lake.x, lake.y);
+    await expect(details(page).locator('.name')).toHaveCount(0);
+    await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+    await expectOutlined(page, 261);
   });
 });
 
@@ -706,6 +736,69 @@ test('clicking another municipality shows it in the panel', async ({ page }) => 
   await clickAt(page, 351);
   await expect(panel(page).locator('.name')).toHaveText('Bern (BE)');
   await expect(panel(page).locator('li').first()).toHaveText("Einwohner: 131'554");
+});
+
+// The outline of the municipality last clicked or tapped (spec result-map; design of
+// add-small-screens, decisions 3 and 4): two paths, black on a white halo, after the cantons.
+const outline = (page: Page) => page.locator('.map .outlined path');
+
+test('before a click no municipality is outlined', async ({ page }) => {
+  await page.goto('de/votes/5960/');
+  await page.locator('.municipalities path').nth(2000).waitFor();
+  await expect(outline(page)).toHaveCount(0);
+});
+
+/** Whether the outline is that of the municipality `number`, black 3 pixels on white 7. */
+async function expectOutlined(page: Page, number: number): Promise<void> {
+  const shape = await municipality(page, number).getAttribute('d');
+  await expect(outline(page)).toHaveCount(2);
+  for (const path of await outline(page).all())
+    await expect(path).toHaveAttribute('d', shape ?? '');
+  const strokes = await outline(page).evaluateAll((paths) =>
+    paths.map((path) => {
+      const style = getComputedStyle(path);
+      return [style.stroke, style.strokeWidth, style.fill, style.pointerEvents];
+    }),
+  );
+  expect(strokes).toEqual([
+    ['rgb(255, 255, 255)', '7px', 'none', 'none'],
+    ['rgb(0, 0, 0)', '3px', 'none', 'none'],
+  ]);
+  // Above the borders of the cantons: after them in the drawing.
+  const after = await page.evaluate(() => {
+    const cantons = document.querySelector('.map .cantons');
+    const outlined = document.querySelector('.map .outlined');
+    return cantons !== null && outlined !== null
+      ? (cantons.compareDocumentPosition(outlined) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+      : false;
+  });
+  expect(after).toBe(true);
+}
+
+test('the municipality last clicked is outlined, also while pointing at another', async ({
+  page,
+}) => {
+  await page.goto('de/votes/5960/');
+  await clickAt(page, 261);
+  await expectOutlined(page, 261);
+  await pointAt(page, 351);
+  await expect(details(page).locator('.name')).toHaveText('Bern (BE)');
+  await expectOutlined(page, 261);
+  await clickAt(page, 351);
+  await expectOutlined(page, 351);
+});
+
+test('a set-aside municipality is outlined too', async ({ page }) => {
+  // Zürich set aside by "Ausländeranteil" up to step 327 (investigations/limits.md, 3).
+  await page.goto('de/votes/5960/');
+  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
+  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await page
+    .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
+    .fill('327');
+  await expect(municipality(page, 261)).toHaveAttribute('fill', '#2c2c2c');
+  await clickAt(page, 261);
+  await expectOutlined(page, 261);
 });
 
 test('in a wide window the panel stands to the right of the map', async ({ page }) => {

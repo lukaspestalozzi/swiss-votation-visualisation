@@ -131,7 +131,7 @@ Spec `result-map`, "Zoom" and "Moving the map"; design, decisions 7, 8, 9 and 13
 Spec `result-map`, "The municipality last clicked or tapped is outlined" and "A tap does what a
 click does"; design, decisions 3 and 4.
 
-- [ ] 3.1 The outline. Tests of "Before clicking", "Clicking, pointing, clicking again" and "A
+- [x] 3.1 The outline. Tests of "Before clicking", "Clicking, pointing, clicking again" and "A
   set-aside municipality", written and run one at a time: an outline is two paths with the `d` of
   the municipality in `last`, black 3 pixels on white 7, after the cantons. The first passes when
   written; the second and third fail first. Then the two paths in `ResultMap.svelte`, with
@@ -139,11 +139,20 @@ click does"; design, decisions 3 and 4.
 
   Verify: each, run alone, passes; "Before clicking" fails against a mutant that outlines 261
   from the start, and passes again without it.
-- [ ] 3.2 The tap. Tests of "Tapping Zürich" and "Tapping a lake" on a phone, written and run one
+
+  (As built: the second failed with no outline, 0 paths; the paths came after it, so the third
+  passed when written, and failed against a mutant that outlines no set-aside municipality. The
+  group is `outlined`, as the outline of Switzerland is already the path `outline`. With both
+  mutants the first and the third failed and the second passed; without them the three pass.)
+- [x] 3.2 The tap. Tests of "Tapping Zürich" and "Tapping a lake" on a phone, written and run one
   at a time. Both pass when written: a tap is a click (investigation, 3), and 3.1 outlines it.
 
   Verify: each, run alone, passes; "Tapping Zürich" fails against a mutant in which only a click
   with `pointerType` "mouse" sets `last`, and passes again without it.
+
+  (As built: both passed when written, and in five runs each, the Zürichsee being a few pixels
+  wide on a phone; the search for it is now a helper shared with "pointing at a lake". Against
+  the mutant both failed and the click of a mouse passed; without it both pass.)
 
 ## 4. Controls for a finger, and the zoom buttons
 

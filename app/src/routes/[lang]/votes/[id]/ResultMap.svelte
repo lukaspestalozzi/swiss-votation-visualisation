@@ -122,6 +122,13 @@
   });
   // The legend, which names the set-aside municipalities while there are any.
   const legend = $derived(aside.size > 0 ? [...legendOf(t), legendSetAsideOf(t)] : legendOf(t));
+  // The shape of the municipality last clicked or tapped, which the map outlines (design of
+  // add-small-screens, decision 3).
+  const outlined = $derived(
+    last === null || sources === null
+      ? null
+      : (sources.map.municipalities.find(([number]) => number === last)?.[1] ?? null),
+  );
   const lastName = $derived.by(() => {
     const named = last === null ? undefined : names.get(last);
     if (last === null || named === undefined) return null;
@@ -381,6 +388,12 @@
               <path d={path} data-canton={canton} />
             {/each}
           </g>
+          {#if outlined !== null}
+            <g class="outlined">
+              <path class="halo" d={outlined} />
+              <path class="line" d={outlined} />
+            </g>
+          {/if}
         </svg>
       </div>
       <CharacteristicsPanel
@@ -464,6 +477,23 @@
     stroke: #fff;
     stroke-width: 0.5px;
     vector-effect: non-scaling-stroke;
+  }
+  /* The municipality last clicked or tapped: black on a white halo, above the cantons' borders,
+     at every zoom the same width (spec result-map; design of add-small-screens, decision 4). The
+     pointer passes through to the municipality beneath. */
+  .outlined path {
+    fill: none;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    pointer-events: none;
+  }
+  .outlined .halo {
+    stroke: #fff;
+    stroke-width: 7px;
+  }
+  .outlined .line {
+    stroke: #000;
+    stroke-width: 3px;
   }
   .cantons path {
     fill: none;
