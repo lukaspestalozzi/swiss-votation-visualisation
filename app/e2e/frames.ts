@@ -28,6 +28,16 @@ export const MEASURE_FRAMES = `
   }
 `;
 
+/**
+ * Wait until the page's fonts have loaded, so that the font's arrival, which sets the text anew,
+ * is never one of the frames a budget test measures (design of add-site-style, "Tests").
+ */
+export async function fontsLoaded(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+  });
+}
+
 /** The frames measured since the page began or was last cleared, printed for the log. */
 export async function measuredFrames(page: Page): Promise<{ type: string; work: number }[]> {
   await page.waitForTimeout(100);

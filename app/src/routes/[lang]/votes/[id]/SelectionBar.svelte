@@ -64,7 +64,7 @@
     z-index: 1;
     padding: 0.25rem 0.5rem;
     border-top: 1px solid;
-    background: #ffffff;
+    background: var(--ground);
   }
   @media (min-width: 640px) {
     .selection-bar {

@@ -47,7 +47,7 @@
         {/each}
       </ul>
     {/each}
-    <p class="source">{t.CHARACTERISTICS_SOURCES}</p>
+    <p class="source secondary">{t.CHARACTERISTICS_SOURCES}</p>
   {/if}
 </section>
 
