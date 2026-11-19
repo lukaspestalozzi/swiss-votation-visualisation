@@ -40,7 +40,7 @@ page, and a dark mode.
   - the page on `#121212`, text `#e8e8e8`, links `#8ab4f8`, the verdicts in the map's class 2;
   - the map keeps its colours, the set-aside grey 11.1 apart from the dark ground;
   - the borders between municipalities and the ground under the hatching take the page's ground;
-  - no switch on the page, and nothing stored.
+  - no switch on the page, no cookie and nothing in the browser's local storage.
 - **A head on every page.** It holds the working title, linked to the start page, then the
   guide's name, linked to the guide, then the language switch. The link to the guide below the
   start page's heading goes.
@@ -59,7 +59,8 @@ page, and a dark mode.
 
 - **No limit on the column's width** (Q): only paragraphs are limited. On a wide screen the map
   stays as large as the window allows, 1552 × 982 pixels at 1920.
-- **No switch between light and dark**, and nothing stored: the page follows the browser.
+- **No switch between light and dark**, no cookie and nothing in local storage: the page follows
+  the browser.
 - **The map's colours stay** as #6 and #8 set them:
   - the classes, the tie, the lakes and the set-aside grey `#2c2c2c`;
   - the cantons' borders;
