@@ -81,10 +81,12 @@ context: |
     a push to main passed, as the build the browser tests checked; it is built for that path. The
     design of the archived change publish-site gives the reasons and the alternatives.
   - The map of a vote is drawn as SVG, one path per municipality, zoomed and moved by the app's
-    own code; its shapes are the BFS's K4 boundaries of the list's reference date from the
-    register of municipalities, with the lakes of the BFS ThemaKart set, written by the pipeline
-    to app/static/data/map.json. Whether a library for zoom and move serves better is checked in
-    #10. The design of the archived change add-result-map gives the reasons and the alternatives.
+    own code, with the mouse, the buttons and fingers (one finger moves it, two pinch); its shapes
+    are the BFS's K4 boundaries of the list's reference date from the register of
+    municipalities, with the lakes of the BFS ThemaKart set, written by the pipeline to
+    app/static/data/map.json. #10 checked a library for zoom and move (d3-zoom, 17.6 KB gzipped,
+    investigations/small-screens.md) and kept the app's own code. The designs of the archived
+    changes add-result-map and add-small-screens give the reasons and the alternatives.
   - Found by the first investigation (investigations/data-sources.md): the public sources offer
     the results per municipality for every national vote since 2013, all on one list of
     municipalities, and the characteristics for matching years on other lists.
