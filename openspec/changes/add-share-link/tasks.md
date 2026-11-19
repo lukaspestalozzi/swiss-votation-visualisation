@@ -87,35 +87,53 @@ link" and "The parts a link cannot use"; design, decisions 1 to 4.
 Spec `share-link`, "The selection in the address", "The keys of the characteristics" and "The
 address follows the selection"; design, decisions 5 and 10.
 
-- [ ] 2.1 The writer. Create `app/e2e/share-link.spec.ts` with a test of the scenario "A limit".
+- [x] 2.1 The writer. Create `app/e2e/share-link.spec.ts` with a test of the scenario "A limit".
   Seen to fail: the address stays `/de/votes/5960/`. Then, in `+page.svelte`: the link derived by
   `linkOf`; once the characteristics have loaded, an effect that restarts a timer of 500 ms at
   every change of the link, and writes the address with SvelteKit's shallow `goto`, by `resolve`,
   when it differs from the address's.
 
   Verify: run alone, the test passes.
-- [ ] 2.2 The other forms. Tests of "Two limits and the switch", "A limit that sets nothing
+
+  As built: the address is `page.url.pathname` and the hash, not `resolve` and the hash (Q,
+  2026-11-19). The lint rule `svelte/no-navigation-without-resolve` accepts no address built from
+  `resolve`, and `resolve('/[lang]/votes/[id]', …)` gives `/de/votes/5960` without the final
+  slash the spec's addresses have. The `goto` has an `eslint-disable-next-line` with its reason.
+- [x] 2.2 The other forms. Tests of "Two limits and the switch", "A limit that sets nothing
   aside", "Back to the real result" and "The keys in French", one at a time.
 
   Verify: each run alone passes; each written after 2.1, so a mutant of `linkOf` (no empty bound)
   shows the first two fail.
-- [ ] 2.3 The history. Tests of "Back leaves the page" and "Nothing is sent": the second collects
+
+  As built: the four passed when written. Against the mutant, all five tests of the file failed,
+  as each writes a bound at its track's end.
+- [x] 2.3 The history. Tests of "Back leaves the page" and "Nothing is sent": the second collects
   every request's address while making the selection and reloading, and none contains
   `foreigners`.
 
   Verify: each run alone passes; against a mutant that writes with `replace: false`, "Back
   leaves the page" fails.
-- [ ] 2.4 A held key. A test of "A held key": a script added before the page loads counts the
+
+  As built: both passed when written. "Back leaves the page" failed against `replace: false`
+  (the vote's page still shown), "Nothing is sent" against a writer of `?` for `#` (the reload's
+  request carried `?foreigners=-19.98`).
+- [x] 2.4 A held key. A test of "A held key": a script added before the page loads counts the
   page's calls of `history.replaceState`; the count starts after the limit has been added and a
   second has passed; 100 presses of the left arrow key, 33 ms apart; a second later the count is
   1 and the address `#foreigners=-54.99`.
 
   Verify: run alone, the test passes; against a mutant with a timer of 0 ms, it fails with a count
   above 1.
-- [ ] 2.5 The budgets of the limits. The limits' budget tests, "Dragging a bound" and "Jumps", run
+
+  As built: it passed after a fresh build; its first run failed because the build still held the
+  mutant of 2.3, so each mutant is now followed by a build of the restored code. Against the
+  timer of 0 ms, the count was 100, one per press.
+- [x] 2.5 The budgets of the limits. The limits' budget tests, "Dragging a bound" and "Jumps", run
   with the writer.
 
   Verify: `pnpm --filter app exec playwright test limits.spec.ts -g "budget"` passes.
+
+  As built: both passed; the longest frame of the drag 6.7 ms, of the jumps 10.3 ms.
 
 ## 3. The page reads its address
 
