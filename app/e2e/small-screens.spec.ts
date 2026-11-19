@@ -183,6 +183,48 @@ test.describe('the bar on a phone', () => {
     await expect(bar(page)).toBeHidden();
   });
 
+  test('a selection that begins with its box in the window shows no bar, not for a frame', async ({
+    page,
+  }) => {
+    await page.goto('de/votes/5950/');
+    const abroad = page.getByRole('checkbox');
+    await expect(abroad).toBeChecked();
+    // The box will stand below the vote's result: the window from just above the result holds
+    // it whole. Every bar that comes into the page is counted.
+    await page.evaluate(() => {
+      scrollTo(
+        0,
+        (document.querySelector('.result')?.getBoundingClientRect().top ?? 0) + scrollY - 8,
+      );
+      const seen = { bars: 0 };
+      (window as unknown as { __seen: typeof seen }).__seen = seen;
+      new MutationObserver((records) => {
+        for (const record of records) {
+          for (const node of record.addedNodes) {
+            if (node instanceof Element && node.matches('.selection-bar')) seen.bars += 1;
+          }
+        }
+      }).observe(document.body, { childList: true, subtree: true });
+    });
+    // The switch, without scrolling to it.
+    await abroad.evaluate((box) => {
+      (box as HTMLInputElement).click();
+    });
+    const selection = page.locator('.selection');
+    await expect(selection).toBeVisible();
+    await page.waitForTimeout(300);
+    const [top, bottom, height] = await selection.evaluate((box) => [
+      box.getBoundingClientRect().top,
+      box.getBoundingClientRect().bottom,
+      innerHeight,
+    ]);
+    expect(top).toBeGreaterThanOrEqual(0);
+    expect(bottom).toBeLessThanOrEqual(height);
+    expect(
+      await page.evaluate(() => (window as unknown as { __seen: { bars: number } }).__seen.bars),
+    ).toBe(0);
+  });
+
   test('no bar without a selection, nor in a window 1,280 pixels wide', async ({
     page,
     browser,

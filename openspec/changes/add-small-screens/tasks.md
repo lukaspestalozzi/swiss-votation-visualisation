@@ -311,10 +311,37 @@ Spec `result-map`, "The budget of fingers"; design, decision 12.
   11 steps passed", with 52 and 122 unit tests, "Running 162 tests using 1 worker", 162 passed in
   57.2 s.)
 
+## Verification
+
+**`/openspec-verify-change`** on 2026-11-19 found:
+- no critical issue and no warning;
+- the 18 tasks done, and the nine requirements implemented (seven added, two modified);
+- 28 of the 29 scenarios covered by browser and unit tests; "A finger beside the map" is checked
+  by hand on a phone after the merge (design, decision 15), as this machine's browser carries out
+  no gesture of a finger by itself;
+- two suggestions:
+  - the bar could show for the frame before its observer reported "Mit Ihrer Auswahl" wholly in
+    the window;
+  - answer 9 of the investigation stated Q's decision, where the investigation decides nothing.
+
+Q asked to fix them:
+- **The bar.** A browser test, "a selection that begins with its box in the window shows no bar,
+  not for a frame", counts every bar that comes into the page while the switch starts a selection
+  with the box wholly in view. It failed first, one bar. `SelectionBar.svelte` now holds whether
+  the box is in view as unknown until its observer reports, and again when the box goes; the bar
+  shows only for a box known not wholly in view. The test passes, and the file's 14.
+- **The investigation.** Answer 9 cites decision 12 of the design.
+
+`./scripts/verify-local.sh` after the fixes: "All 11 steps passed", with 52 and 122 unit tests and
+"Running 163 tests using 1 worker", 162 passed and one flaky: the map's budget test of zooming,
+moving and pointing failed its first try with one wheel frame of 20.5 ms and passed its second,
+its longest frame 6.5 ms; the second try kept for a busy machine right after a build
+(`steady-budget-tests`, design, decision 2).
+
 ## Workflow follow-up
 
 - Push, open the pull request, and watch its CI: the browser tests "Running 162 tests using 1
-  worker".
+  worker". (Done: on 78eee9b, "Running 162 tests using 1 worker", 162 passed in 56.4 s.)
 - Verify the change (`/openspec-verify-change`), then archive it: the roadmap's row 10 done, its
   capabilities `small-screens` and `result-map`; `CLAUDE.md`'s status names it archived and 10a,
   `add-site-style`, as the next.

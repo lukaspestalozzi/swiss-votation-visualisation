@@ -211,9 +211,8 @@ ms: a `pointerover`. `first_tap.cjs`:
   `pointerover` when one finger touches the map to move it, 36.3 to 37.0 ms by the tests'
   measurement, in every run. The trace finds 3.9 to 4.8 ms of the main thread's work in its
   window of 44.7 to 51.9 ms: the rest is the browser waiting to draw the frame. A pause of 150 ms
-  before the finger changes nothing; the fingers of a pinch do not show it. Q decided on
-  2026-11-19 that the budget test counts the frames of the fingers' moves and of the taps, not of
-  a finger's touchdown before a move.
+  before the finger changes nothing; the fingers of a pinch do not show it. How the budget test
+  of fingers treats that frame is decision 12 of the design of `add-small-screens`.
 - **A tap.** On a page just loaded, the first tap on Zürich measures 4.5 to 15.8 ms for its
   pointing and 3.8 to 5.6 ms for its click, the next tap on Bern 3.1 to 4.9 and 3.2 to 4.6 ms.
   A trace slows the page: with it, a tap after "Ganze Schweiz" measured 15.8 to 20.2 ms, with 10.8
