@@ -44,6 +44,17 @@ html {
   background: var(--ground);
 }
 
+/* The page fills its window, 16 pixels from each side, with no limit on its width; a paragraph
+   is at most 40rem wide, about 70 characters a line (decision 8). */
+body {
+  margin: 0;
+  padding: 0 16px;
+}
+
+p {
+  max-width: 40rem;
+}
+
 h1,
 h2,
 h3,

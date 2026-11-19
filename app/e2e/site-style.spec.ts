@@ -288,6 +288,43 @@ test.describe('the head of every page', () => {
   });
 });
 
+test.describe('the width of a page', () => {
+  test.describe('in a window 1,920 pixels wide', () => {
+    test.use({ viewport: { width: 1920, height: 1080 } });
+
+    test('16 pixels at the left, the map 1,552 wide beside its panel, a paragraph at most 640', async ({
+      page,
+    }) => {
+      await page.goto('de/votes/5960/');
+      await page.locator('.municipalities path').nth(2000).waitFor();
+      const box = async (selector: string) => {
+        const found = await page.locator(selector).first().boundingBox();
+        if (found === null) throw new Error(`${selector} has no box`);
+        return found;
+      };
+      expect((await box('header')).x).toBe(16);
+      expect((await box('h1')).x).toBe(16);
+      const map = await box('.map svg');
+      expect(Math.abs(map.width - 1552)).toBeLessThanOrEqual(1);
+      expect((await box('.panel')).x).toBeGreaterThan(map.x + map.width);
+      expect((await box('.limits p')).width).toBeLessThanOrEqual(640);
+    });
+  });
+
+  test.describe('in a window 360 pixels wide', () => {
+    test.use({ viewport: { width: 360, height: 780 } });
+
+    test('the head and the list from 16 pixels to at most 344', async ({ page }) => {
+      await page.goto('de/');
+      for (const selector of ['header', 'ul']) {
+        const found = await page.locator(selector).first().boundingBox();
+        expect(found?.x, selector).toBe(16);
+        expect((found?.x ?? 0) + (found?.width ?? 0), selector).toBeLessThanOrEqual(344);
+      }
+    });
+  });
+});
+
 // What outlives the tab: cookies and local storage. `sessionStorage` is SvelteKit's, whose router
 // writes the scroll position there when a page is left (design of add-site-style, decision 6).
 test('nothing stored: no switch of the scheme, no cookie, no local storage', async ({ page }) => {
