@@ -1,13 +1,7 @@
 // The look of every page (spec site-style), against the built site. The font's figures, the
 // contrasts and the widths are those of investigations/site-style.md.
 import { expect, test, type Page } from '@playwright/test';
-import {
-  controlContrast,
-  lowContrast,
-  pixelAt,
-  ratioOf,
-  type LowContrast,
-} from './contrast.ts';
+import { controlContrast, lowContrast, pixelAt, ratioOf, type LowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
 
 /**
@@ -373,8 +367,34 @@ test.describe('the controls', () => {
         drawn.push([name, await pixelAt(page, at(step), track.y + track.height / 2)]);
       }
       expect(
-        drawn.filter(([, pixel]) => ratioOf(pixel, ground) < 3).map(([name, pixel]) => [name, pixel]),
+        drawn
+          .filter(([, pixel]) => ratioOf(pixel, ground) < 3)
+          .map(([name, pixel]) => [name, pixel]),
       ).toEqual([]);
+    });
+  }
+});
+
+test.describe('a control focused from the keyboard', () => {
+  for (const [colorScheme, ring] of [
+    ['light', 'rgb(26, 95, 180)'], // #1a5fb4
+    ['dark', 'rgb(138, 180, 248)'], // #8ab4f8
+  ] as const) {
+    test(`in the ${colorScheme} scheme: a ring of 2 pixels in the colour of links`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.goto('de/votes/5960/');
+      await page.locator('.municipalities path').nth(2000).waitFor();
+      const target = page.getByRole('button', { name: 'Ganze Schweiz' });
+      for (let presses = 0; presses < 80; presses += 1) {
+        if (await target.evaluate((button) => button === document.activeElement)) break;
+        await page.keyboard.press('Tab');
+      }
+      await expect(target).toBeFocused();
+      await expect(target).toHaveCSS('outline-style', 'solid');
+      await expect(target).toHaveCSS('outline-width', '2px');
+      await expect(target).toHaveCSS('outline-color', ring);
     });
   }
 });

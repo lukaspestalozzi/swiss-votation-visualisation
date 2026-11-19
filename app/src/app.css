@@ -110,3 +110,10 @@ button:disabled {
 input[type='checkbox'] {
   accent-color: var(--link);
 }
+
+/* Whatever has the focus from the keyboard, links included, shows a ring of 2 pixels in the
+   colour of links (decision 10); the thumbs of a limit draw theirs in Limits.svelte. */
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}

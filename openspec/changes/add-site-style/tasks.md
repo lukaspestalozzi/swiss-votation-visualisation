@@ -383,13 +383,18 @@ Spec `site-style`, "The controls"; design, decision 10.
     - The three lake tests passed three times of three without retries.
   - `small-screens`, `limits`, `result-map` and `site-style` pass, 128 tests, none needing its
     retry.)
-- [ ] 7.2 A control focused from the keyboard. Add a test of the scenario: Tab until "Ganze
+- [x] 7.2 A control focused from the keyboard. Add a test of the scenario: Tab until "Ganze
   Schweiz" has the focus, in each scheme, its outline `2px solid` `#1a5fb4` or `#8ab4f8`.
 
   Seen to fail: Chromium's own ring. Then `app.css` sets `:focus-visible` (decision 10), and
   `Limits.svelte`'s rings of the thumbs take `--link`.
 
   Verify: the test, run alone, passes.
+
+  (As built: one test per scheme. Both failed first with `outline-style: auto`, then passed. The
+  file's 19 tests pass, two more than the 17 planned, as the controls and the ring each have a
+  test per scheme. Prettier also wrapped two lines of 7.1's test. `small-screens` and `limits`
+  pass, 54 tests.)
 
 ## 8. The look as a whole
 
