@@ -107,6 +107,10 @@ test.describe('the light scheme', () => {
     await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(page.locator('section p').first()).toHaveCSS('color', 'rgb(28, 28, 28)');
     await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(26, 95, 180)');
+    // A vote's date and kind #595959; the cantonal votes of a majority not needed #767676.
+    await page.goto('de/votes/5950/');
+    await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(89, 89, 89)');
+    await expect(page.locator('.verdict .greyed').first()).toHaveCSS('color', 'rgb(118, 118, 118)');
   });
 
   test('a majority that is not needed: its word #1c1c1c, its cantonal votes #767676', async ({
@@ -129,6 +133,10 @@ test.describe('the dark scheme', () => {
     await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(18, 18, 18)');
     await expect(page.locator('section p').first()).toHaveCSS('color', 'rgb(232, 232, 232)');
     await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(138, 180, 248)');
+    // A vote's date and kind #b0b0b0; the cantonal votes of a majority not needed #9a9a9a.
+    await page.goto('de/votes/5950/');
+    await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(176, 176, 176)');
+    await expect(page.locator('.verdict .greyed').first()).toHaveCSS('color', 'rgb(154, 154, 154)');
   });
 });
 
@@ -180,6 +188,15 @@ test.describe("the verdicts in the map's colours", () => {
     await expect(result).toHaveCSS('color', NO);
   });
 
+  test("a tie-break question's figures keep the text's colour", async ({ page }) => {
+    await page.goto('de/votes/6823/');
+    const figures = page.locator('section', { hasText: 'Für die Initiative' }).locator('p');
+    await expect(figures).toHaveCount(4);
+    for (const figure of await figures.all()) {
+      await expect(figure).toHaveCSS('color', 'rgb(28, 28, 28)');
+    }
+  });
+
   test.describe('on a phone', () => {
     test.use(phone);
 
@@ -192,6 +209,15 @@ test.describe("the verdicts in the map's colours", () => {
       const words = page.locator('.selection-bar span');
       await expect(words).toHaveText(['Angenommen', 'Ja', 'Ja']);
       for (const word of await words.all()) await expect(word).toHaveCSS('color', YES);
+    });
+
+    test("the bar's top border in the colour of borders, #767676", async ({ page }) => {
+      // Design of add-site-style, decision 10.
+      await foreignersUpTo1998(page);
+      await expect(page.locator('.selection-bar')).toHaveCSS(
+        'border-top-color',
+        'rgb(118, 118, 118)',
+      );
     });
   });
 

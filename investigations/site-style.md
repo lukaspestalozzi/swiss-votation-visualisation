@@ -22,7 +22,9 @@ times 100; 8 tells two colours apart); a **pixel** is a CSS pixel.
 The scripts are in `investigations/site-style/`. `look.cjs` uses the global Playwright against
 the built site, served as the browser tests serve it; `fonts.sh` packs five npm packages into a
 directory outside the repository and runs `fonts.py` on them with fontTools, which `uv` fetches;
-`colours.py` uses the standard library only.
+`colours.py` uses the standard library only. Found while applying, `drag.cjs` and `lake_tap.mjs`
+use the global Playwright against the built site; `lake_tap.mjs` imports the browser tests'
+`app/e2e/pointing.ts`, which Node 24 runs with its types stripped.
 
 ```sh
 pnpm run build
@@ -30,6 +32,9 @@ pnpm run build
 node investigations/site-style/look.cjs
 investigations/site-style/fonts.sh /new/path/outside/the/repository
 python3 investigations/site-style/colours.py
+# Found while applying:
+node investigations/site-style/drag.cjs [--scrolled]
+node investigations/site-style/lake_tap.mjs "$PWD" nearest|overlap <zooms> <margin>
 ```
 
 | File | What |
@@ -38,8 +43,11 @@ python3 investigations/site-style/colours.py
 | `fonts.sh` | Packs `@fontsource-variable/source-sans-3` 5.3.1, `@fontsource/atkinson-hyperlegible` 5.3.0, `@fontsource-variable/noto-sans` 5.3.0, `@fontsource/ibm-plex-sans` 5.3.0 and `@fontsource-variable/inter` 5.3.0 into a new directory and unpacks them there; then runs `fonts.py`. |
 | `fonts.py` | For each package, its Latin files of the upright style: their size, whether the ten digits have one width, the feature `tnum`, the average width of the lowercase letters, the characters of the three languages it lacks. Then every character of the data files and of the texts of the screen outside the Latin face of Source Sans 3. |
 | `colours.py` | The contrast of the colours of a light and of a dark palette on their grounds, and of the colours considered and not taken; the distance of the set-aside grey from dark grounds, and of each dark ground from the map's colours, measured as `map-data/check_colours.py` measures, whose functions it loads. |
+| `drag.cjs` | Found while applying: the steps of the browser test "recalculated while dragging" in a window 1,280 × 720, with the upper slider's value and place, the scroll, the heights of the vote's result and of "Mit Ihrer Auswahl", and whether the fonts have loaded; with `--scrolled`, the slider scrolled into view first. |
+| `lake_tap.mjs` | Found while applying: the browser test "tapping a lake" on a phone, with the lake whose centre lies nearest Zürich's or whose box overlaps Zürich's, after a number of zoom steps and with a margin from the shore: the map's and the lake's size, the point, the shape there, the details the tap shows. |
 
-"Output" at the end of this file is what the scripts printed on 2026-11-19.
+"Output" at the end of this file is what the scripts printed on 2026-11-19, those found while
+applying against the site built from `f30e07c` (the merge of `add-site-style`).
 
 ## Answers
 
@@ -144,14 +152,38 @@ proportion, not measured).
   the table of the cantons ("Ja", "Nein"), and in the bar of #10; on the start page in each entry's
   result ("angenommen", "abgelehnt").
 
+### 7. Found while applying
+
+- **The pages at 360 pixels.** With Source Sans 3, the head and 16 pixels at each side, every page
+  still fits: `investigations/small-screens/widths.cjs 360` gives "0 of 381 pages wider than
+  360 px".
+- **The font and the budget tests.** The budget tests now wait for `document.fonts.ready` before
+  their first input (`app/e2e/frames.ts`, `fontsLoaded`), so the font's arrival is no frame they
+  measure.
+- **A tap on "a lake" on a phone.** With 16 pixels at each side the map on a Pixel 7 is 380.0 ×
+  240.3 pixels, where with 8 it was 396.0 × 250.4 (a temporary edit of `app.css`). The browser
+  test took the lake whose centre lies nearest Zürich's. That is the Greifensee, 4.6 × 6.3
+  pixels (4.8 × 6.6 at 8 pixels), and the tap at its point landed on Fällanden, while at 8
+  pixels it stayed on the lake. The Zürichsee is the lake whose box overlaps Zürich's. Zoomed in
+  once, it is 68.1 × 41.4 pixels: a point 2 pixels from its shore still sent the tap to Zürich,
+  and one 4 pixels from it stayed on the lake (Output, `lake_tap.mjs`).
+- **A slider that moves while it is dragged.** When "Mit Ihrer Auswahl" appears beside the vote's
+  result, the results grow and the slider moves down under the pressed pointer:
+  - on `main` before this change (`b730551`), from 301 to 346 pixels, 44 pixels;
+  - with it, from 340 to 386, 46 pixels (Output, `drag.cjs`).
+
+  The drag goes on, as the slider keeps the pointer pressed on it. This is #8's layout.
+  - **Where the slider lay.** On the build of task 4.3 the upper slider lay at y 752, below the
+    window, after a scroll of 3, so the test's press missed it. On `main` before, it was at
+    y 659. On the merged build the click on "Hinzufügen" scrolls the page by 391 pixels and the
+    slider lies at y 409. The test now scrolls the slider into view itself.
+  - **How those were measured.** These earlier builds were measured with the steps of
+    `drag.cjs`, from a copy in the session's scratch space (`main` in a worktree of `b730551`).
+
 ## Not verified
 
 - How the fonts look and wrap on a real phone, Chrome on Android and Safari on iOS, and with a
-  phone's dark mode.
-- Whether the font's loading changes a frame the budget tests measure: a page draws its text
-  first in a fallback and again once the font has loaded.
-- Whether every page still fits 360 pixels with Source Sans 3 and 16 pixels at each side: its
-  letters are about as wide as Liberation Serif's, but the head is new.
+  phone's dark mode. The change's tasks leave this to Q's check by hand after the merge.
 
 ## Output
 
@@ -232,4 +264,20 @@ Each dark ground and the closest colour of the map's classes, tie and lakes:
   #000000  normal  49.5 (no, class 4)  red-green deficiency  43.4 (no, class 4)
   #121212  normal  32.1 (no, class 4)  red-green deficiency  25.7 (no, class 4)
   #1c1c1c  normal  28.1 (no, class 4)  red-green deficiency  21.5 (no, class 4)
+```
+
+`node drag.cjs` (on `f30e07c`; `--scrolled` printed the same):
+
+```
+before the press: {"value":"1000","sliderY":409,"scrollY":391,"own":340,"selection":null,"fonts":"loaded"}
+try 0: pointer at y 420.6 {"value":"328","sliderY":455,"scrollY":391,"own":386,"selection":386,"fonts":"loaded"}
+try 1: pointer at y 420.6 {"value":"327","sliderY":455,"scrollY":391,"own":386,"selection":386,"fonts":"loaded"}
+```
+
+`node lake_tap.mjs "$PWD" nearest 0 0`, `overlap 1 2` and `overlap 1 4` (on `f30e07c`):
+
+```
+{"which":"nearest","zooms":0,"margin":0,"map":"380.0 x 240.3","lake":"4.6 x 6.3","point":"241.1, 351.9","atPoint":"a lake","details":["Fällanden (ZH)"]}
+{"which":"overlap","zooms":1,"margin":2,"map":"380.0 x 240.3","lake":"68.1 x 41.4","point":"263.6, 301.5","atPoint":"a lake","details":["Zürich (ZH)"]}
+{"which":"overlap","zooms":1,"margin":4,"map":"380.0 x 240.3","lake":"68.1 x 41.4","point":"285.7, 319.1","atPoint":"a lake","details":[]}
 ```

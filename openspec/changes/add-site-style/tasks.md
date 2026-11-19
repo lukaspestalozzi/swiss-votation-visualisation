@@ -474,9 +474,43 @@ Design, decision 11, and the performance budget.
   - **Against the plan:** 127, not 128, as the bar's unit test went with `selectionBar` (4.3);
     189, not 187 (8.2).)
 
+## Verification
+
+`/openspec-verify-change` on 2026-11-19, after #18 was merged (`f30e07c`):
+- 21 of 21 tasks;
+- 10 requirements added or modified, and 1 renamed, each implemented;
+- 31 scenarios, each with a browser test;
+- no critical issue, 1 warning and 4 suggestions.
+
+Q asked to fix them all; each fix was seen to fail first, or against a mutant:
+- **Warning: the bar's top border** took the text's colour, where decision 10 gives it
+  `--border`. A test on a phone asks `rgb(118, 118, 118)`; it failed with `rgb(28, 28, 28)`, and
+  passes with `border-top: 1px solid var(--border)`.
+- **Specified colours no test asserted.** The light and dark contrast tests now ask the date and
+  kind of `/de/votes/5950/` in `#595959` or `#b0b0b0`, and its cantonal votes not needed in
+  `#767676` or `#9a9a9a`. With `--greyed` at `#777777` and the dark `--text-secondary` at
+  `#b1b1b1` they failed.
+- **A tie-break question's figures keep the text's colour.** A test on `/de/votes/6823/` asks its
+  four figures in `#1c1c1c`; with the class `side-yes` on the first it failed with
+  `rgb(0, 114, 96)`.
+- **The design's text** now says what was built: the bar writes its words apart (decision 5),
+  the box of details is checked over the map (decision 11, Risks), and the unit test of 4.1 uses
+  the vote 6790 (Tests).
+- **The investigation's "Not verified"** keeps the real phone only. Its section 7, "Found while
+  applying", holds:
+  - the 360 pixels;
+  - the font and the budget tests;
+  - the lake tap and the Greifensee;
+  - the slider's 44 to 46 pixels.
+
+  Its two scripts are `drag.cjs` and `lake_tap.mjs`.
+
+`site-style.spec.ts` now has 21 tests, all passing.
+
 ## Workflow follow-up
 
-- Push, open the pull request, and watch its CI.
+- Push, open the pull request, and watch its CI. (Done: #18, merged on 2026-11-19 as
+  `f30e07c`, CI "Running 189 tests using 1 worker", 189 passed.)
 - Verify the change (`/openspec-verify-change`), then archive it:
   - the roadmap's row 10a done, its capabilities `site-style`, `reading-guide` and `result-map`;
   - `CLAUDE.md`'s status names it archived and v1 complete.
