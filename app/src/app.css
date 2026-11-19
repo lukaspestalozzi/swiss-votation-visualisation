@@ -87,3 +87,26 @@ input,
 select {
   font: inherit;
 }
+
+/* Buttons and lists drawn in the page's colours, their border at least 3:1 on the ground
+   (decision 10). A button that cannot be used is drawn at half its strength. */
+button,
+select {
+  color: var(--text);
+  background: var(--ground);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.25rem 0.75rem;
+}
+
+button:enabled {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+input[type='checkbox'] {
+  accent-color: var(--link);
+}

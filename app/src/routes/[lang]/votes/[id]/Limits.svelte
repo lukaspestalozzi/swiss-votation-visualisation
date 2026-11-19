@@ -166,7 +166,7 @@
     top: calc(50% - 2px);
     height: 4px;
     border-radius: 2px;
-    background: #999999;
+    background: var(--border);
   }
   .track input {
     position: absolute;
@@ -180,9 +180,9 @@
   .track input::-webkit-slider-thumb {
     width: 1.1rem;
     height: 1.1rem;
-    border: 2px solid #ffffff;
+    border: 2px solid var(--ground);
     border-radius: 50%;
-    background: #333333;
+    background: var(--text);
     cursor: pointer;
     pointer-events: auto;
     appearance: none;
@@ -190,9 +190,9 @@
   .track input::-moz-range-thumb {
     width: 1.1rem;
     height: 1.1rem;
-    border: 2px solid #ffffff;
+    border: 2px solid var(--ground);
     border-radius: 50%;
-    background: #333333;
+    background: var(--text);
     cursor: pointer;
     pointer-events: auto;
   }
@@ -235,14 +235,14 @@
       height: 44px;
       border: 13px solid transparent;
       background-clip: padding-box;
-      box-shadow: inset 0 0 0 2px #ffffff;
+      box-shadow: inset 0 0 0 2px var(--ground);
     }
     .track input::-moz-range-thumb {
       width: 44px;
       height: 44px;
       border: 13px solid transparent;
       background-clip: padding-box;
-      box-shadow: inset 0 0 0 2px #ffffff;
+      box-shadow: inset 0 0 0 2px var(--ground);
     }
     .track input:focus-visible::-webkit-slider-thumb {
       outline-offset: -11px;
