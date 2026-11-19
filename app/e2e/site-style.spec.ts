@@ -210,6 +210,84 @@ test.describe("the verdicts in the map's colours", () => {
   });
 });
 
+test.describe('the head of every page', () => {
+  test("on a vote's page: the title, the guide and the languages, before the heading", async ({
+    page,
+  }) => {
+    await page.goto('fr/votes/5960/');
+    const head = page.locator('header');
+    await expect(head).toHaveText(
+      /^\s*Popular Vote Explorer\s*Guide de lecture\s*Deutsch\s*Français\s*Italiano\s*$/,
+    );
+    await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveAttribute(
+      'href',
+      /\/fr\/?$/,
+    );
+    await expect(head.getByRole('link', { name: 'Guide de lecture' })).toHaveAttribute(
+      'href',
+      /\/fr\/guide\/?$/,
+    );
+    const headFirst = await page.evaluate(() => {
+      const [head, heading] = [document.querySelector('header'), document.querySelector('h1')];
+      return head !== null && heading !== null
+        ? Boolean(head.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING)
+        : false;
+    });
+    expect(headFirst).toBe(true);
+  });
+
+  test('on the start page the title, on the guide its name, is no link', async ({ page }) => {
+    const head = page.locator('header');
+    await page.goto('de/');
+    await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveCount(0);
+    await expect(head.getByText('Popular Vote Explorer')).toHaveAttribute('aria-current', 'page');
+    await expect(head.getByRole('link', { name: 'Lesehilfe' })).toHaveAttribute(
+      'href',
+      /\/de\/guide\/?$/,
+    );
+    await page.goto('de/guide/');
+    await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveAttribute(
+      'href',
+      /\/de\/?$/,
+    );
+    await expect(head.getByRole('link', { name: 'Lesehilfe' })).toHaveCount(0);
+    await expect(head.getByText('Lesehilfe', { exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+  });
+
+  test.describe('in a window 360 pixels wide', () => {
+    test.use({ viewport: { width: 360, height: 780 } });
+
+    test('the head fits the window, and none of its parts breaks', async ({ page }) => {
+      await page.goto('it/votes/5960/');
+      const lines = await page.evaluate(() => {
+        const head = document.querySelector('header');
+        if (head === null) return null;
+        // The lines each text of the head takes: one, if it does not break.
+        return {
+          right: head.getBoundingClientRect().right,
+          parts: [...head.querySelectorAll('a, span')].map((part) => {
+            const range = document.createRange();
+            range.selectNodeContents(part);
+            const tops = new Set([...range.getClientRects()].map((rect) => Math.round(rect.top)));
+            return [part.textContent.trim(), tops.size];
+          }),
+        };
+      });
+      expect(lines?.right).toBeLessThanOrEqual(360);
+      expect(lines?.parts).toEqual([
+        ['Popular Vote Explorer', 1],
+        ['Guida alla lettura', 1],
+        ['Deutsch', 1],
+        ['Français', 1],
+        ['Italiano', 1],
+      ]);
+    });
+  });
+});
+
 // What outlives the tab: cookies and local storage. `sessionStorage` is SvelteKit's, whose router
 // writes the scroll position there when a page is left (design of add-site-style, decision 6).
 test('nothing stored: no switch of the scheme, no cookie, no local storage', async ({ page }) => {

@@ -111,16 +111,22 @@ test('the sources, with the dates of the data files of 2026-11-16', async ({ pag
   expect(response.ok()).toBe(true);
 });
 
-test('the start page links to the guide below its heading', async ({ page }) => {
+// Spec reading-guide, "Every page links to the guide": from the head of every page (spec
+// site-style, "The head of every page").
+test('from the start page: "Lesehilfe" in its head, and no other link below its heading', async ({
+  page,
+}) => {
   await page.goto('de/');
-  const link = page.getByRole('link', { name: 'Lesehilfe und Quellen' });
-  const order = await page.evaluate(() => {
-    const at = (element: Element | null) =>
-      element ? [...document.querySelectorAll('*')].indexOf(element) : -1;
-    return [at(document.querySelector('h1')), at(document.querySelector('a[href$="/guide"]'))];
-  });
-  expect(order[0]).toBeLessThan(order[1] ?? -1);
-  await link.click();
+  await expect(page.getByRole('link', { name: 'Lesehilfe und Quellen' })).toHaveCount(0);
+  await page.locator('header').getByRole('link', { name: 'Lesehilfe' }).click();
+  await expect(page).toHaveURL(/\/de\/guide\/$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
+});
+
+test('from a vote\'s page: "Lesehilfe" in its head', async ({ page }) => {
+  await page.goto('de/votes/5960/');
+  await page.locator('header').getByRole('link', { name: 'Lesehilfe' }).click();
+  await expect(page).toHaveURL(/\/de\/guide\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });
 

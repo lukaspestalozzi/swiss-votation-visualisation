@@ -12,7 +12,6 @@
 </svelte:head>
 
 <h1>{t.TITLE}</h1>
-<p><a href={resolve('/[lang]/guide', { lang: data.lang })}>{t.GUIDE_LINK}</a></p>
 
 {#each data.years as year (year.year)}
   <section>
