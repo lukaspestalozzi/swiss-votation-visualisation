@@ -27,7 +27,7 @@ All commands run from the repository root, on a branch started from an updated `
 Spec `share-link`, "The selection in the address", "The keys of the characteristics", "Opening a
 link" and "The parts a link cannot use"; design, decisions 1 to 4.
 
-- [ ] 1.1 Writing a link. Create `app/src/lib/share-link.ts` with `linkOf(limits, abroadCounted)`,
+- [x] 1.1 Writing a link. Create `app/src/lib/share-link.ts` with `linkOf(limits, abroadCounted)`,
   the part after `#` without the `#`, and `app/src/lib/share-link.test.ts`, against
   `characteristics.json` and the vote day of 2016-02-28. The tests, one at a time:
   - no limit and the switch on: the empty string;
@@ -40,7 +40,12 @@ link" and "The parts a link cannot use"; design, decisions 1 to 4.
   - the 21 keys, in the order of `DEFINITIONS`, as the spec lists them.
 
   Verify: `pnpm --filter app exec vitest run src/lib/share-link.test.ts` passes, 6 tests.
-- [ ] 1.2 Reading a link. Add `selectionOf(hash, file, voteDate)` to `share-link.ts`: the limits
+
+  As built: `characteristics.ts` exports `DECIMALS`, which the link reads too. The first three
+  tests failed before their code; the other three passed when written and failed against a
+  mutant each: a bound emptied at steps 0 and 1,000 instead of at the end's value
+  (`inhabitants=31-`), `abroad=no` written only with a limit, and the parts sorted.
+- [x] 1.2 Reading a link. Add `selectionOf(hash, file, voteDate)` to `share-link.ts`: the limits
   with their tracks and steps, the switch, and the unusable parts as `<key>=<value>`, read with
   `URLSearchParams` (design, decision 4). The tests, one at a time:
   - `foreigners=-19.98`: one limit, steps 0 and 327, the switch on, no unusable part;
@@ -54,12 +59,28 @@ link" and "The parts a link cannot use"; design, decisions 1 to 4.
   - a value encoded by a messenger, `foreigners=%2D19.98`, reads as `foreigners=-19.98`.
 
   Verify: `pnpm --filter app exec vitest run src/lib/share-link.test.ts` passes, 14 tests.
-- [ ] 1.3 The round trip. A test that, for every characteristic on the vote day of 2016-02-28,
+
+  As built: the value between two steps is 20.01% of "Ausländeranteil", 0.03 from steps 327 and
+  328. The empty link and `abroad=no` are two tests, the unusable parts two (the spec's scenarios,
+  and the others, with `foreigners=` beside `foreigners`). The tests of `foreigners=-19.98`, the
+  switch off, the spec's scenarios and the others failed before their code; four passed when written and failed
+  against a mutant each: the first step at or above the value (the nearest step), `<=` for `<`
+  (the lower of two), the switch off without a limit (the empty link), and the link split at `&`
+  and `=` without decoding (the encoded link).
+- [x] 1.3 The round trip. A test that, for every characteristic on the vote day of 2016-02-28,
   writes a limit with its upper bound at each step and reads it back to a step of the same value
   (investigation, 5).
 
   Verify: the test passes, 15 tests in the file. Against a mutant that writes one decimal too
   few, it fails.
+
+  As built: with `selectionOf(hash, file, voteDate)` the test took 14 seconds and passed Vitest's
+  limit of 5: it made the track again for each of its 21,021 links, 0.56 ms each, against 9 ms
+  for 1,001 searches of 1,001 steps. Q chose to pass the tracks (2026-11-19): `selectionOf(link,
+  trackFor)` takes the part after `#` and a function that makes a characteristic's track, which
+  the page gives as `trackOf` over its file and vote day. The test makes each track once and
+  takes about a second. Against the mutant, the first characteristic it misses is
+  "Ausländeranteil".
 
 ## 2. The page writes its address
 

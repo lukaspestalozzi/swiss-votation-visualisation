@@ -181,7 +181,7 @@ export function countsAt(file: CharacteristicsFile, applying: Applying, i: numbe
 }
 
 // The decimals each unit is written with.
-const DECIMALS: Readonly<Record<Unit, number>> = {
+export const DECIMALS: Readonly<Record<Unit, number>> = {
   count: 0,
   percent: 2,
   'per-km2': 0,
