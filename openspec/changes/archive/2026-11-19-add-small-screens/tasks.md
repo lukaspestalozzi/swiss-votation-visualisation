@@ -358,12 +358,24 @@ checked against the code and found real, then fixed test first:
   the map's handlers of moving, lifting and cancelling ignore a pressed pointer it does not
   follow. `result-map.spec.ts`: 54.
 
+## Archive
+
+`/openspec-archive-change` on 2026-11-19, after the verification, its fixes and the review's.
+Q chose to sync the specs. In `result-map`, three requirements added (a tap, the outline, the
+budget of fingers) and two modified (Zoom, Moving the map). `small-screens` is a new main spec
+with the delta's Purpose and its four requirements. Each requirement was checked word for word
+against the delta, each body is at most 500 characters (Zoom, the longest, 491), and
+`openspec validate --all --strict` passes. `docs/roadmap.md` marks row 10 done, with
+`small-screens` and `result-map` as its capabilities; `CLAUDE.md` names the change archived,
+lists `small-screens` among the specs, and names 10a, `add-site-style`, as the next.
+
 ## Workflow follow-up
 
 - Push, open the pull request, and watch its CI: the browser tests "Running 162 tests using 1
   worker". (Done: on 78eee9b, "Running 162 tests using 1 worker", 162 passed in 56.4 s.)
 - Verify the change (`/openspec-verify-change`), then archive it: the roadmap's row 10 done, its
   capabilities `small-screens` and `result-map`; `CLAUDE.md`'s status names it archived and 10a,
-  `add-site-style`, as the next.
+  `add-site-style`, as the next. (Done: verified on 2026-11-19, archived the same day; see
+  "Verification" and "Archive".)
 - After the merge, Q checks the published site by hand on a phone (design, Migration Plan, 3);
   what fails there becomes a small change of its own.
