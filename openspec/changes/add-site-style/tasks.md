@@ -407,15 +407,19 @@ Design, decision 11, and the performance budget.
 
   Verify: twelve files are sent; what Q asks to change is listed in a note "As built", and each
   item is done or carried over with Q's word.
-- [ ] 8.2 All browser tests. Run them.
+- [x] 8.2 All browser tests. Run them.
 
   Verify: `pnpm run build && pnpm run test:e2e` gives "Running 187 tests using 1 worker" and "187
   passed": 166 before, 17 in `site-style.spec.ts`, 3 in `result-map.spec.ts` and 1 in
   `guide.spec.ts`. A note "As built" records the time.
 
+  (As built: "Running 189 tests using 1 worker", "189 passed (1.5m)", none needing its retry.
+  That is two more than planned, as `site-style.spec.ts` has 19, a test per scheme for the
+  controls and for the ring of focus.)
+
 ## 9. Docs
 
-- [ ] 9.1 `CLAUDE.md`:
+- [x] 9.1 `CLAUDE.md`:
   - the code map gains `app/src/app.css`, `app/src/routes/+layout.svelte`,
     `app/e2e/site-style.spec.ts` and `app/e2e/contrast.ts`;
   - the rows of `[lang]/+layout.svelte`, `[lang]/+page.svelte`, the guide, `ResultMap.svelte`,
@@ -428,10 +432,38 @@ Design, decision 11, and the performance budget.
 
   Verify: `grep -n "site-style\|app.css\|contrast.ts" CLAUDE.md` shows each; every file
   `git status --short` lists as added is in the code map.
-- [ ] 9.2 The whole. `./scripts/verify-local.sh`.
+
+  (As built:
+  - **Added:** the code map's rows for `app.css`, the root layout, `site-style.spec.ts` and
+    `contrast.ts`, and the eighth investigation in "Where things are".
+  - **Updated:** the status, and the rows of the head, the start page, the vote's page, the
+    limits, the map, the bar, `vote-list.ts`, `vote-page.ts`, `result-map.ts`, `frames.ts`, the
+    guide's tests, the map's tests and `app/package.json`.
+  - **Left for the archive:** `site-style` in the list of `openspec/specs/`, as that list names
+    the main specs and `site-style` is one only once the change is archived. `small-screens` was
+    added there at its archive too. The "Next" line and the list of archived changes also change
+    then.
+  - The guide's row did not change, as its rule of 45rem was never named there.)
+- [x] 9.2 The whole. `./scripts/verify-local.sh`.
 
   Verify: "All 11 steps passed", with 52 and 128 unit tests, "Running 187 tests using 1 worker",
   187 passed, and the pipeline's 134.
+
+  (As built:
+  - **The first run failed 3 of 11 steps**, all on `app/e2e/contrast.ts`. After its rework in
+    7.1 only the test files had been linted:
+    - the formatting;
+    - the lint: needless `??` and `undefined` checks, and the untyped `Buffer` of
+      `page.screenshot`;
+    - the type check: `{ kind: 'texts' }` widened to a `string`.
+  - **The fix.** The requests are typed, the needless checks go, and `pixelAt` reads its pixel
+    through Chrome's `Page.captureScreenshot`, a base64 string, adding the scroll, as it takes
+    the page's coordinates. The controls' test passes; with the mutant of thumbs filled with the
+    ground it failed in both schemes, naming both thumbs, so the pixel is still the thumb's.
+  - **The second run:** "All 11 steps passed", with 52 and 127 unit tests, "Running 189 tests
+    using 1 worker", 189 passed (1.3m), and the pipeline's 134 passed.
+  - **Against the plan:** 127, not 128, as the bar's unit test went with `selectionBar` (4.3);
+    189, not 187 (8.2).)
 
 ## Workflow follow-up
 

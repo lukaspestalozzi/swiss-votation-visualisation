@@ -84,15 +84,16 @@ function measure(request: Request): LowContrast[] | ControlContrast[] {
   if (request.kind === 'controls') {
     return request.of.map((selector) => {
       // `.track::before` names a pseudo-element, whose fill is the track.
-      const [element_, pseudo] = selector.split(/(?=::)/);
-      const element = document.querySelector(element_ ?? '');
+      const parts = selector.split(/(?=::)/);
+      const pseudo = parts.length > 1 ? parts[1] : null;
+      const element = document.querySelector(parts[0]);
       if (element === null) throw new Error(`no control ${selector}`);
-      const style = getComputedStyle(element, pseudo ?? null);
-      const ground = groundOf(pseudo === undefined ? element.parentElement : element);
+      const style = getComputedStyle(element, pseudo);
+      const ground = groundOf(pseudo === null ? element.parentElement : element);
       const fill = over(parse(style.backgroundColor), ground);
       const bordered = parseFloat(style.borderTopWidth) > 0 && style.borderTopStyle !== 'none';
       const border = bordered ? over(parse(style.borderTopColor), fill) : fill;
-      const text = pseudo === undefined && (element.textContent ?? '').trim() !== '';
+      const text = pseudo === null && element.textContent.trim() !== '';
       return {
         selector,
         boundary: Math.max(ratioOf(border, ground), ratioOf(fill, ground)),
@@ -132,17 +133,35 @@ function measure(request: Request): LowContrast[] | ControlContrast[] {
  * draws apart, and a control that cannot be used, which WCAG exempts.
  */
 export async function lowContrast(page: Page): Promise<LowContrast[]> {
-  return (await page.evaluate(measure, { kind: 'texts' })) as LowContrast[];
+  const request: Request = { kind: 'texts' };
+  return (await page.evaluate(measure, request)) as LowContrast[];
 }
 
 /** The contrast of the first element each selector names, as `ControlContrast` says. */
 export async function controlContrast(page: Page, of: string[]): Promise<ControlContrast[]> {
-  return (await page.evaluate(measure, { kind: 'controls', of })) as ControlContrast[];
+  const request: Request = { kind: 'controls', of };
+  return (await page.evaluate(measure, request)) as ControlContrast[];
 }
 
-/** The colour of one pixel of the page as the screen shows it: `[r, g, b]`, 0 to 255. */
+/**
+ * The colour of one pixel of the window as the screen shows it, at a point given as the window's
+ * coordinates: `[r, g, b]`, 0 to 255. Chrome's DevTools protocol takes the shot, in the page's
+ * coordinates.
+ */
 export async function pixelAt(page: Page, x: number, y: number): Promise<number[]> {
-  const shot = await page.screenshot({ clip: { x: Math.round(x), y: Math.round(y), width: 1, height: 1 } });
+  const scrolled = await page.evaluate(() => ({ x: scrollX, y: scrollY }));
+  const cdp = await page.context().newCDPSession(page);
+  const { data } = await cdp.send('Page.captureScreenshot', {
+    format: 'png',
+    clip: {
+      x: Math.round(x) + scrolled.x,
+      y: Math.round(y) + scrolled.y,
+      width: 1,
+      height: 1,
+      scale: 1,
+    },
+  });
+  await cdp.detach();
   return page.evaluate(async (png) => {
     const image = new Image();
     image.src = `data:image/png;base64,${png}`;
@@ -154,7 +173,7 @@ export async function pixelAt(page: Page, x: number, y: number): Promise<number[
     if (context === null) throw new Error('no 2d context');
     context.drawImage(image, 0, 0);
     return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
-  }, shot.toString('base64'));
+  }, data);
 }
 
 /** WCAG 2.2's contrast of two colours `[r, g, b]`, 0 to 255. */
