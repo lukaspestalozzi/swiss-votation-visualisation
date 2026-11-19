@@ -63,7 +63,7 @@ When the browser prefers a dark colour scheme, every page SHALL show its text in
 `#121212`; a vote's date and kind, and sources and notes, in `#b0b0b0`; links and the ring of a
 focused control in `#8ab4f8`; the cantonal votes of a majority that is not needed in `#9a9a9a`,
 with the contrasts of the light scheme. A page SHALL follow the browser when its preference
-changes, keeping its state. It SHALL offer no switch of its own and store nothing.
+changes, keeping its state, with no switch of its own, no cookie and no local storage.
 
 #### Scenario: A dark page
 
@@ -84,7 +84,7 @@ changes, keeping its state. It SHALL offer no switch of its own and store nothin
 
 - **WHEN** a visitor opens the start page in the dark scheme and in the light scheme
 - **THEN** the page offers no switch between them, and writes no cookie and nothing to the
-  browser's storage
+  browser's local storage
 
 ### Requirement: The verdicts in the map's colours
 

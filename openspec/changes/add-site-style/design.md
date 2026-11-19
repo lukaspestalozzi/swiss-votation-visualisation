@@ -169,8 +169,17 @@ Alternatives considered:
 The names of decision 3 take their dark values under `prefers-color-scheme: dark`. The page
 follows the browser's preference, also when it changes on an open page, as CSS does by itself,
 without a script.
-- **Nothing is stored and there is no switch:** a switch would need a stored choice, and the
-  constraint on privacy asks for none.
+- **There is no switch, and no cookie or local storage:** a switch would need a stored choice,
+  and the constraint on privacy asks for none.
+  - **`sessionStorage` is left to SvelteKit (Q, while applying).** Its router writes
+    `sveltekit:history-info`, `sveltekit:snapshot` and `sveltekit:navigation-snapshot` whenever
+    a page is left: the scroll position and empty snapshots, which go with the tab. So the spec
+    names what outlives the tab, cookies and local storage, and the test checks those.
+  - Alternatives considered:
+    - **Nothing of the scheme in any storage**, with SvelteKit's own keys allowed: more to
+      specify.
+    - **Truly nothing**: only without SvelteKit's client-side router, which the vote's page
+      needs.
 - **The map keeps its colours on the dark ground**:
   - the borders between municipalities and the ground under the hatching are `--ground`, as they
     are white today;
