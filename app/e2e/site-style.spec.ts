@@ -1,7 +1,13 @@
 // The look of every page (spec site-style), against the built site. The font's figures, the
 // contrasts and the widths are those of investigations/site-style.md.
 import { expect, test, type Page } from '@playwright/test';
-import { lowContrast, type LowContrast } from './contrast.ts';
+import {
+  controlContrast,
+  lowContrast,
+  pixelAt,
+  ratioOf,
+  type LowContrast,
+} from './contrast.ts';
 import { phone } from './fingers.ts';
 
 /**
@@ -323,6 +329,54 @@ test.describe('the width of a page', () => {
       }
     });
   });
+});
+
+test.describe('the controls', () => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`in the ${colorScheme} scheme: borders or fills at least 3:1, texts 4.5:1`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await foreignersUpTo1998(page);
+      await page.locator('.municipalities path').nth(2000).waitFor();
+      // "Hinzufügen" cannot be used once its limit is added: WCAG exempts it.
+      const controls = await controlContrast(page, [
+        '.zoom button:nth-of-type(1)',
+        '.zoom button:nth-of-type(2)',
+        '.zoom button:nth-of-type(3)',
+        '.limits select',
+        '.limit button',
+        '.limits > button:last-of-type',
+        '.track::before',
+      ]);
+      expect(controls.filter((c) => c.boundary < 3 || (c.text !== null && c.text < 4.5))).toEqual(
+        [],
+      );
+      // The switch's box and the thumbs are drawn by the browser: their pixels on the screen.
+      const ground = (
+        await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor)
+      )
+        .match(/\d+/g)
+        ?.slice(0, 3)
+        .map(Number) ?? [0, 0, 0];
+      const box = await page.locator('.switch input').boundingBox();
+      if (box === null) throw new Error('the switch has no box');
+      const drawn: [string, number[]][] = [['switch', await pixelAt(page, box.x + 3, box.y + 3)]];
+      const track = await page.getByRole('slider').last().boundingBox();
+      if (track === null) throw new Error('the slider has no box');
+      // The thumb's centre runs from half a thumb inside one end of the input to the other.
+      const at = (step: number) => track.x + 10 + ((track.width - 20) * step) / 1000;
+      for (const [name, step] of [
+        ['lower thumb', 0],
+        ['upper thumb', 327],
+      ] as const) {
+        drawn.push([name, await pixelAt(page, at(step), track.y + track.height / 2)]);
+      }
+      expect(
+        drawn.filter(([, pixel]) => ratioOf(pixel, ground) < 3).map(([name, pixel]) => [name, pixel]),
+      ).toEqual([]);
+    });
+  }
 });
 
 // What outlives the tab: cookies and local storage. `sessionStorage` is SvelteKit's, whose router
