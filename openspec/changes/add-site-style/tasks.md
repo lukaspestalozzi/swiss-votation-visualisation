@@ -400,13 +400,22 @@ Spec `site-style`, "The controls"; design, decision 10.
 
 Design, decision 11, and the performance budget.
 
-- [ ] 8.1 Screenshots for Q at 360 and 1,280 pixels, in the light and the dark scheme:
+- [x] 8.1 Screenshots for Q at 360 and 1,280 pixels, in the light and the dark scheme:
   - the start page, the guide, and `/de/votes/5960/` with "Ausländeranteil" at step 327 and
     Zürich clicked;
   - twelve files in the session's scratchpad, sent to Q, not committed.
 
   Verify: twelve files are sent; what Q asks to change is listed in a note "As built", and each
   item is done or carried over with Q's word.
+
+  (As built:
+  - **The shots.** Twelve, at a scale of 2. The start page and the guide are cut to their first
+    1,600 and 1,400 pixels, and the vote's page is whole. The two vote's pages at 360 pixels
+    reached Q scaled down to 8,000 pixels tall.
+  - **What a whole-page shot shows.** At 360 pixels the bar with the selection's result shows
+    below "Abgelehnt": that is where such a shot draws a bar that sticks to the window's
+    bottom.
+  - **Q's answer:** "Looks right". Nothing to change.)
 - [x] 8.2 All browser tests. Run them.
 
   Verify: `pnpm run build && pnpm run test:e2e` gives "Running 187 tests using 1 worker" and "187
