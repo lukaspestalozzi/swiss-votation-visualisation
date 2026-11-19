@@ -174,21 +174,36 @@ test('clicking a municipality shows its details, without pointing first', async 
 
 // The lakes have no names in the data: the Zürichsee is the lake nearest to Zürich, measured in
 // the map's own coordinates, which do not change as the page scrolls. A point inside it.
-async function zurichsee(page: Page): Promise<{ x: number; y: number }> {
-  const nearest = await page.evaluate(() => {
-    const centre = (element: Element | null) => {
+/**
+ * A point in the Zürichsee: the lake whose box overlaps Zürich's, the largest if several do, as
+ * Zürich borders it and the Greifensee, whose centre lies nearer, does not. With a `margin`, as
+ * `pointIn` takes it.
+ */
+async function zurichsee(page: Page, margin = 0): Promise<{ x: number; y: number }> {
+  const index = await page.evaluate(() => {
+    const boxOf = (element: Element | null) => {
       if (!(element instanceof SVGGraphicsElement)) throw new Error('no shape');
-      const box = element.getBBox();
-      return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+      return element.getBBox();
     };
-    const city = centre(document.querySelector('.municipalities [data-number="261"]'));
-    const distances = [...document.querySelectorAll('.lakes path')].map((lake) => {
-      const c = centre(lake);
-      return Math.hypot(c.x - city.x, c.y - city.y);
-    });
-    return distances.indexOf(Math.min(...distances));
+    const city = boxOf(document.querySelector('.municipalities [data-number="261"]'));
+    const lakes = [...document.querySelectorAll('.lakes path')].map((lake, at) => ({
+      at,
+      box: boxOf(lake),
+    }));
+    const touching = lakes.filter(
+      ({ box }) =>
+        box.x < city.x + city.width &&
+        city.x < box.x + box.width &&
+        box.y < city.y + city.height &&
+        city.y < box.y + box.height,
+    );
+    const largest = touching.sort(
+      (a, b) => b.box.width * b.box.height - a.box.width * a.box.height,
+    );
+    return largest[0]?.at ?? -1;
   });
-  return pointIn(page, `.lakes path >> nth=${String(nearest)}`);
+  if (index < 0) throw new Error('no lake borders Zürich');
+  return pointIn(page, `.lakes path >> nth=${String(index)}`, margin);
 }
 
 test('pointing at a lake shows no details', async ({ page }) => {
@@ -480,7 +495,11 @@ test.describe('on a phone', () => {
     const zurich = await pointIn(page, '.municipalities [data-number="261"]');
     await page.touchscreen.tap(zurich.x, zurich.y);
     await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
-    const lake = await zurichsee(page);
+    // At the whole of Switzerland the lake is a few pixels wide on a phone, and Chrome moves a tap
+    // near its shore to the municipality beside it: the map zoomed in twice as far, the tap at
+    // least 4 pixels from the shore (2 were too few beside Zürich).
+    await page.getByRole('button', { name: 'Vergrössern' }).tap();
+    const lake = await zurichsee(page, 4);
     await page.touchscreen.tap(lake.x, lake.y);
     await expect(details(page).locator('.name')).toHaveCount(0);
     await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
