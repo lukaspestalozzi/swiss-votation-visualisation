@@ -338,6 +338,26 @@ moving and pointing failed its first try with one wheel frame of 20.5 ms and pas
 its longest frame 6.5 ms; the second try kept for a busy machine right after a build
 (`steady-budget-tests`, design, decision 2).
 
+## Review
+
+Copilot reviewed the pull request on 2026-11-19 with three findings of medium severity. Each was
+checked against the code and found real, then fixed test first:
+- **`overflow-wrap: break-word` lets a grid overflow.** It does not narrow a grid item below its
+  longest word: from 640 pixels, with a selection beside the vote's result, the Italian page
+  without hyphenation was 676 pixels wide in a window 640 wide. A browser test removes
+  hyphenation and opens the Italian page with a selection at 360, 640 and 800 pixels; it failed
+  at 640, 676, and passes with `overflow-wrap: anywhere` (design, decision 6).
+- **`pinchFrom` kept the view inside the map twice.** Zoomed around the point and then moved,
+  each kept inside apart, a pinch near an edge jumped, and one at the whole of Switzerland undid
+  a move of it. Two unit tests failed first, x −187.5 for −237.5 and 0 for −200; `pinchFrom` now
+  places the view by the point under the fingers and keeps it inside once (design, decision 9).
+  `map-view.test.ts`: 11.
+- **A third finger was not ignored after its press.** Its release ended the pinch of the other
+  two, and after one of them lifted its moves dragged the map from the other's point. Two
+  browser tests on a phone, with `touch` added to `fingers.ts`, failed first, and pass now that
+  the map's handlers of moving, lifting and cancelling ignore a pressed pointer it does not
+  follow. `result-map.spec.ts`: 54.
+
 ## Workflow follow-up
 
 - Push, open the pull request, and watch its CI: the browser tests "Running 162 tests using 1

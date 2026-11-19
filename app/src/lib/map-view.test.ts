@@ -76,3 +76,27 @@ test('two fingers moved apart beyond 16 times stop at a sixteenth of the width',
   const now = { a: { x: 0, y: 100 }, b: { x: 500, y: 100 } };
   expect(pinchFrom(start, now, 500, MAP).width).toBe(MAP.width / 16);
 });
+
+test('a pinch near an edge keeps the point between the fingers under them', () => {
+  // At 2×, its centre on the western edge: a pixel is 1 unit. The midpoint, pixel (450, 150), is
+  // the point (200, 150). The fingers move together to 80 pixels apart, the midpoint 100 pixels
+  // to the left: the view 625 units wide, the point (200, 150) at pixel (350, 150). Zoomed alone
+  // around the point, the view's centre would leave the rectangle; with the shift it does not.
+  const view = { x: -250, y: 0, width: 500, height: 300 };
+  const start = { view, a: { x: 400, y: 150 }, b: { x: 500, y: 150 } };
+  const now = { a: { x: 310, y: 150 }, b: { x: 390, y: 150 } };
+  expect(pinchFrom(start, now, 500, MAP)).toEqual({
+    x: -237.5,
+    y: -37.5,
+    width: 625,
+    height: 375,
+  });
+});
+
+test('two fingers moved without spreading keep a moved whole of Switzerland', () => {
+  // The whole of Switzerland moved 100 pixels to the right: 200 units west.
+  const view = moveBy(wholeView(MAP), 100, 0, 500, MAP);
+  expect(view).toEqual({ x: -200, y: 0, width: 1000, height: 600 });
+  const start = { view, a: { x: 200, y: 100 }, b: { x: 300, y: 100 } };
+  expect(pinchFrom(start, start, 500, MAP)).toEqual(view);
+});

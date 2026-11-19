@@ -55,11 +55,12 @@ export interface Fingers {
 }
 
 /**
- * The view while two fingers pinch (design of add-small-screens, decision 9): the view when the
- * second finger touched, zoomed by the ratio of the fingers' distances around the point that was
- * then midway between them, then moved by the shift of their midpoint, on a map shown
- * `pixelsWide` pixels wide. Taken from the start, not step by step, so that rounding does not
- * drift.
+ * The view while two fingers pinch (design of add-small-screens, decision 9): from the view when
+ * the second finger touched, zoomed by the ratio of the fingers' distances, between the whole of
+ * Switzerland and 16 times, and placed so that the point of the map that was then midway between
+ * them is midway between them now, on a map shown `pixelsWide` pixels wide. The view is kept
+ * inside the map once, at the end, so that a pinch near an edge does not jump. Taken from the
+ * start, not step by step, so that rounding does not drift.
  */
 export function pinchFrom(
   start: Fingers & { readonly view: View },
@@ -69,16 +70,22 @@ export function pinchFrom(
 ): View {
   const distance = ({ a, b }: Fingers): number => Math.hypot(b.x - a.x, b.y - a.y);
   const midpoint = ({ a, b }: Fingers): Point => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
-  const unitsPerPixel = start.view.width / pixelsWide;
   const from = midpoint(start);
-  const point = {
-    x: start.view.x + from.x * unitsPerPixel,
-    y: start.view.y + from.y * unitsPerPixel,
-  };
-  const factor = distance(start) === 0 ? 1 : distance(now) / distance(start);
   const to = midpoint(now);
-  const zoomed = zoomAround(start.view, factor, point, map);
-  return moveBy(zoomed, to.x - from.x, to.y - from.y, pixelsWide, map);
+  const before = start.view.width / pixelsWide;
+  const point = { x: start.view.x + from.x * before, y: start.view.y + from.y * before };
+  const factor = distance(start) === 0 ? 1 : distance(now) / distance(start);
+  const width = Math.min(map.width, Math.max(map.width / MAX_ZOOM, start.view.width / factor));
+  const after = width / pixelsWide;
+  return withinMap(
+    {
+      x: point.x - to.x * after,
+      y: point.y - to.y * after,
+      width,
+      height: (start.view.height * width) / start.view.width,
+    },
+    map,
+  );
 }
 
 /** The view moved so that its centre lies inside the map's rectangle. */

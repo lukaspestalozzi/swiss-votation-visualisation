@@ -227,10 +227,12 @@
 
 <style>
   /* A word too long for its line breaks, hyphenated where the browser knows the page's language
-     (spec small-screens; design of add-small-screens, decision 6). */
+     (spec small-screens; design of add-small-screens, decision 6). `anywhere`, not `break-word`:
+     it also lets the grids of the verdict boxes narrow below their longest word, which a browser
+     without a hyphenation dictionary needs from 640 pixels, two results side by side. */
   h1,
   .verdict {
-    overflow-wrap: break-word;
+    overflow-wrap: anywhere;
     hyphens: auto;
   }
   /* The selection's result beside the vote's own from 640 pixels, below it otherwise (design of
