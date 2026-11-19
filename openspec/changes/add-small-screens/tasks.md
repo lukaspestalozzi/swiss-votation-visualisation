@@ -275,14 +275,19 @@ Spec `result-map`, "The budget of fingers"; design, decision 12.
 
 ## 7. Docs and the whole
 
-- [ ] 7.1 The plans. `openspec/config.yaml`, the map's line of the stack: the check of a library
+- [x] 7.1 The plans. `openspec/config.yaml`, the map's line of the stack: the check of a library
   is done, and the app's own code zooms and moves with fingers too (design of
   `add-small-screens`, decision 7). `docs/roadmap.md`, "Investigations": "Small screens", found
   while proposing #10, with what it found.
 
   Verify: `openspec validate --all --strict` passes; `grep -n "small-screens" docs/roadmap.md
   openspec/config.yaml` shows both.
-- [ ] 7.2 `CLAUDE.md`. In the code map:
+
+  (As built: the config's line of the map says the app's own code zooms and moves with fingers
+  too, and that #10 checked d3-zoom and kept it; the roadmap's investigations name "Small
+  screens" with what was found while proposing and while applying. 14 passed; the grep shows
+  both.)
+- [x] 7.2 `CLAUDE.md`. In the code map:
   - `map-view.ts`: `pinchFrom`;
   - `ResultMap.svelte`: fingers, the outline, the place and size of the buttons;
   - `Limits.svelte`: sizes for a finger;
@@ -297,6 +302,14 @@ Spec `result-map`, "The budget of fingers"; design, decision 12.
   Verify: `grep -n "SelectionBar\|fingers.ts\|small-screens" CLAUDE.md` shows the rows;
   `git diff --stat origin/main` lists only the files this change names; `./scripts/verify-local.sh`
   passes its 11 steps.
+
+  (As built: also the rows of `pointing.ts`, its margin, and of `Limits.svelte`, its sizes on a
+  touch screen; the status names #10 applied, waiting for its verification and archive, and then
+  10a. The grep shows the rows; `git diff --stat origin/main` lists 23 files, all this change's:
+  the code and tests above, the texts, the investigation with its two scripts found while
+  applying, the roadmap, the config, `CLAUDE.md` and the change. `./scripts/verify-local.sh`: "All
+  11 steps passed", with 52 and 122 unit tests, "Running 162 tests using 1 worker", 162 passed in
+  57.2 s.)
 
 ## Workflow follow-up
 

@@ -111,6 +111,15 @@ tolerances.
   register and the parliament, where they differ) and the offices and their publications; the
   data files already hold every title, reference and note in the three languages, and places
   have one name each; three languages make the vote pages about 40 MB.
+- **Small screens**, found while proposing #10, on 2026-11-18, and while applying it, on
+  2026-11-19: `investigations/small-screens.md`, with its scripts in
+  `investigations/small-screens/`. 139 of the 381 pages were wider than 360 pixels (the Italian
+  verdict boxes, long German words of titles); on a phone a dragged limit's result and the map lie
+  out of view; the browser takes a finger on the map unless it has `touch-action: none`, and this
+  machine's browser carries out no gesture of a finger by itself; the controls' sizes; the frames
+  with the CPU slowed 4× and 6×; d3-zoom's size; and, while applying, a tap's lost click right
+  after a finger and Chrome's moving of a tap to a neighbour, and the frame of a finger's
+  touchdown.
 
 ## Failure modes of the predecessor (must not repeat)
 
