@@ -90,7 +90,7 @@
 <nav><a href={resolve('/[lang]', { lang: data.lang })}>{t.ALL_VOTES}</a></nav>
 
 <h1>{data.title}</h1>
-<p>{data.date} · {data.kind}</p>
+<p class="secondary">{data.date} · {data.kind}</p>
 {#if data.majoritiesNeeded !== null}
   <p>{data.majoritiesNeeded}</p>
 {/if}
@@ -208,18 +208,18 @@
 {/if}
 
 {#each data.differences as difference (difference)}
-  <p>{difference}</p>
+  <p class="secondary">{difference}</p>
 {/each}
 {#if data.source !== null}
-  <p>{data.source}</p>
+  <p class="secondary">{data.source}</p>
 {/if}
 {#if data.provisional !== null}
-  <p>{data.provisional}</p>
+  <p class="secondary">{data.provisional}</p>
 {/if}
 {#if data.note !== null}
   <section>
     <h2>{t.NOTE_HEADING}</h2>
-    <p>{data.note}</p>
+    <p class="secondary">{data.note}</p>
   </section>
 {/if}
 
@@ -265,7 +265,7 @@
     gap: 1rem;
   }
   .verdict {
-    border: 1px solid;
+    border: 1px solid var(--border);
     padding: 0 1rem;
   }
   /* In a narrow window the boxes keep side by side with less padding and a smaller heading, so
@@ -286,7 +286,7 @@
   }
   .greyed {
     /* The lightest grey with WCAG's 4.5:1 on white (4.54:1); GrayText gives only 3.95:1. */
-    color: #767676;
+    color: var(--greyed);
   }
   td,
   th {

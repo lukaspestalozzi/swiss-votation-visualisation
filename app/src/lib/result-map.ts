@@ -30,9 +30,9 @@ const COLOURS: Readonly<Record<Side, readonly [string, string, string, string]>>
 };
 export const TIE_COLOUR = '#f0efec';
 export const LAKE_COLOUR = '#9fb8e8';
-// A municipality without a result: grey diagonal lines on white.
+// A municipality without a result: grey diagonal lines on the page's ground, which the map's
+// stylesheet gives it, white or #121212 in the dark scheme (spec result-map).
 export const HATCH_LINE = '#999999';
-export const HATCH_BACKGROUND = '#ffffff';
 // A municipality the selection sets aside (spec result-map, "A set-aside municipality"): the
 // only grey apart from the yes colours for a red-green colour vision deficiency
 // (investigations/limits.md, 6).

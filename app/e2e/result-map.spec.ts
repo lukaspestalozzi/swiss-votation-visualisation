@@ -3,7 +3,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import config from '../playwright.config.ts';
 import { fingersOn, phone } from './fingers.ts';
-import { MEASURE_FRAMES, measuredFrames } from './frames.ts';
+import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 
 const municipality = (page: Page, number: number) =>
@@ -570,6 +570,7 @@ test.describe(() => {
     await page.goto('de/votes/5960/');
     await page.locator('.municipalities path').nth(2000).waitFor();
     await expect(page.locator('.panel')).toContainText('Klicken Sie auf eine Gemeinde');
+    await fontsLoaded(page);
     await page.locator('.map svg').scrollIntoViewIfNeeded();
     const box = await page.locator('.map svg').boundingBox();
     if (box === null) throw new Error('the map is not on the screen');
@@ -844,6 +845,41 @@ test('a set-aside municipality is outlined too', async ({ page }) => {
   await expectOutlined(page, 261);
 });
 
+// The map on the dark ground of the page (spec result-map, "A municipality without a result" and
+// "The map in the dark scheme"; investigations/site-style.md, 4).
+test.describe('in the dark scheme', () => {
+  test.use({ colorScheme: 'dark' });
+
+  test('a municipality without a result is hatched on #121212', async ({ page }) => {
+    await page.goto('de/votes/5960/');
+    await expect(municipality(page, 389)).toHaveAttribute('fill', 'url(#hatch)'); // Meienried
+    await expect(page.locator('pattern#hatch rect')).toHaveCSS('fill', 'rgb(18, 18, 18)');
+  });
+
+  test('a selection: set aside #2c2c2c, outlined black on white, borders #121212', async ({
+    page,
+  }) => {
+    await page.goto('de/votes/5960/');
+    await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
+    await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+    await page
+      .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
+      .fill('327');
+    await expect(municipality(page, 261)).toHaveAttribute('fill', '#2c2c2c'); // Zürich
+    await expect(municipality(page, 1)).toHaveAttribute('fill', '#fbbea3'); // Aeugst am Albis
+    await expect(municipality(page, 1)).toHaveCSS('stroke', 'rgb(18, 18, 18)');
+    await clickAt(page, 261);
+    await expectOutlined(page, 261);
+  });
+
+  test('the colours of the classes stay', async ({ page }) => {
+    await page.goto('de/votes/5960/');
+    await expect(municipality(page, 261)).toHaveAttribute('fill', '#e5946f'); // Zürich, no, 2
+    await expect(municipality(page, 351)).toHaveAttribute('fill', '#c2673b'); // Bern, no, 3
+    await expect(municipality(page, 946)).toHaveAttribute('fill', '#009c86'); // Wachseldorn
+  });
+});
+
 test('in a wide window the panel stands to the right of the map', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('de/votes/5960/');
@@ -898,6 +934,7 @@ test.describe(() => {
     await page.goto('de/votes/5960/');
     await page.locator('.municipalities path').nth(2000).waitFor();
     await expect(panel(page)).toContainText('Klicken Sie auf eine Gemeinde');
+    await fontsLoaded(page);
     await page.evaluate(() => {
       (window as unknown as { __frames: unknown[] }).__frames = [];
     });
@@ -928,6 +965,7 @@ test.describe('on a phone', () => {
     await page.goto('de/votes/5960/');
     await page.locator('.municipalities path').nth(2000).waitFor();
     await expect(panel(page)).toContainText('Klicken Sie auf eine Gemeinde');
+    await fontsLoaded(page);
     await page.locator('.map svg').scrollIntoViewIfNeeded();
     const box = await page.locator('.map svg').boundingBox();
     if (box === null) throw new Error('the map is not on the screen');

@@ -2,7 +2,7 @@
 // map (spec result-map), against the built site. The figures are those of
 // investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
-import { MEASURE_FRAMES, measuredFrames } from './frames.ts';
+import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 
 /** Open a vote's page and wait until the limits can be used. */
@@ -563,6 +563,7 @@ test.describe(() => {
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
     await open(page, 'de/votes/5960/');
+    await fontsLoaded(page);
     await addLimit(page, 'Einwohner');
     const lower = slider(page, 'Untere', 'Einwohner');
     await lower.scrollIntoViewIfNeeded();
@@ -590,6 +591,7 @@ test.describe(() => {
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
     await open(page, 'de/votes/5960/');
+    await fontsLoaded(page);
     await page.evaluate(() => {
       (window as unknown as { __frames: unknown[] }).__frames = [];
     });

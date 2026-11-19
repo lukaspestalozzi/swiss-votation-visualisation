@@ -5,7 +5,6 @@
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import CharacteristicsPanel from './CharacteristicsPanel.svelte';
   import {
-    HATCH_BACKGROUND,
     HATCH_LINE,
     LAKE_COLOUR,
     SET_ASIDE_COLOUR,
@@ -357,7 +356,7 @@
                 patternUnits="userSpaceOnUse"
                 patternTransform="rotate(45)"
               >
-                <rect width="1500" height="1500" fill={HATCH_BACKGROUND} />
+                <rect class="hatch-ground" width="1500" height="1500" />
                 <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
               </pattern>
             </defs>
@@ -419,7 +418,7 @@
           {#if entry.fill === 'hatch'}
             <span
               class="swatch"
-              style:background-image="repeating-linear-gradient(45deg, {HATCH_LINE} 0 2px, {HATCH_BACKGROUND}
+              style:background-image="repeating-linear-gradient(45deg, {HATCH_LINE} 0 2px, var(--ground)
               2px 6px)"
             ></span>
           {:else}
@@ -429,7 +428,7 @@
         </li>
       {/each}
     </ul>
-    <p class="source">{t.mapSource(formatDate(map.referenceDate, t), map.lakesSet)}</p>
+    <p class="source secondary">{t.mapSource(formatDate(map.referenceDate, t), map.lakesSet)}</p>
     {#if swissAbroad > 0}
       <p>{t.swissAbroadNotOnTheMap(swissAbroad)}</p>
     {/if}
@@ -460,7 +459,7 @@
     top: 0;
     left: 0;
     padding: 0 0.5rem;
-    background: rgb(255 255 255 / 90%);
+    background: color-mix(in srgb, var(--ground) 90%, transparent);
     pointer-events: none;
   }
   .zoom {
@@ -504,11 +503,16 @@
     margin: 0.5rem 0 0;
     font-weight: bold;
   }
-  /* Borders keep their width on the screen at every zoom. */
+  /* Borders keep their width on the screen at every zoom. They, and the ground under the
+     hatching, take the page's ground, white or #121212 in the dark scheme (spec result-map, "The
+     map in the dark scheme"; design of add-site-style, decision 6). */
   .municipalities path {
-    stroke: #fff;
+    stroke: var(--ground);
     stroke-width: 0.5px;
     vector-effect: non-scaling-stroke;
+  }
+  .hatch-ground {
+    fill: var(--ground);
   }
   /* The municipality last clicked or tapped: black on a white halo, above the cantons' borders,
      at every zoom the same width (spec result-map; design of add-small-screens, decision 4). The
@@ -548,7 +552,7 @@
     height: 1em;
     margin-right: 0.25rem;
     vertical-align: middle;
-    border: 1px solid #767676;
+    border: 1px solid var(--border);
   }
   /* Fingers on the map are the map's: the browser neither scrolls nor zooms the page for them, and
      passes every move on (spec result-map, "Moving the map"; design of add-small-screens,

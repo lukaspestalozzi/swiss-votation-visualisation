@@ -27,13 +27,13 @@ Playwright's `devices['Pixel 7']`, as in `small-screens.spec.ts`.
 
 Spec `site-style`, "The font"; design, decisions 1 and 2.
 
-- [ ] 1.1 The dependency. Add `@fontsource-variable/source-sans-3` 5.3.1 to the dev dependencies
+- [x] 1.1 The dependency. Add `@fontsource-variable/source-sans-3` 5.3.1 to the dev dependencies
   of `app` (`pnpm --filter app add -D @fontsource-variable/source-sans-3@5.3.1`).
 
   Verify: `pnpm install` succeeds; `git diff pnpm-workspace.yaml` shows no
   `minimumReleaseAgeExclude`; `pnpm-lock.yaml` names the package at 5.3.1 with no dependencies of
   its own.
-- [ ] 1.2 The font of the pages. Create `app/e2e/site-style.spec.ts` with a test of the scenario
+- [x] 1.2 The font of the pages. Create `app/e2e/site-style.spec.ts` with a test of the scenario
   "The font of the pages":
   - `/de/`, `/fr/guide/` and `/it/votes/5960/`;
   - the fonts Chrome renders (`CSS.getPlatformFontsForNode`) for the heading, a paragraph, and
@@ -51,7 +51,14 @@ Spec `site-style`, "The font"; design, decisions 1 and 2.
   `source-sans-3-latin-wght-normal-*.woff2` into `app/build/swiss-votation-visualisation/_app/`;
   `pnpm --filter app exec playwright test vote-list.spec.ts -g "all requests go to the site
   itself"` passes.
-- [ ] 1.3 A font that cannot be loaded. Add a test of the scenario: the browser's requests for
+
+  (As built: Chrome names the rendered font "Source Sans 3 ExtraLight", the variable file's
+  default instance, whatever weight it draws. The loaded face is "Source Sans 3 Variable",
+  weights 200 to 900, with the heading at 700 and the text at 400. So the test asks for a name
+  that begins with "Source Sans 3". The build writes the seven faces with a hash in their names,
+  the Latin one `source-sans-3-latin-wght-normal.Bo_j9asI.woff2`, and the preload names the same
+  file as the stylesheet. The page requests one font file.)
+- [x] 1.3 A font that cannot be loaded. Add a test of the scenario: the browser's requests for
   `woff2` files aborted (`page.route`), `/de/votes/5960/`;
   - the heading rendered in a font that is neither Source Sans 3 nor a serif;
   - a limit "Ausländeranteil" at step 327 gives "Mit Ihrer Auswahl" with "Angenommen";
@@ -61,17 +68,32 @@ Spec `site-style`, "The font"; design, decisions 1 and 2.
   renders Liberation Serif.
 
   Verify: the test, run alone, passes, and fails with the mutant.
-- [ ] 1.4 The budget tests wait for the font. `app/e2e/frames.ts` (or the budget tests' setup,
+
+  (As built: without the file this machine renders Liberation Sans. With the mutant the test
+  failed with "Liberation Serif", and with `sans-serif` back it passes.)
+- [x] 1.4 The budget tests wait for the font. `app/e2e/frames.ts` (or the budget tests' setup,
   whichever starts the measurement) awaits `document.fonts.ready` before the first input.
 
   Verify: `pnpm --filter app exec playwright test result-map.spec.ts limits.spec.ts -g "budget"`
   passes; a note "As built" records each budget test's longest frame.
 
+  (As built: `frames.ts` exports `fontsLoaded`, which the five budget tests await once the page
+  has opened, before their first input. The longest frames, 4 passed and 1 flaky:
+  - a drag of a limit: 7.7 ms;
+  - jumps: 8.6 ms, of the 50 ms budget;
+  - zooming, moving and pointing: 8.1 ms;
+  - clicking: 4.2 ms;
+  - fingers: the first try failed on a tap's `pointerover` of 17.5 ms, and the retry passed, its
+    taps at most 5.5 ms and its moves at most 5.6 ms.
+
+  The fingers' test was as unsteady on `main`'s code before this change: its first try failed in
+  each of three full runs while #18 was proposed. So waiting for the font does not change it.)
+
 ## 2. The colours of the light scheme
 
 Spec `site-style`, "The colours of the light scheme"; design, decisions 3, 4 and 9.
 
-- [ ] 2.1 The contrast of every text. Create `app/e2e/contrast.ts` (design, decision 11): every
+- [x] 2.1 The contrast of every text. Create `app/e2e/contrast.ts` (design, decision 11): every
   element with text of its own, its colour and the first opaque ground behind it, a translucent
   ground laid over the one behind; WCAG's ratio; large text from 24 pixels, or 18.66 in bold.
   Add a test of the scenario "The contrast of every text":
@@ -89,7 +111,18 @@ Spec `site-style`, "The colours of the light scheme"; design, decisions 3, 4 and
 
   Verify: the test, run alone, passes; it fails against a mutant that sets `--text-secondary` to
   `#999999` (2.85:1), naming the date of the vote.
-- [ ] 2.2 A majority that is not needed. Add a test of the scenario: `/de/votes/5950/`, the
+
+  (As built: it failed first on the ground, `rgba(0, 0, 0, 0)`, as the page set none. Today's
+  black text and the browser's links already passed every threshold. `contrast.ts` reads colours
+  through a pixel of a canvas, so that it also reads `color(srgb …)`. The texts that take
+  `--text-secondary` carry a global class `secondary`, set in `app.css`:
+  - on the start page, each entry's date and kind;
+  - on a vote's page, the date and kind, the differences, the source, the mark of a provisional
+    result and the note;
+  - the map's and the panel's sources.
+  With the mutant the test failed on `de/` first, naming the start page's dates and kinds at
+  2.85:1.)
+- [x] 2.2 A majority that is not needed. Add a test of the scenario: `/de/votes/5950/`, the
   Ständemehr's "nicht nötig" in `#1c1c1c` and its cantonal votes in `#767676`.
 
   It passes when written, by 2.1: seen to fail against a mutant that gives `.greyed` the
@@ -97,12 +130,15 @@ Spec `site-style`, "The colours of the light scheme"; design, decisions 3, 4 and
 
   Verify: the test, run alone, passes, and fails with the mutant.
 
+  (As built: passed when written; with the mutant it failed, `rgb(89, 89, 89)` for
+  `rgb(118, 118, 118)`.)
+
 ## 3. The dark scheme
 
 Spec `site-style`, "The dark scheme"; spec `result-map`, "A municipality without a result" and
 "The map in the dark scheme"; design, decision 6.
 
-- [ ] 3.1 A dark page. Add a test of the scenario "A dark page":
+- [x] 3.1 A dark page. Add a test of the scenario "A dark page":
   - the pages of 2.1, in the dark scheme;
   - a paragraph `#e8e8e8` on `#121212` and a link `#8ab4f8`;
   - no text below its threshold.
@@ -112,7 +148,14 @@ Spec `site-style`, "The dark scheme"; spec `result-map`, "A municipality without
   `--ground` instead of `#ffffff`.
 
   Verify: the test, run alone, passes.
-- [ ] 3.2 The preference changes on an open page. Add a test of the scenario:
+
+  (As built: it failed first on a white ground. With the dark values it failed again, on the box
+  of details: the pointer rests over the map once the limit is set, so the box shows Küttigen. Its
+  white ground at 90 % put light text on light, 1.00:1. The design had assumed that box empty in
+  these tests. So the box's ground moved here from 3.4, as
+  `color-mix(in srgb, var(--ground) 90%, transparent)`, and the test passes, with the other four
+  of the file.)
+- [x] 3.2 The preference changes on an open page. Add a test of the scenario:
   - `/de/votes/5960/` with "Ausländeranteil" at step 327, then the dark scheme;
   - the ground `#121212`;
   - the bound still at step 327 and "Angenommen" under "Mit Ihrer Auswahl";
@@ -122,13 +165,28 @@ Spec `site-style`, "The dark scheme"; spec `result-map`, "A municipality without
   media query the page never matches.
 
   Verify: the test, run alone, passes, and fails with the mutant.
-- [ ] 3.3 Nothing stored. Add a test of the scenario: the start page in both schemes, no element
-  that switches the scheme, `document.cookie` empty, `localStorage` and `sessionStorage` empty.
+
+  (As built: that the page is not loaded anew is shown by a mark set on `window` before the
+  switch and still there after it. That is more direct than the navigation entries, which a page
+  loaded anew would also show as one. Passed when written. With the mutant
+  `@media (prefers-color-scheme: dark) and (max-width: 0px)` it failed, the ground still
+  `rgb(255, 255, 255)`.)
+- [x] 3.3 Nothing stored. Add a test of the scenario: the start page in both schemes, no element
+  that switches the scheme, `document.cookie` empty, `localStorage` empty (Q, while applying:
+  `sessionStorage` is SvelteKit's; design, decision 6).
 
   It passes when written: seen to fail against a mutant that writes the scheme to `localStorage`.
 
   Verify: the test, run alone, passes, and fails with the mutant.
-- [ ] 3.4 The map in the dark scheme. In `result-map.spec.ts`, add tests of the scenarios:
+
+  (As built: as first written, with `sessionStorage` empty too, it failed. After the second visit
+  `sessionStorage` held SvelteKit's `sveltekit:history-info` (the scroll position),
+  `sveltekit:snapshot` and `sveltekit:navigation-snapshot`, which its router writes whenever a page
+  is left. Q chose to name only what outlives the tab, cookies and local storage. So the spec's
+  requirement "The dark scheme" and its scenario "Nothing stored", the design's decision 6 and the
+  proposal now say so. The test then passed. With the mutant, an `$effect` in the root layout that
+  writes the scheme to `localStorage`, it failed: `localStorage.length` 1, in the dark scheme.)
+- [x] 3.4 The map in the dark scheme. In `result-map.spec.ts`, add tests of the scenarios:
   - "Hatched in the dark scheme": the ground of 389 Meienried's pattern `#121212`;
   - "A selection on a dark map": Zürich `#2c2c2c` and outlined black on white, Aeugst am Albis
     `#fbbea3`, the stroke of the municipalities `#121212`;
@@ -144,6 +202,16 @@ Spec `site-style`, "The dark scheme"; spec `result-map`, "A municipality without
   Verify: the three tests, each run alone, pass; `pnpm --filter app exec playwright test
   result-map.spec.ts` passes, "The municipalities without a result in 2016" among them;
   `pnpm run check` and `pnpm run lint` pass.
+
+  (As built:
+  - Seen to fail: the pattern's ground and the borders `rgb(255, 255, 255)`. "The colours of the
+    classes stay" passed when written, as it guards what does not change.
+  - The pattern's `rect` takes the class `hatch-ground`, filled with `--ground`.
+  - The box of details had moved to 3.1. The outline's halo stays white, as the spec has it.
+  - All 57 tests of `result-map.spec.ts` pass, the budget tests on their first try.
+  - `pnpm run lint` first failed with 6 errors in `contrast.ts`: five `?? 0` that its types make
+    needless, and a check that can be an optional chain. They were removed with no change to
+    what it reads, and the 7 tests of `site-style.spec.ts` still pass.)
 
 ## 4. The verdicts in the map's colours
 

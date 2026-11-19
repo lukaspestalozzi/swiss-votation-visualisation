@@ -15,6 +15,7 @@
     "calculation": "workspace:*"
   },
   "devDependencies": {
+    "@fontsource-variable/source-sans-3": "5.3.1",
     "@playwright/test": "1.63.0",
     "@sveltejs/adapter-static": "^4.0.0",
     "@sveltejs/kit": "^3.2.0",

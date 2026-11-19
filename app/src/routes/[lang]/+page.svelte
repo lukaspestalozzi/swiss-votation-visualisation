@@ -20,11 +20,11 @@
     <ul>
       {#each year.entries as entry (entry.id)}
         <li>
-          <span>{entry.date}</span>
+          <span class="secondary">{entry.date}</span>
           <a href={resolve('/[lang]/votes/[id]', { lang: data.lang, id: String(entry.id) })}
             >{entry.title}</a
           >
-          <span>{entry.kind}</span>
+          <span class="secondary">{entry.kind}</span>
           <span>{entry.result}</span>
           {#each entry.marks as mark (mark)}
             <span class="mark">{mark}</span>

@@ -1,0 +1,64 @@
+/* The style of every page (spec site-style; design of add-site-style). */
+
+/* Source Sans 3, served with the site: the package's faces, of which a page loads the Latin one
+   only, as its text lies within that face's unicode-range (investigations/site-style.md, 2). Until
+   the file has loaded, and when it cannot load, the system's sans-serif (decision 2). */
+@import '@fontsource-variable/source-sans-3/wght.css';
+
+/* Every colour of the page, named once (decision 3). Each text has at least 4.5:1 on the ground,
+   each border at least 3:1 (investigations/site-style.md, 3). The map's own colours are in
+   src/lib/result-map.ts. */
+:root {
+  color-scheme: light dark;
+  --ground: #ffffff;
+  --text: #1c1c1c;
+  --text-secondary: #595959;
+  --link: #1a5fb4;
+  --greyed: #767676;
+  --border: #767676;
+}
+
+/* The dark scheme follows the browser, also when its preference changes on an open page; there
+   is no switch, and nothing is stored (decision 6). */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ground: #121212;
+    --text: #e8e8e8;
+    --text-secondary: #b0b0b0;
+    --link: #8ab4f8;
+    --greyed: #9a9a9a;
+    --border: #9a9a9a;
+  }
+}
+
+/* The text at the browser's size, 16 pixels unless the visitor set another, so that their own
+   setting applies (decision 9). */
+html {
+  font-family: 'Source Sans 3 Variable', sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--ground);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.25;
+}
+
+a {
+  color: var(--link);
+}
+
+/* A vote's date and kind, sources and notes. */
+.secondary {
+  color: var(--text-secondary);
+}
+
+/* Controls take the page's font, which browsers do not give them by themselves. */
+button,
+input,
+select {
+  font: inherit;
+}
