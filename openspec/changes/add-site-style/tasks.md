@@ -349,7 +349,7 @@ Spec `site-style`, "The width of a page"; design, decision 8.
 
 Spec `site-style`, "The controls"; design, decision 10.
 
-- [ ] 7.1 The controls in both schemes. Add a test of the scenario:
+- [x] 7.1 The controls in both schemes. Add a test of the scenario:
   - `/de/votes/5960/` with "Ausländeranteil" at step 327, in each scheme;
   - for "+", "−", "Ganze Schweiz", the list, "Entfernen", "Zurück zum echten Ergebnis", the
     switch's box, the track and both thumbs: the border or fill at least 3:1 against the colour
@@ -364,6 +364,25 @@ Spec `site-style`, "The controls"; design, decision 10.
 
   Verify: the test, run alone, passes; `pnpm --filter app exec playwright test
   small-screens.spec.ts -g "controls|thumb"` passes.
+
+  (As built:
+  - **The test.** One per scheme. `contrast.ts` now also measures controls: the larger of
+    border and fill against the colour behind, and their text. The switch's box and the thumbs,
+    which the browser draws, are read from their pixels on the screen (`pixelAt`).
+  - **Seen to fail:** in the light scheme the track, 2.85:1; in the dark scheme both thumbs,
+    still `#333333`. `app.css` now draws buttons and lists, with `accent-color` for the switch,
+    and `Limits.svelte` takes the names for the track and the thumbs. Both pass.
+  - **A failure found in `result-map.spec.ts`**, "on a phone › tapping a lake shows no details":
+    - **The cause.** Since 6.1 the map on the phone is 380 pixels wide, not 396, and the tap
+      landed on Fällanden. The test's `zurichsee()` took the lake whose centre lies nearest
+      Zürich's: the Greifensee, 4.6 × 6.3 pixels, beside which Chrome moves the tap. With the
+      sides at 8 pixels, the same tap stayed on the lake.
+    - **The fix (Q).** `zurichsee()` takes the lake whose box overlaps Zürich's, the Zürichsee,
+      as the spec names it. The phone test zooms in once and taps it at least 4 pixels from its
+      shore: at 2 pixels the first such point lay beside Zürich, and the tap reached Zürich.
+    - The three lake tests passed three times of three without retries.
+  - `small-screens`, `limits`, `result-map` and `site-style` pass, 128 tests, none needing its
+    retry.)
 - [ ] 7.2 A control focused from the keyboard. Add a test of the scenario: Tab until "Ganze
   Schweiz" has the focus, in each scheme, its outline `2px solid` `#1a5fb4` or `#8ab4f8`.
 
