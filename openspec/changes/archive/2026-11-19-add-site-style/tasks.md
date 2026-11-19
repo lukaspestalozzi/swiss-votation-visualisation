@@ -507,6 +507,23 @@ Q asked to fix them all; each fix was seen to fail first, or against a mutant:
 
 `site-style.spec.ts` now has 21 tests, all passing.
 
+## Archive
+
+`/openspec-archive-change` on 2026-11-19, after the verification and its fixes; Q chose to sync
+the specs.
+- **`site-style`** is a new main spec, with the delta's Purpose and its seven requirements.
+- **`reading-guide`:** "The start page links to the guide" is renamed "Every page links to the
+  guide", with its new text.
+- **`result-map`:** "A municipality without a result" is modified, and "The map in the dark
+  scheme" added.
+- **The checks:** each requirement matches the delta word for word, and each body is at most
+  500 characters ("The map in the dark scheme" and "The verdicts in the map's colours", the
+  longest, 491). `openspec validate --all --strict` passes, 16 items.
+- **`docs/roadmap.md`** marks row 10a done, with `site-style`, `reading-guide` and `result-map`
+  as its capabilities.
+- **`CLAUDE.md`** names the change archived and v1 complete, lists `site-style` among the specs,
+  and names #11, `add-share-link`, as the next.
+
 ## Workflow follow-up
 
 - Push, open the pull request, and watch its CI. (Done: #18, merged on 2026-11-19 as
@@ -514,5 +531,6 @@ Q asked to fix them all; each fix was seen to fail first, or against a mutant:
 - Verify the change (`/openspec-verify-change`), then archive it:
   - the roadmap's row 10a done, its capabilities `site-style`, `reading-guide` and `result-map`;
   - `CLAUDE.md`'s status names it archived and v1 complete.
+  (Done: verified on 2026-11-19, archived the same day; see "Verification" and "Archive".)
 - After the merge, Q checks the published site on a phone, in its light and dark mode, with #10's
   list (design, Migration Plan).
