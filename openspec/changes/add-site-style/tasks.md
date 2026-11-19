@@ -324,7 +324,7 @@ guide"; design, decision 7.
 
 Spec `site-style`, "The width of a page"; design, decision 8.
 
-- [ ] 6.1 The width. Add tests of the scenarios:
+- [x] 6.1 The width. Add tests of the scenarios:
   - "A wide window": at 1,920 pixels, the head and the `h1` at 16 pixels from the left, the map
     1,552 pixels wide, give or take 1, the panel beside it, the sentence at the limits at most
     640 wide;
@@ -339,6 +339,11 @@ Spec `site-style`, "The width of a page"; design, decision 8.
   small-screens.spec.ts` passes; `node investigations/small-screens/widths.cjs 360`, against the
   build served on port 4174, ends "0 of 381 pages wider than 360 px". Should a page be wider, the
   verdict boxes' padding below 640 pixels shrinks (design, Risks), and a note "As built" says so.
+
+  (As built: both failed first, at 8 pixels. With the body at 16 pixels of padding and `p` at
+  `max-width: 40rem` in `app.css`, both pass, and the guide's rule of 45rem went. `site-style` and
+  `small-screens` pass, 30 tests, and `widths.cjs` gives "0 of 381 pages wider than 360 px", so
+  the verdict boxes needed no change.)
 
 ## 7. The controls
 

@@ -30,9 +30,3 @@
   <p>{t.SOURCE_CHARACTERISTICS}</p>
   <p>{t.SOURCES_FILE} <a href={asset('data/sources.json')}>data/sources.json</a></p>
 </section>
-
-<style>
-  section {
-    max-width: 45rem;
-  }
-</style>
