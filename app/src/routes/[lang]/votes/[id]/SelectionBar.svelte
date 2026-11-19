@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Texts } from '../../../../lib/texts/index.ts';
-  import type { ResultShown } from '../../../../lib/vote-page.ts';
+  import type { ResultShown, Side } from '../../../../lib/vote-page.ts';
 
   // The selection's result at the bottom of a narrow window (spec small-screens; design of
   // add-small-screens, decisions 1 and 2): while a selection applies and its box "Mit Ihrer
@@ -36,21 +36,22 @@
     };
   });
 
-  const lines = $derived(
-    selection === null
-      ? null
-      : t.selectionBar(
-          selection.outcome,
-          selection.verdicts[0].verdict,
-          selection.verdicts[1].verdict,
-        ),
-  );
+  // Each verdict's word in the map's colour of its side, as in the box (spec site-style, "The
+  // verdicts in the map's colours").
+  const sideClass = (side: Side) => (side === null ? undefined : `side-${side}`);
 </script>
 
-{#if lines !== null && whole === false}
+{#if selection !== null && whole === false}
+  {@const [voters, cantons] = selection.verdicts}
   <div class="selection-bar" aria-hidden="true">
-    <p class="outcome">{lines[0]}</p>
-    <p>{lines[1]}</p>
+    <p class="outcome">
+      {t.WITH_SELECTION}:
+      <span class={sideClass(selection.outcomeSide)}>{selection.outcome}</span>
+    </p>
+    <p>
+      {t.MAJORITY_OF_VOTERS}: <span class={sideClass(voters.side)}>{voters.verdict}</span> ·
+      {t.MAJORITY_OF_CANTONS}: <span class={sideClass(cantons.side)}>{cantons.verdict}</span>
+    </p>
   </div>
 {/if}
 

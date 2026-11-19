@@ -11,20 +11,26 @@ import { formatCantonalVotes, formatCount, formatDate, formatShare } from './for
 import type { Texts } from './texts/index.ts';
 import { voteText, type Row, type Vote, type VoteFile } from './vote-data.ts';
 
+// The side a verdict's word stands for, which the page writes in the map's colour of that side
+// (spec site-style, "The verdicts in the map's colours"); none for "nicht nötig" or "–".
+export type Side = 'yes' | 'no' | null;
+
 // A majority: its heading, whether it is reached, and its yes share or cantonal votes.
 export interface Verdict {
   readonly heading: string;
   readonly verdict: string;
+  readonly side: Side;
   readonly figure: string;
   readonly greyed: boolean;
 }
 
-// A row of the table of the cantons.
+// A row of the table of the cantons: `side` is the word, `forSide` the side it stands for.
 export interface CantonRow {
   readonly canton: string;
   readonly yesShare: string;
   readonly cantonalVotes: string;
   readonly side: string;
+  readonly forSide: Side;
 }
 
 // The figures and verdicts of a result, and its table of the cantons: those of a vote, written
@@ -35,6 +41,7 @@ export interface ResultShown {
   readonly yesShare: string;
   readonly verdicts: readonly [Verdict, Verdict];
   readonly outcome: string;
+  readonly outcomeSide: Side;
   readonly cantons: readonly CantonRow[];
 }
 
@@ -182,6 +189,7 @@ export function judgedOf(
       {
         heading: t.MAJORITY_OF_VOTERS,
         verdict: result.majorityOfVoters ? t.REACHED : t.NOT_REACHED,
+        side: result.majorityOfVoters ? 'yes' : 'no',
         figure: yesShare,
         greyed: false,
       },
@@ -192,6 +200,7 @@ export function judgedOf(
           : result.majorityOfCantons
             ? t.REACHED
             : t.NOT_REACHED,
+        side: !cantonsNeeded ? null : result.majorityOfCantons ? 'yes' : 'no',
         figure: t.cantonalVotes(
           formatCantonalVotes(result.cantonalVotesInFavour),
           formatCantonalVotes(result.cantonalVotesAgainst),
@@ -200,6 +209,7 @@ export function judgedOf(
       },
     ],
     outcome: result.passed ? t.PASSED : t.FAILED,
+    outcomeSide: result.passed ? 'yes' : 'no',
     cantons: CANTONS.filter(({ abbreviation }) => ofVote.has(abbreviation)).map(
       ({ abbreviation }): CantonRow => {
         const outcome = outcomes.get(abbreviation);
@@ -209,6 +219,7 @@ export function judgedOf(
             yesShare: '–',
             cantonalVotes: t.NOTHING_LEFT,
             side: '–',
+            forSide: null,
           };
         }
         return {
@@ -216,6 +227,7 @@ export function judgedOf(
           yesShare: formatShare(outcome.yes, outcome.yes + outcome.no),
           cantonalVotes: formatCantonalVotes(outcome.cantonalVotes),
           side: outcome.inFavour ? t.REACHED : t.NOT_REACHED,
+          forSide: outcome.inFavour ? 'yes' : 'no',
         };
       },
     ),

@@ -25,7 +25,9 @@
             >{entry.title}</a
           >
           <span class="secondary">{entry.kind}</span>
-          <span>{entry.result}</span>
+          <span class:side-yes={entry.side === 'yes'} class:side-no={entry.side === 'no'}
+            >{entry.result}</span
+          >
           {#each entry.marks as mark (mark)}
             <span class="mark">{mark}</span>
           {/each}

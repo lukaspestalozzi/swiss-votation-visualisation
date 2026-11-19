@@ -16,6 +16,8 @@
   --link: #1a5fb4;
   --greyed: #767676;
   --border: #767676;
+  --yes: #007260;
+  --no: #934319;
 }
 
 /* The dark scheme follows the browser, also when its preference changes on an open page; there
@@ -28,6 +30,8 @@
     --link: #8ab4f8;
     --greyed: #9a9a9a;
     --border: #9a9a9a;
+    --yes: #4bc1ad;
+    --no: #e5946f;
   }
 }
 
@@ -54,6 +58,16 @@ a {
 /* A vote's date and kind, sources and notes. */
 .secondary {
   color: var(--text-secondary);
+}
+
+/* A verdict in the map's colour of its side: its darkest class, or its class 2 in the dark scheme,
+   where the darkest fall below 4.5:1 (decision 5). The word always stands beside the colour. */
+.side-yes {
+  color: var(--yes);
+}
+
+.side-no {
+  color: var(--no);
 }
 
 /* Controls take the page's font, which browsers do not give them by themselves. */

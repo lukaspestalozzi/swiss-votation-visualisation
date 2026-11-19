@@ -122,12 +122,24 @@
         {#each judged.verdicts as verdict (verdict.heading)}
           <section class="verdict">
             <h2>{verdict.heading}</h2>
-            <p class="word">{verdict.verdict}</p>
+            <p
+              class="word"
+              class:side-yes={verdict.side === 'yes'}
+              class:side-no={verdict.side === 'no'}
+            >
+              {verdict.verdict}
+            </p>
             <p class:greyed={verdict.greyed}>{verdict.figure}</p>
           </section>
         {/each}
       </div>
-      <p class="outcome">{judged.outcome}</p>
+      <p
+        class="outcome"
+        class:side-yes={judged.outcomeSide === 'yes'}
+        class:side-no={judged.outcomeSide === 'no'}
+      >
+        {judged.outcome}
+      </p>
     </div>
     {#if selection !== null}
       <section class="result selection" bind:this={selectionBox}>
@@ -150,12 +162,24 @@
           {#each selection.verdicts as verdict (verdict.heading)}
             <section class="verdict">
               <h3>{verdict.heading}</h3>
-              <p class="word">{verdict.verdict}</p>
+              <p
+                class="word"
+                class:side-yes={verdict.side === 'yes'}
+                class:side-no={verdict.side === 'no'}
+              >
+                {verdict.verdict}
+              </p>
               <p class:greyed={verdict.greyed}>{verdict.figure}</p>
             </section>
           {/each}
         </div>
-        <p class="outcome">{selection.outcome}</p>
+        <p
+          class="outcome"
+          class:side-yes={selection.outcomeSide === 'yes'}
+          class:side-no={selection.outcomeSide === 'no'}
+        >
+          {selection.outcome}
+        </p>
       </section>
     {/if}
   </div>
@@ -191,7 +215,9 @@
           <th scope="row">{row.canton}</th>
           <td>{row.yesShare}</td>
           <td>{row.cantonalVotes}</td>
-          <td>{row.side}</td>
+          <td class:side-yes={row.forSide === 'yes'} class:side-no={row.forSide === 'no'}>
+            {row.side}
+          </td>
         </tr>
       {/each}
     </tbody>

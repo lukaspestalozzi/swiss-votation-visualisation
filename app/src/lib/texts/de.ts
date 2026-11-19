@@ -166,10 +166,6 @@ export const de: Texts = {
   LIMITS_FAILED: 'Ohne die Merkmale lassen sich keine Gemeinden auswählen.',
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
-  selectionBar: (outcome, voters, cantons) => [
-    `${WITH_SELECTION}: ${outcome}`,
-    `${MAJORITY_OF_VOTERS}: ${voters} · ${MAJORITY_OF_CANTONS}: ${cantons}`,
-  ],
   LEGEND_SET_ASIDE: 'Nicht in der Auswahl',
   SET_ASIDE: 'Nicht in der Auswahl.',
   remainingCount: (remaining, all) =>
