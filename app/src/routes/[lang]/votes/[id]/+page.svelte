@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import { textsOf } from '../../../../lib/texts/index.ts';
   import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
@@ -11,6 +13,7 @@
     type LimitSetting,
   } from '../../../../lib/limits.ts';
   import { formatCount } from '../../../../lib/format.ts';
+  import { linkOf } from '../../../../lib/share-link.ts';
   import { judgedOf } from '../../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
@@ -37,6 +40,26 @@
         characteristicsFailed = true;
       },
     );
+  });
+
+  // The selection in the page's address (spec share-link): the link the selection gives, written
+  // into the address once the selection has stayed the same for half a second, as soon as the
+  // characteristics have loaded (design of add-share-link, decision 5).
+  const link = $derived(linkOf(limits, abroadCounted));
+  $effect(() => {
+    if (characteristics === null) return;
+    const hash = link === '' ? '' : `#${link}`;
+    const timer = setTimeout(() => {
+      if (hash === location.hash) return;
+      // The page's own path as the browser shows it, the site's path and the final slash
+      // included, with only its hash changed (Q, 2026-11-19): `resolve` gives the path without
+      // the final slash, and the rule accepts no address built from it.
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- the page's own path
+      void goto(`${page.url.pathname}${hash}`, { shallow: true, replace: true });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
   });
 
   // The municipalities that remain under the limits, once the characteristics are loaded.
