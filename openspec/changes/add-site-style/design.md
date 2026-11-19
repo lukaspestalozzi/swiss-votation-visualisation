@@ -155,7 +155,10 @@ The data says the side:
 - the outcome and each canton's row gain a side the same way;
 - `vote-list.ts` gains a side for each entry, `null` for a tie-break question.
 
-The components set a class from the side; the words stay as they are.
+The components set a class from the side; the words stay as they are. Found while applying, the
+bar: one of its lines can hold both sides ("Volksmehr: Ja · Ständemehr: Nein"), so it writes
+each word apart from its label, in an element of its side, and the texts' `selectionBar`, then
+unused, goes.
 
 Alternatives considered:
 - **Verdicts in the text's colour**: the page reads more calmly, but the map and the verdicts
@@ -274,7 +277,9 @@ Alternatives considered:
   - its colour, against the first ancestor with an opaque ground, a ground at less than full
     opacity laid over the one behind it;
   - "large" is at least 24 pixels, or 18.66 pixels in bold;
-  - the SVG holds no text, and the box of details is empty while nothing is pointed at.
+  - the SVG holds no text. The box of details is checked as any other text, against its ground
+    at 90 % of the page's: found while applying, it shows a municipality wherever the pointer
+    last rested on the map.
 - **The font rendered**, through Chrome's DevTools protocol (`CSS.getPlatformFontsForNode`), as
   `look.cjs` does.
 - **The dark scheme** through Playwright's `emulateMedia({ colorScheme: 'dark' })`.
@@ -297,7 +302,7 @@ the seven before it.
 
 - **App (Vitest):**
   - `vote-page.test.ts`: the sides of the verdicts, the outcome and the cantons' rows, for the
-    vote of 2016-02-28 and for a selection where the Ständemehr is not needed;
+    vote of 2016-02-28 and for the vote 6790, whose own Ständemehr is not needed;
   - `vote-list.test.ts`: the side of an entry, and none for a tie-break question;
   - each seen to fail first.
 - **Browser (Playwright):**
@@ -339,9 +344,9 @@ built into the site; no request goes to another server.
   "Angenommen", "Abgelehnt".
 - **[The hatching's lines have 2.85:1 on white]** → Kept, as the map's colours are #6's; the
   legend names the hatching. On the dark ground they have 6.58:1.
-- **[The contrast test misses text over an image]** → The page has none: the SVG holds no text,
-  and the box of details is tested empty. Its ground at 90 % keeps the text legible over any
-  colour of the map.
+- **[The contrast test misses text over an image]** → The page has none: the SVG holds no text.
+  The box of details lies over the map; the test checks it against its ground, at 90 % of the
+  page's, which keeps the text legible over any colour of the map.
 
 ## Migration Plan
 
