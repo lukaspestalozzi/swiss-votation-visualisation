@@ -242,6 +242,8 @@ test('a canton with nothing left loses its Swiss abroad: BS', async ({ page }) =
  * difference until it lands there.
  */
 async function dragTo(page: Page, input: ReturnType<typeof slider>, from: number, to: number) {
+  // The pointer reaches only what is in the window: below its first screen the press would miss.
+  await input.scrollIntoViewIfNeeded();
   const box = await input.boundingBox();
   if (box === null) throw new Error('the slider has no box');
   // The thumb's centre runs from half a thumb inside one end of the input to the other.
