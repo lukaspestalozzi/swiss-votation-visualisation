@@ -283,6 +283,24 @@ test.describe('the bar on a phone', () => {
   });
 });
 
+// A browser without a dictionary for hyphenating Italian (this one has it, and breaks
+// "Maggio-ranza"): the verdict boxes must fit by breaking the word where they need to, also from
+// 640 pixels, where the selection's result stands beside the vote's.
+test('without hyphenation the Italian verdicts with a selection fit at 360, 640 and 800 pixels', async ({
+  page,
+}) => {
+  for (const width of [360, 640, 800]) {
+    await page.setViewportSize({ width, height: 780 });
+    await page.goto('it/votes/5960/');
+    await page.addStyleTag({ content: '* { hyphens: manual !important; }' });
+    await page.getByLabel('Aggiungere una caratteristica').selectOption('Quota di stranieri');
+    await page.getByRole('button', { name: 'Aggiungere', exact: true }).click();
+    await page.getByRole('slider', { name: 'Limite superiore: Quota di stranieri' }).fill('327');
+    await expect(page.getByRole('heading', { name: 'Con la Sua selezione' })).toBeVisible();
+    expect(await pageWidth(page), `${String(width)} pixels`).toBeLessThanOrEqual(width);
+  }
+});
+
 test.describe('on a touch screen 360 pixels wide', () => {
   test.use({ ...phone, viewport: { width: 360, height: 780 } });
 

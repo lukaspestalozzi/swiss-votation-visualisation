@@ -215,6 +215,10 @@
       if (pressed.has(event.pointerId)) pressed = pressedWith(event.pointerId, null);
     } else if (pressed.has(event.pointerId)) {
       pressed = pressedWith(event.pointerId, { x: event.clientX, y: event.clientY });
+    } else {
+      // A pointer pressed that the map does not follow, a third finger or a press begun outside
+      // the map, neither moves nor zooms it.
+      return;
     }
     if (pinch !== null) {
       if (pressed.size === 2 && sources !== null) {
@@ -245,6 +249,8 @@
   }
 
   function up(event: PointerEvent): void {
+    // The release of a pointer the map does not follow, such as a third finger, changes nothing.
+    if (!pressed.has(event.pointerId)) return;
     pressed = pressedWith(event.pointerId, null);
     if (pinch !== null) {
       // One of two fingers lifted: the other goes on as a drag from where it is, and the release
@@ -263,6 +269,7 @@
   }
 
   function cancel(event: PointerEvent): void {
+    if (!pressed.has(event.pointerId)) return;
     pressed = pressedWith(event.pointerId, null);
     pinch = null;
     press = null;

@@ -33,6 +33,21 @@ export async function fingersOn(page: Page) {
     );
   return {
     /**
+     * One touch event, its fingers named by id, an animation frame after it: on `touchStart` the
+     * fingers that are down, on `touchMove` where they are, on `touchEnd` those that lift (none:
+     * all of them).
+     */
+    async touch(
+      type: 'touchStart' | 'touchMove' | 'touchEnd',
+      points: readonly (Point & { readonly id: number })[],
+    ): Promise<void> {
+      await cdp.send('Input.dispatchTouchEvent', {
+        type,
+        touchPoints: points.map(({ x, y, id }) => ({ x, y, id })),
+      });
+      await frame();
+    },
+    /**
      * Put the fingers down at `from`, move each to its place in `to` in steps of at most 10
      * pixels, an animation frame after each step, and lift them.
      */

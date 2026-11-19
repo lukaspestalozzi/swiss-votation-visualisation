@@ -418,6 +418,49 @@ test.describe('on a phone', () => {
     expect(Math.abs(after.width - before.width)).toBeLessThanOrEqual(unitsPerPixel);
   });
 
+  // A third finger is ignored: it neither ends the pinch of the other two nor moves the map
+  // (design of add-small-screens, decision 9).
+  test('a third finger that touches and lifts does not end a pinch', async ({ page }) => {
+    const box = await mapAt(page, 0);
+    const before = await viewOf(page);
+    const c = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    const fingers = await fingersOn(page);
+    const third = { x: c.x, y: c.y + 60, id: 3 };
+    const at = (spread: number) => [
+      { x: c.x - spread, y: c.y, id: 1 },
+      { x: c.x + spread, y: c.y, id: 2 },
+    ];
+    await fingers.touch('touchStart', at(50));
+    await fingers.touch('touchStart', [...at(50), third]);
+    await fingers.touch('touchEnd', [third]);
+    for (let spread = 60; spread <= 100; spread += 10) {
+      await fingers.touch('touchMove', at(spread));
+    }
+    await fingers.touch('touchEnd', []);
+    // 100 pixels apart to 200: half as wide, within a pixel.
+    const after = await viewOf(page);
+    expect(Math.abs(after.width - before.width / 2)).toBeLessThanOrEqual(after.width / box.width);
+  });
+
+  test("a third finger's move does not move the map", async ({ page }) => {
+    const box = await mapAt(page, 4);
+    const c = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    const fingers = await fingersOn(page);
+    const a = { x: c.x - 50, y: c.y, id: 1 };
+    const b = { x: c.x + 50, y: c.y, id: 2 };
+    const third = { x: c.x, y: c.y + 60, id: 3 };
+    await fingers.touch('touchStart', [a, b]);
+    await fingers.touch('touchStart', [a, b, third]);
+    // One of the two lifts; the other stays where it is, and the third moves 100 pixels.
+    await fingers.touch('touchEnd', [a]);
+    const before = await viewOf(page);
+    for (let step = 1; step <= 5; step += 1) {
+      await fingers.touch('touchMove', [b, { ...third, x: third.x - 20 * step }]);
+    }
+    expect(await viewOf(page)).toEqual(before);
+    await fingers.touch('touchEnd', []);
+  });
+
   // A tap is a click (spec result-map, "A tap does what a click does").
   test('tapping Zürich shows its details and its characteristics, and outlines it', async ({
     page,

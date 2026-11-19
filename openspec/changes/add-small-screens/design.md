@@ -133,7 +133,10 @@ Alternatives considered:
 Two causes, two fixes (investigation, 1):
 - **Long words.** The page's headings and the verdict boxes break a word too long for the line:
   `hyphens: auto`, which hyphenates by the page's `lang` where the browser knows the language,
-  and `overflow-wrap: break-word`, which breaks anywhere where it does not.
+  and `overflow-wrap: anywhere`, which breaks anywhere where it does not. `anywhere`, not
+  `break-word`, as only it lets the grids of the verdict boxes narrow below their longest word:
+  from 640 pixels, two results side by side, a browser without a hyphenation dictionary made the
+  Italian page 676 pixels wide (found in review).
 - **The verdict boxes.** In a window narrower than 640 pixels their padding narrows and their
   headings get a smaller size, so that "Maggioranza dei Cantoni" wraps between its words. The
   size is chosen while applying, by the width test.
@@ -174,14 +177,17 @@ Alternatives considered:
 ### 9. The pinch, in the map's code
 
 - **The fingers.** The map keeps the pointers pressed on it by `pointerId`, at most two; a
-  third is ignored.
+  third is ignored, its moves and its release too.
 - **One pointer** is today's press and drag, with its 4 pixels.
 - **A second pointer** makes the gesture a pinch at once. The map keeps the view and both points
   of that moment.
-- **At each move**, the view is the kept view zoomed around the kept midpoint by the ratio of
-  the fingers' distances, then moved by the midpoint's shift. A new pure function of
-  `map-view.ts`, `pinchFrom`, gives it from `zoomAround` and `moveBy`, so the limits of the zoom
-  and of the centre stay as they are; it is unit-tested.
+- **At each move**, the view is the kept view zoomed by the ratio of the fingers' distances,
+  within the zoom's limits, and placed so that the point of the map that was midway between the
+  fingers is midway between them now. A new pure function of `map-view.ts`, `pinchFrom`, gives
+  it, and keeps the view's centre inside the rectangle once, at the end, with the rule of
+  `moveBy`: zoomed around the point and then moved, each kept inside apart, a pinch near an edge
+  jumped, and one at the whole of Switzerland undid a move of it (found in review). It is
+  unit-tested.
 - **Taken from the start of the pinch**, not step by step, so that rounding does not drift.
 - **A pinch, like a drag, selects nothing.** When one of two fingers lifts, the other goes on as
   a drag from where it is.
