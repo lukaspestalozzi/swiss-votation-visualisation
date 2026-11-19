@@ -2,6 +2,7 @@
 // contrasts and the widths are those of investigations/site-style.md.
 import { expect, test, type Page } from '@playwright/test';
 import { lowContrast, type LowContrast } from './contrast.ts';
+import { phone } from './fingers.ts';
 
 /**
  * The fonts Chrome renders the text of the first element matching `selector` in, by the DevTools
@@ -145,6 +146,68 @@ test('the preference changes on an open page: dark at once, the selection kept',
   expect(await page.evaluate(() => (window as unknown as { mark?: string }).mark)).toBe('kept');
   await expect(page.getByRole('slider').last()).toHaveValue('327');
   await expect(page.locator('.selection .outcome')).toHaveText('Angenommen');
+});
+
+// The map's darkest classes, and in the dark scheme its class 2 (spec site-style, "The verdicts in
+// the map's colours").
+const YES = 'rgb(0, 114, 96)'; // #007260
+const NO = 'rgb(147, 67, 25)'; // #934319
+const YES_DARK = 'rgb(75, 193, 173)'; // #4bc1ad
+const NO_DARK = 'rgb(229, 148, 111)'; // #e5946f
+
+/** The vote's own result on its page, beside which a selection's stands. */
+const ownResult = (page: Page) => page.locator('.results > .result:not(.selection)');
+
+test.describe("the verdicts in the map's colours", () => {
+  test('2016-02-28: "Nein" and "Abgelehnt" #934319, "Ja" #007260, also in the list', async ({
+    page,
+  }) => {
+    // 49.16% yes, 16½ : 6½ cantonal votes (investigations/data-sources.md).
+    await page.goto('de/votes/5960/');
+    const words = ownResult(page).locator('.word');
+    await expect(words).toHaveText(['Nein', 'Ja']);
+    await expect(words.first()).toHaveCSS('color', NO);
+    await expect(words.last()).toHaveCSS('color', YES);
+    await expect(ownResult(page).locator('.outcome')).toHaveText('Abgelehnt');
+    await expect(ownResult(page).locator('.outcome')).toHaveCSS('color', NO);
+    const zurich = page.getByRole('row', { name: /^ZH / }).locator('td').last();
+    await expect(zurich).toHaveText('Nein');
+    await expect(zurich).toHaveCSS('color', NO);
+    await page.goto('de/');
+    const result = page
+      .locator('li', { has: page.locator('a[href$="/votes/5960/"]') })
+      .locator('span', { hasText: /^abgelehnt/ });
+    await expect(result).toHaveCSS('color', NO);
+  });
+
+  test.describe('on a phone', () => {
+    test.use(phone);
+
+    test('a selection: "Angenommen" and both "Ja" #007260, in the box and the bar', async ({
+      page,
+    }) => {
+      await foreignersUpTo1998(page);
+      await expect(page.locator('.selection .outcome')).toHaveText('Angenommen');
+      await expect(page.locator('.selection .outcome')).toHaveCSS('color', YES);
+      const words = page.locator('.selection-bar span');
+      await expect(words).toHaveText(['Angenommen', 'Ja', 'Ja']);
+      for (const word of await words.all()) await expect(word).toHaveCSS('color', YES);
+    });
+  });
+
+  test.describe('in the dark scheme', () => {
+    test.use({ colorScheme: 'dark' });
+
+    test('in French: "Non" and "Rejeté" #e5946f, "Oui" #4bc1ad', async ({ page }) => {
+      await page.goto('fr/votes/5960/');
+      const words = ownResult(page).locator('.word');
+      await expect(words).toHaveText(['Non', 'Oui']);
+      await expect(words.first()).toHaveCSS('color', NO_DARK);
+      await expect(words.last()).toHaveCSS('color', YES_DARK);
+      await expect(ownResult(page).locator('.outcome')).toHaveText('Rejeté');
+      await expect(ownResult(page).locator('.outcome')).toHaveCSS('color', NO_DARK);
+    });
+  });
 });
 
 // What outlives the tab: cookies and local storage. `sessionStorage` is SvelteKit's, whose router

@@ -167,10 +167,6 @@ export const it: Texts = {
   LIMITS_FAILED: 'Senza le caratteristiche non è possibile scegliere Comuni.',
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
-  selectionBar: (outcome, voters, cantons) => [
-    `${WITH_SELECTION}: ${outcome}`,
-    `${MAJORITY_OF_VOTERS}: ${voters} · ${MAJORITY_OF_CANTONS}: ${cantons}`,
-  ],
   LEGEND_SET_ASIDE: 'Non nella selezione',
   SET_ASIDE: 'Non nella selezione.',
   remainingCount: (remaining, all) =>

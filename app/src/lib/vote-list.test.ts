@@ -83,6 +83,16 @@ test('the entry of the tie-break question shows its share for the initiative', (
   expect(tieBreak.result).not.toMatch(/angenommen|abgelehnt/);
 });
 
+test('the side of an entry, for the colour of its result', () => {
+  // Spec site-style, "The verdicts in the map's colours".
+  expect(entry(5960).side).toBe('no');
+  expect(entry(6790).side).toBe('yes');
+});
+
+test('the tie-break question has no side', () => {
+  expect(entry(6823).side).toBeNull();
+});
+
 test('the entry shows the official result where the municipal figures differ', () => {
   // 1,884,096 yes and 1,350,325 no votes validated; the entries give 200 no votes more.
   expect(entry(6650).result).toBe('angenommen, 58.25% Ja');

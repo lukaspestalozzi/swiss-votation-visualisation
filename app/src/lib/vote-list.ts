@@ -2,6 +2,7 @@
 import { formatDate, formatShare } from './format.ts';
 import type { Texts } from './texts/index.ts';
 import { voteText, type Vote, type Votes } from './vote-data.ts';
+import type { Side } from './vote-page.ts';
 
 export interface ListEntry {
   readonly id: number;
@@ -10,6 +11,9 @@ export interface ListEntry {
   readonly kind: string;
   // The official result: its verdict and yes share.
   readonly result: string;
+  // The side of its verdict, whose colour the whole result takes; none for a tie-break question
+  // (spec site-style, "The verdicts in the map's colours").
+  readonly side: Side;
   readonly marks: readonly string[];
 }
 
@@ -41,6 +45,7 @@ function entryOf(vote: Vote, t: Texts): ListEntry {
     title: voteText(vote, 'title', t.LANGUAGE),
     kind: t.KINDS[vote.kind],
     result: resultOf(vote, t),
+    side: vote.kind === 'tie-break-question' ? null : vote.result.passed ? 'yes' : 'no',
     marks: [
       ...(vote.note === null ? [] : [t.MARK_NOTE]),
       ...(vote.validated ? [] : [t.MARK_PROVISIONAL]),

@@ -217,7 +217,7 @@ Spec `site-style`, "The dark scheme"; spec `result-map`, "A municipality without
 
 Spec `site-style`, "The verdicts in the map's colours"; design, decision 5.
 
-- [ ] 4.1 The sides of a vote's page. In `vote-page.test.ts`, two tests:
+- [x] 4.1 The sides of a vote's page. In `vote-page.test.ts`, two tests:
   - the vote of 2016-02-28: the Volksmehr's side `'no'`, the Ständemehr's `'yes'`, the outcome
     `'no'`, ZH's row `'no'`;
   - `/votes/5950/` without the Swiss abroad: the Ständemehr's side `null` ("nicht nötig"), the
@@ -228,12 +228,25 @@ Spec `site-style`, "The verdicts in the map's colours"; design, decision 5.
 
   Verify: `pnpm --filter app exec vitest run src/lib/vote-page.test.ts` passes; `pnpm run check`
   passes.
-- [ ] 4.2 The side of an entry of the list. In `vote-list.test.ts`, two tests: the entry of 5960
+
+  (As built:
+  - A type `Side`, `'yes'`, `'no'` or `null`. A verdict gains `side`, the result `outcomeSide`,
+    and a canton's row `forSide`, as its `side` already holds the word.
+  - The second test takes the vote 6790, an optional referendum whose own Ständemehr is "nicht
+    nötig": the same case as 5950 without the Swiss abroad, with no selection to build. Its
+    sides are `'yes'` and `null`, its outcome's `'yes'`.
+  - Both failed first with `undefined`. The three tests that compare whole rows took the new
+    field, `null` for a canton with nothing left.
+  - 20 passed.)
+- [x] 4.2 The side of an entry of the list. In `vote-list.test.ts`, two tests: the entry of 5960
   has the side `'no'`; the tie-break question 6823 has none (`null`).
 
   Seen to fail. Then the entries of `vote-list.ts` gain a side.
 
   Verify: `pnpm --filter app exec vitest run src/lib/vote-list.test.ts` passes.
+
+  (As built: the first test also checks 6790, `'yes'`. Both failed first with `undefined`. The
+  entry takes `Side` from `vote-page.ts`. 12 passed.)
 - [ ] 4.3 The colours on the pages. Add tests of the scenarios:
   - "The vote of 2016-02-28": the colours of "Nein", "Abgelehnt", "Ja" and ZH's "Nein", and the
     start page's "abgelehnt";

@@ -78,10 +78,30 @@ test('a majority that is not needed reads so, with its cantonal votes greyed out
   });
 });
 
+test('the sides of the verdicts of 2016-02-28, for their colours', () => {
+  // Spec site-style, "The verdicts in the map's colours".
+  const judged = page(5960).judged;
+  expect(judged?.verdicts.map((verdict) => verdict.side)).toEqual(['no', 'yes']);
+  expect(judged?.outcomeSide).toBe('no');
+  expect(judged?.cantons[0]).toMatchObject({ canton: 'ZH', side: 'Nein', forSide: 'no' });
+});
+
+test('a majority that is not needed has no side', () => {
+  const judged = page(6790).judged;
+  expect(judged?.verdicts.map((verdict) => verdict.side)).toEqual(['yes', null]);
+  expect(judged?.outcomeSide).toBe('yes');
+});
+
 test('the table of the cantons', () => {
   const rows = page(5960).judged?.cantons ?? [];
   expect(rows).toHaveLength(26);
-  expect(rows[0]).toEqual({ canton: 'ZH', yesShare: '43.46%', cantonalVotes: '1', side: 'Nein' });
+  expect(rows[0]).toEqual({
+    canton: 'ZH',
+    yesShare: '43.46%',
+    cantonalVotes: '1',
+    side: 'Nein',
+    forSide: 'no',
+  });
   expect(rows.at(-1)?.canton).toBe('JU');
   expect(rows.filter((row) => row.cantonalVotes === '½').map((row) => row.canton)).toEqual([
     'OW',
@@ -105,8 +125,8 @@ test('a canton without valid votes shows no yes share', () => {
     withoutResult: [],
   };
   expect(votePage(voteOf(5960), file, de).judged?.cantons).toEqual([
-    { canton: 'ZH', yesShare: '66.67%', cantonalVotes: '1', side: 'Ja' },
-    { canton: 'UR', yesShare: '–', cantonalVotes: '1', side: 'Nein' },
+    { canton: 'ZH', yesShare: '66.67%', cantonalVotes: '1', side: 'Ja', forSide: 'yes' },
+    { canton: 'UR', yesShare: '–', cantonalVotes: '1', side: 'Nein', forSide: 'no' },
   ]);
 });
 
@@ -172,9 +192,21 @@ test('a canton of the vote with nothing left keeps its row, which says so', () =
   // Spec verdicts, "The cantons under a selection": only ZH remains of a vote of ZH, BE and OW.
   const result = calculateResult([{ canton: 'ZH', yes: 60, no: 40 }], 'voters-and-cantons');
   expect(judgedOf(result, 'voters-and-cantons', ['ZH', 'BE', 'OW'], de).cantons).toEqual([
-    { canton: 'ZH', yesShare: '60.00%', cantonalVotes: '1', side: 'Ja' },
-    { canton: 'BE', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
-    { canton: 'OW', yesShare: '–', cantonalVotes: 'keine Gemeinde übrig', side: '–' },
+    { canton: 'ZH', yesShare: '60.00%', cantonalVotes: '1', side: 'Ja', forSide: 'yes' },
+    {
+      canton: 'BE',
+      yesShare: '–',
+      cantonalVotes: 'keine Gemeinde übrig',
+      side: '–',
+      forSide: null,
+    },
+    {
+      canton: 'OW',
+      yesShare: '–',
+      cantonalVotes: 'keine Gemeinde übrig',
+      side: '–',
+      forSide: null,
+    },
   ]);
 });
 
