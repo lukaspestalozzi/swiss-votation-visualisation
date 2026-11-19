@@ -18,8 +18,9 @@
     box: HTMLElement | null;
   } = $props();
 
-  // Whether the box lies wholly within the window.
-  let whole = $state(false);
+  // Whether the box lies wholly within the window; null until the observer has said so for this
+  // box, so that the bar does not show for the frame before it reports a box in view.
+  let whole = $state<boolean | null>(null);
   $effect(() => {
     if (box === null) return;
     const observer = new IntersectionObserver(
@@ -31,6 +32,7 @@
     observer.observe(box);
     return () => {
       observer.disconnect();
+      whole = null;
     };
   });
 
@@ -45,7 +47,7 @@
   );
 </script>
 
-{#if lines !== null && !whole}
+{#if lines !== null && whole === false}
   <div class="selection-bar" aria-hidden="true">
     <p class="outcome">{lines[0]}</p>
     <p>{lines[1]}</p>
