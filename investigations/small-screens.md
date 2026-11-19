@@ -35,6 +35,11 @@ node investigations/small-screens/gestures.cjs
 node investigations/small-screens/targets.cjs
 node investigations/small-screens/slowed_frames.cjs 3
 investigations/small-screens/d3_zoom_size.sh /new/path/outside/the/repository
+# Found while applying; the server may also run with --dev, which reads the files anew after a
+# build:
+node investigations/small-screens/taps.cjs
+node investigations/small-screens/first_tap.cjs --runs 5
+node investigations/small-screens/first_tap.cjs --runs 3 --after-fingers [--pause 150]
 ```
 
 | File | What |
@@ -46,8 +51,11 @@ investigations/small-screens/d3_zoom_size.sh /new/path/outside/the/repository
 | `targets.cjs` | The size of each control of a vote's page with a limit, on a phone and on a computer, and the media queries of the pointer. |
 | `slowed_frames.cjs` | The longest frame of zooming and moving the map, of a click on Zürich and of dragging a limit, with the CPU at full speed and slowed 4× and 6×, as the browser tests measure frames. |
 | `d3_zoom_size.sh` | The size of a page that attaches d3-zoom 3.0.0 to an SVG, minified and gzipped, and the sizes of the built site's larger scripts. |
+| `taps.cjs` | Found while applying: whether a tap on "Ganze Schweiz" gets its click 0 to 150 ms after a finger left the map, a paragraph, or that paragraph with `touch-action: none`; and which municipality a tap on Genève, Davos and Lausanne reaches, at points 0, 2 and 4 pixels inside their borders. |
+| `first_tap.cjs` | Found while applying: the frames of the first and the next tap on a municipality, with a Chrome trace that splits each long frame into the main thread's work; with `--after-fingers`, the sequence of the budget test of fingers, each frame named by its input. |
 
-"Output" at the end of this file is what the scripts printed on 2026-11-18.
+"Output" at the end of this file is what the scripts printed on 2026-11-18, and those found while
+applying on 2026-11-19.
 
 ## Answers
 
@@ -174,6 +182,46 @@ script is 88,625 bytes minified, 21,271 gzipped; the site's two largest shared s
 a transform (a scale and a shift) rather than a view box. Its version 3.0.1 was published on
 2026-11-03; pnpm holds back versions that recent.
 
+### 8. Two things this browser does with a tap, found while applying
+
+`taps.cjs`, on a phone, against the site with the change's fingers (`touch-action: none` on the
+map):
+- **A tap soon after a finger left an element with `touch-action: none` gets no click.** A tap
+  on "Ganze Schweiz" 0, 20 or 50 ms after one finger moved over the map gets `pointerdown`,
+  `pointerup` and `touchend`, but no `click`; 100 ms and more after it, it gets its click. Over a
+  paragraph the click always comes; over the same paragraph with `touch-action: none` it is lost
+  as over the map. No code of the app is involved. A person does not tap again within 50 ms; the
+  budget test of fingers waits 150 ms before each tap. Whether a phone does the same is for the
+  check by hand.
+- **Chrome moves a tap from a small municipality to its neighbour.** At the whole of
+  Switzerland on a phone, a tap at a point of Genève where `elementFromPoint` finds Genève reaches
+  6643 Vernier, at 0 and at 2 pixels from Genève's border; Genève has no point 4 pixels inside it.
+  A tap on Davos and on Lausanne at their first point inside reaches a neighbour (3921, 5651), and
+  at a point 2 pixels inside reaches them. This is Chrome's adjustment of a touch to its target. The
+  browser tests tap points 2 pixels inside a municipality (`pointIn`'s margin), and the budget
+  test of fingers taps Davos where the mouse's taps Genève. A finger on a real phone covers more
+  than a point: a small municipality is reached by zooming in, and the outline shows which one a
+  tap reached.
+
+### 9. The frames of a tap and of a finger's touchdown, found while applying
+
+The budget test of fingers, as first written, failed on both tries with one frame of 36 to 37
+ms: a `pointerover`. `first_tap.cjs`:
+- **The finger's touchdown before a move.** With `--after-fingers`, the long frame is the
+  `pointerover` when one finger touches the map to move it, 36.3 to 37.0 ms by the tests'
+  measurement, in every run. The trace finds 3.9 to 4.8 ms of the main thread's work in its
+  window of 44.7 to 51.9 ms: the rest is the browser waiting to draw the frame. A pause of 150 ms
+  before the finger changes nothing; the fingers of a pinch do not show it. Q decided on
+  2026-11-19 that the budget test counts the frames of the fingers' moves and of the taps, not of
+  a finger's touchdown before a move.
+- **A tap.** On a page just loaded, the first tap on Zürich measures 4.5 to 15.8 ms for its
+  pointing and 3.8 to 5.6 ms for its click, the next tap on Bern 3.1 to 4.9 and 3.2 to 4.6 ms.
+  A trace slows the page: with it, a tap after "Ganze Schweiz" measured 15.8 to 20.2 ms, with 10.8
+  to 17.1 ms of the main thread's work. Without a trace, the budget test measures every frame of
+  its six taps at 4.9 ms or less.
+- **A pinch's step** measures 9.5 to 11.8 ms, with 13.6 to 14.7 ms of work under the trace,
+  mostly layout (3.4 to 7.1 ms) and paint (1.8 to 3.6 ms).
+
 ## Not verified
 
 - What a real phone's browser does with a finger outside the app's code, Chrome on Android and
@@ -181,6 +229,8 @@ a transform (a scale and a shift) rather than a view box. Its version 3.0.1 was 
   lie over one another and take the pointer on their thumbs only (answer 4). The change's tasks
   check it by hand on a phone.
 - How Chrome's slowed CPU compares with a given phone (answer 6).
+- Whether a phone loses the click of a tap soon after a finger left the map, and whether it waits
+  to draw the frame of a finger's touchdown (answers 8 and 9).
 
 ## Output
 
@@ -293,4 +343,66 @@ site BBbxcIfG.js: 43064 bytes minified, 15814 gzipped
 site C_80NMBa.js: 26261 bytes minified, 8794 gzipped
 site D3BhSEgC.js: 5355 bytes minified, 2262 gzipped
 site DqjgSlZK.js: 44058 bytes minified, 16898 gzipped
+```
+
+Found while applying, on 2026-11-19: `node taps.cjs`:
+
+```
+a tap after one finger over the map: 0 ms: no click, 20 ms: no click, 50 ms: no click, 100 ms: click, 150 ms: click
+a tap after one finger over the paragraph: 0 ms: click, 20 ms: click, 50 ms: click, 100 ms: click, 150 ms: click
+a tap after one finger over the paragraph, none: 0 ms: no click, 20 ms: no click, 50 ms: no click, 100 ms: click, 150 ms: click
+Genève (6621): margin 0: tap at 22,496: 6643 at 22,496; margin 2: tap at 24,496: 6643 at 24,496; margin 4: no such point
+Davos (3851): margin 0: tap at 332,428: 3921 at 332,428; margin 2: tap at 335,429: 3851 at 335,429; margin 4: tap at 338,427: 3851 at 338,427
+Lausanne (5586): margin 0: tap at 64,452: 5651 at 64,452; margin 2: tap at 68,457: 5586 at 68,457; margin 4: no such point
+```
+
+`node first_tap.cjs --runs 5`, then `--runs 3 --after-fingers`, then `--runs 3 --after-fingers --pause 150`:
+
+```
+run 1, first tap, Zürich, pointerover 12.1 ms
+    busy 15.8 of 15.8 ms: FunctionCall 6.6, ThreadControllerImpl::RunTask 2.3, Paint 1.8, Layout 1.2, Layerize 0.8, PrePaint 0.6, EventDispatch 0.5, UpdateLayoutTree 0.4, Commit 0.4
+run 1, first tap, Zürich, click 4.5 ms
+run 1, next tap, Bern, pointerover 3.4 ms
+run 1, next tap, Bern, click 3.2 ms
+run 2, first tap, Zürich, pointerover 4.5 ms
+run 2, first tap, Zürich, click 4.1 ms
+run 2, next tap, Bern, pointerover 3.1 ms
+run 2, next tap, Bern, click 3.3 ms
+run 3, first tap, Zürich, pointerover 6.6 ms
+run 3, first tap, Zürich, click 5.6 ms
+run 3, next tap, Bern, pointerover 3.8 ms
+run 3, next tap, Bern, click 3.6 ms
+run 4, first tap, Zürich, pointerover 5.8 ms
+run 4, first tap, Zürich, click 5.5 ms
+run 4, next tap, Bern, pointerover 4.9 ms
+run 4, next tap, Bern, click 4.6 ms
+run 5, first tap, Zürich, pointerover 15.8 ms
+    busy 14.1 of 19.1 ms: FunctionCall 6.2, ThreadControllerImpl::RunTask 2.1, Paint 1.6, Layout 1.0, Layerize 0.7, PrePaint 0.5, EventDispatch 0.5, UpdateLayoutTree 0.4
+run 5, first tap, Zürich, click 3.8 ms
+run 5, next tap, Bern, pointerover 3.3 ms
+run 5, next tap, Bern, click 3.5 ms
+run 1, pinch, pointermove 11.8 ms
+    busy 14.7 of 14.8 ms: Layout 7.1, Paint 3.6, V8.HandleInterrupts 1.0, Layerize 0.7, PrePaint 0.7, FunctionCall 0.7, ThreadControllerImpl::RunTask 0.5
+run 1, one finger, pointerover 36.7 ms
+    busy 4.4 of 51.9 ms: FunctionCall 1.2, Paint 0.8, ThreadControllerImpl::RunTask 0.6, PrePaint 0.5
+run 2, pinch, pointermove 9.5 ms
+    busy 14.0 of 14.0 ms: ThreadControllerImpl::RunTask 6.7, Layout 3.4, Paint 1.8, FunctionCall 0.8, Layerize 0.5, PrePaint 0.4
+run 2, pinch, pointermove 11.5 ms
+    busy 13.6 of 13.6 ms: ThreadControllerImpl::RunTask 6.7, Layout 3.4, Paint 1.8, Layerize 0.5, FunctionCall 0.5, PrePaint 0.4
+run 2, one finger, pointerover 36.3 ms
+    busy 3.9 of 51.5 ms: FunctionCall 1.0, Paint 0.7, ThreadControllerImpl::RunTask 0.6, PrePaint 0.5, Layout 0.3
+run 3, one finger, pointerover 36.3 ms
+    busy 4.2 of 51.0 ms: FunctionCall 0.9, Paint 0.9, ThreadControllerImpl::RunTask 0.7, PrePaint 0.5
+run 1, one finger, pointerover 37.0 ms
+    busy 4.8 of 45.3 ms: FunctionCall 1.2, Paint 0.8, ThreadControllerImpl::RunTask 0.8, PrePaint 0.6, Layout 0.3
+run 1, tap Zürich, pointerover 15.8 ms
+    busy 10.8 of 16.2 ms: FunctionCall 2.6, ThreadControllerImpl::RunTask 2.3, Paint 2.1, Layerize 1.0, Layout 0.7, PrePaint 0.6, UpdateLayoutTree 0.3
+run 2, one finger, pointerover 36.8 ms
+    busy 4.6 of 46.5 ms: FunctionCall 1.2, Paint 0.9, ThreadControllerImpl::RunTask 0.7, PrePaint 0.5, Layout 0.4
+run 2, tap Zürich, pointerover 20.2 ms
+    busy 17.1 of 21.1 ms: FunctionCall 3.7, Paint 3.4, ThreadControllerImpl::RunTask 3.3, Layerize 1.8, Layout 1.2, PrePaint 1.0, UpdateLayoutTree 0.5, EventDispatch 0.5, Commit 0.4, HitTest 0.4
+run 3, one finger, pointerover 36.7 ms
+    busy 4.5 of 44.7 ms: FunctionCall 1.1, Paint 0.9, ThreadControllerImpl::RunTask 0.7, PrePaint 0.6
+run 3, tap Zürich, pointerover 16.1 ms
+    busy 11.3 of 16.6 ms: FunctionCall 2.5, Paint 2.3, ThreadControllerImpl::RunTask 2.3, Layerize 1.1, Layout 0.8, PrePaint 0.6, UpdateLayoutTree 0.4, Commit 0.3
 ```
