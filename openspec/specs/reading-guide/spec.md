@@ -138,11 +138,20 @@ SHALL link to `data/sources.json`, the record of every file read.
   "ThemaKart 2026", "STATPOP", "Nationalratswahlen", "Volkszählung 2000", "Landwirtschaftliche
   Strukturerhebung" and "swissBOUNDARIES3D 2026", and links to `data/sources.json`
 
-### Requirement: The start page links to the guide
+### Requirement: Every page links to the guide
 
-The start page SHALL show, below its heading, the link "Lesehilfe und Quellen" to `/guide/`.
+Every page under `/de/`, `/fr/` and `/it/` SHALL link to the guide from its head, with the
+guide's name "Lesehilfe" (the `site-style` capability, "The head of every page"); on the guide
+itself the name is not a link. The start page SHALL show no other link to the guide below its
+heading.
 
 #### Scenario: From the start page
 
-- **WHEN** a visitor opens the start page and follows "Lesehilfe und Quellen"
+- **WHEN** a visitor opens the start page and follows "Lesehilfe" in its head
+- **THEN** the page "Lesehilfe" opens
+- **AND** the start page shows no link "Lesehilfe und Quellen"
+
+#### Scenario: From a vote's page
+
+- **WHEN** a visitor opens `/votes/5960/` and follows "Lesehilfe" in its head
 - **THEN** the page "Lesehilfe" opens
