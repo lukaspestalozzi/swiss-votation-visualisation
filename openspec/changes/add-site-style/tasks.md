@@ -290,7 +290,7 @@ Spec `site-style`, "The verdicts in the map's colours"; design, decision 5.
 Spec `site-style`, "The head of every page"; spec `reading-guide`, "Every page links to the
 guide"; design, decision 7.
 
-- [ ] 5.1 The head. Add tests of the scenarios "On a vote's page", "On the start page and the
+- [x] 5.1 The head. Add tests of the scenarios "On a vote's page", "On the start page and the
   guide" and "The head in a narrow window":
   - the head's three parts in order, before the `h1`, with their links;
   - on its own page the title or the guide's name is not a link;
@@ -309,6 +309,16 @@ guide"; design, decision 7.
 
   Verify: the five tests, each run alone, pass; `pnpm --filter app exec playwright test
   guide.spec.ts languages.spec.ts vote-list.spec.ts` passes.
+
+  (As built:
+  - All five failed first: there was no `header`.
+  - The head is a flex row that wraps between its parts. Each part keeps its words on one line
+    (`white-space: nowrap`), and the switch keeps its own `nav` and stands to the right.
+  - The narrow-window test asks each part's text to take one line, which is stricter than "no
+    word broken", as the design wants the head to wrap only between its parts. At 360 pixels in
+    Italian the switch takes the second line.
+  - `site-style`, `guide`, `languages` and `vote-list` pass, 64 tests, and `small-screens` and
+    `vote-page`, 23.)
 
 ## 6. The width
 
