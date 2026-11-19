@@ -228,6 +228,17 @@ Alternatives considered:
 - **Print the frames slowed 4× without failing:** each budget test twice as long, for a figure no
   one acts on.
 
+Found while applying (Q, 2026-11-19): the frame of a finger's touchdown before a move measures 36
+to 37 ms with 4 to 5 ms of the page's work in it; the rest is the browser waiting to draw it
+(investigation, 9). The budget test counts the frames of the fingers' moves and of the taps,
+pointing and click, not of a finger's touchdown before a move.
+
+Alternatives considered:
+- **The main thread's work from a Chrome trace** in place of the tests' frame measurement: a
+  second way of measuring beside the other budget tests, and more test code.
+- **Tracing Chrome's frame scheduling first**, to find why that frame waits: possibly this
+  browser's synthetic touches.
+
 ### 13. The tests on a phone's emulation, with fingers sent by the DevTools protocol
 
 - **The phone:** Playwright's `devices['Pixel 7']` (412 × 839, touch, mobile viewport) in
@@ -337,7 +348,9 @@ None. The fingers are the map's own code, and the sizes and the bar are CSS and 
    - one finger on the map moves it, and the page does not scroll;
    - one finger over the limits scrolls the page;
    - two fingers zoom the map, not the page;
-   - a tap shows the details, fills the panel and outlines the municipality;
+   - a tap shows the details, fills the panel and outlines the municipality, also a tap right
+     after moving the map with a finger, which this browser loses within 50 ms (investigation, 8);
+   - a finger's touchdown shows the details under it without a visible wait (investigation, 9);
    - a finger drags each thumb of a limit;
    - the bar follows the drag and goes when "Mit Ihrer Auswahl" is on the screen;
    - nothing scrolls sideways.

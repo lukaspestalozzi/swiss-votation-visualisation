@@ -871,3 +871,65 @@ test.describe(() => {
     expect(frames.filter((f) => f.work > 16)).toEqual([]);
   });
 });
+test.describe('on a phone', () => {
+  test.use(phone);
+  test.describe.configure({ retries: 1 });
+
+  // Fingers keep the map's budget (spec result-map, "The budget of fingers"; design of
+  // add-small-screens, decision 12): two fingers, one finger, and taps, each tap after showing the
+  // whole of Switzerland and 50 ms after the finger's arrival there.
+  test('the budget of fingers: no frame after pinching, moving or tapping takes more than 16 ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(MEASURE_FRAMES);
+    await page.goto('de/votes/5960/');
+    await page.locator('.municipalities path').nth(2000).waitFor();
+    await expect(panel(page)).toContainText('Klicken Sie auf eine Gemeinde');
+    await page.locator('.map svg').scrollIntoViewIfNeeded();
+    const box = await page.locator('.map svg').boundingBox();
+    if (box === null) throw new Error('the map is not on the screen');
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    const fingers = await fingersOn(page);
+    const centre = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    for (let i = 0; i < 2; i += 1) {
+      await fingers.move(
+        [
+          { x: centre.x - 50, y: centre.y },
+          { x: centre.x + 50, y: centre.y },
+        ],
+        [
+          { x: centre.x - 100, y: centre.y },
+          { x: centre.x + 100, y: centre.y },
+        ],
+      );
+    }
+    await fingers.move([centre], [{ x: centre.x - 120, y: centre.y + 40 }]);
+    // The frames of the fingers' moves. A finger's touchdown before a move is not measured: its
+    // frame waits on the browser, with 4 ms of the page's work in 36 ms (Q, 2026-11-19;
+    // investigations/small-screens.md, 9).
+    const moves = (await measuredFrames(page)).filter((f) => f.type === 'pointermove');
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    // Points 2 pixels inside their municipality's border (app/e2e/pointing.ts). Davos for Genève:
+    // on a phone's whole of Switzerland Genève is a few pixels wide, and Chrome moves a tap on it
+    // to its neighbour (investigations/small-screens.md, 8).
+    for (const number of [261, 351, 3851]) {
+      // In this browser a tap less than about 100 ms after a finger left the map gets no click,
+      // faster than a person taps again (investigations/small-screens.md, 8).
+      await page.waitForTimeout(150);
+      await page.getByRole('button', { name: 'Ganze Schweiz' }).tap();
+      const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`, 2);
+      await page.waitForTimeout(50);
+      await page.touchscreen.tap(point.x, point.y);
+    }
+    await expect(panel(page).locator('.name')).toHaveText('Davos (GR)');
+    // The frames of the taps, of "Ganze Schweiz" and of the municipalities, pointing and click.
+    const taps = await measuredFrames(page);
+    expect(moves.length).toBeGreaterThan(20);
+    expect(taps.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
+    expect([...moves, ...taps].filter((f) => f.work > 16)).toEqual([]);
+  });
+});

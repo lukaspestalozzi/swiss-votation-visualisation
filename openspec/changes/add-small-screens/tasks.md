@@ -252,13 +252,26 @@ decisions 1 and 2.
 
 Spec `result-map`, "The budget of fingers"; design, decision 12.
 
-- [ ] 6.1 A test of "Pinching, moving and tapping" in the budget tests of `result-map.spec.ts`,
+- [x] 6.1 A test of "Pinching, moving and tapping" in the budget tests of `result-map.spec.ts`,
   in a `describe` with one retry, on a phone: the frames measured by `app/e2e/frames.ts`, whose
   script already listens for `pointermove`, `pointerover` and `click`. Seen to fail with a
   temporary delay of 20 ms in the map's `pointermove` handler, then passing without it.
 
   Verify: the test, run alone, passes and prints its frames; `pnpm run test:e2e` prints
   "Running 162 tests using 1 worker" and "162 passed"; write its time into a note "As built".
+
+  (As built, with three findings of `investigations/small-screens.md`, 8 and 9:
+  - a tap on "Ganze Schweiz" right after the fingers got no click in this browser, within 50 ms
+    after a finger left the map; the test waits 150 ms before each tap;
+  - Chrome moved the tap on Genève to Vernier, a few pixels at the whole of Switzerland on a
+    phone; the test taps Davos, at points 2 pixels inside each municipality, `pointIn` taking a
+    margin;
+  - the test then failed on both tries with one frame of 36 to 37 ms, the `pointerover` of a
+    finger's touchdown before a move, with 4 to 5 ms of the page's work in a Chrome trace. Q chose
+    on 2026-11-19 to count the frames of the moves and of the taps (design, decision 12).
+  It then passed three times of three, the taps' frames at 4.9 ms or less; with a delay of 20 ms in
+  the map's `pointermove` handler it failed on both tries, and passed without it.
+  `pnpm run test:e2e`: "Running 162 tests using 1 worker", "162 passed (59.1s)".)
 
 ## 7. Docs and the whole
 
