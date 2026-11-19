@@ -247,7 +247,7 @@ Spec `site-style`, "The verdicts in the map's colours"; design, decision 5.
 
   (As built: the first test also checks 6790, `'yes'`. Both failed first with `undefined`. The
   entry takes `Side` from `vote-page.ts`. 12 passed.)
-- [ ] 4.3 The colours on the pages. Add tests of the scenarios:
+- [x] 4.3 The colours on the pages. Add tests of the scenarios:
   - "The vote of 2016-02-28": the colours of "Nein", "Abgelehnt", "Ja" and ZH's "Nein", and the
     start page's "abgelehnt";
   - "A selection on a phone": "Angenommen" in the box and in the bar, and the bar's "Ja", on a
@@ -261,6 +261,29 @@ Spec `site-style`, "The verdicts in the map's colours"; design, decision 5.
 
   Verify: the three tests, each run alone, pass; `pnpm --filter app exec playwright test
   vote-page.spec.ts vote-list.spec.ts small-screens.spec.ts` passes.
+
+  (As built:
+  - **The bar.** A line holds both sides ("Volksmehr: Ja · Ständemehr: Nein"), so the bar writes
+    its words apart, each in a `span` of its side, from `WITH_SELECTION`, `MAJORITY_OF_VOTERS`
+    and `MAJORITY_OF_CANTONS`. The texts' `selectionBar` thus went unused and was removed, with
+    its unit test. The bar's lines stay tested in German and French by `small-screens.spec.ts`.
+    The app's unit tests are now 127.
+  - **The classes.** `app.css` holds `--yes`, `--no` and the global classes `side-yes` and
+    `side-no`.
+  - **Two failures, fixed with Q's go-ahead.**
+    - The start page's entry was not found: a vote's link ends in `/votes/5960`, without the
+      final slash, and the selector had one.
+    - `limits.spec.ts` "recalculated while dragging" failed with "the slider did not reach step
+      327", measured with the test's steps in a window 1,280 × 720. The taller lines put the
+      upper slider at y 752, below the window, where the press missed it; on `main`'s build it
+      lies at y 659. `dragTo` now scrolls the slider into view first, as the budget test of
+      dragging does. All 39 tests of the file pass.
+  - **Found and not changed.** When "Mit Ihrer Auswahl" appears, the results grow and the
+    slider moves down under the pressed pointer: 44 pixels on `main` (301 → 346), 46 with this
+    change (340 → 386). The drag goes on, as the slider keeps the pointer pressed on it. This is
+    #8's layout, not this change's.
+  - The three tests failed first with the text's colour. `vote-page`, `vote-list`,
+    `small-screens`, `site-style` and `languages` pass: 73 tests.)
 
 ## 5. The head
 

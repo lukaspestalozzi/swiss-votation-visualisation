@@ -175,7 +175,7 @@ test.describe("the verdicts in the map's colours", () => {
     await expect(zurich).toHaveCSS('color', NO);
     await page.goto('de/');
     const result = page
-      .locator('li', { has: page.locator('a[href$="/votes/5960/"]') })
+      .locator('li', { has: page.locator('a[href$="/votes/5960"]') })
       .locator('span', { hasText: /^abgelehnt/ });
     await expect(result).toHaveCSS('color', NO);
   });
