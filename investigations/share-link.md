@@ -151,6 +151,10 @@ test run once and removed; the tasks' notes "As built" give the details.
   title at the first address change of a visit, half a second after the visitor's first change
   of the selection. The later changes set the same title, which changes nothing on the page, so a
   screen reader hears the title once per visit. Accepted (Q, 2026-11-20).
+- **A shallow `goto` leaves `page.url` as it was.** It sets `page.shallow.url` and `page.state`
+  (`update_page` in SvelteKit 3.2.0's `client.js`), and a link opened in the tab, which only fires
+  `hashchange`, changes neither. A link built from `page.url.hash` keeps the hash the page opened
+  with; the language switch takes `(page.shallow?.url ?? page.url).hash` (Q, 2026-11-20).
 - **Focus stays.** A shallow `goto` blurs the focused element only with `reset`, false by
   default for it: a slider keeps its focus through every address change.
 - **`resolve` and the final slash.** `resolve('/[lang]/votes/[id]', …)` gives `/de/votes/5960`,

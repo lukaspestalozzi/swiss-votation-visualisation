@@ -13,7 +13,7 @@ export type { Language };
 export const LANGUAGES: readonly Language[] = ['de', 'fr', 'it'];
 
 /** Each language by its name in itself, the same on every page (the switch, spec
- * interface-languages, "Changing the language"). */
+ * interface-languages, "The switch between the languages"). */
 export const LANGUAGE_NAMES: Readonly<Record<Language, string>> = {
   de: 'Deutsch',
   fr: 'Français',

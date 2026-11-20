@@ -158,10 +158,16 @@ link the site never writes.
 
 ### 8. The language switch adds the page's hash (Q)
 
-The switch's links to the two other languages add `page.url.hash`, in the browser only: the
-prerendered page's links have none, as `url.hash` is not available while prerendering. A shallow
-`goto` changes `page.url`, so the links follow the address. With `data-sveltekit-reload`, the
-other language's page loads anew and reads the hash as any link's.
+The switch's links to the two other languages add the hash of the address as SvelteKit knows it,
+`(page.shallow?.url ?? page.url).hash`, in the browser only: the prerendered page's links have
+none, as `url.hash` is not available while prerendering. With `data-sveltekit-reload`, the other
+language's page loads anew and reads the hash as any link's.
+
+Planned as `page.url.hash`, on the belief that a shallow `goto` changes `page.url`. Applying found
+that it does not: it sets `page.shallow.url`, and a link opened in the tab changes neither (found
+while applying, investigation). So the writer of decision 5 compares the selection's link with
+that address, not with `location.hash`: after reading a link opened in the tab, it writes the
+address once more, and the links follow (Q, 2026-11-20).
 
 The links carry the selection the address holds, up to half a second old. A visitor who follows
 "Français" within half a second of a change carries the selection before it.
@@ -169,7 +175,10 @@ The links carry the selection the address holds, up to half a second old. A visi
 Alternatives considered:
 - **A shared state of the selection** between the page and the layout: always current, but a
   state outside the page, for a lag of half a second.
-- **Reading `location.hash` when the link is clicked**: the same lag, and a handler on the links.
+- **Reading `location.hash` when the link is clicked**: the same lag, and a handler on the links;
+  the link shown on hover, copied or opened in a new tab would carry no selection.
+- **A hash of the layout's own**, kept from `location.hash` on `hashchange` and after each shallow
+  `goto`: as current, with a listener and an effect in the layout.
 
 ### 9. The guide says that the address holds the selection (Q)
 

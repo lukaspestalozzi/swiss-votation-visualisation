@@ -206,7 +206,7 @@ of a link"; spec `limits`, "Limits belong to the page"; design, decisions 4, 6, 
 
 Spec `interface-languages`, "The switch between the languages"; design, decision 8.
 
-- [ ] 4.1 The switch. In `languages.spec.ts`, the test "a selection stays behind" becomes "A
+- [x] 4.1 The switch. In `languages.spec.ts`, the test "a selection stays behind" becomes "A
   selection goes along", with the spec's scenario. Seen to fail: `/it/votes/5960/` without the
   hash. Then `[lang]/+layout.svelte` adds `page.url.hash` to the links of the two other
   languages, in the browser only; its comment and that of `texts/index.ts` name "The switch
@@ -214,6 +214,15 @@ Spec `interface-languages`, "The switch between the languages"; design, decision
 
   Verify: run alone, the test passes; `pnpm --filter app exec playwright test languages.spec.ts`
   passes, as `pnpm run build` does (the prerendered links have no hash).
+
+  As built: `page.url.hash` did not pass: a shallow `goto` sets `page.shallow.url` and leaves
+  `page.url` as it was. The links add `(page.shallow?.url ?? page.url).hash`, and the writer of 2.1
+  compares with that address instead of `location.hash`, so that it writes a link opened in the
+  tab once more after reading it (Q, 2026-11-20; design decision 8). A second test, "A selection
+  goes along after a link opened in the same tab", failed against the writer that compares with
+  `location.hash` (the switch carried `#inhabitants=-`). `browser` comes from `$app/env`, SvelteKit
+  3's name for `$app/environment`. The languages' and the address's tests, 54, pass; the
+  prerendered link to `/it/votes/5960` has no hash.
 
 ## 5. The guide
 
