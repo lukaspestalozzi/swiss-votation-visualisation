@@ -189,8 +189,11 @@ phone; or nothing.
   steps. The limits' budget tests run with it unchanged.
 - **Applying a link** makes up to 21 tracks, `trackOf` over the list's 2,110 municipalities each,
   and up to 42 searches of 1,001 steps, then recalculates as a jump does. On `hashchange`, each
-  frame takes at most 50 ms of main-thread work, a jump's budget (spec share-link, "The budget of
-  a link"); a browser test measures it with all 21 limits, as the limits' budget tests do.
+  frame takes at most 100 ms of main-thread work, twice a jump's budget (spec share-link, "The
+  budget of a link"); a browser test measures it with all 21 limits, as the limits' budget tests
+  do. Planned as 50 ms, a jump's budget; applying found 55 to 94 ms, about 27 ms of it making the
+  21 tracks as the link is read, and Q raised it (2026-11-20) rather than make the tracks when the
+  page loads: a link opened in the tab that shows its vote is rare.
 - **When the page opens**, applying a link shares its frames with the map's first drawing. The
   page load has no budget of its own, as before.
 
@@ -211,6 +214,10 @@ phone; or nothing.
 
 - **[The switch lags by half a second]** → Accepted with decision 5 (Q). The language a visitor
   ends in shows the selection the address held.
+- **[SvelteKit's announcer reads the page's title]** once per visit, half a second after the
+  first change of the selection, as a shallow `goto` runs the navigation hooks (found while
+  applying, investigation) → Accepted (Q, 2026-11-20): later changes do not repeat it, and focus
+  stays on the slider.
 - **[A shallow `goto` in a later SvelteKit]** writes the address differently → The browser tests
   check the address, the history and `page.url` through the switch.
 - **[An update of the data moves a value off its step]** → The bound lands at most half a gap away

@@ -482,6 +482,15 @@ test('limits belong to the page: another vote starts without them', async ({ pag
   await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
 });
 
+test('limits belong to the page: a link with a selection', async ({ page }) => {
+  // Spec share-link: the page starts with the selection its address holds.
+  await page.goto('de/votes/5960/#foreigners=-19.98&abroad=no');
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  ]);
+  await expect(abroadSwitch(page)).not.toBeChecked();
+});
+
 test('characteristics that cannot be loaded: no limits, and the rest of the page', async ({
   page,
 }) => {

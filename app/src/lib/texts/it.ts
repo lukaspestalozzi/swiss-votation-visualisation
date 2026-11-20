@@ -165,6 +165,8 @@ export const it: Texts = {
   ABROAD_SWITCH:
     "Contare le Svizzere e gli Svizzeri all'estero (in ogni Cantone in cui rimane un Comune)",
   LIMITS_FAILED: 'Senza le caratteristiche non è possibile scegliere Comuni.',
+  unusableParts: (parts) =>
+    `Queste indicazioni dell'indirizzo non hanno potuto essere applicate: ${parts.map((part) => `«${part}»`).join(', ')}.`,
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
   LEGEND_SET_ASIDE: 'Non nella selezione',

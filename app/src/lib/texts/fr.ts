@@ -166,6 +166,8 @@ export const fr: Texts = {
     "Compter les Suissesses et Suisses de l'étranger (dans chaque canton où il reste une " +
     'commune)',
   LIMITS_FAILED: 'Sans les caractéristiques, aucune commune ne peut être choisie.',
+  unusableParts: (parts) =>
+    `Ces indications de l'adresse n'ont pas pu être appliquées: ${parts.map((part) => `«${part}»`).join(', ')}.`,
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
   LEGEND_SET_ASIDE: 'Pas dans la sélection',

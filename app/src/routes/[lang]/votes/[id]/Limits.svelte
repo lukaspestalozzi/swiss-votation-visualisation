@@ -13,6 +13,7 @@
     failed,
     voteDate,
     count,
+    unusable,
     limits = $bindable(),
     abroadCounted = $bindable(),
   }: {
@@ -22,6 +23,8 @@
     voteDate: string;
     // How many municipalities remain, as the section says it.
     count: string;
+    // The parts of the page's address it could not use (spec share-link).
+    unusable: readonly string[];
     limits: readonly LimitSetting[];
     abroadCounted: boolean;
   } = $props();
@@ -75,6 +78,9 @@
     {t.THOUGHT_EXPERIMENT}
     <a href={resolve('/[lang]/guide', { lang: t.LANGUAGE })}>{t.GUIDE_LINK}</a>
   </p>
+  {#if unusable.length > 0}
+    <p>{t.unusableParts(unusable)}</p>
+  {/if}
   {#if failed}
     <p>{t.LIMITS_FAILED}</p>
   {:else if file === null}
