@@ -107,6 +107,10 @@ address follows the selection"; design, decisions 5 and 10.
 
   As built: the four passed when written. Against the mutant, all five tests of the file failed,
   as each writes a bound at its track's end.
+
+  After verification (Q, 2026-11-20): "Back to the real result" also checks that the address has
+  no `#` at all, as the hash of an address ending in `#` reads as empty too; it failed against a
+  writer that leaves a bare `#`.
 - [x] 2.3 The history. Tests of "Back leaves the page" and "Nothing is sent": the second collects
   every request's address while making the selection and reloading, and none contains
   `foreigners`.
@@ -163,6 +167,12 @@ of a link"; spec `limits`, "Limits belong to the page"; design, decisions 4, 6, 
   characteristics have loaded.
 
   Verify: run alone, the test passes.
+  After verification (Q, 2026-11-20): a link opened in the tab whose selection the page already
+  showed, written otherwise (`#foreigners=-20` for `-19.98`), stayed as it was opened. A test, "A
+  value no step has, in the same tab", failed (`#foreigners=-20`); the page now counts its readings
+  (`readings` for `addressRead`), each of which restarts the writer's timer, and the writer
+  compares with the browser's address too.
+
 - [x] 3.4 The unusable parts. Add `unusableParts` to `Texts` (`texts/index.ts`), in German, French
   and Italian as design decision 4 writes them; the page keeps the applied link and its unusable
   parts, and `Limits.svelte` shows the sentence below the guide's sentence. Tests of "An unknown

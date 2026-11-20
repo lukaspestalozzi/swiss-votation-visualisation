@@ -69,6 +69,8 @@ test('Back to the real result', async ({ page }) => {
   await page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }).click();
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/');
+  // No "#" at all: the hash of an address ending in "#" is empty too.
+  expect(page.url()).toMatch(/\/de\/votes\/5960\/$/);
 });
 
 test('The keys in French', async ({ page }) => {
@@ -211,6 +213,21 @@ test('Another link to the same vote', async ({ page }) => {
   expect(await page.evaluate(() => (window as unknown as { mark?: string }).mark)).toBe(
     'the same page',
   );
+});
+
+test('A value no step has, in the same tab', async ({ page }) => {
+  // The same selection, written otherwise: the page writes the address anew, as when it opens.
+  await open(page, 'de/votes/5960/');
+  await addLimit(page, 'Ausländeranteil');
+  await slider(page, 'Obere', 'Ausländeranteil').fill('327');
+  await waitASecond(page);
+  expect(address(page)).toBe('/de/votes/5960/#foreigners=-19.98');
+  await page.goto('de/votes/5960/#foreigners=-20');
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  ]);
+  await waitASecond(page);
+  expect(address(page)).toBe('/de/votes/5960/#foreigners=-19.98');
 });
 
 /** The sentence that names the parts of the address the page could not use. */
