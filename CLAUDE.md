@@ -6,7 +6,7 @@ A static site for the curious public; everything runs in the browser. "Popular V
 a working title: the name is not decided.
 
 **Status:** the skeleton, the calculation, the vote data, the first screen, the map, the
-characteristics, the limits, the languages, the small screens and the look. Every page is written in German, French and Italian,
+characteristics, the limits, the languages, the small screens, the look and the share link. Every page is written in German, French and Italian,
 under `/de/`, `/fr/` and `/it/`; the site's address and the addresses of before open the page in
 the browser's language, German otherwise, and the head of every page, with the working title and a
 link to the guide, holds a switch that opens it in another. Every page is set in Source Sans 3,
@@ -29,19 +29,19 @@ each canton, and is tested against seven official votes; the pipeline writes the
 counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #10a, 7a and 9a of `docs/roadmap.md`,
+after every push to `main` whose checks pass. Changes #1 to #11, 7a, 9a and 10a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
 `publish-site`, `add-result-map`, `add-characteristics`, `tighten-map-budget` (the look at
 performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`,
 `add-interface-languages`, `steady-budget-tests` (the browser tests one at a time, so that no
-test runs beside a budget test), `add-small-screens` and `add-site-style`, are archived, and
+test runs beside a budget test), `add-small-screens`, `add-site-style` and `add-share-link`, are archived, and
 `openspec/specs/` holds their specs.
 Nine investigations are done: `investigations/data-sources.md`, `investigations/map-data.md`,
 `investigations/characteristics.md`, `investigations/performance.md`,
 `investigations/limits.md`, `investigations/languages.md`, `investigations/small-screens.md`,
 `investigations/site-style.md` and `investigations/share-link.md`.
-v1, changes #1 to #10a, is complete. #11, `add-share-link`, the first change after v1, is applied;
-its verification and archive come next.
+v1, changes #1 to #10a, is complete, and #11, `add-share-link`, the first change after v1, is
+archived. Next: #12, `add-vote-comparison`.
 `README.md` is the human-facing overview.
 
 ## Where things are
@@ -49,7 +49,7 @@ its verification and archive come next.
 | Path | What |
 |------|------|
 | `openspec/config.yaml` | Project context and rules: product, hard constraints, decided stack and what is still open, module boundaries, quality bar, glossary. Read first. |
-| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `characteristics`, `interface-languages`, `limits`, `municipalities`, `publishing`, `reading-guide`, `result-calculation`, `result-map`, `site-style`, `small-screens`, `verdicts`, `vote-data`, `vote-list`. |
+| `openspec/specs/` | Current truth: what the app does, one spec per capability: `app-shell`, `build-checks`, `characteristics`, `interface-languages`, `limits`, `municipalities`, `publishing`, `reading-guide`, `result-calculation`, `result-map`, `share-link`, `site-style`, `small-screens`, `verdicts`, `vote-data`, `vote-list`. |
 | `openspec/changes/` | In-flight changes: proposal, spec deltas, design, tasks. Finished ones are under `openspec/changes/archive/`. |
 | `docs/roadmap.md` | Ordered list of planned changes and their status, what counts as v1, the investigations, and the predecessor's failure modes with the change that specifies against each. |
 | `investigations/` | Spikes and verified reference values (test oracles). `data-sources.md` is the first, `map-data.md` the second (the map's sources, the distances of its colours, the municipal figures its specs cite; scripts in `map-data/`, run as the file says), `characteristics.md` the third (the characteristics' sources, the list each uses, how they come onto the votes' list, and the figures the specs cite; scripts in `characteristics/`, run as the file says), `performance.md` the fourth (why frames after a click looked slow, the first pointing's cost, a busy machine's long frames; scripts in `performance/`, two in JavaScript on the global Playwright, two in Python that read their traces, `budget_tries.py`, which reads Playwright's JSON reports of the budget tests, and `budget_tests_traced.spec.ts`, the budget tests with a trace, copied into `app/e2e/` to run; all as the file says), `limits.md` the fifth (the Swiss abroad, missing figures, the tracks, named selections, the grey of set-aside municipalities, a drag's frames; scripts in `limits/`, two in Python on the data files and four in JavaScript on the global Playwright, run as the file says), `languages.md` the sixth (the official French and Italian terms and their sources, what the data holds in three languages, the names of places, the site's size; its script in `languages/`, Python, standard library only, run as the file says); `small-screens.md` the seventh (pages wider than 360 pixels and why, where a phone's screen shows the parts of a vote's page, what the map receives from fingers, what this machine's browser does not do with them, the controls' sizes, frames with the CPU slowed, d3-zoom's size, and, found while applying, a tap's lost click right after a finger, Chrome moving a tap to a neighbour, and the frame of a finger's touchdown; scripts in `small-screens/`, eight in JavaScript on the global Playwright and one in shell, run as the file says); `site-style.md` the eighth (the look of before, five fonts that could be served and the site's characters in Source Sans 3's Latin face, the contrast of a light and a dark palette, a dark ground beside the map's colours, the map's size by width, and, found while applying, every page still within 360 pixels, a tap on a lake with the map narrower, and a slider that moves while dragged; scripts in `site-style/`, three in JavaScript on the global Playwright (`lake_tap.mjs` imports the browser tests' `pointing.ts`), one in shell that packs the fonts outside the repository and runs one in Python with fontTools, and one in Python, standard library only, run as the file says); `share-link.md` the ninth (how often a page may change its address, SvelteKit's shallow `goto`, a link opened in the tab that shows its page, a link's length, values and steps, what a change of the data moves, and, found while applying, SvelteKit's announcer, `page.url` after a shallow `goto`, the order of listeners on `window` and the frame of a link with 21 limits; scripts in `share-link/`, `link.mjs`, which imports the app's `limits.ts` and `characteristics.ts`, and `listener_order.cjs`, both in JavaScript on the global Playwright, run as the file says); the first's scripts are in `data-sources/` (Python, standard library only; the downloads stay outside the repository). One of them, `write_reference_votes.py`, writes the reference data of the calculation; `investigations/data-sources/check_ids_and_cantons.py` shows the three facts found while proposing #3, and `check_tie_break.py` what the yes and no of a tie-break question stand for, found while proposing #4. Each file names its sources, the script and the output that produced its values, and the expected values with tolerances, so that specs and tests can cite it. |
