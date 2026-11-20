@@ -18,7 +18,7 @@ day (spec characteristics, "The figures that apply to a vote"); a **file of entr
 
 ## How to reproduce
 
-The scripts are in `investigations/vote-comparison/`. Three run in Node 24, which runs the app's
+The scripts are in `investigations/vote-comparison/`. Four run in Node 24, which runs the app's
 own `.ts` files with their types stripped; `layout.mjs` uses the global Playwright against the
 built site; `reference_comparisons.py` is Python, standard library only, apart from the app.
 
@@ -26,6 +26,7 @@ built site; `reference_comparisons.py` is Python, standard library only, apart f
 node investigations/vote-comparison/same_limits.mjs "$PWD"
 node investigations/vote-comparison/calc_cost.mjs "$PWD"
 node investigations/vote-comparison/sizes.mjs "$PWD"
+node investigations/vote-comparison/first_vote.mjs "$PWD"
 python3 investigations/vote-comparison/reference_comparisons.py
 pnpm run build
 (cd app && pnpm exec sirv build --port 4174) &
@@ -37,6 +38,7 @@ node investigations/vote-comparison/layout.mjs
 | `same_limits.mjs` | Four selections of `investigations/limits.md`, 5, by value, on the vote day of 2016-02-28 and on five other days: how many municipalities each keeps, and how many leave and join against 2016-02-28; then the first and the last vote day. |
 | `calc_cost.mjs` | One recalculation of the vote of 2016-02-28 under a selection that keeps two of every three municipalities, `entriesThatRemain` and `calculateResult`, averaged over 1,000. |
 | `sizes.mjs` | The files of entries and `votes.json`, plain and gzipped; a list of the judged votes (id, date, title) in each language; the votes per vote day. |
+| `first_vote.mjs` | "Ausländeranteil" up to 19.98%, read as a link on the track of the vote day of 2016-02-28 and of 2020-09-27: the step and the limit's label. |
 | `reference_comparisons.py` | The results of two named comparisons, by the rules of the selection as `investigations/limits/reference_selections.py` writes them apart from the app, which it imports: the municipalities "Ausländeranteil" keeps by the first vote's figures count in both votes; for contrast, the second vote with the municipalities its own figures keep. |
 | `layout.mjs` | A vote's page with a selection (`#foreigners=-19.98`), 360 and 1,280 pixels wide: the width of the two result boxes, the height of the pair, and where the limits begin. |
 
@@ -64,6 +66,10 @@ figures apply. On different days they keep different municipalities wherever the
 
 The 1,462 are municipalities of the list; 1,455 of them have a result of their own in the vote of
 2016-02-28 (`investigations/limits.md`, 5).
+
+A selection read anew on another vote's track keeps each bound's value at the nearest step. Read
+on the track of 2020-09-27 (the population at the end of 2019), "up to 19.98%" lands on step 346,
+19.99%; on that of 2016-02-28 on step 327, 19.98% (Output, `first_vote.mjs`).
 
 So "the same selection applied to two votes" has two readings that differ by up to 336 of 2,110
 municipalities: the same municipalities, kept by one vote's figures, or the same limits, each
@@ -150,6 +156,10 @@ a list of the judged votes in de: 16615 bytes, gzipped 4734
 a list of the judged votes in fr: 18412 bytes, gzipped 5069
 a list of the judged votes in it: 18024 bytes, gzipped 4927
 vote days 44: 40 with several votes, at most 6
+
+$ node investigations/vote-comparison/first_vote.mjs "$PWD"
+2016-02-28: step 327, Ausländeranteil (Ende 2015): von 0.00% bis 19.98%
+2020-09-27: step 346, Ausländeranteil (Ende 2019): von 0.00% bis 19.99%
 
 $ python3 investigations/vote-comparison/reference_comparisons.py
 The selection: Ausländeranteil (figures of vote 5960, 2016-02-28) up to step 327, 1998 hundredths of a percent: 1462 of 2110 municipalities of the list remain; Swiss abroad counted
