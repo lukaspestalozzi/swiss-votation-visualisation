@@ -245,7 +245,7 @@ Spec `reading-guide`, "Sharing a selection explained"; design, decision 9.
 
   Verify: 11 of 11 steps pass; the counts are those planned (unit tests 52 and 142, browser tests
   about 212), or the note says why not.
-- [ ] 6.3 `CLAUDE.md`: the status names `add-share-link` applied; the code map adds
+- [x] 6.3 `CLAUDE.md`: the status names `add-share-link` applied; the code map adds
   `app/src/lib/share-link.ts`, its tests and `app/e2e/share-link.spec.ts`, and changes the lines
   of `+page.svelte`, `Limits.svelte`, `[lang]/+layout.svelte` and the texts; "Where things are"
   adds `investigations/share-link.md` and its script among the investigations, and the spec
@@ -253,6 +253,11 @@ Spec `reading-guide`, "Sharing a selection explained"; design, decision 9.
 
   Verify: every file `git diff --stat main` names under `app/` and `investigations/` is in
   `CLAUDE.md`.
+
+  As built: the lines of `characteristics.ts` (`DECIMALS`), `frames.ts`, `limits.spec.ts` and
+  `languages.spec.ts` changed too; the texts' lines needed no change, as they name no text. The
+  spec `share-link` joins the list of "Where things are" at the archive, which writes it to
+  `openspec/specs/`.
 
 ## Workflow follow-up
 
