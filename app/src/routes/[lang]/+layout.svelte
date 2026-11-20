@@ -1,15 +1,17 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import { browser } from '$app/env';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import type { ResolvedPathname } from '$app/types';
   import { LANGUAGES, LANGUAGE_NAMES, textsOf, type Language } from '../../lib/texts/index.ts';
   import type { LayoutProps } from './$types';
 
-  // The switch at the top of every page (spec interface-languages, "Changing the language";
-  // design of add-interface-languages, decision 12): the three languages in their own words, the
-  // page's own as text, the others linking to this page in them. A link loads the page anew, so
-  // that it has its own `lang` and nothing of this page is carried over.
+  // The switch at the top of every page (spec interface-languages, "The switch between the
+  // languages"; design of add-interface-languages, decision 12): the three languages in their own
+  // words, the page's own as text, the others linking to this page in them. A link loads the page
+  // anew, so that it has its own `lang`; of this page it carries over only the selection its
+  // address holds (spec share-link; design of add-share-link, decision 8).
   let { data, children }: LayoutProps & { children: Snippet } = $props();
   const t = $derived(textsOf(data.lang));
 
@@ -33,6 +35,17 @@
         throw new Error(`the language switch knows no route ${String(route)}`);
     }
   }
+
+  // The hash of this page's address as SvelteKit knows it, which holds a vote's selection: that
+  // of the last shallow `goto`, which leaves `page.url` as it was, or else the address the page
+  // opened with (Q, 2026-11-20). In the browser only, as a page written at build time has none.
+  const hash = $derived(browser ? (page.shallow?.url ?? page.url).hash : '');
+
+  /** The link to this page in `language`, with the hash of this page's address. */
+  function linkIn(language: Language): ResolvedPathname {
+    // A hash leaves the path that `resolve` gave as it was.
+    return `${addressIn(language)}${hash}` as ResolvedPathname;
+  }
 </script>
 
 <!-- The head of every page (spec site-style, "The head of every page"; design of add-site-style,
@@ -54,7 +67,7 @@
       {#if language === data.lang}
         <span lang={language} aria-current="page">{LANGUAGE_NAMES[language]}</span>
       {:else}
-        <a href={addressIn(language)} lang={language} hreflang={language} data-sveltekit-reload
+        <a href={linkIn(language)} lang={language} hreflang={language} data-sveltekit-reload
           >{LANGUAGE_NAMES[language]}</a
         >
       {/if}

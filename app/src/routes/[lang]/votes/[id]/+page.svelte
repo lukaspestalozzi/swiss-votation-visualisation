@@ -83,7 +83,10 @@
     if (!addressRead) return;
     const hash = link === '' ? '' : `#${link}`;
     const timer = setTimeout(() => {
-      if (hash === location.hash) return;
+      // Compared with the address as SvelteKit knows it, which the language switch carries: a
+      // link opened in this tab changes the browser's address but not SvelteKit's, so the page
+      // writes it once more after reading it (Q, 2026-11-20).
+      if (hash === (page.shallow?.url ?? page.url).hash) return;
       // The page's own path as the browser shows it, the site's path and the final slash
       // included, with only its hash changed (Q, 2026-11-19): `resolve` gives the path without
       // the final slash, and the rule accepts no address built from it.

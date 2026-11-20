@@ -43,22 +43,48 @@ test('the switch on the start page and the guide: the others are links, the own 
   }
 });
 
-test('a selection stays behind: the other language opens the page anew', async ({ page }) => {
+test('A selection goes along: the other language opens the page anew with it', async ({ page }) => {
+  // Spec interface-languages, "The switch between the languages"; spec share-link.
   await page.goto('de/votes/5960/');
+  const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+  await page.mouse.click(zurich.x, zurich.y);
+  await expect(page.locator('.map .outlined path')).toHaveCount(2);
   await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
   await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
   await page
     .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
     .fill('327');
-  await expect(page.locator('.selection')).toHaveCount(1);
+  await page.waitForTimeout(1000);
   await switchOf(page).getByRole('link', { name: 'Italiano' }).click();
-  await expect(page).toHaveURL(/\/it\/votes\/5960\/?$/);
-  // Wait until the Italian page's limits and map are there before counting what they hold.
-  await expect(page.getByLabel('Aggiungere una caratteristica')).toBeVisible();
+  await expect(page).toHaveURL(/\/it\/votes\/5960\/?#foreigners=-19\.98$/);
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Quota di stranieri (fine 2015): da 0.00% a 19.98%',
+  ]);
+  await expect(page.locator('.selection h2')).toHaveText('Con la Sua selezione');
+  // Wait until the Italian page's map is there before looking at what it outlines.
   await expect(page.locator('.municipalities [data-number="261"]')).toBeVisible();
-  await expect(page.locator('.limit')).toHaveCount(0);
-  await expect(page.locator('.selection')).toHaveCount(0);
-  await expect(page.locator('.municipalities [fill="#2c2c2c"]')).toHaveCount(0);
+  await expect(page.locator('.map .outlined path')).toHaveCount(0);
+  await expect(page.locator('.panel')).toContainText(
+    'Clicchi su un Comune per vederne le caratteristiche.',
+  );
+});
+
+test('A selection goes along after a link opened in the same tab', async ({ page }) => {
+  // The browser's address changes, not SvelteKit's, which the switch carries: the page writes it.
+  await page.goto('de/votes/5960/');
+  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Einwohner' });
+  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await page.waitForTimeout(1000);
+  await page.goto('de/votes/5960/#foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  ]);
+  await page.waitForTimeout(1000);
+  await switchOf(page).getByRole('link', { name: 'Italiano' }).click();
+  await expect(page).toHaveURL(/\/it\/votes\/5960\/?#foreigners=-19\.98$/);
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Quota di stranieri (fine 2015): da 0.00% a 19.98%',
+  ]);
 });
 
 test('the three pages of a vote, each in its language, and every vote in each', async ({
