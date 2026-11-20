@@ -113,10 +113,20 @@ applied and its unusable parts, and forgets the parts once the selection's link 
 ### 5. The address follows after 500 ms at rest (Q)
 
 The page derives the selection's link from `limits` and `abroadCounted`. An effect starts a timer
-of 500 ms whenever the link changes, and clears the previous one. When the timer fires, and the
-link differs from the address's, the page writes the address with
-`goto(<the page's address by resolve> + link, { shallow: true, replace: true })`. A shallow `goto`
-keeps scroll and focus, and changes `page.url`.
+of 500 ms whenever the link changes or the page has read its address, and clears the previous
+one. When the timer fires, and the link differs from the browser's address or from the address as
+SvelteKit knows it, `(page.shallow?.url ?? page.url)`, the page writes the address with
+`goto(page.url.pathname + link, { shallow: true, replace: true })`: its own path, with the site's
+path and the final slash. A shallow `goto` keeps scroll and focus; it sets `page.shallow.url` and
+leaves `page.url` as it was (decision 8).
+
+Planned as `goto(<the page's address by resolve> + link, …)`, when the link differs from the
+address's. Applying found that `resolve` gives the path without the final slash, and that the lint
+rule `svelte/no-navigation-without-resolve` accepts no address built from it: the page writes its
+own path, with the rule's warning suppressed and the reason beside it (Q, 2026-11-19). The
+verification found that a link opened in the tab, whose selection the page already showed but
+written otherwise (`#foreigners=-20` for `-19.98`), stayed as it was opened: a reading now restarts
+the timer, and the browser's address is compared too (Q, 2026-11-20).
 
 The writer starts only once the address has been read (decision 6). So the address keeps its
 selection while the characteristics load, and when they cannot be loaded.
@@ -228,7 +238,7 @@ phone; or nothing.
   applying, investigation) → Accepted (Q, 2026-11-20): later changes do not repeat it, and focus
   stays on the slider.
 - **[A shallow `goto` in a later SvelteKit]** writes the address differently → The browser tests
-  check the address, the history and `page.url` through the switch.
+  check the address, the history and, through the switch, the address as SvelteKit knows it.
 - **[An update of the data moves a value off its step]** → The bound lands at most half a gap away
   (investigation, 5), and its label shows the value it now has.
 - **[Safari and Firefox are not tested here]** → The half second keeps the page at a fifth of the

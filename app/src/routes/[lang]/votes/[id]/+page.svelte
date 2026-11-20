@@ -33,22 +33,54 @@
   let abroadCounted = $state(true);
   let characteristics = $state.raw<CharacteristicsFile | null>(null);
   let characteristicsFailed = $state(false);
-  // Whether the page has read the selection its address holds, after which it writes it (design
-  // of add-share-link, decision 6). A tie-break question's page, without limits, does neither
-  // (decision 7).
-  let addressRead = $state(false);
+  // How often the page has read the selection its address holds: it writes the address only once
+  // it has read it, and anew after every reading, so that the address takes the selection as the
+  // page writes it (design of add-share-link, decisions 5 and 6). A tie-break question's page,
+  // without limits, does neither (decision 7).
+  let readings = $state(0);
   onMount(() => {
     loadCharacteristics().then(
       (loaded) => {
         characteristics = loaded;
         if (data.entries === null) return;
         readAddress(loaded);
-        addressRead = true;
       },
       () => {
         characteristicsFailed = true;
       },
     );
+  });
+
+  // The selection in the page's address (spec share-link): the link the selection gives, written
+  // into the address once the selection has stayed the same for half a second, once the page has
+  // read its address (design of add-share-link, decisions 5 and 6).
+  const link = $derived(linkOf(limits, abroadCounted));
+  $effect(() => {
+    if (readings === 0) return;
+    const hash = link === '' ? '' : `#${link}`;
+    const timer = setTimeout(() => {
+      // Compared with the browser's address and with the address as SvelteKit knows it, which the
+      // language switch carries: a link opened in this tab changes the browser's but not
+      // SvelteKit's, so the page writes it once more after reading it (Q, 2026-11-20).
+      if (hash === location.hash && hash === (page.shallow?.url ?? page.url).hash) return;
+      // The page's own path as the browser shows it, the site's path and the final slash
+      // included, with only its hash changed (Q, 2026-11-19): `resolve` gives the path without
+      // the final slash, and the rule accepts no address built from it.
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- the page's own path
+      void goto(`${page.url.pathname}${hash}`, { shallow: true, replace: true });
+    }, 500);
+    return () => {
+      clearTimeout(timer);
+    };
+  });
+
+  // The parts of the address the page could not use, which the limits name until the visitor
+  // next changes the selection: until its link differs from the one read (design of
+  // add-share-link, decision 4).
+  let unusable = $state.raw<readonly string[]>([]);
+  let readLink = '';
+  $effect(() => {
+    if (link !== readLink) unusable = [];
   });
 
   /**
@@ -64,39 +96,8 @@
     abroadCounted = read.abroadCounted;
     readLink = linkOf(read.limits, read.abroadCounted);
     unusable = read.unusable;
+    readings += 1;
   }
-
-  // The parts of the address the page could not use, which the limits name until the visitor
-  // next changes the selection: until its link differs from the one read (design of
-  // add-share-link, decision 4).
-  let unusable = $state.raw<readonly string[]>([]);
-  let readLink = '';
-  $effect(() => {
-    if (link !== readLink) unusable = [];
-  });
-
-  // The selection in the page's address (spec share-link): the link the selection gives, written
-  // into the address once the selection has stayed the same for half a second, once the page has
-  // read its address (design of add-share-link, decisions 5 and 6).
-  const link = $derived(linkOf(limits, abroadCounted));
-  $effect(() => {
-    if (!addressRead) return;
-    const hash = link === '' ? '' : `#${link}`;
-    const timer = setTimeout(() => {
-      // Compared with the address as SvelteKit knows it, which the language switch carries: a
-      // link opened in this tab changes the browser's address but not SvelteKit's, so the page
-      // writes it once more after reading it (Q, 2026-11-20).
-      if (hash === (page.shallow?.url ?? page.url).hash) return;
-      // The page's own path as the browser shows it, the site's path and the final slash
-      // included, with only its hash changed (Q, 2026-11-19): `resolve` gives the path without
-      // the final slash, and the rule accepts no address built from it.
-      // eslint-disable-next-line svelte/no-navigation-without-resolve -- the page's own path
-      void goto(`${page.url.pathname}${hash}`, { shallow: true, replace: true });
-    }, 500);
-    return () => {
-      clearTimeout(timer);
-    };
-  });
 
   // The municipalities that remain under the limits, once the characteristics are loaded.
   const remaining = $derived(
@@ -150,7 +151,7 @@
      same tab"); before the characteristics have loaded, the page reads the address it then has. -->
 <svelte:window
   onhashchange={() => {
-    if (addressRead && characteristics !== null) readAddress(characteristics);
+    if (readings > 0 && characteristics !== null) readAddress(characteristics);
   }}
 />
 
