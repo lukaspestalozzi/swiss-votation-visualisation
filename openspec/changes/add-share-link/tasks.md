@@ -241,10 +241,13 @@ Spec `reading-guide`, "Sharing a selection explained"; design, decision 9.
   selection, so that a link, a reload or the language switch keeps it.
 
   Verify: `git diff README.md` shows that sentence only.
-- [ ] 6.2 All checks. `./scripts/verify-local.sh`.
+- [x] 6.2 All checks. `./scripts/verify-local.sh`.
 
   Verify: 11 of 11 steps pass; the counts are those planned (unit tests 52 and 142, browser tests
   about 212), or the note says why not.
+
+  As built: 11 of 11 steps passed; unit tests 52 and 142, browser tests 213 (the planned ones and
+  "A selection goes along after a link opened in the same tab" of 4.1), the pipeline's 134.
 - [x] 6.3 `CLAUDE.md`: the status names `add-share-link` applied; the code map adds
   `app/src/lib/share-link.ts`, its tests and `app/e2e/share-link.spec.ts`, and changes the lines
   of `+page.svelte`, `Limits.svelte`, `[lang]/+layout.svelte` and the texts; "Where things are"
