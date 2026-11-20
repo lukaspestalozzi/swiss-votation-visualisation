@@ -202,6 +202,7 @@ export const fr: Texts = {
           "les mêmes règles que le vrai. Un canton dans lequel il ne reste aucune commune n'a " +
           'pas de voix. La majorité des cantons requiert alors moins de voix des cantons. ' +
           "S'il ne reste aucune commune, l'objet est rejeté.",
+        "L'adresse de la page retient votre sélection: qui l'ouvre voit la même sélection.",
       ],
     },
     {

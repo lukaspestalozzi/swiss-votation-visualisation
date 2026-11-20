@@ -42,6 +42,14 @@ test('how a selection works: the rule in plain words', async ({ page }) => {
   await expect(rule).toContainText('dunkelgrau');
 });
 
+test('The sentence in the guide: the address holds the selection', async ({ page }) => {
+  // Spec reading-guide, "Sharing a selection explained".
+  await page.goto('de/guide/');
+  await expect(section(page, 'Gemeinden auswählen').locator('p').last()).toHaveText(
+    'Die Adresse der Seite hält Ihre Auswahl fest: Wer sie öffnet, sieht dieselbe Auswahl.',
+  );
+});
+
 test('what a selection does not show: municipalities, not people, and no forecast', async ({
   page,
 }) => {

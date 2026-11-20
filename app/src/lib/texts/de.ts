@@ -200,6 +200,7 @@ export const de: Texts = {
           'denselben Regeln wie das echte. Ein Kanton, in dem keine Gemeinde übrig ist, hat ' +
           'keine Standesstimme. Für das Ständemehr braucht es dann weniger Standesstimmen. ' +
           'Bleibt keine Gemeinde übrig, ist die Vorlage abgelehnt.',
+        'Die Adresse der Seite hält Ihre Auswahl fest: Wer sie öffnet, sieht dieselbe Auswahl.',
       ],
     },
     {
