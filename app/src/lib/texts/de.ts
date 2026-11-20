@@ -164,6 +164,8 @@ export const de: Texts = {
     'Auslandschweizerinnen und Auslandschweizer mitzählen (in jedem Kanton, in dem eine Gemeinde ' +
     'übrig ist)',
   LIMITS_FAILED: 'Ohne die Merkmale lassen sich keine Gemeinden auswählen.',
+  unusableParts: (parts) =>
+    `Diese Angaben der Adresse liessen sich nicht anwenden: ${parts.map((part) => `«${part}»`).join(', ')}.`,
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
   LEGEND_SET_ASIDE: 'Nicht in der Auswahl',

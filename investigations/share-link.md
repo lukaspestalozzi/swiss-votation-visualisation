@@ -34,6 +34,7 @@ node investigations/share-link/link.mjs "$PWD"
 | File | What |
 |------|------|
 | `link.mjs` | Part 1, over the 44 vote days of `votes.json`: for each characteristic, the smallest and the largest end of its track, the largest gap and the value where it lies, and whether every value of a step, written as a link would write it and read back, finds a step of the same value as the nearest; then the longest link with all 21 limits. Part 2, in Chromium: 300 address changes in a row with Playwright's flags and without `--disable-ipc-flooding-protection`; the `input` and `change` events of a drag of 20 moves and of 20 presses of an arrow key on a slider; whether an address change fires `hashchange`; a link to the same page with another hash, opened in the tab. |
+| `listener_order.cjs` | Found while applying: the order in which Chromium runs three `hashchange` listeners on `window`, added without capture, with capture and without. Run as `node investigations/share-link/listener_order.cjs`. |
 
 "Output" at the end of this file is what the script printed on 2026-11-19, with Google Chrome for
 Testing 153.0.8010.12, the Chromium of Playwright 1.63.0 in the cloud image.
@@ -139,6 +140,37 @@ measured:
 So a bound written as the value of its track's end, while it sets nothing aside, could set aside a
 municipality after an update; a bound written as "at the end" stays at the end. A bound inside the
 track keeps its meaning, at most half a gap away (5).
+
+## Found while applying
+
+Found on 2026-11-19 and 2026-11-20 while applying `add-share-link`, in the browser tests and in a
+test run once and removed; the tasks' notes "As built" give the details.
+
+- **SvelteKit's announcer.** A shallow `goto` runs SvelteKit's navigation hooks, so its hidden
+  announcer for screen readers (`#svelte-announcer`, `aria-live="assertive"`) takes the page's
+  title at the first address change of a visit, half a second after the visitor's first change
+  of the selection. The later changes set the same title, which changes nothing on the page, so a
+  screen reader hears the title once per visit. Accepted (Q, 2026-11-20).
+- **Focus stays.** A shallow `goto` blurs the focused element only with `reset`, false by
+  default for it: a slider keeps its focus through every address change.
+- **`resolve` and the final slash.** `resolve('/[lang]/votes/[id]', …)` gives `/de/votes/5960`,
+  without the final slash of the site's pages, and the lint rule
+  `svelte/no-navigation-without-resolve` accepts no address built from it. The page writes its own
+  path, `page.url.pathname`, and the hash (Q, 2026-11-19).
+- **Listeners at `window` run in the order they were added.** Chromium 153 runs a `hashchange`'s
+  listeners on `window`, the event's own target, in the order they were added, one with capture
+  among them (`listener_order.cjs`: "first, without capture", "second, with capture", "third,
+  without capture"). A measurement of the page's work after a `hashchange` must add its start
+  before the page's listener, by a script that runs before the page loads, and its end after it;
+  a first measurement that added both after the page loaded missed the page's handler (20.5 ms
+  measured, a handler that waited 60 ms not seen).
+- **A link with all 21 limits takes 55 to 94 ms** of main-thread work in the frame after the hash
+  changes (five runs), against the planned 50 ms of a jump; about 27 ms of it is making the 21
+  tracks as the link is read, the rest the recalculation, with every municipality set aside, and
+  the 21 limits drawn. Q raised the budget of a link to 100 ms (2026-11-20).
+- **Making a track is the cost of reading a link.** `trackOf` takes 0.56 ms in Node, a search of
+  1,001 steps 0.009 ms; reading every step of the 21 characteristics with a track made per link
+  took 14 seconds, so `selectionOf` takes the function that makes a track (Q, 2026-11-19).
 
 ## Not verified
 

@@ -10,10 +10,12 @@
     remainingOf,
     remainingUnder,
     setAsideOf,
+    trackOf,
     type LimitSetting,
   } from '../../../../lib/limits.ts';
   import { formatCount } from '../../../../lib/format.ts';
-  import { linkOf } from '../../../../lib/share-link.ts';
+  import { applyingTo } from '../../../../lib/characteristics.ts';
+  import { linkOf, selectionOf } from '../../../../lib/share-link.ts';
   import { judgedOf } from '../../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
@@ -31,10 +33,17 @@
   let abroadCounted = $state(true);
   let characteristics = $state.raw<CharacteristicsFile | null>(null);
   let characteristicsFailed = $state(false);
+  // Whether the page has read the selection its address holds, after which it writes it (design
+  // of add-share-link, decision 6). A tie-break question's page, without limits, does neither
+  // (decision 7).
+  let addressRead = $state(false);
   onMount(() => {
     loadCharacteristics().then(
       (loaded) => {
         characteristics = loaded;
+        if (data.entries === null) return;
+        readAddress(loaded);
+        addressRead = true;
       },
       () => {
         characteristicsFailed = true;
@@ -42,12 +51,36 @@
     );
   });
 
+  /**
+   * Take the selection the page's address holds (spec share-link, "Opening a link"), on the
+   * tracks of the characteristics that apply to the vote.
+   */
+  function readAddress(file: CharacteristicsFile): void {
+    const applying = applyingTo(file, data.voteDate);
+    const read = selectionOf(location.hash.slice(1), (definition) =>
+      trackOf(definition, file, applying),
+    );
+    limits = read.limits;
+    abroadCounted = read.abroadCounted;
+    readLink = linkOf(read.limits, read.abroadCounted);
+    unusable = read.unusable;
+  }
+
+  // The parts of the address the page could not use, which the limits name until the visitor
+  // next changes the selection: until its link differs from the one read (design of
+  // add-share-link, decision 4).
+  let unusable = $state.raw<readonly string[]>([]);
+  let readLink = '';
+  $effect(() => {
+    if (link !== readLink) unusable = [];
+  });
+
   // The selection in the page's address (spec share-link): the link the selection gives, written
-  // into the address once the selection has stayed the same for half a second, as soon as the
-  // characteristics have loaded (design of add-share-link, decision 5).
+  // into the address once the selection has stayed the same for half a second, once the page has
+  // read its address (design of add-share-link, decisions 5 and 6).
   const link = $derived(linkOf(limits, abroadCounted));
   $effect(() => {
-    if (characteristics === null) return;
+    if (!addressRead) return;
     const hash = link === '' ? '' : `#${link}`;
     const timer = setTimeout(() => {
       if (hash === location.hash) return;
@@ -109,6 +142,14 @@
 <svelte:head>
   <title>{data.title} – {t.TITLE}</title>
 </svelte:head>
+
+<!-- A link to this vote opened in its tab changes only the hash (spec share-link, "A link in the
+     same tab"); before the characteristics have loaded, the page reads the address it then has. -->
+<svelte:window
+  onhashchange={() => {
+    if (addressRead && characteristics !== null) readAddress(characteristics);
+  }}
+/>
 
 <nav><a href={resolve('/[lang]', { lang: data.lang })}>{t.ALL_VOTES}</a></nav>
 
@@ -214,6 +255,7 @@
       failed={characteristicsFailed}
       voteDate={data.voteDate}
       {count}
+      {unusable}
       bind:limits
       bind:abroadCounted
     />

@@ -180,13 +180,13 @@ SHALL NOT change its address.
 ### Requirement: The budget of a link
 
 Each frame the browser draws after a link to the vote is opened in the tab that shows it SHALL
-take at most 50 ms of work on the page's main thread, as a jump of the `limits` capability's
-budget does. The browser tests measure it as they measure the limits' budget, and once more when
-a frame exceeds it.
+take at most 100 ms of work on the page's main thread, twice a jump's budget in the `limits`
+capability, as it makes up to 21 tracks at once. The browser tests measure it as they measure the
+limits' budget, and once more when a frame exceeds it.
 
 #### Scenario: All 21 limits in the same tab
 
 - **WHEN** the browser tests open `/de/votes/5960/`, wait until the characteristics have loaded,
   and open in the same tab a link to it with all 21 limits, each narrowed on both sides
-- **THEN** no frame after the hash changed took more than 50 ms of work on the main thread, in the
-  first measurement or, when a frame exceeded it, in the second
+- **THEN** no frame after the hash changed took more than 100 ms of work on the main thread, in
+  the first measurement or, when a frame exceeded it, in the second

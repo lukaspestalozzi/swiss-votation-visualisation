@@ -141,24 +141,29 @@ Spec `share-link`, "Opening a link", "A link in the same tab", "The parts a link
 sentence goes with the next change", "A tie-break question ignores the address" and "The budget
 of a link"; spec `limits`, "Limits belong to the page"; design, decisions 4, 6, 7 and 10.
 
-- [ ] 3.1 Opening a link. A test of "A link". Seen to fail: no limit. Then, in `+page.svelte`, when
+- [x] 3.1 Opening a link. A test of "A link". Seen to fail: no limit. Then, in `+page.svelte`, when
   the characteristics have loaded: read `location.hash` with `selectionOf`, set `limits` and
   `abroadCounted`, then start the writer of 2.1.
 
   Verify: run alone, the test passes.
-- [ ] 3.2 More links. Tests of "A value no step has" (with the address a second later), "A
+- [x] 3.2 More links. Tests of "A value no step has" (with the address a second later), "A
   reload", "The characteristics cannot be loaded", and `limits`' "A link with a selection", one at
   a time.
 
   Verify: each run alone passes; against a mutant that starts the writer before the
   characteristics have loaded, "The characteristics cannot be loaded" fails.
-- [ ] 3.3 A link in the same tab. A test of "Another link to the same vote", with a mark on
+
+  As built: the four passed when written. "The characteristics cannot be loaded" failed against
+  the mutant (the address `/de/votes/5960/`); the other three against a page that never reads its
+  address. "A link with a selection" is in `limits.spec.ts`, beside "another vote starts without
+  them".
+- [x] 3.3 A link in the same tab. A test of "Another link to the same vote", with a mark on
   `window` to show that the page did not load again. Seen to fail: the limit "Einwohner" stays.
   Then a `hashchange` listener in `+page.svelte` that reads the address again, once the
   characteristics have loaded.
 
   Verify: run alone, the test passes.
-- [ ] 3.4 The unusable parts. Add `unusableParts` to `Texts` (`texts/index.ts`), in German, French
+- [x] 3.4 The unusable parts. Add `unusableParts` to `Texts` (`texts/index.ts`), in German, French
   and Italian as design decision 4 writes them; the page keeps the applied link and its unusable
   parts, and `Limits.svelte` shows the sentence below the guide's sentence. Tests of "An unknown
   characteristic", "Bounds that cannot be used", "A characteristic twice" and "Adding a limit",
@@ -166,14 +171,36 @@ of a link"; spec `limits`, "Limits belong to the page"; design, decisions 4, 6, 
 
   Verify: each run alone passes; `pnpm --filter app exec vitest run src/lib/texts` passes, its
   test that no French or Italian text is the German one included.
-- [ ] 3.5 The tie-break question. A test of "A link to a tie-break question".
+
+  As built: "An unknown characteristic" failed before the code; the other three passed when
+  written and failed against a mutant each: the page naming only the first part, a repeated key
+  read as a usable one (`share-link.ts`), and a sentence that never goes. The page forgets the
+  parts in an effect once the selection's link differs from the one read, so that a return to
+  that selection does not bring the sentence back. The texts' test compares strings only, not a
+  text that is a function; the three sentences, printed by `textsOf(…).unusableParts`, are those
+  of design decision 4.
+- [x] 3.5 The tie-break question. A test of "A link to a tie-break question".
 
   Verify: run alone, the test passes; against a mutant that reads the address on every vote's
   page, it fails.
-- [ ] 3.6 The budget of a link. A test of "All 21 limits in the same tab", with `frames.ts`, as
+
+  As built: the page of 3.4, which read the address on every vote's page, was the mutant: the
+  test failed, the page's text with the title SvelteKit's announcer takes after a `goto`. The
+  spec's link alone would not fail it, as the page writes it back unchanged, so the test also
+  opens `#rainfall=1-2&foreigners=-20`, which a reading page writes anew.
+- [x] 3.6 The budget of a link. A test of "All 21 limits in the same tab", with `frames.ts`, as
   the limits' budget tests measure.
 
   Verify: run alone, the test passes; the largest frame it measured is in the note "As built".
+
+  As built: `frames.ts` has a measurement of its own, `MEASURE_HASHCHANGE` added before the page
+  loads and `HASHCHANGE_HANDLED` after: Chromium runs a `hashchange`'s listeners on `window` in
+  the order they were added, so a first measurement added after the page loaded missed the page's
+  handler (investigation, "Found while applying"). The test makes its link on the page, every
+  bound at step 100 or 900, which sets every municipality aside. It measured 55 to 94 ms against
+  the planned 50 ms; Q raised the budget of a link to 100 ms (spec share-link and design
+  decision 10, 2026-11-20). The largest frame of its last run was 53.1 ms; against a handler that
+  waits 100 ms, it measured 149.5 and 165.7 ms and failed.
 
 ## 4. The switch carries the selection
 

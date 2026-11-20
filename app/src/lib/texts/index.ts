@@ -157,6 +157,8 @@ export interface Texts {
   readonly upperBound: (name: string) => string;
   readonly ABROAD_SWITCH: string;
   readonly LIMITS_FAILED: string;
+  // The parts of a page's address it could not use, each as written there (spec share-link).
+  readonly unusableParts: (parts: readonly string[]) => string;
   readonly removeLimit: (name: string) => string;
   readonly WITH_SELECTION: string;
   readonly LEGEND_SET_ASIDE: string;

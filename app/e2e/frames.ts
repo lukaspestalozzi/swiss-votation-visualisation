@@ -29,6 +29,41 @@ export const MEASURE_FRAMES = `
 `;
 
 /**
+ * The work of the frame after the address's hash changes (spec share-link, "The budget of a
+ * link"), measured as MEASURE_FRAMES measures an input's. The event is fired at `window` itself,
+ * where Chromium runs the listeners in the order they were added, with capture or without
+ * (investigations/share-link.md, "Found while applying"): this script, added before the page
+ * loads, marks the start before the page's own listener, and HASHCHANGE_HANDLED, added once the
+ * page has loaded, the end after it.
+ */
+export const MEASURE_HASHCHANGE = `
+  window.__frames = [];
+  window.__hashchanges = [];
+  window.addEventListener('hashchange', () => {
+    const measured = { start: performance.now(), handled: 0 };
+    window.__hashchanges.push(measured);
+    requestAnimationFrame(() => {
+      const frame = performance.now();
+      setTimeout(() => {
+        const handlers = (measured.handled || frame) - measured.start;
+        window.__frames.push({
+          type: 'hashchange',
+          work: Math.max(0, handlers) + (performance.now() - frame),
+        });
+      });
+    });
+  });
+`;
+
+/** The end of the page's handlers of a hash's change, for MEASURE_HASHCHANGE. */
+export const HASHCHANGE_HANDLED = `
+  window.addEventListener('hashchange', () => {
+    const measured = window.__hashchanges.at(-1);
+    if (measured) measured.handled = performance.now();
+  });
+`;
+
+/**
  * Wait until the page's fonts have loaded, so that the font's arrival, which sets the text anew,
  * is never one of the frames a budget test measures (design of add-site-style, "Tests").
  */
