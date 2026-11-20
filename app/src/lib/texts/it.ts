@@ -201,6 +201,7 @@ export const it: Texts = {
           'le stesse regole di quello reale. Un Cantone in cui non rimane nessun Comune non ha ' +
           'alcun voto. Per la maggioranza dei Cantoni servono allora meno voti dei Cantoni. Se ' +
           "non rimane nessun Comune, l'oggetto è respinto.",
+        "L'indirizzo della pagina conserva la Sua selezione: chi lo apre vede la stessa selezione.",
       ],
     },
     {

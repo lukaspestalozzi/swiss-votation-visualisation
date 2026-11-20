@@ -228,7 +228,7 @@ Spec `interface-languages`, "The switch between the languages"; design, decision
 
 Spec `reading-guide`, "Sharing a selection explained"; design, decision 9.
 
-- [ ] 5.1 The sentence. A test in `guide.spec.ts` of "The sentence in the guide". Seen to fail.
+- [x] 5.1 The sentence. A test in `guide.spec.ts` of "The sentence in the guide". Seen to fail.
   Then the third paragraph of the section "Gemeinden auswählen" in `de.ts`, `fr.ts` and `it.ts`,
   as design decision 9 writes it.
 
@@ -237,7 +237,7 @@ Spec `reading-guide`, "Sharing a selection explained"; design, decision 9.
 
 ## 6. Docs and checks
 
-- [ ] 6.1 `README.md`: the list of what the site shows adds that a page's address holds its
+- [x] 6.1 `README.md`: the list of what the site shows adds that a page's address holds its
   selection, so that a link, a reload or the language switch keeps it.
 
   Verify: `git diff README.md` shows that sentence only.

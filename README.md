@@ -41,7 +41,8 @@ and Italian:
   it lies within all limits. While you drag, the map greys out the others in dark grey, and the
   result of the selection, "Mit Ihrer Auswahl", stands beside the real one, with both majorities
   and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
-  count, and one button returns to the real result;
+  count, and one button returns to the real result. The page's address holds the selection, so
+  that a link, a reload or the language switch keeps it;
 - a page "Lesehilfe" (`/de/guide/`) explains that this is a thought experiment about whole
   municipalities, not about people and not a forecast, and names every source;
 - the results come from the data of every vote per municipality, made from public sources by
