@@ -157,6 +157,9 @@ export const it: Texts = {
   PROPOSAL: 'Oggetto',
   VOTE_LOADING: 'I risultati vengono caricati.',
   VOTE_FAILED: 'I risultati di questa votazione non possono essere caricati.',
+  SAME_MUNICIPALITIES:
+    'I Comuni sono scelti secondo le cifre della prima votazione; nelle due votazioni ' +
+    'contano gli stessi Comuni.',
 
   // The limits (spec limits).
   populationDate: (year) => `fine ${String(year)}`,

@@ -154,6 +154,9 @@ export const de: Texts = {
   PROPOSAL: 'Vorlage',
   VOTE_LOADING: 'Die Ergebnisse werden geladen.',
   VOTE_FAILED: 'Die Ergebnisse dieser Abstimmung lassen sich nicht laden.',
+  SAME_MUNICIPALITIES:
+    'Die Gemeinden werden nach den Zahlen der ersten Abstimmung ausgewählt; in beiden ' +
+    'Abstimmungen zählen dieselben Gemeinden.',
 
   // The limits (spec limits).
   populationDate: (year) => `Ende ${String(year)}`,

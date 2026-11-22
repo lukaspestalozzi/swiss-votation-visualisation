@@ -156,6 +156,9 @@ export const fr: Texts = {
   PROPOSAL: 'Objet',
   VOTE_LOADING: 'Les résultats sont en cours de chargement.',
   VOTE_FAILED: 'Les résultats de cette votation ne peuvent pas être chargés.',
+  SAME_MUNICIPALITIES:
+    'Les communes sont choisies selon les chiffres de la première votation; les mêmes ' +
+    'communes comptent dans les deux votations.',
 
   // The limits (spec limits).
   populationDate: (year) => `fin ${String(year)}`,

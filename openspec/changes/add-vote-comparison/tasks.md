@@ -142,25 +142,47 @@ Spec `vote-comparison`, "The comparison page", "Choosing the votes", "The table 
 Spec `vote-comparison`, "The same municipalities in both votes", "Choosing the votes" and "The
 comparison in the address"; design, decisions 2, 8 and 9.
 
-- [ ] 3.1 The limits. A test of "Two votes of one day". Seen to fail: no limit. Then the page loads
+- [x] 3.1 The limits. A test of "Two votes of one day". Seen to fail: no limit. Then the page loads
   the characteristics, holds the limits and the switch, shows the sentence of decision 2 and
   `Limits.svelte` without its count, and recalculates both votes over the same municipalities.
 
   Verify: run alone, the test passes.
-- [ ] 3.2 Years apart. A test of "Two votes years apart".
+
+  As built: it failed at the limit's label before the page had limits. `Limits.svelte` takes a
+  count of `null`, which it does not show. Each vote's real result and entries per canton are made
+  when its file arrives, so that a step of a slider recalculates only the selection's results.
+- [x] 3.2 Years apart. A test of "Two votes years apart".
 
   Verify: run alone, the test passes; against a mutant that keeps the second vote's municipalities
   by its own figures, it fails (1,419 for 1,456).
-- [ ] 3.3 The address. Tests of "A link to a comparison", "The address follows the choice" and "A
+
+  As built: it passed when written, and failed against that mutant with 1'419 for 1'456 and
+  576'424 yes votes for 603'173.
+- [x] 3.3 The address. Tests of "A link to a comparison", "The address follows the choice" and "A
   vote the comparison cannot use", one at a time. The writer and the reading of the vote's page,
   in the comparison page (design, decision 8).
 
   Verify: each run alone passes; `pnpm --filter app exec playwright test share-link.spec.ts`
   passes unchanged.
-- [ ] 3.4 Another first vote. A test of "Another first vote".
+
+  As built: "A link to a comparison" passed when written, as 3.1 had built the reading, and failed
+  against a page that drops the second id. "The address follows the choice" failed before the
+  writer (the address stayed `#votes=5960`), "A vote the comparison cannot use" before the
+  sentence. The page reads its address anew on `hashchange`, as decision 8 says, which a fourth
+  test, "A link to a comparison in the same tab", checks; it failed against a page without the
+  listener. The parts of `votes` the page could not use are named with the selection's, once it
+  reads the selection on the first vote's tracks, as a vote's page names nothing before its
+  characteristics have loaded. `share-link.spec.ts` passes unchanged.
+- [x] 3.4 Another first vote. A test of "Another first vote".
 
   Verify: run alone, the test passes; against a mutant that clears the limits on another first
   vote, it fails.
+
+  As built: it failed before the page read the selection anew (the label stayed "Ende 2015 …
+  19.98%"), and against that mutant (no limit). A second test, "A link without votes", checks the
+  other path of choosing a first vote: the address's selection, which no first vote had read, is
+  read on the chosen one's tracks and written with it; it failed against a page that only reads
+  the selection anew. `compare.spec.ts` and `limits.spec.ts` pass, 55 tests.
 
 ## 4. From a vote's page
 

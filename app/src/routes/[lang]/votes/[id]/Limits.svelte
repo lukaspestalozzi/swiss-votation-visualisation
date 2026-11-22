@@ -21,8 +21,9 @@
     file: CharacteristicsFile | null;
     failed: boolean;
     voteDate: string;
-    // How many municipalities remain, as the section says it.
-    count: string;
+    // How many municipalities remain, as the section says it; none on the comparison, which says
+    // it below each vote's table (design of add-vote-comparison, decision 6).
+    count: string | null;
     // The parts of the page's address it could not use (spec share-link).
     unusable: readonly string[];
     limits: readonly LimitSetting[];
@@ -141,7 +142,9 @@
       <input type="checkbox" bind:checked={abroadCounted} />
       {t.ABROAD_SWITCH}
     </label>
-    <p class="count">{count}</p>
+    {#if count !== null}
+      <p class="count">{count}</p>
+    {/if}
     {#if limits.length > 0 || !abroadCounted}
       <button type="button" onclick={backToReal}>{t.BACK_TO_REAL}</button>
     {/if}

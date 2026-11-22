@@ -147,3 +147,113 @@ test('Each file once', async ({ page }) => {
   expect(files.sort()).toEqual(['5960.json', '5970.json', '5980.json']);
   expect(requested.filter((url) => !url.startsWith('http://localhost:4173/'))).toEqual([]);
 });
+
+/** The columns of a vote's table once its selection applies, then its rows and its count. */
+async function selectedOf(page: Page, id: number) {
+  await expect(tableOf(page, id).locator('thead th')).toHaveText([
+    'Echtes Ergebnis',
+    'Mit Ihrer Auswahl',
+  ]);
+  const { rows } = await rowsOf(page, id);
+  return {
+    selected: rows.map((row) => row[2]),
+    count: await page.locator(`[data-vote="${String(id)}"] p.count`).innerText(),
+  };
+}
+
+test('Two votes of one day', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await expect(
+    page.getByText(
+      'Die Gemeinden werden nach den Zahlen der ersten Abstimmung ausgewählt; in beiden ' +
+        'Abstimmungen zählen dieselben Gemeinden.',
+    ),
+  ).toBeVisible();
+  expect(await selectedOf(page, 5960)).toEqual({
+    selected: ["733'402", "664'373", '52.47%', 'Ja 52.47%', 'Ja 18 : 4½', 'Angenommen'],
+    count: "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
+  });
+  expect(await selectedOf(page, 5970)).toEqual({
+    selected: ["654'548", "769'763", '45.96%', 'Nein 45.96%', 'Nein 8½ : 14', 'Abgelehnt'],
+    count: "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
+  });
+  // The limits' own count stands below each table instead (design, decision 6).
+  await expect(page.locator('.limits p.count')).toHaveCount(0);
+});
+
+test('Two votes years apart', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,6310&foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  expect(await selectedOf(page, 6310)).toEqual({
+    selected: ["603'173", "796'237", '43.10%', 'Nein 43.10%', 'Nein 4½ : 18', 'Abgelehnt'],
+    count: "In der Auswahl: 1'456 von 2'104 Gemeinden mit eigenem Ergebnis.",
+  });
+});
+
+test('A link to a comparison', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,6310&foreigners=-19.98');
+  await expect(page.getByLabel('Erste Abstimmung')).toHaveValue('5960');
+  await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('6310');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+});
+
+test('The address follows the choice', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960');
+  await expect(page.locator('.limits select')).toBeVisible();
+  await page.getByLabel('Zweite Abstimmung').selectOption('5970');
+  await expect(page).toHaveURL(/\/de\/compare\/#votes=5960,5970$/);
+});
+
+test('A vote the comparison cannot use', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,6823&foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await expect(page.getByLabel('Erste Abstimmung')).toHaveValue('5960');
+  await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('');
+  await expect(
+    page.getByText('Diese Angaben der Adresse liessen sich nicht anwenden: «votes=5960,6823».'),
+  ).toBeVisible();
+});
+
+test('A link to a comparison in the same tab', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,5970');
+  await expect(page.locator('.limits select')).toBeVisible();
+  await page.goto('de/compare/#votes=6310,5960&foreigners=-19.98');
+  await expect(page.getByLabel('Erste Abstimmung')).toHaveValue('6310');
+  await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('5960');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2019): von 0.00% bis 19.99%',
+  );
+});
+
+test('Another first vote', async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await page.getByLabel('Erste Abstimmung').selectOption('6310');
+  // investigations/vote-comparison.md, 1: 19.98% on the track of 2020-09-27 is step 346, 19.99%.
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2019): von 0.00% bis 19.99%',
+  );
+  await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('5970');
+});
+
+test('A link without votes', async ({ page }) => {
+  // Its selection waits for a first vote, on whose tracks the page reads it.
+  await page.goto('de/compare/#foreigners=-19.98');
+  await expect(page.locator('.limit')).toHaveCount(0);
+  await page.getByLabel('Erste Abstimmung').selectOption('5960');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await expect(page).toHaveURL(/\/de\/compare\/#votes=5960&foreigners=-19.98$/);
+});
