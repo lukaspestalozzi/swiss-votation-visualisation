@@ -247,11 +247,15 @@ Spec `vote-comparison`, "The comparison on a phone" and "The table of a vote"; d
 
 Spec `vote-comparison`, "The budget of the comparison"; design, decision 11.
 
-- [ ] 6.1 The budget tests. Tests of "Dragging a bound with two votes" and "Jumps with two votes",
+- [x] 6.1 The budget tests. Tests of "Dragging a bound with two votes" and "Jumps with two votes",
   with `frames.ts`, as the limits' budget tests measure, once more when a frame exceeds its budget.
 
   Verify: `pnpm --filter app exec playwright test compare.spec.ts -g "budget"` passes; the longest
   frames are in the note "As built".
+
+  As built: four runs passed, each at the first measurement. The longest frames: of the drag,
+  14.7, 8.1, 6.8 and 5.6 ms (83 frames each); of the jumps, 34.4, 22.5, 8.4 and 5.7 ms (28 frames
+  each), the longest after the choice of 5980, whose file arrives as its frame is drawn.
 
 ## 7. Docs and checks
 
