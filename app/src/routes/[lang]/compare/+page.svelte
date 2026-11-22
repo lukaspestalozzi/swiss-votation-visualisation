@@ -53,8 +53,8 @@
   let characteristicsFailed = $state(false);
   // The selection's part of the address, and the parts of its `votes` the page could not use,
   // until the page has the characteristics and a first vote to read the selection on (design,
-  // decision 8).
-  let unread: { link: string; unusable: readonly string[] } | null = null;
+  // decision 8). While it waits, the page writes no address, which keeps it.
+  let unread = $state.raw<{ link: string; unusable: readonly string[] } | null>(null);
   // How often the page has read a selection: it writes the address only once it has read one, and
   // anew after every reading, as a vote's page does (design, decision 8).
   let readings = $state(0);
@@ -120,7 +120,7 @@
   });
 
   $effect(() => {
-    if (readings === 0) return;
+    if (readings === 0 || unread !== null) return;
     const hash = link === '' ? '' : `#${link}`;
     const timer = setTimeout(() => {
       // Compared with the browser's address and with the address as SvelteKit knows it, which the

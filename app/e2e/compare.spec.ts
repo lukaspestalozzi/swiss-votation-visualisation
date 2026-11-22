@@ -135,6 +135,22 @@ test('A file that cannot be loaded', async ({ page }) => {
   await expect(tableOf(page, 5970)).toHaveCount(0);
 });
 
+test('The characteristics cannot be loaded', async ({ page }) => {
+  // Spec vote-comparison, "Loading the votes": the tables show their real results.
+  await page.route('**/data/characteristics.json', (route) => route.abort());
+  await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+  await expect(
+    page.getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
+  ).toBeVisible();
+  for (const id of [5960, 5970]) {
+    await expect(tableOf(page, id).locator('thead th')).toHaveText(['Echtes Ergebnis']);
+  }
+  expect((await rowsOf(page, 5960)).rows[0]).toEqual(['Ja-Stimmen', "1'609'152"]);
+  // Without the characteristics the page writes nothing (design, decision 8).
+  await page.waitForTimeout(1000);
+  expect(new URL(page.url()).hash).toBe('#votes=5960,5970&foreigners=-19.98');
+});
+
 test('Each file once', async ({ page }) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
@@ -248,6 +264,54 @@ test('Another first vote', async ({ page }) => {
     'Ausländeranteil (Ende 2019): von 0.00% bis 19.99%',
   );
   await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('5970');
+});
+
+test('The language switch carries the comparison', async ({ page }) => {
+  // Spec interface-languages, "The switch between the languages": the address the page wrote.
+  await page.goto('de/compare/#votes=5960&foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await page.getByLabel('Zweite Abstimmung').selectOption('5970');
+  await expect(page).toHaveURL(/#votes=5960,5970&foreigners=-19\.98$/);
+  await page.locator('nav.languages').getByRole('link', { name: 'Français' }).click();
+  await expect(page).toHaveURL(/\/fr\/compare\/?#votes=5960,5970&foreigners=-19\.98$/);
+  expect(await languageOf(page)).toBe('fr');
+  await expect(page.getByLabel('Première votation')).toHaveValue('5960');
+  await expect(page.getByLabel('Deuxième votation')).toHaveValue('5970');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Part des étrangers (fin 2015): de 0.00% à 19.98%',
+  );
+  await expect(tableOf(page, 5970).locator('thead th')).toHaveText([
+    'Vrai résultat',
+    'Avec votre sélection',
+  ]);
+});
+
+test('A link without votes in the same tab', async ({ page }) => {
+  // The address keeps a selection that waits for a first vote, as when the page opens with it.
+  await page.goto('de/compare/#votes=5960');
+  await expect(page.locator('.limits select')).toBeVisible();
+  await page.goto('de/compare/#foreigners=-19.98');
+  await expect(page.getByLabel('Erste Abstimmung')).toHaveValue('');
+  await expect(page.locator('.limit')).toHaveCount(0);
+  await page.waitForTimeout(1000);
+  expect(new URL(page.url()).hash).toBe('#foreigners=-19.98');
+  await page.getByLabel('Erste Abstimmung').selectOption('5960');
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await expect(page).toHaveURL(/\/de\/compare\/#votes=5960&foreigners=-19\.98$/);
+});
+
+test('The second vote chosen as the first', async ({ page }) => {
+  // Design, decision 9: the second choice is emptied.
+  await page.goto('de/compare/#votes=5960,5970');
+  await expect(page.locator('.limits select')).toBeVisible();
+  await page.getByLabel('Erste Abstimmung').selectOption('5970');
+  await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('');
+  await expect(page.locator('[data-vote]')).toHaveCount(1);
+  await expect(page).toHaveURL(/\/de\/compare\/#votes=5970$/);
 });
 
 test('A link without votes', async ({ page }) => {

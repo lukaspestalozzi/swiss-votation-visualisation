@@ -77,8 +77,8 @@ too.
   leads to it.
 - **No new section in the guide.** The comparison page says in a sentence which municipalities
   count.
-- **No change to a vote's page** but the link: it still holds its own result and loads no file of
-  entries (spec verdicts, "The page holds its result").
+- **No change to a vote's page** but the link, and the vote's id in its data for it: it still
+  holds its own result and loads no file of entries (spec verdicts, "The page holds its result").
 - **No change to the data, the pipeline or the calculation.**
 
 ## Capabilities
@@ -110,7 +110,7 @@ written; the new capability's scenarios check them on it.
   - a loader of a vote's file of entries beside the others in `map-data.ts`;
   - `vote-page.ts` gives a vote's real result from its file, so that the table shows the vote
     page's own;
-  - `Limits.svelte` is used by the comparison page as it is;
+  - `Limits.svelte` is used by the comparison page, which gives it no count to show;
   - `[lang]/+layout.svelte`'s language switch knows the new route;
   - a vote's page gets its link;
   - the texts in three languages.

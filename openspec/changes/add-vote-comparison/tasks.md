@@ -287,6 +287,23 @@ Spec `vote-comparison`, "The budget of the comparison"; design, decision 11.
   them, and the changed lines, those of the vote's `+page.server.ts` and of `Limits.svelte` too.
   Each of the 27 files under `app/` and `investigations/` that the branch changes is named.
 
+## Found while verifying
+
+`/openspec-verify-change` found no critical issue, two warnings and three suggestions, all fixed
+(Q, 2026-11-22):
+- **The language switch** on the comparison had no test: "The language switch carries the
+  comparison" follows "Français" after a choice the page wrote; it failed against a switch that
+  reads the address the page opened with.
+- **The design and the proposal** said `Limits.svelte` is used as it is and a vote's page changes
+  only by its link: they now name the count of `null` and the vote's id in its data.
+- **The characteristics cannot be loaded:** a test that the tables show their real results and
+  the page writes nothing; it failed against tables that wait for the characteristics.
+- **The second vote chosen as the first** (decision 9): a test that the second choice is emptied;
+  it failed against a page that keeps it.
+- **A link without votes in the same tab** emptied the address while the page kept its selection
+  for a first vote; the page now writes nothing while a selection waits, as when it opens with
+  one. Its test failed before (the address `''`).
+
 ## Workflow follow-up
 
 - Push, open the pull request, and watch its CI.
