@@ -29,6 +29,7 @@
   import { loadCharacteristics } from '../votes/[id]/loaders.ts';
   import type { PageProps } from './$types';
   import ComparedVote from './ComparedVote.svelte';
+  import ComparisonBar from './ComparisonBar.svelte';
   import { loadEntries } from './loaders.ts';
 
   // The comparison of two votes (spec vote-comparison): one selection applied to two votes, the
@@ -185,13 +186,37 @@
   // cannot be loaded.
   const shown = $derived(
     chosen.map(({ vote, made }) => {
-      if (made === 'loading' || made === 'failed') return { vote, table: made };
+      if (made === 'loading' || made === 'failed') return { vote, table: made, selected: null };
       const selected =
         applies && remaining !== null && made.entries !== null
           ? withSelection(made.entries, vote.majorities, remaining, abroadCounted, t)
           : null;
       const table: VoteTable = tableOf(made.real, selected, t);
-      return { vote, table };
+      return { vote, table, selected };
+    }),
+  );
+
+  // The bar at the bottom of a narrow window (design, decision 7): each vote's outcome with the
+  // selection, and the tables it observes, which change with the votes chosen and their files, not
+  // at each step of a slider.
+  const outcomes = $derived(
+    shown.flatMap(({ selected }, index) =>
+      selected === null
+        ? []
+        : [
+            {
+              vote: index === 0 ? t.FIRST_VOTE : t.SECOND_VOTE,
+              outcome: selected.result.outcome,
+              side: selected.result.outcomeSide,
+            },
+          ],
+    ),
+  );
+  const tableElements = $state<Record<number, HTMLElement | null>>({});
+  const observed = $derived(
+    [first, second].flatMap((id) => {
+      const element = id === null ? null : (tableElements[id] ?? null);
+      return element === null ? [] : [element];
     }),
   );
 
@@ -258,7 +283,7 @@
 {/if}
 <div class="tables">
   {#each shown as { vote, table } (vote.id)}
-    <ComparedVote {t} {vote} {table} />
+    <ComparedVote {t} {vote} {table} bind:element={tableElements[vote.id]} />
   {/each}
 </div>
 {#if firstVote !== undefined}
@@ -274,3 +299,34 @@
     bind:abroadCounted
   />
 {/if}
+
+<ComparisonBar {outcomes} tables={observed} />
+
+<style>
+  .choices label {
+    display: block;
+  }
+  /* A list is as wide as its longest option, a vote's title of some 2,000 pixels: it takes at most
+     the page's width, and shows the chosen vote's beginning. */
+  .choices select {
+    max-width: 100%;
+  }
+  /* On a touch screen, a list a finger can hit, as "Merkmal hinzufügen" is (spec small-screens). */
+  @media (pointer: coarse) {
+    .choices select {
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+  /* The second table below the first, and from 640 pixels beside it, as a vote's page sets its
+     result beside the selection's (design of add-vote-comparison, decision 7). */
+  .tables {
+    display: grid;
+    gap: 1rem;
+  }
+  @media (min-width: 640px) {
+    .tables {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

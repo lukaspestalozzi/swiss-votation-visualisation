@@ -205,22 +205,43 @@ Spec `vote-comparison`, "From a vote's page"; design, decision 10.
 
 Spec `vote-comparison`, "The comparison on a phone" and "The table of a vote"; design, decision 7.
 
-- [ ] 5.1 The width. A test of "Two tables in a narrow window", and a test that the tables stand
+- [x] 5.1 The width. A test of "Two tables in a narrow window", and a test that the tables stand
   side by side in a window 1,280 pixels wide.
 
   Verify: each run alone passes.
-- [ ] 5.2 The lists for a finger. A test that on a touch screen the two lists are at least 44 × 44
+
+  As built: the narrow test failed at 2,001 pixels: a list is as wide as its longest option, a
+  vote's title. The lists take at most the page's width, each on its own line; the tables stand in
+  a grid of one column, and of two from 640 pixels. The wide test failed before the grid (the
+  second table at x 16). Measured: at 640 pixels two tables of 296 pixels side by side and nothing
+  past the window, at 639 one below the other.
+- [x] 5.2 The lists for a finger. A test that on a touch screen the two lists are at least 44 × 44
   pixels, as the small screens' test of the controls measures them.
 
   Verify: run alone, the test passes; seen to fail before the lists take the style of "Merkmal
   hinzufügen".
-- [ ] 5.3 The bar. A test of "The bar". Seen to fail: no bar. Then the bar of decision 7.
+
+  As built: it failed before (both lists lower than 44 pixels) and passed once the lists take, on
+  a touch screen, the least width and height of "Merkmal hinzufügen".
+- [x] 5.3 The bar. A test of "The bar". Seen to fail: no bar. Then the bar of decision 7.
 
   Verify: run alone, the test passes.
-- [ ] 5.4 The colours. A test of "The colours of the tables", with `contrast.ts`, in both schemes.
+
+  As built: it failed before the bar. `ComparisonBar.svelte` observes each table, keeps what the
+  observer last said of each, and shows while a selection applies and one is not wholly in the
+  window; each `ComparedVote` gives its table up by a bindable prop. Found while applying: that
+  prop has no fallback, as Svelte refuses to bind `undefined` to a prop that has one
+  (`props_invalid_value`) and the page then shows no table. The test also checks that the bar goes
+  with the selection ("Zurück zum echten Ergebnis"), which failed against a bar without that
+  condition.
+- [x] 5.4 The colours. A test of "The colours of the tables", with `contrast.ts`, in both schemes.
 
   Verify: run alone, the test passes; against a mutant without the class of a side on the
   outcome, it fails.
+
+  As built: it passed when written in both schemes, as the tables have taken the classes of their
+  sides since 2.3, and every text has its contrast. Against that mutant it failed: "Abgelehnt" and
+  "Angenommen" in the text's colour, `#1c1c1c`.
 
 ## 6. The budgets
 

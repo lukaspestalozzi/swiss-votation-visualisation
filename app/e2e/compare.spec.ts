@@ -1,6 +1,8 @@
 // The comparison of two votes (spec vote-comparison), against the built site. The figures are
 // those of investigations/vote-comparison.md and investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
+import { lowContrast } from './contrast.ts';
+import { phone } from './fingers.ts';
 
 /** The language a page declares in its markup. */
 const languageOf = (page: Page) => page.locator('html').getAttribute('lang');
@@ -286,3 +288,128 @@ test('No comparison of the tie-break question', async ({ page }) => {
     page.getByRole('link', { name: 'Mit einer anderen Abstimmung vergleichen' }),
   ).toHaveCount(0);
 });
+
+/** The width of the page, which is the window's when nothing reaches past it. */
+const pageWidth = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth);
+
+/** The boxes of the chosen votes 5960 and 5970, once both tables show the selection. */
+async function boxesOf(page: Page) {
+  for (const id of [5960, 5970]) await expect(tableOf(page, id).locator('thead th')).toHaveCount(2);
+  const [first, second] = await Promise.all(
+    [5960, 5970].map((id) => page.locator(`[data-vote="${String(id)}"]`).boundingBox()),
+  );
+  if (first === null || second === null) throw new Error('not on the screen');
+  return { first, second };
+}
+
+test.describe('in a window 360 pixels wide', () => {
+  test.use({ viewport: { width: 360, height: 780 } });
+
+  test('Two tables in a narrow window', async ({ page }) => {
+    for (const language of ['de', 'fr', 'it']) {
+      await page.goto(`${language}/compare/#votes=5960,5970&foreigners=-19.98`);
+      const { first, second } = await boxesOf(page);
+      expect(second.y, language).toBeGreaterThanOrEqual(first.y + first.height);
+      expect(await pageWidth(page), language).toBeLessThanOrEqual(360);
+    }
+  });
+});
+
+test.describe('in a window 1,280 pixels wide', () => {
+  test.use({ viewport: { width: 1280, height: 900 } });
+
+  test('the tables stand side by side', async ({ page }) => {
+    await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+    const { first, second } = await boxesOf(page);
+    expect(second.x).toBeGreaterThanOrEqual(first.x + first.width);
+    expect(second.y).toBe(first.y);
+  });
+});
+
+test.describe('on a phone', () => {
+  test.use(phone);
+
+  test('the lists are at least 44 × 44 pixels', async ({ page }) => {
+    await page.goto('de/compare/#votes=5960,5970');
+    await expect(tableOf(page, 5970)).toBeVisible();
+    const lists = ['Erste Abstimmung', 'Zweite Abstimmung'];
+    const sizes = await Promise.all(
+      lists.map(async (name) => {
+        const box = await page.getByLabel(name).boundingBox();
+        return [name, box === null ? null : [box.width >= 44, box.height >= 44]] as const;
+      }),
+    );
+    expect(sizes).toEqual(lists.map((name) => [name, [true, true]]));
+  });
+});
+
+test.describe('the bar on a phone', () => {
+  test.use(phone);
+
+  test('The bar', async ({ page }) => {
+    await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+    for (const id of [5960, 5970])
+      await expect(tableOf(page, id).locator('thead th')).toHaveCount(2);
+    await page.locator('.limits').evaluate((limits) => {
+      limits.scrollIntoView({ block: 'center' });
+    });
+    const bar = page.locator('.comparison-bar');
+    await expect(bar.locator('p')).toHaveText([
+      'Erste Abstimmung: Angenommen',
+      'Zweite Abstimmung: Abgelehnt',
+    ]);
+    await expect(bar.locator('.side-yes')).toHaveText('Angenommen');
+    await expect(bar.locator('.side-no')).toHaveText('Abgelehnt');
+    // At the bottom of the window.
+    const box = await bar.boundingBox();
+    const height = await page.evaluate(() => innerHeight);
+    expect(Math.abs((box?.y ?? NaN) + (box?.height ?? NaN) - height)).toBeLessThanOrEqual(1);
+    // Without a selection, no bar.
+    await page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }).click();
+    await expect(bar).toBeHidden();
+  });
+});
+
+// The map's darkest classes in the light scheme and its class 2 in the dark one (spec site-style,
+// "The verdicts in the map's colours").
+const SIDES = {
+  light: { yes: 'rgb(0, 114, 96)', no: 'rgb(147, 67, 25)' },
+  dark: { yes: 'rgb(75, 193, 173)', no: 'rgb(229, 148, 111)' },
+} as const;
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test.describe(`in the ${colorScheme} scheme`, () => {
+    test.use({ colorScheme });
+
+    test('The colours of the tables', async ({ page }) => {
+      await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+      for (const id of [5960, 5970]) {
+        await expect(tableOf(page, id).locator('thead th')).toHaveCount(2);
+      }
+      // Each word of a side, row by row: the real result, then the selection's.
+      const words = await page
+        .locator('table td span')
+        .evaluateAll((spans) =>
+          spans.map((span) => [span.textContent.trim(), getComputedStyle(span).color]),
+        );
+      const { yes, no } = SIDES[colorScheme];
+      expect(
+        words.filter(([word]) => ['Ja', 'Nein', 'Angenommen', 'Abgelehnt'].includes(word)),
+      ).toEqual([
+        ['Nein', no],
+        ['Ja', yes],
+        ['Ja', yes],
+        ['Ja', yes],
+        ['Abgelehnt', no],
+        ['Angenommen', yes],
+        ['Nein', no],
+        ['Nein', no],
+        ['Nein', no],
+        ['Nein', no],
+        ['Abgelehnt', no],
+        ['Abgelehnt', no],
+      ]);
+      expect(await lowContrast(page)).toEqual([]);
+    });
+  });
+}
