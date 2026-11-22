@@ -9,10 +9,15 @@
     t,
     vote,
     table,
+    element = $bindable(),
   }: {
     t: Texts;
     vote: Comparable;
     table: VoteTable | 'loading' | 'failed';
+    // The table, while it is on the page, which the bar at the bottom of a narrow window observes.
+    // No fallback: Svelte binds no undefined to a prop that has one, and the page has no table of
+    // a vote before it shows.
+    element?: HTMLElement | null;
   } = $props();
 </script>
 
@@ -24,7 +29,7 @@
   {:else if table === 'failed'}
     <p>{t.VOTE_FAILED}</p>
   {:else}
-    <table>
+    <table bind:this={element}>
       <thead>
         <tr>
           <td></td>
