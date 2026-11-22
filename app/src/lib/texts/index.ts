@@ -152,6 +152,7 @@ export interface Texts {
   readonly PROPOSAL: string;
   readonly VOTE_LOADING: string;
   readonly VOTE_FAILED: string;
+  readonly SAME_MUNICIPALITIES: string;
 
   // The limits (spec limits).
   readonly populationDate: (year: number) => string;
