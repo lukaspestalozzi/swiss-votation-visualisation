@@ -160,6 +160,7 @@ export const it: Texts = {
   SAME_MUNICIPALITIES:
     'I Comuni sono scelti secondo le cifre della prima votazione; nelle due votazioni ' +
     'contano gli stessi Comuni.',
+  COMPARE_LINK: "Confrontare con un'altra votazione",
 
   // The limits (spec limits).
   populationDate: (year) => `fine ${String(year)}`,

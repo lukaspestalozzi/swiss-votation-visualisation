@@ -41,5 +41,5 @@ export const load: PageServerLoad = async ({ params, parent }) => {
     file === undefined || page.judged === null ? null : voteEntriesOf(file, onTheMap, swissAbroad);
   const majorities = majoritiesNeeded(vote.kind);
   // The vote's day decides which characteristics apply (spec characteristics).
-  return { ...page, entries, majorities, voteDate: vote.date };
+  return { ...page, id: vote.id, entries, majorities, voteDate: vote.date };
 };

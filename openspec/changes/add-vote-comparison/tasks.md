@@ -188,11 +188,18 @@ comparison in the address"; design, decisions 2, 8 and 9.
 
 Spec `vote-comparison`, "From a vote's page"; design, decision 10.
 
-- [ ] 4.1 The link. Tests of "From a vote with a selection" and "No comparison of the tie-break
+- [x] 4.1 The link. Tests of "From a vote with a selection" and "No comparison of the tie-break
   question", one at a time. Seen to fail: no link. Then the link below `Limits.svelte` on a judged
   vote's page, with the page's current selection, and its text in three languages.
 
   Verify: each run alone passes; `pnpm --filter app exec playwright test limits.spec.ts` passes.
+
+  As built: "From a vote with a selection" failed before the link; the comparison opens in the
+  same tab, by SvelteKit's navigation, and reads the selection the link carries. A vote's page has
+  its id in its data. The page written at build time links `/de/compare#votes=5960`. "No
+  comparison of the tie-break question" passed when written and failed against a page that shows
+  the link outside the part only a judged vote has. `compare.spec.ts`, `limits.spec.ts` and
+  `vote-page.spec.ts` pass, 65 tests.
 
 ## 5. The phone and the look
 
