@@ -43,6 +43,11 @@ and Italian:
   and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
   count, and one button returns to the real result. The page's address holds the selection, so
   that a link, a reload or the language switch keeps it;
+- a page compares two votes (`/de/compare/`): you choose a first and a second vote, and one
+  selection, made by the figures of the first, keeps the same municipalities in both. Each vote
+  has a table of its real result and of its result with the selection, and the address holds both
+  votes and the selection. Below its limits, each vote's page links to it with that vote first
+  and the page's selection;
 - a page "Lesehilfe" (`/de/guide/`) explains that this is a thought experiment about whole
   municipalities, not about people and not a forecast, and names every source;
 - the results come from the data of every vote per municipality, made from public sources by
