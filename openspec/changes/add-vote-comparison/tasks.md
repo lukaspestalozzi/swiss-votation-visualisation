@@ -259,15 +259,21 @@ Spec `vote-comparison`, "The budget of the comparison"; design, decision 11.
 
 ## 7. Docs and checks
 
-- [ ] 7.1 `README.md`: the list of what the site shows adds the comparison page and the link to
+- [x] 7.1 `README.md`: the list of what the site shows adds the comparison page and the link to
   it from a vote's page.
 
   Verify: `git diff README.md` shows that addition only.
-- [ ] 7.2 All checks. `./scripts/verify-local.sh`.
+
+  As built: one item after the limits', `git diff README.md` shows it alone.
+- [x] 7.2 All checks. `./scripts/verify-local.sh`.
 
   Verify: 11 of 11 steps pass; the counts are those planned (unit tests 52, and 142 and the new
   ones, about 158; browser tests about 235), or the note says why not.
-- [ ] 7.3 `CLAUDE.md`: the status names `add-vote-comparison` applied; the code map adds
+
+  As built: 11 of 11 steps passed, without a retry: unit tests 52 and 158, browser tests 239 (the
+  planned 235 and four found while applying: a link in the same tab, a link without votes, the
+  wide window, and the tie-break question's page), the pipeline's 134.
+- [x] 7.3 `CLAUDE.md`: the status names `add-vote-comparison` applied; the code map adds
   `app/src/lib/comparison.ts`, its tests, the route `app/src/routes/[lang]/compare/` and its files,
   and `app/e2e/compare.spec.ts`, and changes the lines of `vote-page.ts`, `map-data.ts`,
   `[lang]/+layout.svelte`, the vote's `+page.svelte` and the texts; "Where things are" adds
@@ -275,6 +281,11 @@ Spec `vote-comparison`, "The budget of the comparison"; design, decision 11.
 
   Verify: every file `git diff --stat main` names under `app/` and `investigations/` is in
   `CLAUDE.md`.
+
+  As built: the status names the comparison and #12 applied, "Where things are" the tenth
+  investigation and its six scripts, and the code map the new files, `ComparisonBar.svelte` among
+  them, and the changed lines, those of the vote's `+page.server.ts` and of `Limits.svelte` too.
+  Each of the 27 files under `app/` and `investigations/` that the branch changes is named.
 
 ## Workflow follow-up
 
