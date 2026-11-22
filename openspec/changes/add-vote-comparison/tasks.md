@@ -101,26 +101,41 @@ of a vote" and "The comparison in the address"; design, decisions 2 to 6, 8 and 
 Spec `vote-comparison`, "The comparison page", "Choosing the votes", "The table of a vote" and
 "Loading the votes"; design, decisions 1, 3 to 7.
 
-- [ ] 2.1 The page. Create `app/e2e/compare.spec.ts` with a test of "A page in each language".
+- [x] 2.1 The page. Create `app/e2e/compare.spec.ts` with a test of "A page in each language".
   Seen to fail: 404. Then the route `app/src/routes/[lang]/compare/` (`+page.server.ts` with its
   `entries` and the list of decision 4, `+page.svelte` with the heading and the two lists), the
   texts in three languages, and the route in the language switch of `[lang]/+layout.svelte`. Then
   a test of "The head of the comparison".
 
   Verify: each run alone passes; `pnpm run build` writes `compare/index.html` under each language.
-- [ ] 2.2 The lists. A test of "The lists of a vote of 2016-02-28". Seen to fail: no vote chosen.
+
+  As built: after adding the route, `svelte-kit sync` writes its types anew before `pnpm run check`
+  knows it. "A page in each language" failed with 404 before the route. "The head of the
+  comparison" passed when written; without the route in the switch the build itself fails (the
+  head throws on a route it does not know), and against a switch that links to the start page the
+  test fails (`/swiss-votation-visualisation/fr`).
+- [x] 2.2 The lists. A test of "The lists of a vote of 2016-02-28". Seen to fail: no vote chosen.
   Then the page reads `votes` from its address and chooses them.
 
   Verify: run alone, the test passes.
-- [ ] 2.3 The tables. Tests of "The real results" and "A known difference", one at a time. Seen to
+- [x] 2.3 The tables. Tests of "The real results" and "A known difference", one at a time. Seen to
   fail: no table. Then the tables (a component of their own), the loading of each chosen vote's
   file with the loader of 1.6, and their notes.
 
   Verify: each run alone passes.
-- [ ] 2.4 Loading. Tests of "A file that cannot be loaded" and "Each file once", one at a time.
+  As built: the table is `ComparedVote.svelte`, the loader of the page `compare/loaders.ts`; the
+  page keeps the files as they arrive in a `SvelteMap`. "The real results" failed before the code;
+  "A known difference" passed when written and failed against a table without its notes.
+- [x] 2.4 Loading. Tests of "A file that cannot be loaded" and "Each file once", one at a time.
 
   Verify: each run alone passes; against a mutant that makes a new loader per choice, "Each file
   once" fails.
+
+  As built: both passed when written. "A file that cannot be loaded" failed against a page that
+  ignores a failed request ("Die Ergebnisse werden geladen." stayed). A new loader per choice
+  alone does not fail "Each file once", as the page keeps the files that arrived and asks only for
+  those it has not; against a mutant with a new loader per call and a page that asks at every
+  change, it failed, 5960 requested four times.
 
 ## 3. The selection on both votes
 

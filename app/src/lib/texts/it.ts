@@ -150,8 +150,13 @@ export const it: Texts = {
     'popolazione 2000, rilevazione delle strutture agricole); swisstopo (swissBOUNDARIES3D 2026).',
 
   // The comparison of two votes (spec vote-comparison).
+  COMPARE_HEADING: 'Confrontare due votazioni',
+  FIRST_VOTE: 'Prima votazione',
+  SECOND_VOTE: 'Seconda votazione',
   REAL_RESULT: 'Risultato reale',
   PROPOSAL: 'Oggetto',
+  VOTE_LOADING: 'I risultati vengono caricati.',
+  VOTE_FAILED: 'I risultati di questa votazione non possono essere caricati.',
 
   // The limits (spec limits).
   populationDate: (year) => `fine ${String(year)}`,

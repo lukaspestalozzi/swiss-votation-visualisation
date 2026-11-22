@@ -147,8 +147,13 @@ export const de: Texts = {
     'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).',
 
   // The comparison of two votes (spec vote-comparison).
+  COMPARE_HEADING: 'Zwei Abstimmungen vergleichen',
+  FIRST_VOTE: 'Erste Abstimmung',
+  SECOND_VOTE: 'Zweite Abstimmung',
   REAL_RESULT: 'Echtes Ergebnis',
   PROPOSAL: 'Vorlage',
+  VOTE_LOADING: 'Die Ergebnisse werden geladen.',
+  VOTE_FAILED: 'Die Ergebnisse dieser Abstimmung lassen sich nicht laden.',
 
   // The limits (spec limits).
   populationDate: (year) => `Ende ${String(year)}`,

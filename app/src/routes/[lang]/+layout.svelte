@@ -26,6 +26,8 @@
         return resolve('/[lang]', { lang: language });
       case '/[lang]/guide':
         return resolve('/[lang]/guide', { lang: language });
+      case '/[lang]/compare':
+        return resolve('/[lang]/compare', { lang: language });
       case '/[lang]/votes/[id]': {
         const { id } = page.params;
         if (id === undefined) throw new Error('the page of a vote has no id');
