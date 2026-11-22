@@ -38,7 +38,9 @@ What the change builds on:
 
 **Non-Goals:**
 - **Sharing the vote page's code beyond what it already shares.** The comparison page uses
-  `Limits.svelte` and `share-link.ts` as they are; a vote's page changes only by its link.
+  `share-link.ts` as it is, and `Limits.svelte` with one change: it shows no count when it is
+  given none (decision 6). A vote's page changes only by its link, for which its data holds the
+  vote's id (decision 10).
 - **A comparison without the characteristics.** Without them there are no limits, so the tables
   show their real results only.
 
