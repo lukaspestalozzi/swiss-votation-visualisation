@@ -145,8 +145,13 @@ export interface Texts {
   readonly CHARACTERISTICS_SOURCES: string;
 
   // The comparison of two votes (spec vote-comparison).
+  readonly COMPARE_HEADING: string;
+  readonly FIRST_VOTE: string;
+  readonly SECOND_VOTE: string;
   readonly REAL_RESULT: string;
   readonly PROPOSAL: string;
+  readonly VOTE_LOADING: string;
+  readonly VOTE_FAILED: string;
 
   // The limits (spec limits).
   readonly populationDate: (year: number) => string;
