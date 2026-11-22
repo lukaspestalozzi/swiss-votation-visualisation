@@ -148,6 +148,10 @@ export const fr: Texts = {
     'Sources: OFS (STATPOP, élections au Conseil national, recensement fédéral de la population ' +
     '2000, relevé des structures agricoles); swisstopo (swissBOUNDARIES3D 2026).',
 
+  // The comparison of two votes (spec vote-comparison).
+  REAL_RESULT: 'Vrai résultat',
+  PROPOSAL: 'Objet',
+
   // The limits (spec limits).
   populationDate: (year) => `fin ${String(year)}`,
   censusDate: (year) => `recensement ${String(year)}`,

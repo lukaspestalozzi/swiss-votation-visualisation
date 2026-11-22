@@ -146,6 +146,10 @@ export const de: Texts = {
     'Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000, ' +
     'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).',
 
+  // The comparison of two votes (spec vote-comparison).
+  REAL_RESULT: 'Echtes Ergebnis',
+  PROPOSAL: 'Vorlage',
+
   // The limits (spec limits).
   populationDate: (year) => `Ende ${String(year)}`,
   censusDate: (year) => `Volkszählung ${String(year)}`,
