@@ -257,3 +257,32 @@ test('A link without votes', async ({ page }) => {
   );
   await expect(page).toHaveURL(/\/de\/compare\/#votes=5960&foreigners=-19.98$/);
 });
+
+test('From a vote with a selection', async ({ page }) => {
+  await page.goto('de/votes/5960/');
+  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
+  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await page
+    .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
+    .fill('327');
+  await page.getByRole('link', { name: 'Mit einer anderen Abstimmung vergleichen' }).click();
+  await expect(page).toHaveURL(
+    /\/swiss-votation-visualisation\/de\/compare\/#votes=5960&foreigners=-19\.98$/,
+  );
+  await expect(page.locator('.limit .label')).toHaveText(
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  );
+  await expect(tableOf(page, 5960).locator('thead th')).toHaveText([
+    'Echtes Ergebnis',
+    'Mit Ihrer Auswahl',
+  ]);
+  await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('');
+});
+
+test('No comparison of the tie-break question', async ({ page }) => {
+  await page.goto('de/votes/6823/');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Mit einer anderen Abstimmung vergleichen' }),
+  ).toHaveCount(0);
+});

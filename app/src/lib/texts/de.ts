@@ -157,6 +157,7 @@ export const de: Texts = {
   SAME_MUNICIPALITIES:
     'Die Gemeinden werden nach den Zahlen der ersten Abstimmung ausgewählt; in beiden ' +
     'Abstimmungen zählen dieselben Gemeinden.',
+  COMPARE_LINK: 'Mit einer anderen Abstimmung vergleichen',
 
   // The limits (spec limits).
   populationDate: (year) => `Ende ${String(year)}`,

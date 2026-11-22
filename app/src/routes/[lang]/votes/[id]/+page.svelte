@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import type { ResolvedPathname } from '$app/types';
   import { textsOf } from '../../../../lib/texts/index.ts';
   import { calculateResult, entriesThatRemain } from 'calculation';
   import { onMount } from 'svelte';
@@ -15,6 +16,7 @@
   } from '../../../../lib/limits.ts';
   import { formatCount } from '../../../../lib/format.ts';
   import { applyingTo } from '../../../../lib/characteristics.ts';
+  import { comparisonLinkOf } from '../../../../lib/comparison.ts';
   import { linkOf, selectionOf } from '../../../../lib/share-link.ts';
   import { judgedOf } from '../../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
@@ -73,6 +75,13 @@
       clearTimeout(timer);
     };
   });
+
+  // The comparison with this vote first and the page's current selection, which the page written
+  // at build time does not have (spec vote-comparison, "From a vote's page"; design of
+  // add-vote-comparison, decision 10). A hash leaves the path that `resolve` gave as it was.
+  const comparison = $derived(
+    `${resolve('/[lang]/compare', { lang: data.lang })}#${comparisonLinkOf([data.id], link)}` as ResolvedPathname,
+  );
 
   // The parts of the address the page could not use, which the limits name until the visitor
   // next changes the selection: until its link differs from the one read (design of
@@ -263,6 +272,7 @@
       bind:limits
       bind:abroadCounted
     />
+    <p><a href={comparison}>{t.COMPARE_LINK}</a></p>
     <ResultMap {t} entries={data.entries} {aside} title={data.title} voteDate={data.voteDate} />
   {/if}
 

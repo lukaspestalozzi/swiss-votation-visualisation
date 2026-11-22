@@ -159,6 +159,7 @@ export const fr: Texts = {
   SAME_MUNICIPALITIES:
     'Les communes sont choisies selon les chiffres de la première votation; les mêmes ' +
     'communes comptent dans les deux votations.',
+  COMPARE_LINK: 'Comparer avec une autre votation',
 
   // The limits (spec limits).
   populationDate: (year) => `fin ${String(year)}`,
