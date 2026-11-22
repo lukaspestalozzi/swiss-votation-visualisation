@@ -3,6 +3,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { lowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
+import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 
 /** The language a page declares in its markup. */
 const languageOf = (page: Page) => page.locator('html').getAttribute('lang');
@@ -413,3 +414,76 @@ for (const colorScheme of ['light', 'dark'] as const) {
     });
   });
 }
+
+/** The comparison of 5960 and 5970 with the share of foreigners at its track's ends, measured. */
+async function openMeasured(page: Page): Promise<void> {
+  await page.addInitScript(MEASURE_FRAMES);
+  await page.goto('de/compare/#votes=5960,5970&foreigners=-');
+  for (const id of [5960, 5970]) await expect(tableOf(page, id)).toBeVisible();
+  await expect(page.locator('.limit')).toHaveCount(1);
+  await fontsLoaded(page);
+}
+
+/** Forget the frames measured so far. */
+const forgetFrames = (page: Page) =>
+  page.evaluate(() => {
+    (window as unknown as { __frames: unknown[] }).__frames = [];
+  });
+
+// The budget of the comparison (spec vote-comparison; design of add-vote-comparison, decision 11),
+// measured as the limits' budget, and once more when a frame exceeds it.
+test.describe(() => {
+  test.describe.configure({ retries: 1 });
+
+  test('the budget: Dragging a bound with two votes', async ({ page }) => {
+    await openMeasured(page);
+    const upper = page.getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true });
+    await upper.scrollIntoViewIfNeeded();
+    const box = await upper.boundingBox();
+    if (box === null) throw new Error('the slider has no box');
+    const y = box.y + box.height / 2;
+    const [left, right] = [box.x + 10, box.x + box.width - 10];
+    // The pointer rests on the thumb 50 ms before the press, as a person's does.
+    await page.mouse.move(right, y);
+    await page.waitForTimeout(50);
+    await forgetFrames(page);
+    await page.mouse.down();
+    await page.mouse.move(left, y, { steps: 20 });
+    await page.mouse.move(right, y, { steps: 20 });
+    await page.mouse.up();
+    const frames = await measuredFrames(page);
+    expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
+    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+  });
+
+  test('the budget: Jumps with two votes', async ({ page }) => {
+    await openMeasured(page);
+    await forgetFrames(page);
+    // Each control at a person's pace: the pointer rests on it 50 ms before the click.
+    const press = async (control: ReturnType<Page['getByRole']>) => {
+      await control.hover();
+      await page.waitForTimeout(50);
+      await control.click();
+    };
+    await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Einwohner' });
+    await press(page.getByRole('button', { name: 'Hinzufügen', exact: true }));
+    const abroad = page.getByRole('checkbox', {
+      name: /Auslandschweizerinnen und Auslandschweizer mitzählen/,
+    });
+    await press(abroad);
+    await press(abroad);
+    const second = page.getByLabel('Zweite Abstimmung');
+    await second.selectOption('5980');
+    await expect(tableOf(page, 5980)).toBeVisible();
+    await page.waitForTimeout(50);
+    await second.selectOption('5970');
+    await expect(tableOf(page, 5970)).toBeVisible();
+    await page.waitForTimeout(50);
+    await press(page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }));
+    await expect(page.locator('.limit')).toHaveCount(0);
+    const frames = await measuredFrames(page);
+    expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(4);
+    expect(frames.filter((f) => f.type === 'change').length).toBeGreaterThanOrEqual(3);
+    expect(frames.filter((f) => f.work > 50)).toEqual([]);
+  });
+});
