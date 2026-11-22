@@ -3,9 +3,9 @@
 import { expect, test } from 'vitest';
 import votesFile from '../../static/data/votes.json';
 import type { Vote, VoteFile, Votes } from './vote-data.ts';
-import { calculateResult } from 'calculation';
+import { calculateResult, majoritiesNeeded } from 'calculation';
 import { textsOf } from './texts/index.ts';
-import { judgedOf, votePage } from './vote-page.ts';
+import { judgedOf, judgedOfFile, votePage } from './vote-page.ts';
 
 const listing = votesFile as Votes;
 const de = textsOf('de');
@@ -263,4 +263,20 @@ test('a result not validated yet, in French and Italian: "validé" and "accertat
   expect(votePage(voteOf(6850), fileOf.get(6850), it).provisional).toBe(
     'Risultato provvisorio: non ancora accertato dal Consiglio federale.',
   );
+});
+
+test("a vote's result from its file, as its page gives it, for every judged vote", () => {
+  // The comparison of two votes calculates each from its file in the browser (spec
+  // vote-comparison, "The table of a vote").
+  const judged = listing.votes.filter((vote) => vote.kind !== 'tie-break-question');
+  expect(judged).toHaveLength(124);
+  for (const vote of judged) {
+    const file = fileOf.get(vote.id);
+    if (file === undefined) throw new Error(`no file of vote ${String(vote.id)}`);
+    const majorities = majoritiesNeeded(vote.kind);
+    if (majorities === 'not-calculated') throw new Error(`vote ${String(vote.id)} is not judged`);
+    expect(judgedOfFile(`vote ${String(vote.id)}`, file, majorities, de)).toEqual(
+      votePage(vote, file, de).judged,
+    );
+  }
 });

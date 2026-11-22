@@ -27,13 +27,13 @@ All commands run from the repository root, on a branch started from an updated `
 Spec `vote-comparison`, "Choosing the votes", "The same municipalities in both votes", "The table
 of a vote" and "The comparison in the address"; design, decisions 2 to 6, 8 and 9.
 
-- [ ] 1.1 A vote's real result from its file. `vote-page.ts` exports the function that calculates a
+- [x] 1.1 A vote's real result from its file. `vote-page.ts` exports the function that calculates a
   judged vote's result from its file, the one `votePage` uses. A test in `vote-page.test.ts`: for
   every judged vote it gives the figures `votePage` gives.
 
   Verify: `pnpm --filter app exec vitest run src/lib/vote-page.test.ts` passes, its count one more
   than before.
-- [ ] 1.2 The votes the comparison offers. Create `app/src/lib/comparison.ts` with the list of the
+- [x] 1.2 The votes the comparison offers. Create `app/src/lib/comparison.ts` with the list of the
   judged votes in a language, as the page holds it from the build (design, decision 4), and the
   order of the second list (decision 5), and `app/src/lib/comparison.test.ts`, against
   `votes.json` and the files of entries. The tests, one at a time:
@@ -46,7 +46,7 @@ of a vote" and "The comparison in the address"; design, decisions 2 to 6, 8 and 
     Ergebnis: vom Bundesrat noch nicht erwahrt.".
 
   Verify: `pnpm --filter app exec vitest run src/lib/comparison.test.ts` passes, 4 tests.
-- [ ] 1.3 The comparison in the address. Add the writing (`votes=<first>,<second>` and the
+- [x] 1.3 The comparison in the address. Add the writing (`votes=<first>,<second>` and the
   selection) and the reading (the votes, the selection on the first vote's tracks, and the
   unusable parts) to `comparison.ts` (design, decision 8). The tests, one at a time:
   - written: no vote; one vote; two votes and a selection, `votes=5960,5970&foreigners=-19.98`;
@@ -57,12 +57,19 @@ of a vote" and "The comparison in the address"; design, decisions 2 to 6, 8 and 
   - a link without `votes`, which chooses no vote and keeps its selection's parts.
 
   Verify: `comparison.test.ts` passes, 8 tests.
-- [ ] 1.4 Another first vote. Add the selection read anew on another first vote's tracks (design,
+
+  As built: the reading has two steps. `comparisonOf` gives the votes, the parts of `votes` it
+  cannot use and the rest of the address, which the page reads with `selectionOf` on the first
+  vote's tracks once it has them; a link without votes keeps its selection's parts until a first
+  vote is chosen. The unusable parts of `votes` come before those of the selection in the sentence,
+  as in every link the site writes. The first three tests failed before their code; the fourth
+  passed when written and failed against a mutant that drops the rest without a vote.
+- [x] 1.4 Another first vote. Add the selection read anew on another first vote's tracks (design,
   decision 9). A test: "up to 19.98%" of 5960, read on 6310's track, step 346, the label
   "Ausländeranteil (Ende 2019): von 0.00% bis 19.99%" (investigation, 1).
 
   Verify: `comparison.test.ts` passes, 9 tests.
-- [ ] 1.5 The table of a vote. Add a vote's table, from its real result and, while a selection
+- [x] 1.5 The table of a vote. Add a vote's table, from its real result and, while a selection
   applies, its result with the selection, and its count (design, decision 6). The tests, one at a
   time, with the selection of "Ausländeranteil" up to step 327 of 5960:
   - 5960, real and with the selection, and its count, 1'455 of 2'103;
@@ -72,12 +79,22 @@ of a vote" and "The comparison in the address"; design, decisions 2 to 6, 8 and 
 
   Verify: `comparison.test.ts` passes, 13 tests; the figures are those of
   `investigations/vote-comparison.md`, 2.
-- [ ] 1.6 The loader of a vote's file. Add `createEntriesLoader` to `map-data.ts`, which loads a
+
+  As built: `withSelection` gives a vote's result with the selection and its count from its
+  entries per canton, as the vote's page works them out; `tableOf` lays out the table. The texts
+  "Echtes Ergebnis" and "Vorlage" are added in three languages ("Vrai résultat", "Objet";
+  "Risultato reale", "Oggetto"). The first test failed before the code; the other three passed
+  when written and failed against a mutant each: the Swiss abroad's switch inverted (the first
+  three), and two columns without a selection (the fourth).
+- [x] 1.6 The loader of a vote's file. Add `createEntriesLoader` to `map-data.ts`, which loads a
   vote's file once per id and rejects when the request fails, with tests in `map-data.test.ts`:
   one request per id, and a failed request rejects.
 
   Verify: `pnpm --filter app exec vitest run src/lib/map-data.test.ts` passes, 2 tests more than
   before.
+
+  As built: 6 tests, 4 before. The first failed before the code; the second passed when written
+  and failed against a mutant that reads the answer whatever its status.
 
 ## 2. The page and its votes
 

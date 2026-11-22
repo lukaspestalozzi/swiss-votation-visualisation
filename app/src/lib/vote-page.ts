@@ -79,6 +79,26 @@ export interface VotePage {
 // The entries of a vote's file, each with the canton it counts for.
 type Rows = readonly { readonly canton: string; readonly row: Row }[];
 
+function rowsOf(file: VoteFile): Rows {
+  return Object.entries(file.entries).flatMap(([canton, rows]) =>
+    rows.map((row) => ({ canton, row })),
+  );
+}
+
+/**
+ * The result of a vote the calculation judges, from its file, as its page shows it: the vote that
+ * `name` names, by the `majorities` it needs. The comparison of two votes calculates it in the
+ * browser (spec vote-comparison, "The table of a vote").
+ */
+export function judgedOfFile(
+  name: string,
+  file: VoteFile,
+  majorities: Majorities,
+  t: Texts,
+): Judged {
+  return judgedOfRows(name, rowsOf(file), majorities, t);
+}
+
 export function votePage(vote: Vote, file: VoteFile | undefined, t: Texts): VotePage {
   const name = `vote ${String(vote.id)} of ${vote.date}`;
   if (file === undefined) {
@@ -86,9 +106,7 @@ export function votePage(vote: Vote, file: VoteFile | undefined, t: Texts): Vote
       `${name} has no file of entries (app/static/data/votes/${String(vote.id)}.json)`,
     );
   }
-  const rows = Object.entries(file.entries).flatMap(([canton, rows]) =>
-    rows.map((row) => ({ canton, row })),
-  );
+  const rows = rowsOf(file);
   const majorities = majoritiesNeeded(vote.kind);
   return {
     title: voteText(vote, 'title', t.LANGUAGE),

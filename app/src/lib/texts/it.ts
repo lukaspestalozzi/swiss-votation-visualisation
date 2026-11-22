@@ -149,6 +149,10 @@ export const it: Texts = {
     'Fonti: UST (STATPOP, elezioni del Consiglio nazionale, censimento federale della ' +
     'popolazione 2000, rilevazione delle strutture agricole); swisstopo (swissBOUNDARIES3D 2026).',
 
+  // The comparison of two votes (spec vote-comparison).
+  REAL_RESULT: 'Risultato reale',
+  PROPOSAL: 'Oggetto',
+
   // The limits (spec limits).
   populationDate: (year) => `fine ${String(year)}`,
   censusDate: (year) => `censimento ${String(year)}`,

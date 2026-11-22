@@ -2,7 +2,7 @@
 // browser (spec result-map, "The map's data is loaded once"; design of add-result-map, decisions
 // 7 and 15, and of add-characteristics, decision 13). The page passes the addresses under the
 // site's path; a test passes a fake of `fetch`.
-import type { CharacteristicsFile, MapFile, Municipalities } from './vote-data.ts';
+import type { CharacteristicsFile, MapFile, Municipalities, VoteFile } from './vote-data.ts';
 
 export interface MapSources {
   readonly map: MapFile;
@@ -49,5 +49,26 @@ export function createCharacteristicsLoader(
   return () => {
     loading ??= json(url, fetcher).then((file) => file as CharacteristicsFile);
     return loading;
+  };
+}
+
+/**
+ * A loader of the votes' files of entries, which the comparison of two votes calculates from in
+ * the browser (spec vote-comparison, "Loading the votes"; design of add-vote-comparison, decision
+ * 3): it requests a vote's file, at `urlOf` its id, on the first call for it and gives the same
+ * answer after.
+ */
+export function createEntriesLoader(
+  urlOf: (id: number) => string,
+  fetcher: Fetch,
+): (id: number) => Promise<VoteFile> {
+  const loading = new Map<number, Promise<VoteFile>>();
+  return (id) => {
+    let file = loading.get(id);
+    if (file === undefined) {
+      file = json(urlOf(id), fetcher).then((answer) => answer as VoteFile);
+      loading.set(id, file);
+    }
+    return file;
   };
 }

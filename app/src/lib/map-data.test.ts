@@ -1,7 +1,7 @@
 // Loading the map's data (spec result-map, "The map's data is loaded once" and "A map that
 // cannot be loaded"), with a fake of the browser's fetch.
 import { expect, test } from 'vitest';
-import { createCharacteristicsLoader, createMapLoader } from './map-data.ts';
+import { createCharacteristicsLoader, createEntriesLoader, createMapLoader } from './map-data.ts';
 
 const URLS = { map: '/site/data/map.json', municipalities: '/site/data/municipalities.json' };
 
@@ -46,4 +46,24 @@ test('a failed request of the characteristics rejects, naming the file', async (
   const { fetcher } = fakeFetch(() => 404);
   const load = createCharacteristicsLoader(CHARACTERISTICS, fetcher);
   await expect(load()).rejects.toThrow(/\/site\/data\/characteristics\.json: HTTP 404/);
+});
+
+// A vote's file of entries, as the comparison of two votes loads it (spec vote-comparison).
+const entriesUrl = (id: number) => `/site/data/votes/${String(id)}.json`;
+
+test("each vote's file of entries is requested once", async () => {
+  const { fetcher, requested } = fakeFetch();
+  const load = createEntriesLoader(entriesUrl, fetcher);
+  const first = await load(5960);
+  expect(await load(5960)).toBe(first);
+  expect(first).toEqual({ url: entriesUrl(5960) });
+  await load(5970);
+  expect(requested).toEqual([entriesUrl(5960), entriesUrl(5970)]);
+});
+
+test("a failed request of a vote's file rejects, naming the file", async () => {
+  const { fetcher } = fakeFetch((url) => (url === entriesUrl(5970) ? 404 : 200));
+  const load = createEntriesLoader(entriesUrl, fetcher);
+  await expect(load(5970)).rejects.toThrow(/\/site\/data\/votes\/5970\.json: HTTP 404/);
+  await expect(load(5960)).resolves.toEqual({ url: entriesUrl(5960) });
 });
