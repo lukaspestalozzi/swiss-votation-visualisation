@@ -19,20 +19,29 @@ from pipeline.characteristics import (
     ELECTION_PLACE,
     NOT_A_MUNICIPALITY,
     PLACE,
+    PLAIN_PLACE,
     CharacteristicsData,
     Counts,
     Cube,
+    Withheld,
     check_list,
     election_years,
     group_parties,
     onto_list,
     read_areas,
+    read_born_abroad,
+    read_buildings,
     read_cattle,
     read_correspondences,
     read_cube,
+    read_dwellings,
+    read_education,
     read_elections,
+    read_farms,
+    read_jobs,
     read_languages,
     read_population,
+    read_religions,
     required_years,
 )
 from pipeline.checks import (
@@ -332,11 +341,21 @@ def _register_date(date: str) -> str:
     return f"{day}-{month}-{year}"
 
 
+# The dimension that names the municipalities of a table, where it is not `PLACE`.
+PLACES = {
+    download.ELECTIONS: ELECTION_PLACE,
+    download.JOBS: PLAIN_PLACE,
+    download.DWELLINGS_2000: PLAIN_PLACE,
+    download.BUILDINGS_2000: PLAIN_PLACE,
+}
+
+
 def _characteristics(
     downloads: _Downloads, reference: str, municipalities: list[Municipality], first_vote_day: str
 ) -> CharacteristicsData:
     """The counts of the characteristics, each source checked against the list it gives and
-    brought onto the list of `reference` (design of add-characteristics, decisions 8 to 10)."""
+    brought onto the list of `reference` (design of add-characteristics, decisions 8 to 10; of
+    add-more-characteristics, decisions 7 and 11)."""
     today = [m.number for m in municipalities]
     listed: dict[str, list[int]] = {}
     successors: dict[str, dict[int, set[int]]] = {}
@@ -356,14 +375,20 @@ def _characteristics(
     def cube(request: Request, name: str, table: str) -> Cube:
         found = read_cube(downloads.answer(request, name, f"STAT-TAB gives no {name}"), name)
         date = download.LIST_DATES[table]
-        places = ELECTION_PLACE if table == download.ELECTIONS else PLACE
+        places = PLACES.get(table, PLACE)
         numbers = [n for n in found.municipalities(places).values() if n < NOT_A_MUNICIPALITY]
         check_list(name, date, numbers, listed[date])
         return found
 
-    def onto(table: str, counts: Mapping[int, Counts], what: str) -> dict[int, Counts]:
+    def onto(
+        table: str, counts: Mapping[int, Counts], what: str, all_parts: bool = False
+    ) -> dict[int, Counts]:
         date = download.LIST_DATES[table]
-        return onto_list(counts, successors[date], today, what)
+        return onto_list(counts, successors[date], today, what, all_parts)
+
+    def whole(table: str, counts: Mapping[int, list[int]], what: str) -> dict[int, list[int]]:
+        """Counts every municipality has, on the list."""
+        return {n: _given(moved) for n, moved in onto(table, counts, what).items()}
 
     first_year = int(first_vote_day[:4]) - 1
     totals = cube(download.population_totals(), "population_totals.json", download.POPULATION)
@@ -375,10 +400,38 @@ def _characteristics(
         for year in years
         for first, last in download.AGE_PARTS
     ]  # fmt: skip
-    population: dict[int, dict[int, list[int]]] = {}
-    for year, by_number in read_population(totals, ages).items():
-        moved = onto(download.POPULATION, by_number, f"the population of {year}")
-        population[year] = {n: _given(counts) for n, counts in moved.items()}
+    people = read_population(totals, ages)
+    population = {
+        year: whole(download.POPULATION, by_number, f"the population of {year}")
+        for year, by_number in people.items()
+    }
+
+    name = "born_abroad.json"
+    born = read_born_abroad(cube(download.born_abroad(), name, download.BIRTHPLACE), people)
+    born_abroad: dict[int, dict[int, int]] = {}
+    for year in required_years(born, first_year, name):
+        one = {n: [abroad] for n, abroad in born[year].items()}
+        moved = whole(download.BIRTHPLACE, one, f"those born abroad of {year}")
+        born_abroad[year] = {n: counts[0] for n, counts in moved.items()}
+
+    answers = [
+        cube(download.jobs(sectors), f"jobs_{sectors[0]}.json", download.JOBS)
+        for sectors in download.JOB_PARTS
+    ]
+    employed = read_jobs(answers)
+    jobs: dict[int, dict[int, Withheld]] = {}
+    for year in required_years(employed, first_year, answers[0].source):
+        # Each count by itself: a part whose count is withheld leaves the sum without one.
+        columns = [
+            onto(
+                download.JOBS,
+                {n: _row(row[i]) for n, row in employed[year].items()},
+                f"the jobs of {year}",
+                all_parts=True,
+            )
+            for i in range(4)
+        ]
+        jobs[year] = {n: [_first(column[n]) for column in columns] for n in today}
 
     name = "elections_description.json"
     content = downloads.answer(download.description(download.ELECTIONS), name, "no description")
@@ -391,21 +444,60 @@ def _characteristics(
         }
         elections[year] = onto(download.ELECTIONS, rows, f"the election of {year}")
 
-    farms = read_cattle(cube(download.cattle(), "cattle.json", download.FARMS))
+    head = read_cattle(cube(download.cattle(), "cattle.json", download.FARMS))
     cattle: dict[int, dict[int, int]] = {}
-    for year in required_years(farms, first_year, "cattle.json"):
-        moved = onto(download.FARMS, {n: [head] for n, head in farms[year].items()}, "cattle")
-        cattle[year] = {n: _given(counts)[0] for n, counts in moved.items()}
+    for year in required_years(head, first_year, "cattle.json"):
+        moved = whole(download.FARMS, {n: [count] for n, count in head[year].items()}, "cattle")
+        cattle[year] = {n: counts[0] for n, counts in moved.items()}
+
+    surveyed = read_farms(
+        cube(download.farms(), "farms.json", download.FARMS),
+        cube(download.farmland(), "farmland.json", download.FARMS),
+        cube(download.organic_farmland(), "organic_farmland.json", download.FARMS),
+    )
+    farms = {
+        year: whole(download.FARMS, surveyed[year], f"the farms of {year}")
+        for year in required_years(surveyed, first_year, "farms.json")
+    }
+    if sorted(farms) != sorted(cattle):
+        raise SourceError(
+            f"farms.json: its years {sorted(farms)} are not those of cattle.json, {sorted(cattle)}"
+        )
 
     census = read_languages(cube(download.census(), "census_2000.json", download.CENSUS_2000))
-    moved = onto(download.CENSUS_2000, census, "the census of 2000")
-    languages = {n: _given(counts) for n, counts in moved.items()}
+    languages = whole(download.CENSUS_2000, census, "the languages of 2000")
+    table, name = download.RELIGION_2000, "religion_2000.json"
+    religion = whole(table, read_religions(cube(download.religion(), name, table)), "religion")
+    table, name = download.EDUCATION_2000, "education_2000.json"
+    education = whole(table, read_education(cube(download.education(), name, table)), "education")
+    table = download.DWELLINGS_2000
+    answers = [
+        cube(download.dwellings(rooms), f"dwellings_2000_{rooms[0]}.json", table)
+        for rooms in download.ROOM_PARTS
+    ]
+    dwellings = whole(table, read_dwellings(answers), "the dwellings of 2000")
+    table, name = download.BUILDINGS_2000, "buildings_2000.json"
+    buildings = whole(table, read_buildings(cube(download.buildings(), name, table)), "buildings")
 
     name = "swissboundaries3d_2026-01.zip"
     content = downloads.answer(Request(download.SWISSBOUNDARIES), name, "swisstopo gives no areas")
     areas = read_areas(content, name)
     check_list(name, reference, areas, today)
-    return CharacteristicsData(today, population, elections, cattle, languages, areas)
+    return CharacteristicsData(
+        municipalities=today,
+        population=population,
+        elections=elections,
+        cattle=cattle,
+        languages=languages,
+        areas=areas,
+        born_abroad=born_abroad,
+        jobs=jobs,
+        farms=farms,
+        religion=religion,
+        education=education,
+        dwellings=dwellings,
+        buildings=buildings,
+    )
 
 
 def _given(counts: Counts) -> list[int]:
@@ -413,6 +505,16 @@ def _given(counts: Counts) -> list[int]:
     if counts is None:
         raise SourceError("a municipality has no counts where every one must have them")
     return counts
+
+
+def _row(held: int | None) -> Counts:
+    """One count as a row, none for a count the source withholds."""
+    return None if held is None else [held]
+
+
+def _first(counts: Counts) -> int | None:
+    """The one count of a row, or none."""
+    return None if counts is None else counts[0]
 
 
 def _description_years(content: bytes, name: str) -> list[int]:

@@ -12,15 +12,23 @@ from pipeline.characteristics import (
     group_parties,
     onto_list,
     read_areas,
+    read_born_abroad,
+    read_buildings,
     read_cattle,
     read_correspondences,
     read_cube,
+    read_dwellings,
+    read_education,
     read_elections,
+    read_farms,
+    read_jobs,
     read_languages,
     read_population,
+    read_religions,
     required_years,
 )
 from pipeline.counts import SourceError
+from pipeline.download import JOB_PARTS, ROOM_PARTS
 from pipeline.register import read_register
 
 # The three queries of a year's single years of age (at most 100,000 cells each).
@@ -324,3 +332,393 @@ def test_an_election_missing_from_the_last_before_the_first_vote_on_stops_the_ru
     message = r"^elections: no figures of the elections \[2019\]"
     with pytest.raises(SourceError, match=message):
         election_years([2007, 2011, 2015, 2023], "2013-03-03", "elections")
+
+
+def test_municipalities_named_without_dots_are_read_with_their_numbers() -> None:
+    # Three tables have a dimension "Gemeinde": "0001 Aeugst am Albis", beside Switzerland.
+    found = cube(made_up.buildings(), "buildings_2000.json").municipalities("Gemeinde")
+    assert found == {f"{number:04d}": number for number in made_up.CENSUS_EARLIER}
+    assert "0000" not in found
+
+
+BORN = {"Bevölkerungstyp": "1", "Geschlecht": "-99999", "Zivilstand": "-99999"}
+
+
+def born_abroad(document: dict[str, Any] | None = None) -> dict[int, dict[int, int]]:
+    """Those born abroad as read, beside the population of 2015."""
+    given = made_up.birthplace() if document is None else document
+    return read_born_abroad(cube(given, "born_abroad.json"), read_population(*population_cubes()))
+
+
+def test_those_born_abroad_are_read_for_every_year() -> None:
+    born = born_abroad()
+    assert born[2015][351] == made_up.born_abroad(351, 2015)
+    assert born[2025][1] == made_up.born_abroad(1, 2025)
+    assert set(born) == set(made_up.POPULATION_YEARS)
+    assert set(born[2015]) == set(made_up.EARLIER)
+
+
+def test_a_missing_count_of_those_born_abroad_stops_the_run() -> None:
+    document = made_up.birthplace()
+    set_value(document, BORN | {"Jahr": "2015", made_up.GEO: "0351", "Geburtsort": "2"}, None)
+    message = "born_abroad.json, municipality 351, 2015: born abroad is None"
+    with pytest.raises(SourceError, match=f"^{message}, not a whole number from zero$"):
+        born_abroad(document)
+
+
+def test_those_born_abroad_that_do_not_add_up_to_switzerland_stop_the_run() -> None:
+    document = made_up.birthplace()
+    total = sum(made_up.born_abroad(number, 2015) for number in made_up.EARLIER)
+    set_value(document, BORN | {"Jahr": "2015", made_up.GEO: "8100", "Geburtsort": "2"}, total + 1)
+    message = f"born_abroad.json, 2015: the municipalities add up to {total} born abroad"
+    with pytest.raises(SourceError, match=f"^{message}, not {total + 1}$"):
+        born_abroad(document)
+
+
+def test_inhabitants_that_differ_from_the_population_tables_stop_the_run() -> None:
+    document = made_up.birthplace()
+    inhabitants = sum(made_up.population_groups(351, 2015))
+    cell = BORN | {"Jahr": "2015", made_up.GEO: "0351", "Geburtsort": "-99999"}
+    set_value(document, cell, inhabitants - 1)
+    message = (
+        f"born_abroad.json, municipality 351, 2015: its {inhabitants - 1} inhabitants are not "
+        f"the {inhabitants} of the population table"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        born_abroad(document)
+
+
+def test_a_year_only_one_table_gives_is_not_compared() -> None:
+    # The population as read here has 2015 only; the place of birth also gives the other years.
+    document = made_up.birthplace()
+    cell = BORN | {"Jahr": "2014", made_up.GEO: "0351", "Geburtsort": "-99999"}
+    set_value(document, cell, 1)
+    assert born_abroad(document)[2014][351] == made_up.born_abroad(351, 2014)
+
+
+def test_the_religions_are_read() -> None:
+    read = read_religions(cube(made_up.religion(), "religion_2000.json"))
+    given = made_up.religions(351)
+    assert read[351] == [sum(given.values()), given["1"], given["8"], given["17"]]
+    assert set(read) == set(made_up.CENSUS_EARLIER)
+
+
+def religion_cell(document: dict[str, Any], label: str, religion: str) -> dict[str, str]:
+    """The cell of a place, by its label, and a religion, by its code."""
+    return {
+        "Wohnsitztyp": "1",
+        made_up.GEO: code_of(document, made_up.GEO, label),
+        "Religion": religion,
+    }
+
+
+def test_a_religion_without_a_count_stops_the_run_and_is_named() -> None:
+    document = made_up.religion()
+    set_value(document, religion_cell(document, "......0351 Bern", "8"), None)
+    message = "religion_2000.json, municipality 351, 2000: Roman Catholic is None"
+    with pytest.raises(SourceError, match=f"^{message}, not a whole number from zero$"):
+        read_religions(cube(document, "religion_2000.json"))
+
+
+def test_religions_that_do_not_add_up_to_the_inhabitants_stop_the_run() -> None:
+    # A religion the characteristics do not name counts too: the Islamic communities.
+    document = made_up.religion()
+    given = made_up.religions(351)
+    set_value(document, religion_cell(document, "......0351 Bern", "13"), given["13"] - 1)
+    total = sum(given.values())
+    message = (
+        f"religion_2000.json, municipality 351, 2000: its religions add up to {total - 1}, "
+        f"not to its {total} inhabitants"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_religions(cube(document, "religion_2000.json"))
+
+
+def test_a_religion_that_does_not_add_up_to_switzerland_stops_the_run() -> None:
+    document = made_up.religion()
+    total = sum(made_up.religions(number)["8"] for number in made_up.CENSUS_EARLIER)
+    set_value(document, religion_cell(document, "Schweiz", "8"), total + 1)
+    message = f"religion_2000.json, 2000: the municipalities add up to {total} Roman Catholic"
+    with pytest.raises(SourceError, match=f"^{message}, not {total + 1}$"):
+        read_religions(cube(document, "religion_2000.json"))
+
+
+def test_the_three_levels_of_education_are_read_from_the_tables_thirteen() -> None:
+    read = read_education(cube(made_up.education(), "education_2000.json"))
+    given = made_up.education_levels(351)
+    assert read[351] == [
+        given["1"] + given["2"],
+        given["3"] + given["4"] + given["5"] + given["6"],
+        given["7"] + given["8"] + given["9"] + given["10"],
+    ]
+    assert set(read) == set(made_up.CENSUS_EARLIER)
+
+
+def education_cell(document: dict[str, Any], label: str, level: str) -> dict[str, str]:
+    """The cell of a place, by its label, and a level of education, by its code."""
+    return {
+        "Höchste abgeschlossene Ausbildung": level,
+        made_up.GEO: code_of(document, made_up.GEO, label),
+        "Staatsangehörigkeit (Kategorie)": "0",
+        "Geschlecht": "0",
+    }
+
+
+def test_levels_of_education_that_do_not_add_up_to_the_inhabitants_stop_the_run() -> None:
+    # Those of school age count among the inhabitants, though in none of the three levels.
+    document = made_up.education()
+    given = made_up.education_levels(351)
+    set_value(document, education_cell(document, "......0351 Bern", "12"), given["12"] + 1)
+    total = sum(given.values())
+    message = (
+        f"education_2000.json, municipality 351, 2000: its levels of education add up to "
+        f"{total + 1}, not to its {total} inhabitants"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_education(cube(document, "education_2000.json"))
+
+
+def test_a_level_of_education_that_does_not_add_up_to_switzerland_stops_the_run() -> None:
+    document = made_up.education()
+    total = sum(made_up.education_levels(number)["10"] for number in made_up.CENSUS_EARLIER)
+    set_value(document, education_cell(document, "Schweiz", "10"), total - 1)
+    message = (
+        f"education_2000.json, 2000: the municipalities add up to {total} Universität, Hochschule"
+    )
+    with pytest.raises(SourceError, match=f"^{message}, not {total - 1}$"):
+        read_education(cube(document, "education_2000.json"))
+
+
+def dwellings_cubes() -> list[Cube]:
+    return [
+        cube(made_up.dwellings(rooms), f"dwellings_2000_{rooms[0]}.json") for rooms in ROOM_PARTS
+    ]
+
+
+def test_the_occupied_dwellings_are_added_up_over_the_rooms() -> None:
+    read = read_dwellings(dwellings_cubes())
+    sizes = [str(rooms) for rooms in range(1, 11)]
+    occupied = [
+        made_up.dwellings_occupied(351, size, occupant)
+        for size in sizes
+        for occupant in made_up.OCCUPANTS
+    ]
+    # The owners: of the flat, of the house alone, of the house with others.
+    owners = [
+        made_up.dwellings_occupied(351, size, occupant)
+        for size in sizes
+        for occupant in ("3", "4", "5")
+    ]
+    assert read[351] == [sum(occupied), sum(owners)]
+    assert set(read) == set(made_up.CENSUS_EARLIER)
+
+
+def test_the_buildings_with_dwellings_and_the_single_family_houses_are_read() -> None:
+    read = read_buildings(cube(made_up.buildings(), "buildings_2000.json"))
+    built = {
+        kind: sum(made_up.buildings_built(351, kind, period) for period in made_up.BUILDING_PERIODS)
+        for kind in made_up.BUILDING_KINDS
+    }
+    assert read[351] == [sum(built.values()), built["EFH"]]
+    assert set(read) == set(made_up.CENSUS_EARLIER)
+
+
+def test_dwellings_of_another_year_stop_the_run() -> None:
+    # The table also gives 1990: an answer must be the one asked for 2000.
+    answer = cube(made_up.dwellings(ROOM_PARTS[0], year="1990"), "dwellings_2000_1.json")
+    message = r"dwellings_2000_1.json: its figures are of the years \['1990'\], not of 2000 alone"
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_dwellings([answer, *dwellings_cubes()[1:]])
+
+
+def test_dwellings_that_do_not_add_up_to_switzerland_stop_the_run() -> None:
+    document = made_up.dwellings(ROOM_PARTS[0])
+    cell = {"Gemeinde": "CH", "Anzahl Zimmer": "3", "Bewohnertyp": "1", "Jahr": "2000"}
+    total = sum(made_up.dwellings_occupied(n, "3", "1") for n in made_up.CENSUS_EARLIER)
+    set_value(document, cell, total + 1)
+    message = (
+        f"dwellings_2000_1.json, 2000: the municipalities add up to {total} occupied dwellings "
+        rf"\(3 Zimmer, Mieter/in\), not {total + 1}"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_dwellings([cube(document, "dwellings_2000_1.json"), *dwellings_cubes()[1:]])
+
+
+def test_buildings_that_do_not_add_up_to_switzerland_stop_the_run() -> None:
+    document = made_up.buildings()
+    cell = {"Gemeinde": "0000", "Gebäudekategorie": "EFH", "Bauperiode": "8", "Jahr": "2000"}
+    total = sum(made_up.buildings_built(n, "EFH", "8") for n in made_up.CENSUS_EARLIER)
+    set_value(document, cell, total - 1)
+    message = (
+        f"buildings_2000.json, 2000: the municipalities add up to {total} buildings with "
+        rf"dwellings \(Einfamilienhäuser, Zwischen 1996 und 2000 erbaut\), not {total - 1}"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_buildings(cube(document, "buildings_2000.json"))
+
+
+def jobs_cubes(first: dict[str, Any] | None = None) -> list[Cube]:
+    """The jobs' two answers, by sectors; `first` in the place of the one with all jobs."""
+    documents = [made_up.jobs(sectors) for sectors in JOB_PARTS]
+    if first is not None:
+        documents[0] = first
+    return [
+        cube(document, f"jobs_{sectors[0]}.json")
+        for document, sectors in zip(documents, JOB_PARTS, strict=True)
+    ]
+
+
+def test_the_four_counts_of_the_jobs_are_read() -> None:
+    jobs = read_jobs(jobs_cubes())
+    assert jobs[2015][351] == made_up.jobs_counted(351, 2015)
+    assert set(jobs) == set(made_up.JOB_YEARS)
+    assert set(jobs[2015]) == set(made_up.EARLIER)
+
+
+def test_a_withheld_count_of_the_jobs_is_none() -> None:
+    jobs = read_jobs(jobs_cubes())
+    counted = made_up.jobs_counted(389, 2015)
+    assert jobs[2015][389] == [counted[0], counted[1], None, None]
+
+
+def set_sign(document: dict[str, Any], cell: dict[str, str], sign: str) -> None:
+    """Break a json-stat2 answer: a sign in place of the value of a cell."""
+    keys = itertools.product(
+        *[list(document["dimension"][d]["category"]["index"]) for d in document["id"]]
+    )
+    index = list(keys).index(tuple(cell[d] for d in document["id"]))
+    document["value"][index] = None
+    document["status"][str(index)] = sign
+
+
+def jobs_cell(number: int, year: int, sector: str) -> dict[str, str]:
+    return {
+        "Jahr": str(year),
+        "Gemeinde": str(number),
+        "Wirtschaftssektor": sector,
+        "Beobachtungseinheit": "2",
+    }
+
+
+def test_another_sign_in_the_jobs_table_stops_the_run_and_is_named() -> None:
+    document = made_up.jobs(JOB_PARTS[0])
+    set_sign(document, jobs_cell(351, 2015, "999"), "...")
+    message = "jobs_999.json, municipality 351, 2015: jobs is None"
+    with pytest.raises(SourceError, match=f"^{message}, not a whole number from zero$"):
+        read_jobs(jobs_cubes(document))
+
+
+def test_sectors_that_do_not_add_up_to_all_jobs_stop_the_run() -> None:
+    document = made_up.jobs(JOB_PARTS[0])
+    counted = made_up.jobs_counted(351, 2015)
+    set_value(document, jobs_cell(351, 2015, "1"), counted[1] - 1)
+    message = (
+        f"jobs_999.json, municipality 351, 2015: its sectors add up to {counted[0] - 1}, "
+        f"not to its {counted[0]} jobs"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_jobs(jobs_cubes(document))
+
+
+def test_with_a_sector_withheld_the_sum_is_not_compared() -> None:
+    document = made_up.jobs(JOB_PARTS[0])
+    set_sign(document, jobs_cell(351, 2015, "1"), "X")
+    counted = made_up.jobs_counted(351, 2015)
+    jobs = read_jobs(jobs_cubes(document))
+    assert jobs[2015][351] == [counted[0], None, counted[2], counted[3]]
+
+
+def test_the_jobs_are_not_added_up_over_switzerland() -> None:
+    # Switzerland's figures count what the table withholds of a municipality.
+    counted = [made_up.jobs_counted(number, 2015)[2] for number in made_up.EARLIER]
+    given = [made_up.jobs_of(number, 2015)[2] for number in made_up.EARLIER]
+    assert sum(held for held in given if held is not None) < sum(counted)
+    jobs = read_jobs(jobs_cubes())
+    assert [jobs[2015][number][2] for number in made_up.EARLIER] == given
+
+
+def test_a_part_without_a_count_leaves_the_sum_without_one() -> None:
+    # Bonstetten (3) is part of Affoltern am Albis (2) today; its count is withheld.
+    rows: dict[int, list[int] | None] = {number: [10] for number in made_up.EARLIER}
+    rows[3] = None
+    today = onto_list(
+        rows, successors("2024-01-01"), listed("2026-01-01"), "the jobs", all_parts=True
+    )
+    assert today[2] is None
+    assert today[1] == [10]
+    assert today[6831] == [10]
+
+
+def test_a_part_without_an_election_result_adds_nothing() -> None:
+    # The elections' rule stays: Bonstetten (3) counts its votes with another municipality.
+    rows: dict[int, list[int] | None] = {number: [10] for number in made_up.EARLIER}
+    rows[3] = None
+    today = onto_list(rows, successors("2023-01-01"), listed("2026-01-01"), "the election")
+    assert today[2] == [10]
+
+
+# The farms table's three further answers: the farms, the farmland, the organic farmland.
+FARM_ANSWERS = {"farms": ("0", "0"), "farmland": ("10", "0"), "organic_farmland": ("10", "1")}
+
+
+def farm_cubes(**changed: dict[str, Any]) -> list[Cube]:
+    """The three answers, each as made up or as `changed` gives it by its name."""
+    return [
+        cube(changed.get(name, made_up.farms(unit, system)), f"{name}.json")
+        for name, (unit, system) in FARM_ANSWERS.items()
+    ]
+
+
+def test_the_farms_and_their_farmland_are_read() -> None:
+    farms = read_farms(*farm_cubes())
+    assert farms[2015][2] == made_up.farms_of(2, 2015)
+    assert farms[2015][351] == [0, 0, 0]
+    assert set(farms) == set(made_up.FARM_YEARS)
+    assert set(farms[2015]) == set(made_up.EARLIER)
+
+
+def farm_cell(document: dict[str, Any], label: str, year: int) -> dict[str, str]:
+    """The cell of a place, by its label, and a year in an answer of the farms table."""
+
+    def only(dimension: str) -> str:
+        return str(next(iter(document["dimension"][dimension]["category"]["index"])))
+
+    return {
+        "Beobachtungseinheit": only("Beobachtungseinheit"),
+        made_up.GEO: code_of(document, made_up.GEO, label),
+        "Betriebssystem": only("Betriebssystem"),
+        "Jahr": code_of(document, "Jahr", str(year)),
+    }
+
+
+def test_farms_that_do_not_add_up_to_switzerland_stop_the_run() -> None:
+    document = made_up.farms("0", "0")
+    total = sum(made_up.farms_of(number, 2015)[0] for number in made_up.EARLIER)
+    set_value(document, farm_cell(document, "Schweiz", 2015), total + 1)
+    message = f"farms.json, 2015: the municipalities add up to {total} farms, not {total + 1}"
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_farms(*farm_cubes(farms=document))
+
+
+def test_farmland_that_does_not_add_up_to_switzerland_is_accepted() -> None:
+    # Each municipality's farmland is a whole number of hectares, Switzerland's the rounded sum.
+    documents = {}
+    for i, name in ((1, "farmland"), (2, "organic_farmland")):
+        documents[name] = made_up.farms(*FARM_ANSWERS[name])
+        total = sum(made_up.farms_of(number, 2015)[i] for number in made_up.EARLIER)
+        set_value(documents[name], farm_cell(documents[name], "Schweiz", 2015), total + 3)
+    farms = read_farms(*farm_cubes(**documents))
+    assert farms[2015][2] == made_up.farms_of(2, 2015)
+
+
+def test_more_organic_farmland_than_farmland_stops_the_run() -> None:
+    document = made_up.farms(*FARM_ANSWERS["organic_farmland"])
+    farmland = made_up.farms_of(2, 2015)[1]
+    cell = farm_cell(document, "......0002 Affoltern am Albis", 2015)
+    set_value(document, cell, farmland + 1)
+    message = (
+        f"organic_farmland.json, municipality 2, 2015: its {farmland + 1} hectares of organic "
+        f"farmland are more than its {farmland} hectares of farmland"
+    )
+    with pytest.raises(SourceError, match=f"^{message}$"):
+        read_farms(*farm_cubes(organic_farmland=document))

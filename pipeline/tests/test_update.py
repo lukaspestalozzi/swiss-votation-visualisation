@@ -61,6 +61,17 @@ class Sources:
         self.answer(download.cattle(), made_up.farms())
         self.answer(download.census(), made_up.census())
         self.files[download.SWISSBOUNDARIES] = made_up.swissboundaries()
+        self.answer(download.born_abroad(), made_up.birthplace())
+        for sectors in download.JOB_PARTS:
+            self.answer(download.jobs(sectors), made_up.jobs(sectors))
+        self.answer(download.farms(), made_up.farms("0", "0"))
+        self.answer(download.farmland(), made_up.farms("10", "0"))
+        self.answer(download.organic_farmland(), made_up.farms("10", "1"))
+        self.answer(download.religion(), made_up.religion())
+        self.answer(download.education(), made_up.education())
+        for rooms in download.ROOM_PARTS:
+            self.answer(download.dwellings(rooms), made_up.dwellings(rooms))
+        self.answer(download.buildings(), made_up.buildings())
 
     def answer(self, request: Request, document: dict[str, Any]) -> None:
         assert request.body is not None
@@ -360,9 +371,23 @@ def test_the_record_names_the_characteristics_sources(tmp_path: Path) -> None:
     # The elections: their description (no query) and the three elections from 2015.
     elections = by_address[download.STAT_TAB.format(table=download.ELECTIONS)]
     assert sorted(source["query"] is None for source in elections) == [False] * 3 + [True]
-    for table in (download.FARMS, download.CENSUS_2000):
-        [answer] = by_address[download.STAT_TAB.format(table=table)]
-        assert answer["query"] is not None
+    # The farms table's four answers, the jobs' two, the dwellings' three, and one of each other.
+    answers = {
+        download.FARMS: 4,
+        download.CENSUS_2000: 1,
+        download.BIRTHPLACE: 1,
+        download.JOBS: 2,
+        download.RELIGION_2000: 1,
+        download.EDUCATION_2000: 1,
+        download.DWELLINGS_2000: 3,
+        download.BUILDINGS_2000: 1,
+    }
+    for table, expected in answers.items():
+        given = by_address[download.STAT_TAB.format(table=table)]
+        assert len({answer["query"] for answer in given}) == len(given) == expected, table
+        assert all(answer["query"] is not None for answer in given)
+    assert set(download.LIST_DATES) == {download.POPULATION, download.ELECTIONS, *answers}
+    assert REGISTER.format(date="01-01-2024") in by_address
     for date in set(download.LIST_DATES.values()):
         start = "-".join(reversed(date.split("-")))
         assert REGISTER.format(date=start) in by_address
@@ -403,5 +428,144 @@ def test_a_source_without_the_first_year_needed_leaves_the_data_files_as_they_we
     monkeypatch.setattr(made_up, years, [y for y in getattr(made_up, years) if y != 2015])
     status = main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data)
     assert status == 1
+    assert message in capsys.readouterr().err
+    assert snapshot(data) == before
+
+
+def characteristics_of(tmp_path: Path, sources: Sources | None = None) -> dict[str, Any]:
+    """`characteristics.json` as a run writes it."""
+    data = tmp_path / "data"
+    update(project(tmp_path), data, sources or Sources(), TODAY)
+    document: dict[str, Any] = json.loads(
+        (data / "characteristics.json").read_text(encoding="utf-8")
+    )
+    return document
+
+
+def added(*rows: list[int]) -> list[int]:
+    return [sum(column) for column in zip(*rows, strict=True)]
+
+
+def test_a_run_writes_the_yearly_counts_of_the_new_tables(tmp_path: Path) -> None:
+    document = characteristics_of(tmp_path)
+    numbers = document["municipalities"]
+    # Each from the year before the first vote day (2016-02-28) to its table's newest.
+    assert document["bornAbroad"]["years"] == list(range(2015, 2026))
+    assert document["jobs"]["years"] == list(range(2015, 2025))
+    assert document["farms"]["years"] == document["cattle"]["years"] == list(range(2015, 2026))
+    born_2015 = dict(zip(numbers, document["bornAbroad"]["counts"][0], strict=True))
+    # Bonstetten (3) merged into Affoltern am Albis (2); Moutier was 700.
+    assert born_2015[2] == made_up.born_abroad(2, 2015) + made_up.born_abroad(3, 2015)
+    assert born_2015[6831] == made_up.born_abroad(700, 2015)
+    farms_2015 = dict(zip(numbers, document["farms"]["counts"][0], strict=True))
+    assert farms_2015[2] == added(made_up.farms_of(2, 2015), made_up.farms_of(3, 2015))
+    assert farms_2015[351] == [0, 0, 0]
+    jobs_2016 = dict(zip(numbers, document["jobs"]["counts"][1], strict=True))
+    assert jobs_2016[2] == added(made_up.jobs_counted(2, 2016), made_up.jobs_counted(3, 2016))
+    assert jobs_2016[6831] == made_up.jobs_counted(700, 2016)
+
+
+def religions_of(number: int) -> list[int]:
+    given = made_up.religions(number)
+    return [sum(given.values()), given["1"], given["8"], given["17"]]
+
+
+def education_of(number: int) -> list[int]:
+    given = made_up.education_levels(number)
+    return [
+        given["1"] + given["2"],
+        given["3"] + given["4"] + given["5"] + given["6"],
+        given["7"] + given["8"] + given["9"] + given["10"],
+    ]
+
+
+def dwellings_of(number: int) -> list[int]:
+    sizes = [str(rooms) for rooms in range(1, 11)]
+
+    def occupied(occupants: tuple[str, ...]) -> int:
+        return sum(made_up.dwellings_occupied(number, s, o) for s in sizes for o in occupants)
+
+    return [occupied(tuple(made_up.OCCUPANTS)), occupied(("3", "4", "5"))]
+
+
+def buildings_of(number: int) -> list[int]:
+    def built(kinds: tuple[str, ...]) -> int:
+        periods = made_up.BUILDING_PERIODS
+        return sum(made_up.buildings_built(number, k, p) for k in kinds for p in periods)
+
+    return [built(tuple(made_up.BUILDING_KINDS)), built(("EFH",))]
+
+
+def test_a_run_writes_the_counts_of_2000_of_the_new_tables(tmp_path: Path) -> None:
+    document = characteristics_of(tmp_path)
+    numbers = document["municipalities"]
+    # Wettswil (4) is split between Aeugst am Albis (1) and Affoltern am Albis (2), which
+    # Bonstetten (3) joined: the four are one group, and both have its counts.
+    for key, counted in (
+        ("religion2000", religions_of),
+        ("education2000", education_of),
+        ("dwellings2000", dwellings_of),
+        ("buildings2000", buildings_of),
+    ):
+        written = dict(zip(numbers, document[key], strict=True))
+        assert written[1] == written[2] == added(*(counted(n) for n in (1, 2, 3, 4))), key
+        assert written[351] == counted(351), key
+        assert written[6831] == counted(700), key
+
+
+def test_a_withheld_count_is_written_as_null(tmp_path: Path) -> None:
+    document = characteristics_of(tmp_path)
+    jobs_2015 = dict(zip(document["municipalities"], document["jobs"]["counts"][0], strict=True))
+    meienried = made_up.jobs_counted(389, 2015)
+    assert jobs_2015[389] == [meienried[0], meienried[1], None, None]
+    # Affoltern am Albis (2) is made of two: the primary sector of Bonstetten (3) is withheld
+    # in 2015, so the two have no count of it together; the other three are added up.
+    both = added(made_up.jobs_counted(2, 2015), made_up.jobs_counted(3, 2015))
+    assert jobs_2015[2] == [both[0], None, both[2], both[3]]
+    text = (tmp_path / "data" / "characteristics.json").read_text(encoding="utf-8")
+    assert f"[{meienried[0]},{meienried[1]},null,null]" in text
+
+
+def test_the_jobs_table_on_another_list_stops_the_update(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    sources = Sources()
+    for sectors in download.JOB_PARTS:
+        document = made_up.jobs(sectors)
+        # Bern under another number: 351 is missing, and 8999 is on no list.
+        document["dimension"]["Gemeinde"]["category"]["label"]["351"] = "8999 Neudorf"
+        sources.answer(download.jobs(sectors), document)
+    status = main(["update"], fetch=sources, today=TODAY, project=directory, data=data)
+    assert status == 1
+    message = (
+        "jobs_999.json: its municipalities are not the register's list of 2024-01-01: "
+        "not on the list [8999], missing [351]"
+    )
+    assert message in capsys.readouterr().err
+    assert snapshot(data) == before
+
+
+def test_farms_of_other_years_than_the_cattle_stop_the_update(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The four answers of the farms table are asked one after the other; the app takes the
+    # farms of the cattle's year.
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    sources = Sources()
+    monkeypatch.setattr(made_up, "FARM_YEARS", [y for y in made_up.FARM_YEARS if y != 2025])
+    sources.answer(download.farms(), made_up.farms("0", "0"))
+    sources.answer(download.farmland(), made_up.farms("10", "0"))
+    sources.answer(download.organic_farmland(), made_up.farms("10", "1"))
+    status = main(["update"], fetch=sources, today=TODAY, project=directory, data=data)
+    assert status == 1
+    message = (
+        f"farms.json: its years {list(range(2015, 2025))} are not those of cattle.json, "
+        f"{list(range(2015, 2026))}"
+    )
     assert message in capsys.readouterr().err
     assert snapshot(data) == before

@@ -494,7 +494,8 @@ CENSUS_EARLIER = EARLIER | {4: ("Wettswil", "ZH")}
 SUCCESSORS: dict[int, list[int]] = {2: [2], 3: [2], 700: [6831]}
 CENSUS_SUCCESSORS = SUCCESSORS | {4: [1, 2]}
 # The dates of the tables' lists, as the pipeline expects them.
-LIST_DATES = {"population": "2025-04-06", "elections": "2023-01-01", "census": "2000-12-05"}
+LIST_DATES = {"population": "2025-04-06", "elections": "2023-01-01", "census": "2000-12-05",
+              "jobs": "2024-01-01"}  # fmt: skip
 DISTRICTS = {"ZH": ("000101", "Bezirk Affoltern"), "BE": ("000243", "Verwaltungskreis Seeland"),
              "JU": ("002601", "District de Delémont")}  # fmt: skip
 CANTON_NAMES = {"ZH": "Zürich", "BE": "Bern / Berne", "JU": "Jura"}
@@ -525,8 +526,20 @@ def foreigners(number: int, year: int) -> int:
     return sum(population_groups(number, year)) // 4
 
 
+def born_abroad(number: int, year: int) -> int:
+    return sum(population_groups(number, year)) // 5
+
+
 def cattle(number: int, year: int) -> int:
     return 0 if number == 351 else BASES[number] // 10 + year - 2010
+
+
+def farms_of(number: int, year: int) -> list[int]:
+    """The farms of a year, their farmland and the farmland of the organic ones, in hectares.
+    Bern (351) has no farm and no farmland."""
+    farms = 0 if number == 351 else BASES[number] // 100 + 1
+    farmland = farms * (20 + year - 2010)
+    return [farms, farmland, farmland // 4]
 
 
 def party_votes(number: int, year: int) -> dict[str, int]:
@@ -547,21 +560,66 @@ def languages(number: int) -> list[int]:
     return [base, base * 8 // 10, base // 30, base // 25, base // 200]
 
 
+# The real religion table's religions, by code, in its order.
+RELIGIONS = {"0": "Religionen - Total", "1": "Evangelisch-reformierte Kirche",
+             "2": "Evangelisch-methodistische Kirche", "3": "Neupietistisch-evangelikale Gemeinden",
+             "4": "Pfingstgemeinden", "5": "Neuapostolische Kirchen", "6": "Zeugen Jehovas",
+             "7": "Übrige protestantische Kirchen und Gemeinschaften",
+             "8": "Römisch-katholische Kirche", "9": "Christkatholische Kirche",
+             "10": "Christlich-orthodoxe Kirchen", "11": "Andere christliche Gemeinschaften",
+             "12": "Jüdische Glaubensgemeinschaft", "13": "Islamische Gemeinschaften",
+             "14": "Buddhistische Vereinigungen", "15": "Hinduistische Vereinigungen",
+             "16": "Übrige Kirchen und Religionsgemeinschaften", "17": "Keine Zugehörigkeit",
+             "18": "Ohne Angabe"}  # fmt: skip
+
+
+def religions(number: int) -> dict[str, int]:
+    """The census of 2000: the inhabitants by the code of their religion, those without an
+    answer ("18") being the rest. A religion not named has none there."""
+    base = languages(number)[0]
+    named = {"1": base * 4 // 10, "8": base * 3 // 10, "13": base // 20, "17": base // 10}
+    return named | {"18": base - sum(named.values())}
+
+
+# The real education table's levels, by code, in its order.
+EDUCATION_LEVELS = {"0": "Höchste abgeschlossene Ausbildung - Total",
+                    "1": "Keine Ausbildung abgeschlossen", "2": "Obligatorische Schule",
+                    "3": "Diplommittelschule oder berufsvorbereitende Schule",
+                    "4": "Berufslehre, Vollzeit-Berufsschule", "5": "Maturitätsschule",
+                    "6": "Lehrerseminar", "7": "Höhere Fach- und Berufsausbildung",
+                    "8": "Höhere Fachschule", "9": "Fachhochschule",
+                    "10": "Universität, Hochschule", "11": "Ohne Angabe", "12": "Schulpflichtig",
+                    "13": "Noch nicht schulpflichtig"}  # fmt: skip
+
+
+def education_levels(number: int) -> dict[str, int]:
+    """The census of 2000: the inhabitants by the code of their highest completed education,
+    those not yet of school age ("13") being the rest."""
+    base = languages(number)[0]
+    parts = {"1": 50, "2": 5, "3": 40, "4": 4, "5": 30, "6": 100, "7": 20, "8": 60, "9": 80,
+             "10": 15, "11": 12, "12": 9}  # fmt: skip
+    levels = {code: base // part for code, part in parts.items()}
+    return levels | {"13": base - sum(levels.values())}
+
+
 Dimension = tuple[str, list[tuple[str, str]]]
 
 
 def json_stat(
-    label: str, dimensions: list[Dimension], cell: Callable[[tuple[str, ...]], int | None]
+    label: str,
+    dimensions: list[Dimension],
+    cell: Callable[[tuple[str, ...]], int | None],
+    sign: str = "...",
 ) -> dict[str, Any]:
     """A STAT-TAB answer in json-stat2: `cell` gives the value of each combination of codes,
-    None for one the table writes "..."."""
+    None for one the table writes `sign`."""
     values: list[int | None] = []
     status: dict[str, str] = {}
     for i, key in enumerate(itertools.product(*[[c for c, _ in codes] for _, codes in dimensions])):
         value = cell(key)
         values.append(value)
         if value is None:
-            status[str(i)] = "..."
+            status[str(i)] = sign
     return {
         "class": "dataset",
         "label": label,
@@ -664,6 +722,31 @@ def population_ages(year: int, first: int, last: int) -> dict[str, Any]:
     )
 
 
+def birthplace() -> dict[str, Any]:
+    """The inhabitants and those of them born abroad, of every year."""
+    places = {code: members for code, _, members in _places("population", EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        year, place, _, born, _, _ = key
+        members = places[place]
+        if born == "2":
+            return sum(born_abroad(n, int(year)) for n in members)
+        return sum(sum(population_groups(n, int(year))) for n in members)
+
+    return json_stat(
+        "Ständige und nichtständige Wohnbevölkerung nach Geburtsort (made up)",
+        [
+            ("Jahr", _single([str(year) for year in POPULATION_YEARS])),
+            (GEO, [(code, label) for code, label, _ in _places("population", EARLIER)]),
+            ("Bevölkerungstyp", [("1", "Ständige Wohnbevölkerung")]),
+            ("Geburtsort", [("-99999", "Geburtsort - Total"), ("2", "Im Ausland")]),
+            ("Geschlecht", [("-99999", "Geschlecht - Total")]),
+            ("Zivilstand", [("-99999", "Zivilstand - Total")]),
+        ],
+        cell,
+    )
+
+
 ELECTION_PLACES = "Bezirk (>>) / Gemeinde (......)"
 
 
@@ -724,21 +807,32 @@ def election(year: int) -> dict[str, Any]:
     )
 
 
-def farms() -> dict[str, Any]:
-    """The cattle of every year."""
+FARM_UNITS = {"15": "Tiere - Rinder", "0": "Betriebe",
+              "10": "LN - Landwirtschaftliche Nutzfläche Total (in ha)"}  # fmt: skip
+FARM_SYSTEMS = {"0": "Betriebssystem - Total", "1": "Biologische Betriebe"}
+
+
+def farms(unit: str = "15", system: str = "0") -> dict[str, Any]:
+    """One count of the farm structure survey, of every year: the cattle ("15"), the farms
+    ("0") or the farmland ("10"), of all farms ("0") or of the organic ones ("1")."""
     places = {code: members for code, _, members in _places("farms", EARLIER)}
     year_of = {str(i): year for i, year in enumerate(FARM_YEARS)}
 
+    def counted(number: int, year: int) -> int:
+        if unit == "15":
+            return cattle(number, year)
+        return farms_of(number, year)[0 if unit == "0" else 1 + int(system)]
+
     def cell(key: tuple[str, ...]) -> int | None:
         _, place, _, year = key
-        return sum(cattle(n, year_of[year]) for n in places[place])
+        return sum(counted(n, year_of[year]) for n in places[place])
 
     return json_stat(
         "Landwirtschaftliche Betriebe und Nutztiere (made up)",
         [
-            ("Beobachtungseinheit", [("15", "Tiere - Rinder")]),
+            ("Beobachtungseinheit", [(unit, FARM_UNITS[unit])]),
             (GEO, [(code, label) for code, label, _ in _places("farms", EARLIER)]),
-            ("Betriebssystem", [("0", "Betriebssystem - Total")]),
+            ("Betriebssystem", [(system, FARM_SYSTEMS[system])]),
             ("Jahr", [(code, str(year)) for code, year in year_of.items()]),
         ],
         cell,
@@ -765,6 +859,174 @@ def census() -> dict[str, Any]:
         ],
         cell,
     )  # fmt: skip
+
+
+def _plain_places(swiss: str, digits: int, listing: dict[int, tuple[str, str]]) -> list[Place]:
+    """The dimension "Gemeinde" of the tables that list municipalities only, beside one code for
+    Switzerland: each municipality's number is its code and starts its label, without dots,
+    padded to `digits` digits ("0001 Aeugst am Albis", or "1 Aeugst am Albis" with 1)."""
+    return [(swiss, "Schweiz", list(listing))] + [
+        (f"{number:0{digits}d}", f"{number:0{digits}d} {name}", [number])
+        for number, (name, _) in listing.items()
+    ]
+
+
+JOB_YEARS = list(range(2011, 2025))
+JOB_SECTORS = {"999": "Wirtschaftssektor - Total", "1": "Primärsektor", "2": "Sekundärer Sektor",
+               "3": "Tertiärer Sektor"}  # fmt: skip
+
+
+def jobs_counted(number: int, year: int) -> list[int]:
+    """All jobs of a municipality at the end of a year, and those of the primary, the secondary
+    and the tertiary sector, whether the table gives them or not."""
+    base = BASES[number] // 2 + (year - 2011) * 3
+    return [base, base // 10, base // 4, base - base // 10 - base // 4]
+
+
+def jobs_of(number: int, year: int) -> list[int | None]:
+    """The same as the table gives them, None for a count it withholds: two sectors of Meienried
+    (389) in every year, and the primary sector of Bonstetten (3), now a part of Affoltern am
+    Albis, in 2015."""
+    counts: list[int | None] = list(jobs_counted(number, year))
+    if number == 389:
+        counts[2] = counts[3] = None
+    if number == 3 and year == 2015:
+        counts[1] = None
+    return counts
+
+
+def jobs(sectors: tuple[str, ...]) -> dict[str, Any]:
+    """The employed persons of these sectors at the end of every year (STATENT), a withheld count
+    written "X". Switzerland's figures count the withheld ones too, as the real table's do."""
+    places = {code: members for code, _, members in _plain_places("99999", 1, EARLIER)}
+    order = list(JOB_SECTORS)
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        year, place, sector, _ = key
+        if place == "99999":
+            return sum(jobs_counted(n, int(year))[order.index(sector)] for n in places[place])
+        return jobs_of(places[place][0], int(year))[order.index(sector)]
+
+    return json_stat(
+        "Arbeitsstätten und Beschäftigte nach Jahr, Gemeinde und Wirtschaftssektor (made up)",
+        [
+            ("Jahr", _single([str(year) for year in JOB_YEARS])),
+            ("Gemeinde", [(c, label) for c, label, _ in _plain_places("99999", 1, EARLIER)]),
+            ("Wirtschaftssektor", [(sector, JOB_SECTORS[sector]) for sector in sectors]),
+            ("Beobachtungseinheit", [("2", "Beschäftigte")]),
+        ],
+        cell,
+        sign="X",
+    )
+
+
+OCCUPANTS = {"1": "Mieter/in", "2": "Genossenschafter/in", "3": "Stockwerkeigentümer/in",
+             "4": "Alleineigentümer/in des Hauses", "5": "Miteigentümer/in des Hauses",
+             "6": "Inhaber/in einer Dienstwohnung", "7": "Inhaber/in einer Freiwohnung",
+             "8": "Pächter/in"}  # fmt: skip
+
+
+def dwellings_occupied(number: int, rooms: str, occupant: str) -> int:
+    """The occupied dwellings of 2000 with a number of rooms and a kind of occupant."""
+    return BASES[number] // 100 // int(occupant) + int(rooms)
+
+
+def dwellings(rooms: tuple[str, ...], year: str = "2000") -> dict[str, Any]:
+    """The buildings and dwellings survey of 2000: the occupied dwellings with these numbers of
+    rooms by who lives in them. The real table also gives 1990; the query asks for 2000."""
+    places = {code: members for code, _, members in _plain_places("CH", 4, CENSUS_EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        place, size, occupant, _ = key
+        return sum(dwellings_occupied(n, size, occupant) for n in places[place])
+
+    return json_stat(
+        "Bewohnte Wohnungen nach Gemeinde, Anzahl Zimmer, Bewohnertyp und Jahr (made up)",
+        [
+            ("Gemeinde", [(c, label) for c, label, _ in _plain_places("CH", 4, CENSUS_EARLIER)]),
+            ("Anzahl Zimmer", [(n, "10+ Zimmer" if n == "10" else f"{n} Zimmer") for n in rooms]),
+            ("Bewohnertyp", list(OCCUPANTS.items())),
+            ("Jahr", [(year, year)]),
+        ],
+        cell,
+    )
+
+
+BUILDING_KINDS = {"EFH": "Einfamilienhäuser", "Mehrfamilienhäuser": "Mehrfamilienhäuser",
+                  "3": "Wohngebäude mit Nebennutzung", "1": "Gebäude mit teilweiser Wohnnutzung"}  # fmt: skip
+BUILDING_PERIODS = {"1": "Vor 1919 erbaut", "2": "Zwischen 1919 und 1945 erbaut",
+                    "3": "Zwischen 1946 und 1960 erbaut", "4": "Zwischen 1961 und 1970 erbaut",
+                    "5": "Zwischen 1971 und 1980 erbaut", "6": "Zwischen 1981 und 1990 erbaut",
+                    "7": "Zwischen 1991 und 1995 erbaut", "8": "Zwischen 1996 und 2000 erbaut"}  # fmt: skip
+
+
+def buildings_built(number: int, kind: str, period: str) -> int:
+    """The buildings with dwellings of a kind and a period of construction, in 2000."""
+    return BASES[number] // 40 // (list(BUILDING_KINDS).index(kind) + 1) + int(period)
+
+
+def buildings() -> dict[str, Any]:
+    """The buildings and dwellings survey of 2000: the buildings with dwellings by kind and
+    period of construction. The real table also gives 1990; the query asks for 2000."""
+    places = {code: members for code, _, members in _plain_places("0000", 4, CENSUS_EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        place, kind, period, _ = key
+        return sum(buildings_built(n, kind, period) for n in places[place])
+
+    return json_stat(
+        "Gebäude nach Gemeinde, Gebäudekategorie, Bauperiode und Jahr (made up)",
+        [
+            ("Gemeinde", [(c, label) for c, label, _ in _plain_places("0000", 4, CENSUS_EARLIER)]),
+            ("Gebäudekategorie", list(BUILDING_KINDS.items())),
+            ("Bauperiode", list(BUILDING_PERIODS.items())),
+            ("Jahr", [("2000", "2000")]),
+        ],
+        cell,
+    )
+
+
+def religion() -> dict[str, Any]:
+    """The census of 2000: the inhabitants by religion."""
+    places = {code: members for code, _, members in _places("census", CENSUS_EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        _, place, code = key
+        if code == "0":
+            return sum(languages(n)[0] for n in places[place])
+        return sum(religions(n).get(code, 0) for n in places[place])
+
+    return json_stat(
+        "Wohnbevölkerung 2000 nach Religion (made up)",
+        [
+            ("Wohnsitztyp", [("1", "Wirtschaftlicher Wohnsitz")]),
+            (GEO, [(code, label) for code, label, _ in _places("census", CENSUS_EARLIER)]),
+            ("Religion", list(RELIGIONS.items())),
+        ],
+        cell,
+    )
+
+
+def education() -> dict[str, Any]:
+    """The census of 2000: the inhabitants by highest completed education."""
+    places = {code: members for code, _, members in _places("census", CENSUS_EARLIER)}
+
+    def cell(key: tuple[str, ...]) -> int | None:
+        level, place, _, _ = key
+        if level == "0":
+            return sum(languages(n)[0] for n in places[place])
+        return sum(education_levels(n)[level] for n in places[place])
+
+    return json_stat(
+        "Wohnbevölkerung 2000 nach höchster abgeschlossener Ausbildung (made up)",
+        [
+            ("Höchste abgeschlossene Ausbildung", list(EDUCATION_LEVELS.items())),
+            (GEO, [(code, label) for code, label, _ in _places("census", CENSUS_EARLIER)]),
+            ("Staatsangehörigkeit (Kategorie)", [("0", "Staatsangehörigkeit - Total")]),
+            ("Geschlecht", [("0", "Geschlecht - Total")]),
+        ],
+        cell,
+    )
 
 
 def register_of(date: str) -> str:

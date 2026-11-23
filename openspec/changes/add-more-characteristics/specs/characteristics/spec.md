@@ -371,7 +371,7 @@ The update SHALL stop when:
   table;
 - its religions or levels of education do not add up to its inhabitants of 2000;
 - its sectors do not add up to all its jobs, where none is withheld;
-- its organic farms or farmland exceed its farms or farmland.
+- its organic farmland exceeds its farmland.
 
 #### Scenario: The place of birth against the population
 

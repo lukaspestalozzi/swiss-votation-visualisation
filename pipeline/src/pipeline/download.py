@@ -39,14 +39,35 @@ POPULATION = "px-x-0102010000_101"
 ELECTIONS = "px-x-1702020000_105"
 FARMS = "px-x-0702000000_104"
 CENSUS_2000 = "px-x-4003000000_123"
+# More tables (investigations/more-characteristics.md): the population by place of birth.
+BIRTHPLACE = "px-x-0102010000_100"
+# The employed persons at the workplaces of each municipality (STATENT).
+JOBS = "px-x-0602010000_102"
+# The census of 2000: the inhabitants by religion.
+RELIGION_2000 = "px-x-4003000000_122"
+# The census of 2000: the inhabitants by highest completed education.
+EDUCATION_2000 = "px-x-4003000000_161"
+# The buildings and dwellings survey of the census: the occupied dwellings by who lives in them.
+# It gives 1990 and 2000 and is asked for the year; a sibling without a year differs
+# (investigations/more-characteristics.md, 4).
+DWELLINGS_2000 = "px-x-0903020000_113"
+# The same survey: the buildings with dwellings by kind, asked for the year too.
+BUILDINGS_2000 = "px-x-0902020100_114"
 # The date of the register's list each table gives for all its years. When STAT-TAB moves a
 # table to a newer list, the update stops; the new date goes here (pipeline/README.md).
 LIST_DATES = {POPULATION: "2025-04-06", ELECTIONS: "2023-01-01", FARMS: "2025-04-06",
-              CENSUS_2000: "2000-12-05"}  # fmt: skip
+              CENSUS_2000: "2000-12-05", BIRTHPLACE: "2025-04-06", JOBS: "2024-01-01",
+              RELIGION_2000: "2000-12-05", EDUCATION_2000: "2000-12-05",
+              DWELLINGS_2000: "2000-12-05", BUILDINGS_2000: "2000-12-05"}  # fmt: skip
 # STAT-TAB answers at most 100,000 cells per query and 50 queries in 15 seconds.
 STAT_TAB_PAUSE = 0.4
 # A year's single years of age, in three queries.
 AGE_PARTS = ((0, 33), (34, 66), (67, 100))
+# The jobs of all sectors (999) and of each of the three, in two queries.
+JOB_PARTS = (("999", "1"), ("2", "3"))
+# The occupied dwellings by their number of rooms ("10" stands for 10 and more), in three
+# queries.
+ROOM_PARTS = (("1", "2", "3", "4"), ("5", "6", "7", "8"), ("9", "10"))
 # The days of the National Council elections, as the Federal Council's circulars to the cantons
 # give them (Federal Gazette; investigations/characteristics.md). The table gives the years.
 ELECTION_DAYS = {2011: "2011-10-23", 2015: "2015-10-18", 2019: "2019-10-20", 2023: "2023-10-22"}
@@ -163,6 +184,25 @@ def population_ages(year: int, first: int, last: int) -> Request:
     return stat_tab(POPULATION, [_item("Jahr", [str(year)]), *_people(["-99999"], ages)])
 
 
+def born_abroad() -> Request:
+    """The permanent resident population and those of it born abroad, every year."""
+    return stat_tab(
+        BIRTHPLACE,
+        [_all("Jahr"), _all(PLACES), _item("Bevölkerungstyp", ["1"]),
+         _item("Geburtsort", ["-99999", "2"]), _item("Geschlecht", ["-99999"]),
+         _item("Zivilstand", ["-99999"])],
+    )  # fmt: skip
+
+
+def jobs(sectors: tuple[str, ...]) -> Request:
+    """The employed persons of these sectors at the end of every year the table gives."""
+    return stat_tab(
+        JOBS,
+        [_all("Jahr"), _all("Gemeinde"), _item("Wirtschaftssektor", list(sectors)),
+         _item("Beobachtungseinheit", ["2"])],
+    )  # fmt: skip
+
+
 def election(year: int) -> Request:
     """The votes of every party in a National Council election, per district and municipality."""
     return stat_tab(
@@ -176,13 +216,34 @@ def election(year: int) -> Request:
     )
 
 
-def cattle() -> Request:
-    """The cattle of the farm structure survey, every year."""
+def _farm_survey(unit: str, system: str) -> Request:
+    """One count of the farm structure survey, of all farms ("0") or the organic ones ("1"),
+    every year."""
     return stat_tab(
         FARMS,
-        [_item("Beobachtungseinheit", ["15"]), _all(PLACES), _item("Betriebssystem", ["0"]),
+        [_item("Beobachtungseinheit", [unit]), _all(PLACES), _item("Betriebssystem", [system]),
          _all("Jahr")],
     )  # fmt: skip
+
+
+def cattle() -> Request:
+    """The cattle of the farm structure survey, every year."""
+    return _farm_survey("15", "0")
+
+
+def farms() -> Request:
+    """The farms, every year."""
+    return _farm_survey("0", "0")
+
+
+def farmland() -> Request:
+    """The farmland of all farms in hectares, every year."""
+    return _farm_survey("10", "0")
+
+
+def organic_farmland() -> Request:
+    """The farmland of the organic farms in hectares, every year."""
+    return _farm_survey("10", "1")
 
 
 def census() -> Request:
@@ -193,6 +254,37 @@ def census() -> Request:
          _item("Staatsangehörigkeit (Kategorie)", ["0"]),
          _item("Hauptsprache", ["0", "1", "2", "3", "4"])],
     )  # fmt: skip
+
+
+def religion() -> Request:
+    """The census of 2000: the inhabitants (economic residence) by religion."""
+    return stat_tab(RELIGION_2000, [_item("Wohnsitztyp", ["1"]), _all(PLACES), _all("Religion")])
+
+
+def education() -> Request:
+    """The census of 2000: the inhabitants (economic residence) by highest completed education."""
+    return stat_tab(
+        EDUCATION_2000,
+        [_all("Höchste abgeschlossene Ausbildung"), _all(PLACES),
+         _item("Staatsangehörigkeit (Kategorie)", ["0"]), _item("Geschlecht", ["0"])],
+    )  # fmt: skip
+
+
+def dwellings(rooms: tuple[str, ...]) -> Request:
+    """The occupied dwellings of 2000 with these numbers of rooms, by who lives in them."""
+    return stat_tab(
+        DWELLINGS_2000,
+        [_all("Gemeinde"), _item("Anzahl Zimmer", list(rooms)), _all("Bewohnertyp"),
+         _item("Jahr", ["2000"])],
+    )  # fmt: skip
+
+
+def buildings() -> Request:
+    """The buildings with dwellings of 2000, by kind and period of construction."""
+    return stat_tab(
+        BUILDINGS_2000,
+        [_all("Gemeinde"), _all("Gebäudekategorie"), _all("Bauperiode"), _item("Jahr", ["2000"])],
+    )
 
 
 def fetch_url(request: Request) -> bytes | None:

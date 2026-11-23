@@ -64,12 +64,25 @@ def test_the_addresses_of_the_maps_sources() -> None:
 
 
 # The number of codes of each dimension that a query asks for with the filter "all", in the
-# real tables on 2026-11-15 (investigations/characteristics.md).
+# real tables on 2026-11-15 (investigations/characteristics.md) and, for the tables from the
+# place of birth on, on 2026-11-22 (investigations/more-characteristics.md).
 ALL_CODES = {
     download.POPULATION: {"Jahr": 16, "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 2286},
     download.ELECTIONS: {"Bezirk (>>) / Gemeinde (......)": 2333, "Partei": 25},
     download.FARMS: {"Jahr": 28, "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 2285},
     download.CENSUS_2000: {"Kanton (-) / Bezirk (>>) / Gemeinde (......)": 3107},
+    download.BIRTHPLACE: {"Jahr": 16, "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 2286},
+    download.JOBS: {"Jahr": 14, "Gemeinde": 2132},
+    download.RELIGION_2000: {
+        "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 3107,
+        "Religion": 19,
+    },
+    download.EDUCATION_2000: {
+        "Kanton (-) / Bezirk (>>) / Gemeinde (......)": 3107,
+        "Höchste abgeschlossene Ausbildung": 14,
+    },
+    download.DWELLINGS_2000: {"Gemeinde": 2897, "Bewohnertyp": 8},
+    download.BUILDINGS_2000: {"Gemeinde": 2897, "Gebäudekategorie": 4, "Bauperiode": 8},
 }
 
 
@@ -81,7 +94,12 @@ def test_no_query_asks_for_more_than_100000_cells() -> None:
         for year in range(2012, 2026)
         for first, last in download.AGE_PARTS
     ]
-    assert len(requests) == 49
+    requests += [download.born_abroad(), download.religion(), download.education()]
+    requests += [download.farms(), download.farmland(), download.organic_farmland()]
+    requests += [download.jobs(sectors) for sectors in download.JOB_PARTS]
+    requests += [download.dwellings(rooms) for rooms in download.ROOM_PARTS]
+    requests += [download.buildings()]
+    assert len(requests) == 61
     for request in requests:
         table = request.address.rsplit("/", 1)[1].removesuffix(".px")
         assert request.body is not None
@@ -91,3 +109,111 @@ def test_no_query_asks_for_more_than_100000_cells() -> None:
             given = len(selection["values"])
             cells *= ALL_CODES[table][dimension["code"]] if selection["filter"] == "all" else given
         assert cells <= 100_000, (table, cells)
+
+
+def asked(request: Request) -> dict[str, tuple[str, list[str]]]:
+    """What a query asks of each dimension it names: the filter and its values."""
+    assert request.body is not None
+    return {
+        dimension["code"]: (dimension["selection"]["filter"], dimension["selection"]["values"])
+        for dimension in json.loads(request.body)["query"]
+    }
+
+
+PLACES = "Kanton (-) / Bezirk (>>) / Gemeinde (......)"
+EVERY = ("all", ["*"])
+
+
+def test_the_query_of_those_born_abroad() -> None:
+    # The dimensions and codes of the table on 2026-11-22 (investigations/more-characteristics.md).
+    request = download.born_abroad()
+    assert request.address.endswith(f"/{download.BIRTHPLACE}/{download.BIRTHPLACE}.px")
+    assert download.BIRTHPLACE == "px-x-0102010000_100"
+    assert asked(request) == {
+        "Jahr": EVERY,
+        PLACES: EVERY,
+        "Bevölkerungstyp": ("item", ["1"]),
+        "Geburtsort": ("item", ["-99999", "2"]),
+        "Geschlecht": ("item", ["-99999"]),
+        "Zivilstand": ("item", ["-99999"]),
+    }
+    assert download.LIST_DATES[download.BIRTHPLACE] == "2025-04-06"
+
+
+def test_the_two_queries_of_the_jobs() -> None:
+    # By sectors, as the pipeline does not know the table's years before it asks (design of
+    # add-more-characteristics, decision 11).
+    assert download.JOBS == "px-x-0602010000_102"
+    assert download.JOB_PARTS == (("999", "1"), ("2", "3"))
+    for sectors in download.JOB_PARTS:
+        assert asked(download.jobs(sectors)) == {
+            "Jahr": EVERY,
+            "Gemeinde": EVERY,
+            "Wirtschaftssektor": ("item", list(sectors)),
+            "Beobachtungseinheit": ("item", ["2"]),
+        }
+    assert download.LIST_DATES[download.JOBS] == "2024-01-01"
+
+
+def test_the_four_queries_of_the_farms_table() -> None:
+    # One query per count: the cattle of before, the farms, the farmland and the organic farmland.
+    queries = {"15": download.cattle(), "0": download.farms(), "10": download.farmland()}
+    for unit, request in queries.items():
+        assert asked(request) == {
+            "Beobachtungseinheit": ("item", [unit]),
+            PLACES: EVERY,
+            "Betriebssystem": ("item", ["0"]),
+            "Jahr": EVERY,
+        }
+    assert asked(download.organic_farmland()) == {
+        "Beobachtungseinheit": ("item", ["10"]),
+        PLACES: EVERY,
+        "Betriebssystem": ("item", ["1"]),
+        "Jahr": EVERY,
+    }
+
+
+def test_the_query_of_the_religions() -> None:
+    assert download.RELIGION_2000 == "px-x-4003000000_122"
+    assert asked(download.religion()) == {
+        "Wohnsitztyp": ("item", ["1"]),
+        PLACES: EVERY,
+        "Religion": EVERY,
+    }
+    assert download.LIST_DATES[download.RELIGION_2000] == "2000-12-05"
+
+
+def test_the_query_of_the_education() -> None:
+    assert download.EDUCATION_2000 == "px-x-4003000000_161"
+    assert asked(download.education()) == {
+        "Höchste abgeschlossene Ausbildung": EVERY,
+        PLACES: EVERY,
+        "Staatsangehörigkeit (Kategorie)": ("item", ["0"]),
+        "Geschlecht": ("item", ["0"]),
+    }
+    assert download.LIST_DATES[download.EDUCATION_2000] == "2000-12-05"
+
+
+def test_the_three_queries_of_the_dwellings() -> None:
+    # The table also gives 1990; the query names the year it wants.
+    assert download.DWELLINGS_2000 == "px-x-0903020000_113"
+    assert download.ROOM_PARTS == (("1", "2", "3", "4"), ("5", "6", "7", "8"), ("9", "10"))
+    for rooms in download.ROOM_PARTS:
+        assert asked(download.dwellings(rooms)) == {
+            "Gemeinde": EVERY,
+            "Anzahl Zimmer": ("item", list(rooms)),
+            "Bewohnertyp": EVERY,
+            "Jahr": ("item", ["2000"]),
+        }
+    assert download.LIST_DATES[download.DWELLINGS_2000] == "2000-12-05"
+
+
+def test_the_query_of_the_buildings() -> None:
+    assert download.BUILDINGS_2000 == "px-x-0902020100_114"
+    assert asked(download.buildings()) == {
+        "Gemeinde": EVERY,
+        "Gebäudekategorie": EVERY,
+        "Bauperiode": EVERY,
+        "Jahr": ("item", ["2000"]),
+    }
+    assert download.LIST_DATES[download.BUILDINGS_2000] == "2000-12-05"
