@@ -4,6 +4,7 @@ import { expect, test } from 'vitest';
 import characteristicsFile from '../../static/data/characteristics.json';
 import {
   DEFINITIONS,
+  GROUPS,
   applyingTo,
   countsOf,
   nameOf,
@@ -202,7 +203,11 @@ test('the cattle per inhabitant count the inhabitants of the cattle year', () =>
   expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2024]);
   const cattle = definitionOf('cattle');
   expect(nameOf(cattle, de)).toBe('Rinder je Einwohner');
-  expect(cattle.value(countsOf(file, applying, 1))).toEqual({ part: 5, whole: 10 });
+  const counts = countsOf(file, applying, 1);
+  expect(cattle.value(counts)).toEqual({ part: 5, whole: 10 });
+  // The farms of 2024 too, per 1,000 of the 10 inhabitants at the end of 2024.
+  expect(definitionOf('farms').value(counts)).toEqual({ part: 2000, whole: 10 });
+  expect(definitionOf('organic-farmland').value(counts)).toEqual({ part: 10, whole: 40 });
 });
 
 test('those born abroad published later take the newest year that has them', () => {
@@ -225,6 +230,11 @@ test('the jobs published later take the newest year that has them', () => {
   const applying = applyingTo(file, '2026-03-08');
   expect([applying.populationYear, applying.jobsYear]).toEqual([2025, 2024]);
   expect(applyingTo(MADE_UP, '2026-03-08').jobsYear).toBe(2025);
+  // The 6 jobs at the end of 2024 per 100 of the 10 inhabitants at the end of 2024.
+  const jobs = definitionOf('jobs');
+  expect(jobs.value(countsOf(file, applying, 1))).toEqual({ part: 600, whole: 10 });
+  const all = applyingTo(MADE_UP, '2026-03-08');
+  expect(jobs.value(countsOf(MADE_UP, all, 1))).toEqual({ part: 700, whole: 11 });
 });
 
 test('a file whose farms have other years than its cattle is refused', () => {
@@ -270,6 +280,22 @@ test('a line of another year than its group names its year', () => {
       'Bio-Anteil der landwirtschaftlichen Nutzfläche (2025): 26.83%',
     ],
   });
+});
+
+test("each heading of the panel begins with the list's heading of its group, in three languages", () => {
+  // Spec limits, "Adding and removing a limit": the list stands under the panel's headings
+  // without their dates. The two are separate texts.
+  const applying = applyingTo(MADE_UP, '2026-03-08');
+  for (const language of ['de', 'fr', 'it'] as const) {
+    const t = textsOf(language);
+    const panel = panelOf(countsOf(MADE_UP, applying, 1), applying, t);
+    expect(panel).toHaveLength(GROUPS.length);
+    GROUPS.forEach((group, i) => {
+      expect(panel[i].heading.startsWith(t.GROUP[group]), `${language}: ${panel[i].heading}`).toBe(
+        true,
+      );
+    });
+  }
 });
 
 // The real data file, as the page reads it.

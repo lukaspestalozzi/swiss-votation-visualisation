@@ -342,7 +342,7 @@ def _register_date(date: str) -> str:
 
 
 # The dimension that names the municipalities of a table, where it is not `PLACE`.
-PLACES = {
+PLACE_DIMENSIONS = {
     download.ELECTIONS: ELECTION_PLACE,
     download.JOBS: PLAIN_PLACE,
     download.DWELLINGS_2000: PLAIN_PLACE,
@@ -375,7 +375,7 @@ def _characteristics(
     def cube(request: Request, name: str, table: str) -> Cube:
         found = read_cube(downloads.answer(request, name, f"STAT-TAB gives no {name}"), name)
         date = download.LIST_DATES[table]
-        places = PLACES.get(table, PLACE)
+        places = PLACE_DIMENSIONS.get(table, PLACE)
         numbers = [n for n in found.municipalities(places).values() if n < NOT_A_MUNICIPALITY]
         check_list(name, date, numbers, listed[date])
         return found

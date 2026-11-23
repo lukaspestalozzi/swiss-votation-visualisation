@@ -11,7 +11,7 @@ run: an update with unchanged sources SHALL leave every data file unchanged, byt
 
 #### Scenario: The record names every source file
 
-- **GIVEN** the sources as they were on 2026-11-22
+- **GIVEN** the sources as they were on 2026-11-23
 - **WHEN** the record of the sources is read
 - **THEN** it names 45 BFS vote-day files, the answer of the Federal Chancellery, the answer of
   the BFS register of municipalities, the register's three answers with the boundaries of the
