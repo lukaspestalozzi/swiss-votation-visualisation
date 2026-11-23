@@ -29,6 +29,7 @@ export function isLanguage(value: string): value is Language {
 export type CharacteristicKey =
   | 'inhabitants'
   | 'foreigners'
+  | 'born-abroad'
   | 'age-0-17'
   | 'age-18-34'
   | 'age-35-49'
@@ -46,8 +47,21 @@ export type CharacteristicKey =
   | 'french'
   | 'italian'
   | 'romansh'
+  | 'reformed'
+  | 'catholic'
+  | 'no-religion'
+  | 'higher-education'
+  | 'compulsory-education'
+  | 'owner-occupied'
+  | 'single-family-houses'
+  | 'jobs'
+  | 'primary-sector'
+  | 'secondary-sector'
+  | 'tertiary-sector'
   | 'area'
-  | 'cattle';
+  | 'cattle'
+  | 'farms'
+  | 'organic-farmland';
 
 /** A group of characteristics, as the panel and the list of the limits head them. */
 export type CharacteristicGroup =

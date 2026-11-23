@@ -45,7 +45,8 @@ test('the switch off alone', () => {
   expect(linkOf([], false)).toBe('abroad=no');
 });
 
-test('the 21 keys, the same in every language, in the order of the panel', () => {
+test('the 35 keys, the same in every language, in the order of the panel', () => {
+  // Spec share-link, "The keys": the 21 of before stay as they were.
   expect(
     linkOf(
       DEFINITIONS.map((definition) => limit(definition.key)),
@@ -55,6 +56,7 @@ test('the 21 keys, the same in every language, in the order of the panel', () =>
     [
       'inhabitants',
       'foreigners',
+      'born-abroad',
       'age-0-17',
       'age-18-34',
       'age-35-49',
@@ -72,8 +74,21 @@ test('the 21 keys, the same in every language, in the order of the panel', () =>
       'french',
       'italian',
       'romansh',
+      'reformed',
+      'catholic',
+      'no-religion',
+      'higher-education',
+      'compulsory-education',
+      'owner-occupied',
+      'single-family-houses',
+      'jobs',
+      'primary-sector',
+      'secondary-sector',
+      'tertiary-sector',
       'area',
       'cattle',
+      'farms',
+      'organic-farmland',
     ]
       .map((key) => `${key}=-`)
       .join('&'),

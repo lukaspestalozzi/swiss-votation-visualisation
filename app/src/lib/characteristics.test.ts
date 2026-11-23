@@ -12,15 +12,23 @@ import {
   type Quotient,
 } from './characteristics.ts';
 import { formatCount, formatQuotient, formatShare } from './format.ts';
-import { textsOf } from './texts/index.ts';
+import { textsOf, type CharacteristicKey } from './texts/index.ts';
 import type { CharacteristicsFile } from './vote-data.ts';
 
 const de = textsOf('de');
 
-test('the 21 characteristics have their names, in the order of the spec', () => {
+/** A definition by its key: the tests name a characteristic, not its place among the others. */
+function definitionOf(key: CharacteristicKey): Definition {
+  const found = DEFINITIONS.find((definition) => definition.key === key);
+  if (found === undefined) throw new Error(`no characteristic ${key}`);
+  return found;
+}
+
+test('the 35 characteristics have their names, in the order of the spec', () => {
   expect(DEFINITIONS.map((definition) => nameOf(definition, de))).toEqual([
     'Einwohner',
     'Ausländeranteil',
+    'Im Ausland geboren',
     '0–17 Jahre',
     '18–34 Jahre',
     '35–49 Jahre',
@@ -38,19 +46,35 @@ test('the 21 characteristics have their names, in the order of the spec', () => 
     'Französisch',
     'Italienisch',
     'Rätoromanisch',
+    'Evangelisch-reformiert',
+    'Römisch-katholisch',
+    'Keine Religionszugehörigkeit',
+    'Hochschule oder höhere Berufsbildung',
+    'Obligatorische Schule oder keine Ausbildung',
+    'Vom Eigentümer bewohnte Wohnungen',
+    'Einfamilienhäuser',
+    'Arbeitsplätze je 100 Einwohner',
+    'Arbeitsplätze im Primärsektor',
+    'Arbeitsplätze im Sekundärsektor',
+    'Arbeitsplätze im Tertiärsektor',
     'Fläche',
     'Rinder je Einwohner',
+    "Landwirtschaftsbetriebe je 1'000 Einwohner",
+    'Bio-Anteil der landwirtschaftlichen Nutzfläche',
   ]);
 });
 
-test('each definition names its group: population, election, languages, land', () => {
+test('each definition names its group: 9, 7, 4, 3, 2, 2, 4 and 4 in eight groups', () => {
   // Design of add-more-characteristics, decision 3: the group sorts the panel, not the source.
   expect(DEFINITIONS.map((definition) => definition.group)).toEqual([
-    ...Array<string>(8).fill('population'),
+    ...Array<string>(9).fill('population'),
     ...Array<string>(7).fill('election'),
     ...Array<string>(4).fill('languages'),
-    'land',
-    'land',
+    ...Array<string>(3).fill('religion'),
+    ...Array<string>(2).fill('education'),
+    ...Array<string>(2).fill('housing'),
+    ...Array<string>(4).fill('jobs'),
+    ...Array<string>(4).fill('land'),
   ]);
 });
 
@@ -175,7 +199,7 @@ test('the cattle per inhabitant count the inhabitants of the cattle year', () =>
   };
   const applying = applyingTo(file, '2026-03-08');
   expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2024]);
-  const cattle = DEFINITIONS[20];
+  const cattle = definitionOf('cattle');
   expect(nameOf(cattle, de)).toBe('Rinder je Einwohner');
   expect(cattle.value(countsOf(file, applying, 1))).toEqual({ part: 5, whole: 10 });
 });
@@ -248,18 +272,46 @@ test('the newest vote day takes those born abroad of 2025 and the jobs of 2024',
   expect([applying.bornAbroadYear, applying.jobsYear]).toEqual([2025, 2024]);
 });
 
-function valuesOf(number: number, voteDate: string): (Quotient | null)[] {
-  const applying = applyingTo(REAL, voteDate);
-  return DEFINITIONS.map((definition) => definition.value(countsOf(REAL, applying, number)));
+/** The values of the characteristics `keys` of a municipality for a vote day, in their order. */
+function valuesOf(
+  number: number,
+  voteDate: string,
+  ...keys: CharacteristicKey[]
+): (Quotient | null)[] {
+  const counts = countsOf(REAL, applyingTo(REAL, voteDate), number);
+  return keys.map((key) => definitionOf(key).value(counts));
 }
+
+const POPULATION: CharacteristicKey[] = [
+  'inhabitants',
+  'foreigners',
+  'age-0-17',
+  'age-18-34',
+  'age-35-49',
+  'age-50-64',
+  'age-65',
+  'density',
+];
+const PARTIES: CharacteristicKey[] = [
+  'fdp',
+  'centre',
+  'sp',
+  'svp',
+  'glp',
+  'greens',
+  'other-parties',
+];
+const LANGUAGES: CharacteristicKey[] = ['german', 'french', 'italian', 'romansh'];
+// The 21 characteristics of before the change add-more-characteristics.
+const OF_BEFORE: CharacteristicKey[] = [...POPULATION, ...PARTIES, ...LANGUAGES, 'area', 'cattle'];
 
 function percent(value: Quotient | null): number {
   if (value === null) throw new Error('no figure');
   return (100 * value.part) / value.whole;
 }
 
-test('Zürich for the vote of 2016-02-28: its 21 values', () => {
-  const values = valuesOf(261, '2016-02-28');
+test('Zürich for the vote of 2016-02-28: its 21 values of before', () => {
+  const values = valuesOf(261, '2016-02-28', ...OF_BEFORE);
   expect(values.slice(0, 8)).toEqual([
     { part: 396955, whole: 1 },
     { part: 127151, whole: 396955 },
@@ -293,31 +345,295 @@ test('Zürich for the vote of 2016-02-28: its 21 values', () => {
   expect(percent(values[15] ?? null)).toBeCloseTo(77.7038, 4);
 });
 
+test('born abroad: Zürich for the vote of 2016-02-28', () => {
+  // investigations/more-characteristics.md, 12: 163,047 of 396,955 at the end of 2015.
+  const [born] = valuesOf(261, '2016-02-28', 'born-abroad');
+  expect(born).toEqual({ part: 163047, whole: 396955 });
+  expect(percent(born)).toBeCloseTo(41.0744, 4);
+});
+
+test('born abroad: third, with its key, its names and the date of its own year', () => {
+  const born = DEFINITIONS[2];
+  expect(born.key).toBe('born-abroad');
+  expect(['de', 'fr', 'it'].map((language) => nameOf(born, textsOf(language as 'de')))).toEqual([
+    'Im Ausland geboren',
+    "Nés à l'étranger",
+    "Nati all'estero",
+  ]);
+  expect([born.unit, born.group, born.scale]).toEqual(['percent', 'population', 'linear']);
+  // Design of add-more-characteristics, decision 4: its own year, as the cattle.
+  expect(born.year(applyingTo(REAL, '2016-02-28'))).toBe(2015);
+});
+
+test('those born abroad published later: Zürich at the end of 2024 for a vote of 2026', () => {
+  // Spec characteristics, "Those born abroad published later": 194,608 of 436,551.
+  const { years, counts } = REAL.bornAbroad;
+  const file: CharacteristicsFile = {
+    ...REAL,
+    bornAbroad: { years: years.slice(0, -1), counts: counts.slice(0, -1) },
+  };
+  expect(years.at(-1)).toBe(2025);
+  const applying = applyingTo(file, '2026-03-08');
+  expect([applying.populationYear, applying.bornAbroadYear]).toEqual([2025, 2024]);
+  const born = definitionOf('born-abroad').value(countsOf(file, applying, 261));
+  expect(born).toEqual({ part: 194608, whole: 436551 });
+  expect(percent(born)).toBeCloseTo(44.5785, 4);
+});
+
+const CENSUS_2000: CharacteristicKey[] = [
+  'reformed',
+  'catholic',
+  'no-religion',
+  'higher-education',
+  'compulsory-education',
+  'owner-occupied',
+  'single-family-houses',
+];
+
+test('religion, education and housing of 2000: Zürich', () => {
+  // investigations/more-characteristics.md, 12; each share within 0.00005 points.
+  const values = valuesOf(261, '2016-02-28', ...CENSUS_2000);
+  expect(values).toEqual([
+    { part: 110008, whole: 363273 },
+    { part: 120853, whole: 363273 },
+    { part: 61153, whole: 363273 },
+    { part: 72373, whole: 290377 }, // of those who named a level
+    { part: 76077, whole: 290377 },
+    { part: 12920, whole: 181801 }, // of the occupied dwellings
+    { part: 8530, whole: 36121 }, // of the buildings with dwellings
+  ]);
+  const shares = [30.2825, 33.2678, 16.8339, 24.9238, 26.1994, 7.1067, 23.6151];
+  shares.forEach((share, i) => {
+    expect(percent(values[i])).toBeCloseTo(share, 4);
+  });
+});
+
+test('few answers on education: Hérémence keeps its figures', () => {
+  // Spec characteristics, "Few answers": 16 named a level, 1,077 past school age gave none.
+  const values = valuesOf(6084, '2016-02-28', 'higher-education', 'compulsory-education');
+  expect(values).toEqual([
+    { part: 6, whole: 16 },
+    { part: 4, whole: 16 },
+  ]);
+  expect(values.map((value) => written(definitionOf('higher-education'), value, de))).toEqual([
+    '37.50%',
+    '25.00%',
+  ]);
+});
+
+test('land exchanged in 2004: Castel San Pietro and Breggia share the figures of 2000', () => {
+  // As the languages: the two are one group in the census (investigations/characteristics.md, 2).
+  const [castel, breggia] = [5249, 5269].map((n) => valuesOf(n, '2016-02-28', ...CENSUS_2000));
+  expect(castel).toEqual(breggia);
+  expect(castel.slice(0, 3).map((value) => value?.whole)).toEqual([3724, 3724, 3724]);
+});
+
+test('the seven of the census of 2000: their keys in order, their names in French and Italian', () => {
+  const seven = DEFINITIONS.filter((definition) =>
+    ['religion', 'education', 'housing'].includes(definition.group),
+  );
+  expect(seven.map((definition) => definition.key)).toEqual(CENSUS_2000);
+  // Design of add-more-characteristics, decision 2.
+  expect(seven.map((definition) => nameOf(definition, textsOf('fr')))).toEqual([
+    'Évangéliques réformés',
+    'Catholiques romains',
+    'Sans appartenance religieuse',
+    'Haute école ou formation professionnelle supérieure',
+    'Scolarité obligatoire ou aucune formation',
+    'Logements occupés par leur propriétaire',
+    'Maisons individuelles',
+  ]);
+  expect(seven.map((definition) => nameOf(definition, textsOf('it')))).toEqual([
+    'Evangelici riformati',
+    'Cattolici romani',
+    'Senza appartenenza religiosa',
+    'Scuola universitaria o formazione professionale superiore',
+    "Scuola dell'obbligo o nessuna formazione",
+    'Abitazioni occupate dal proprietario',
+    'Case unifamiliari',
+  ]);
+  expect(
+    seven.every((definition) => definition.year(applyingTo(REAL, '2016-02-28')) === 2000),
+  ).toBe(true);
+});
+
+const JOBS: CharacteristicKey[] = ['jobs', 'primary-sector', 'secondary-sector', 'tertiary-sector'];
+
+test('the jobs at the end of 2015: Zürich', () => {
+  // investigations/more-characteristics.md, 12: 468,852 jobs, 118.1121 per 100 inhabitants.
+  const values = valuesOf(261, '2016-02-28', ...JOBS);
+  expect(values).toEqual([
+    { part: 46885200, whole: 396955 },
+    { part: 231, whole: 468852 },
+    { part: 30062, whole: 468852 },
+    { part: 438559, whole: 468852 },
+  ]);
+  const [jobs, ...sectors] = values;
+  expect((jobs?.part ?? 0) / (jobs?.whole ?? 1)).toBeCloseTo(118.1121, 4);
+  [0.0493, 6.4118, 93.5389].forEach((share, i) => {
+    expect(percent(sectors[i])).toBeCloseTo(share, 4);
+  });
+  expect(values.map((value, i) => written(definitionOf(JOBS[i]), value, de))).toEqual([
+    '118.1',
+    '0.05%',
+    '6.41%',
+    '93.54%',
+  ]);
+});
+
+test('one sector only: Bister', () => {
+  // Spec characteristics, "One sector only": 9 jobs, 31 inhabitants, all in the primary sector.
+  const values = valuesOf(6172, '2016-02-28', ...JOBS);
+  expect(values).toEqual([
+    { part: 900, whole: 31 },
+    { part: 9, whole: 9 },
+    { part: 0, whole: 9 },
+    { part: 0, whole: 9 },
+  ]);
+  expect(900 / 31).toBeCloseTo(29.0323, 4);
+  expect(values.map((value, i) => written(definitionOf(JOBS[i]), value, de))).toEqual([
+    '29.0',
+    '100.00%',
+    '0.00%',
+    '0.00%',
+  ]);
+});
+
+test('two sectors withheld: Oberrieden', () => {
+  // Spec characteristics, "Two sectors withheld": 1,037 jobs, 927 of them in the tertiary sector.
+  const values = valuesOf(137, '2016-02-28', ...JOBS);
+  expect(values).toEqual([{ part: 103700, whole: 5037 }, null, null, { part: 927, whole: 1037 }]);
+  expect(103700 / 5037).toBeCloseTo(20.5877, 4);
+  expect(percent(values[3])).toBeCloseTo(89.3925, 4);
+  expect(values.map((value, i) => written(definitionOf(JOBS[i]), value, de))).toEqual([
+    '20.6',
+    'keine Angabe',
+    'keine Angabe',
+    '89.39%',
+  ]);
+});
+
+test('a part of a municipality without a count: Rue', () => {
+  // Spec characteristics, "A part of a municipality": Chapelle (Glâne)'s two sectors are
+  // withheld, so Rue has 434 jobs, 217 of them in the tertiary sector, and no other share.
+  const values = valuesOf(2097, '2016-02-28', ...JOBS);
+  expect(values.slice(1)).toEqual([null, null, { part: 217, whole: 434 }]);
+  expect(values[0]?.part).toBe(43400);
+  expect(written(definitionOf('tertiary-sector'), values[3], de)).toBe('50.00%');
+});
+
+test('all jobs withheld: Linescio at the end of 2024', () => {
+  // Spec characteristics, "All jobs withheld": for the vote of 2026-03-08 (6850).
+  expect(valuesOf(5315, '2026-03-08', ...JOBS)).toEqual([null, null, null, null]);
+});
+
+test('the four of the jobs: their names in French and Italian, the date of their own year', () => {
+  const four = JOBS.map(definitionOf);
+  expect(four.map((definition) => nameOf(definition, textsOf('fr')))).toEqual([
+    'Emplois pour 100 habitants',
+    'Emplois du secteur primaire',
+    'Emplois du secteur secondaire',
+    'Emplois du secteur tertiaire',
+  ]);
+  expect(four.map((definition) => nameOf(definition, textsOf('it')))).toEqual([
+    'Impieghi ogni 100 abitanti',
+    'Impieghi nel settore primario',
+    'Impieghi nel settore secondario',
+    'Impieghi nel settore terziario',
+  ]);
+  // The newest vote day takes the jobs of 2024, though the population of 2025.
+  expect(four.map((definition) => definition.year(applyingTo(REAL, '2026-03-08')))).toEqual(
+    Array(4).fill(2024),
+  );
+  expect(four.map((definition) => definition.unit)).toEqual([
+    'rate',
+    'percent',
+    'percent',
+    'percent',
+  ]);
+});
+
+const FARMS: CharacteristicKey[] = ['farms', 'organic-farmland'];
+
+test('the farms and the organic farmland of 2015: Zürich', () => {
+  // investigations/more-characteristics.md, 12: 41 farms, 381 of 855 hectares organic.
+  const values = valuesOf(261, '2016-02-28', ...FARMS);
+  expect(values).toEqual([
+    { part: 41000, whole: 396955 },
+    { part: 381, whole: 855 },
+  ]);
+  expect(41000 / 396955).toBeCloseTo(0.1033, 4);
+  expect(percent(values[1])).toBeCloseTo(44.5614, 4);
+  expect(values.map((value, i) => written(definitionOf(FARMS[i]), value, de))).toEqual([
+    '0.1',
+    '44.56%',
+  ]);
+});
+
+test('without farmland: Oberrieden has no organic share', () => {
+  // Spec characteristics, "Without farmland": no farm and no farmland in 2015.
+  const values = valuesOf(137, '2016-02-28', ...FARMS);
+  expect(values).toEqual([
+    { part: 0, whole: 5037 },
+    { part: 0, whole: 0 },
+  ]);
+  expect(values.map((value, i) => written(definitionOf(FARMS[i]), value, de))).toEqual([
+    '0.0',
+    'keine Angabe',
+  ]);
+});
+
+test('no organic farm: Meienried', () => {
+  // Spec characteristics, "No organic farm": none of its 60 hectares is organic.
+  const [farms, organic] = valuesOf(389, '2016-02-28', ...FARMS);
+  expect(organic).toEqual({ part: 0, whole: 60 });
+  expect(written(definitionOf('organic-farmland'), organic, de)).toBe('0.00%');
+  expect(written(definitionOf('farms'), farms, de)).toBe('76.9'); // 4 farms, 52 inhabitants
+});
+
+test('the two of the farms: their names in French and Italian, the year of the cattle', () => {
+  const two = FARMS.map(definitionOf);
+  expect(two.map((definition) => nameOf(definition, textsOf('fr')))).toEqual([
+    "Exploitations agricoles pour 1'000 habitants",
+    'Part bio de la surface agricole utile',
+  ]);
+  expect(two.map((definition) => nameOf(definition, textsOf('it')))).toEqual([
+    "Aziende agricole ogni 1'000 abitanti",
+    'Quota bio della superficie agricola utile',
+  ]);
+  expect(two.map((definition) => [definition.unit, definition.group])).toEqual([
+    ['rate', 'land'],
+    ['percent', 'land'],
+  ]);
+  expect(two.map((definition) => definition.year(applyingTo(REAL, '2016-02-28')))).toEqual([
+    2015, 2015,
+  ]);
+});
+
 test('a merged municipality has the inhabitants of its parts: Fétigny-Ménières', () => {
-  expect(valuesOf(2056, '2016-02-28')[0]).toEqual({ part: 1376, whole: 1 });
+  expect(valuesOf(2056, '2016-02-28', 'inhabitants')).toEqual([{ part: 1376, whole: 1 }]);
 });
 
 test('a municipality that changed canton keeps its figures: Moutier', () => {
-  expect(valuesOf(6831, '2016-02-28')[0]).toEqual({ part: 7615, whole: 1 });
+  expect(valuesOf(6831, '2016-02-28', 'inhabitants')).toEqual([{ part: 7615, whole: 1 }]);
 });
 
 test('land exchanged in 2004: Castel San Pietro and Breggia share the languages of 2000', () => {
   for (const number of [5249, 5269]) {
-    const italian = valuesOf(number, '2016-02-28')[17] ?? null;
+    const [italian] = valuesOf(number, '2016-02-28', 'italian');
     expect(italian).toEqual({ part: 3359, whole: 3724 });
     expect(percent(italian)).toBeCloseTo(90.1987, 4);
   }
 });
 
 test('a municipality without an election result has no party values: Meienried', () => {
-  const values = valuesOf(389, '2016-02-28');
-  expect(values[0]).toEqual({ part: 52, whole: 1 });
-  expect(values.slice(8, 15)).toEqual(Array(7).fill(null));
+  expect(valuesOf(389, '2016-02-28', 'inhabitants')).toEqual([{ part: 52, whole: 1 }]);
+  expect(valuesOf(389, '2016-02-28', ...PARTIES)).toEqual(Array(7).fill(null));
 });
 
 test('each definition gives the year of its figures', () => {
   const applying = applyingTo(REAL, '2016-02-28'); // 5960
-  expect(DEFINITIONS.map((definition) => definition.year(applying))).toEqual([
+  expect(OF_BEFORE.map((key) => definitionOf(key).year(applying))).toEqual([
     ...Array<number>(8).fill(2015), // the population at the end of 2015
     ...Array<number>(7).fill(2015), // the election of 2015
     ...Array<number>(4).fill(2000), // the census
@@ -327,18 +643,26 @@ test('each definition gives the year of its figures', () => {
 });
 
 test('a party without a list counts no votes: Zürich in 2023, Die Mitte its own', () => {
-  const mitte = valuesOf(261, '2024-03-03')[9]; // the election of 2023
+  const [mitte] = valuesOf(261, '2024-03-03', 'centre'); // the election of 2023
   expect(mitte).toEqual({ part: 265215, whole: 4292333 });
 });
 
-test('four characteristics have a logarithmic track, the others a linear one', () => {
-  // Design of add-limits, decision 5: the four whose values span several orders of magnitude.
+test('six characteristics have a logarithmic track, the others a linear one', () => {
+  // Design of add-limits, decision 5, and of add-more-characteristics, decision 9: those whose
+  // values span several orders of magnitude.
   expect(
     DEFINITIONS.filter((definition) => definition.scale === 'logarithmic').map((d) =>
       nameOf(d, de),
     ),
-  ).toEqual(['Einwohner', 'Einwohner je km²', 'Fläche', 'Rinder je Einwohner']);
-  expect(DEFINITIONS.filter((definition) => definition.scale === 'linear')).toHaveLength(17);
+  ).toEqual([
+    'Einwohner',
+    'Einwohner je km²',
+    'Arbeitsplätze je 100 Einwohner',
+    'Fläche',
+    'Rinder je Einwohner',
+    "Landwirtschaftsbetriebe je 1'000 Einwohner",
+  ]);
+  expect(DEFINITIONS.filter((definition) => definition.scale === 'linear')).toHaveLength(29);
 });
 
 test('a rate is written with one decimal, rounded half away from zero', () => {
@@ -371,14 +695,14 @@ function oldWritten(definition: Definition, value: Quotient | null): string {
   }
 }
 
-test('every value is written as before, for every municipality of two votes', () => {
+test('every value of the 21 of before is written as before, for every municipality of two votes', () => {
   const file = characteristicsFile as unknown as CharacteristicsFile;
   let compared = 0;
   for (const voteDate of ['2016-02-28', '2021-03-07']) {
     const applying = applyingTo(file, voteDate);
     for (const number of file.municipalities) {
       const counts = countsOf(file, applying, number);
-      for (const definition of DEFINITIONS) {
+      for (const definition of OF_BEFORE.map(definitionOf)) {
         const value = definition.value(counts);
         expect(written(definition, value, de)).toBe(oldWritten(definition, value));
         compared += 1;
@@ -386,6 +710,28 @@ test('every value is written as before, for every municipality of two votes', ()
     }
   }
   expect(compared).toBe(2 * 2110 * 21);
+});
+
+test('every value of the 35 is written for every municipality of two votes', () => {
+  // The votes of 2016-02-28 and 2026-03-08, whose jobs are of 2015 and of 2024: no value is
+  // refused, and each is a figure or "keine Angabe".
+  let written35 = 0;
+  let withoutFigure = 0;
+  for (const voteDate of ['2016-02-28', '2026-03-08']) {
+    const applying = applyingTo(REAL, voteDate);
+    for (const number of REAL.municipalities) {
+      const counts = countsOf(REAL, applying, number);
+      for (const definition of DEFINITIONS) {
+        const text = written(definition, definition.value(counts), de);
+        expect(text).toMatch(/^([0-9']+(\.[0-9]+)?(%| km²)?|keine Angabe)$/);
+        if (text === 'keine Angabe') withoutFigure += 1;
+        written35 += 1;
+      }
+    }
+  }
+  expect(written35).toBe(2 * 2110 * 35);
+  expect(DEFINITIONS).toHaveLength(35);
+  expect(withoutFigure).toBeGreaterThan(0);
 });
 
 test('the parties in French and Italian, after STAT-TAB and the party register', () => {
