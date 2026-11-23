@@ -20,10 +20,30 @@ export interface Counts {
   readonly cattle: number;
   // The inhabitants at the end of the cattle's year.
   readonly cattleInhabitants: number;
+  // Those born abroad, and the inhabitants at the end of their year.
+  readonly bornAbroad: number;
+  readonly bornAbroadInhabitants: number;
+  // The census of 2000: all inhabitants, the Evangelical Reformed, the Roman Catholic and those
+  // without a religious affiliation.
+  readonly religion: readonly number[];
+  // Those with none or compulsory school, upper secondary and tertiary education.
+  readonly education: readonly number[];
+  // The occupied dwellings and those lived in by their owner; the buildings with dwellings and
+  // the single-family houses.
+  readonly dwellings: readonly number[];
+  readonly buildings: readonly number[];
+  // The jobs at the end of their year: all of them and those of the primary, the secondary and
+  // the tertiary sector, each null where the source withholds it; and the inhabitants at the
+  // end of that year.
+  readonly jobs: readonly (number | null)[];
+  readonly jobsInhabitants: number;
+  // The farms of the cattle's year, their farmland and the farmland of the organic ones, in ha.
+  readonly farms: readonly number[];
 }
 
 // Where a characteristic's figures come from, which gives the date of its figures.
-export type Source = 'population' | 'election' | 'census' | 'area' | 'cattle';
+export type Source =
+  'population' | 'born-abroad' | 'jobs' | 'election' | 'census' | 'area' | 'cattle';
 
 // The group a characteristic stands in, in the panel and in the list of the limits.
 export type Group = CharacteristicGroup;
@@ -64,6 +84,8 @@ export const AREA_YEAR = 2026;
 // The year of each source's figures.
 const YEAR_OF: Readonly<Record<Source, (applying: Applying) => number>> = {
   population: (applying) => applying.populationYear,
+  'born-abroad': (applying) => applying.bornAbroadYear,
+  jobs: (applying) => applying.jobsYear,
   election: (applying) => applying.election.year,
   census: () => CENSUS_YEAR,
   area: () => AREA_YEAR,
@@ -97,6 +119,24 @@ function partyShare(i: number): (c: Counts) => Quotient | null {
 const AGE_GROUPS = ['age-0-17', 'age-18-34', 'age-35-49', 'age-50-64', 'age-65'] as const;
 const PARTIES = ['fdp', 'centre', 'sp', 'svp', 'glp', 'greens', 'other-parties'] as const;
 const LANGUAGES = ['german', 'french', 'italian', 'romansh'] as const;
+const RELIGIONS = ['reformed', 'catholic', 'no-religion'] as const;
+const SECTORS = ['primary-sector', 'secondary-sector', 'tertiary-sector'] as const;
+
+// A sector's share of all jobs: none where the source withholds one of the two counts (design
+// of add-more-characteristics, decision 7).
+function sectorShare(i: number): (c: Counts) => Quotient | null {
+  return (c) => {
+    const [all, sector] = [c.jobs[0], c.jobs[1 + i]];
+    return all === null || sector === null ? null : { part: sector, whole: all };
+  };
+}
+
+// A share of those who named a level of education: of the three levels the file has, not of
+// those of school age, below it or without an answer (design of add-more-characteristics, 5).
+const ofLevels = (i: number) => (c: Counts) => ({
+  part: c.education[i],
+  whole: c.education[0] + c.education[1] + c.education[2],
+});
 
 export const DEFINITIONS: readonly Definition[] = [
   define('inhabitants', 'count', 'population', 'population', 'logarithmic', (c) => ({
@@ -104,6 +144,10 @@ export const DEFINITIONS: readonly Definition[] = [
     whole: 1,
   })),
   define('foreigners', 'percent', 'population', 'population', 'linear', ofInhabitants(1)),
+  define('born-abroad', 'percent', 'born-abroad', 'population', 'linear', (c) => ({
+    part: c.bornAbroad,
+    whole: c.bornAbroadInhabitants,
+  })),
   ...AGE_GROUPS.map((key, i) =>
     define(key, 'percent', 'population', 'population', 'linear', ofInhabitants(2 + i)),
   ),
@@ -120,10 +164,39 @@ export const DEFINITIONS: readonly Definition[] = [
       whole: c.languages[0],
     })),
   ),
+  ...RELIGIONS.map((key, i) =>
+    define(key, 'percent', 'census', 'religion', 'linear', (c) => ({
+      part: c.religion[1 + i],
+      whole: c.religion[0],
+    })),
+  ),
+  define('higher-education', 'percent', 'census', 'education', 'linear', ofLevels(2)),
+  define('compulsory-education', 'percent', 'census', 'education', 'linear', ofLevels(0)),
+  define('owner-occupied', 'percent', 'census', 'housing', 'linear', (c) => ({
+    part: c.dwellings[1],
+    whole: c.dwellings[0],
+  })),
+  define('single-family-houses', 'percent', 'census', 'housing', 'linear', (c) => ({
+    part: c.buildings[1],
+    whole: c.buildings[0],
+  })),
+  define('jobs', 'rate', 'jobs', 'jobs', 'logarithmic', (c) =>
+    c.jobs[0] === null ? null : { part: 100 * c.jobs[0], whole: c.jobsInhabitants },
+  ),
+  ...SECTORS.map((key, i) => define(key, 'percent', 'jobs', 'jobs', 'linear', sectorShare(i))),
   define('area', 'km2', 'area', 'land', 'logarithmic', (c) => ({ part: c.hectares, whole: 100 })),
   define('cattle', 'per-inhabitant', 'cattle', 'land', 'logarithmic', (c) => ({
     part: c.cattle,
     whole: c.cattleInhabitants,
+  })),
+  // The farms come from the cattle's table, for its years.
+  define('farms', 'rate', 'cattle', 'land', 'logarithmic', (c) => ({
+    part: 1000 * c.farms[0],
+    whole: c.cattleInhabitants,
+  })),
+  define('organic-farmland', 'percent', 'cattle', 'land', 'linear', (c) => ({
+    part: c.farms[2],
+    whole: c.farms[1],
   })),
 ];
 
@@ -193,6 +266,11 @@ export function countsAt(file: CharacteristicsFile, applying: Applying, i: numbe
   const people = file.population.counts[file.population.years.indexOf(applying.populationYear)];
   const head = file.cattle.counts[file.cattle.years.indexOf(applying.cattleYear)];
   const ofCattleYear = file.population.counts[file.population.years.indexOf(applying.cattleYear)];
+  const born = file.bornAbroad.counts[file.bornAbroad.years.indexOf(applying.bornAbroadYear)];
+  const ofBornYear = file.population.counts[file.population.years.indexOf(applying.bornAbroadYear)];
+  const employed = file.jobs.counts[file.jobs.years.indexOf(applying.jobsYear)];
+  const surveyed = file.farms.counts[file.farms.years.indexOf(applying.cattleYear)];
+  const ofJobsYear = file.population.counts[file.population.years.indexOf(applying.jobsYear)];
   return {
     population: people[i],
     votes: applying.election.votes[i],
@@ -200,6 +278,15 @@ export function countsAt(file: CharacteristicsFile, applying: Applying, i: numbe
     hectares: file.area[i],
     cattle: head[i],
     cattleInhabitants: ofCattleYear[i][0],
+    bornAbroad: born[i],
+    bornAbroadInhabitants: ofBornYear[i][0],
+    religion: file.religion2000[i],
+    education: file.education2000[i],
+    dwellings: file.dwellings2000[i],
+    buildings: file.buildings2000[i],
+    jobs: employed[i],
+    jobsInhabitants: ofJobsYear[i][0],
+    farms: surveyed[i],
   };
 }
 

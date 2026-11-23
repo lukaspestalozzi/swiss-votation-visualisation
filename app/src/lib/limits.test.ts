@@ -94,6 +94,33 @@ test('the label of a limit names its characteristic, the date of its figures and
   );
 });
 
+test('each of the 35 characteristics has a track with its label', () => {
+  // investigations/more-characteristics.md, 3, 7 and 12, for the vote of 2016-02-28.
+  const applying = applyingTo(file, '2016-02-28');
+  for (const definition of DEFINITIONS) {
+    const track = trackOf(definition, file, applying);
+    expect(track.values).toHaveLength(file.municipalities.length);
+    expect(track.smallest).toBeLessThan(track.largest);
+    expect(valueAt(track, 0)).toBe(track.smallest);
+    expect(valueAt(track, STEPS)).toBe(track.largest);
+  }
+  expect(DEFINITIONS).toHaveLength(35);
+  const label = (name: string): string => labelOf(trackFor(name, '2016-02-28'), 0, STEPS, de);
+  expect(label('Im Ausland geboren')).toBe('Im Ausland geboren (Ende 2015): von 0.00% bis 66.13%');
+  expect(label('Arbeitsplätze je 100 Einwohner')).toBe(
+    'Arbeitsplätze je 100 Einwohner (Ende 2015): von 5.2 bis 445.5',
+  );
+  expect(label("Landwirtschaftsbetriebe je 1'000 Einwohner")).toBe(
+    "Landwirtschaftsbetriebe je 1'000 Einwohner (2015): von 0.0 bis 210.5",
+  );
+  expect(label('Hochschule oder höhere Berufsbildung')).toBe(
+    'Hochschule oder höhere Berufsbildung (Volkszählung 2000): von 0.00% bis 49.69%',
+  );
+  expect(label('Bio-Anteil der landwirtschaftlichen Nutzfläche')).toBe(
+    'Bio-Anteil der landwirtschaftlichen Nutzfläche (2015): von 0.00% bis 100.00%',
+  );
+});
+
 // The selections of investigations/limits.md, 5, from the data files: each limit by its
 // characteristic and the steps of its bounds.
 const listing = votesFile as Votes;

@@ -56,6 +56,8 @@ export function trackOf(
 // The date of a characteristic's figures, by its source, as a limit's label writes it.
 const DATE_OF: Readonly<Record<Source, (t: Texts, year: number) => string>> = {
   population: (t, year) => t.populationDate(year),
+  'born-abroad': (t, year) => t.populationDate(year),
+  jobs: (t, year) => t.populationDate(year),
   election: (t, year) => t.electionHeading(year),
   census: (t, year) => t.censusDate(year),
   area: (_, year) => String(year),

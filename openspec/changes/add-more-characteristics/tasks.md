@@ -236,25 +236,56 @@ of 2000", "The jobs", "A count the source withholds", "The farms and the organic
   As built: the unit is `rate`, one decimal. The test failed before the unit; it also writes 1234.56
   as "1'234.6" and a rate without a whole as "keine Angabe". 19 tests in the file. Done before tasks
   2.1 and 2.3, while the update of task 1.11 ran.
-- [ ] 2.5 Born abroad. Its name in three languages, its key, its definition, third in the order.
+- [x] 2.5 Born abroad. Its name in three languages, its key, its definition, third in the order.
   Tests, one at a time: Zürich's 41.0744% for the vote of 2016-02-28; the name and the key.
 
   Verify: each run alone passes.
-- [ ] 2.6 Religion, education and housing: seven definitions in three groups, with their names
+
+  As built: 3 tests, 27 in the file. Before it, the tests of the file were changed to name a
+  characteristic by its key, not by its place among the others; their assertions stayed, and the 24
+  passed before and after. Zürich's test failed before the definition (no characteristic
+  `born-abroad`). The three tests of whole lists (names, groups, tracks) failed with one entry more
+  and now hold it; the test of the name, the key and the date holds the three names. A third test
+  has the spec's scenario of the later year: Zürich's 194,608 of 436,551. Two passed when written
+  and failed against a mutant each: the inhabitants of the population's year (440,935), and the date
+  of another year. The source `born-abroad` gives the year and the date "Ende 2015" of a limit's
+  label.
+- [x] 2.6 Religion, education and housing: seven definitions in three groups, with their names
   and keys. Tests, one at a time: Zürich's seven values; Hérémence's 37.50% and 25.00%; Castel San
   Pietro and Breggia share them, as the languages.
 
   Verify: each run alone passes.
-- [ ] 2.7 The jobs: four definitions, with their names and keys. Tests, one at a time: Zürich's
+
+  As built: 4 tests, 31 in the file. Zürich's seven values failed before the definitions; the three
+  tests of whole lists hold seven entries more. Hérémence's test and the test of the seven keys and
+  names in French and Italian passed when written and failed against a mutant each: the share of
+  education out of all inhabitants (6 of 1,294), and a name swapped. The test of Castel San Pietro
+  and Breggia passed when written; it checks the data file, whose groups the pipeline's test of a
+  split covers, so no mutant of the app applies. The education's whole is the sum of the three
+  levels the file holds.
+- [x] 2.7 The jobs: four definitions, with their names and keys. Tests, one at a time: Zürich's
   four values for the vote of 2016-02-28; Bister's; Oberrieden without the two sectors; Rue
   without them, with its 50.00%; Linescio's four without a figure for the vote of 2026-03-08.
 
   Verify: each run alone passes.
-- [ ] 2.8 The farms: two definitions, with their names and keys. Tests, one at a time: Zürich's
+
+  As built: 6 tests, 37 in the file. Zürich's four values failed before the definitions; the three
+  tests of whole lists hold four entries more, and five tracks are logarithmic. Five passed when
+  written and failed against a mutant: Bister (the jobs per 1,000), Oberrieden and Rue (a withheld
+  sector as 0), Linescio (all jobs withheld as 0), and the test of the names in French and Italian
+  with the jobs' own year (the population's year). The source `jobs` gives the year and the date
+  "Ende 2015".
+- [x] 2.8 The farms: two definitions, with their names and keys. Tests, one at a time: Zürich's
   0.1033 and 44.5614%; Oberrieden's 0.0 and no organic share; Meienried's 0.00%.
 
   Verify: each run alone passes.
-- [ ] 2.9 The 35 together. Tests: their names in the spec's order; their groups, 9, 7, 4, 3, 2,
+
+  As built: 4 tests, 41 in the file. Zürich's two values failed before the definitions; the three
+  tests of whole lists hold two entries more, and six tracks are logarithmic. Three passed when
+  written and failed against a mutant each: Oberrieden (a whole of 1 where there is no farmland),
+  Meienried (the farmland as the organic farmland), and the names in French and Italian (a name not
+  translated). Both take the source `cattle`, whose year is the cattle's.
+- [x] 2.9 The 35 together. Tests: their names in the spec's order; their groups, 9, 7, 4, 3, 2,
   2, 4 and 4; exactly six logarithmic tracks; every value written for every municipality of two
   votes without an error; in `texts.test.ts`, no French or Italian name is the German one; in
   `limits.test.ts` and `share-link.test.ts`, a track and every step written and read back for
@@ -262,6 +293,18 @@ of 2000", "The jobs", "A count the source withholds", "The farms and the organic
 
   Verify: `pnpm run test` passes, 52 and about 185; `pnpm run lint && pnpm run check` report
   nothing.
+
+  As built: `pnpm run test`: 52 and 185. The tests of the names, the groups and the tracks grew with
+  each of the tasks 2.5 to 2.8 and now hold the 35, the eight groups and the six logarithmic tracks.
+  New here: every value of the 35 written for every municipality of the votes of 2016-02-28 and
+  2026-03-08, a figure or "keine Angabe" (147,700 values); in `limits.test.ts`, a track for each of
+  the 35 and the labels of five new ones, "Im Ausland geboren (Ende 2015): von 0.00% bis 66.13%" and
+  "Arbeitsplätze je 100 Einwohner (Ende 2015): von 5.2 bis 445.5" among them; in
+  `share-link.test.ts`, the test of the keys, which failed from task 2.5 on, holds the 35 of the
+  spec (the unit test of task 5.1). Each new test passed when written and failed against a mutant:
+  the organic share turned round (refused), the jobs' date without "Ende", a French name left in
+  German (`texts.test.ts`), and a rate written without its decimal in a link (the test of every
+  step, which runs over the 35).
 
 ## 3. The panel
 
