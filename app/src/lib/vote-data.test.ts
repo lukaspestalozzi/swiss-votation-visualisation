@@ -226,3 +226,36 @@ test('the characteristics hold every year from the one before the first vote day
   expect(elections.slice(0, 4)).toEqual([2011, 2015, 2019, 2023]);
   expect(characteristics.elections[0]?.day).toBe('2011-10-23');
 });
+
+test('the counts of the new tables: a row per municipality, and each yearly set its years', () => {
+  // Spec characteristics, "The data file of the characteristics"; design of
+  // add-more-characteristics, decision 10.
+  const characteristics = characteristicsFile as unknown as CharacteristicsFile;
+  const listed = characteristics.municipalities.length;
+  const sized = [
+    ...characteristics.bornAbroad.counts,
+    ...characteristics.jobs.counts,
+    ...characteristics.farms.counts,
+    characteristics.religion2000,
+    characteristics.education2000,
+    characteristics.dwellings2000,
+    characteristics.buildings2000,
+  ];
+  for (const counts of sized) expect(counts).toHaveLength(listed);
+  // From the year before the first vote day, 2013-03-03, without a gap: those born abroad to
+  // the population's newest year, the farms as the cattle, the jobs to 2024 or later.
+  const { bornAbroad, jobs, farms, population, cattle } = characteristics;
+  expect(bornAbroad.years).toEqual(population.years);
+  expect(farms.years).toEqual(cattle.years);
+  expect(jobs.years.slice(0, 13)).toEqual(Array.from({ length: 13 }, (_, i) => 2012 + i));
+  expect(jobs.years).toEqual(jobs.years.map((_, i) => 2012 + i));
+  // Each row has its counts: four of the jobs, each a number or none; three of the farms.
+  for (const row of jobs.counts.flat()) {
+    expect(row).toHaveLength(4);
+  }
+  for (const row of farms.counts.flat()) expect(row).toHaveLength(3);
+  expect(characteristics.religion2000[0]).toHaveLength(4);
+  expect(characteristics.education2000[0]).toHaveLength(3);
+  expect(characteristics.dwellings2000[0]).toHaveLength(2);
+  expect(characteristics.buildings2000[0]).toHaveLength(2);
+});

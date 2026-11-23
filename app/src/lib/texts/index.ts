@@ -49,6 +49,10 @@ export type CharacteristicKey =
   | 'area'
   | 'cattle';
 
+/** A group of characteristics, as the panel and the list of the limits head them. */
+export type CharacteristicGroup =
+  'population' | 'election' | 'languages' | 'religion' | 'education' | 'housing' | 'jobs' | 'land';
+
 /** A section of the reading guide. */
 export interface GuideSection {
   readonly heading: string;

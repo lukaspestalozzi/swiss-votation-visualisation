@@ -43,6 +43,17 @@ test('the 21 characteristics have their names, in the order of the spec', () => 
   ]);
 });
 
+test('each definition names its group: population, election, languages, land', () => {
+  // Design of add-more-characteristics, decision 3: the group sorts the panel, not the source.
+  expect(DEFINITIONS.map((definition) => definition.group)).toEqual([
+    ...Array<string>(8).fill('population'),
+    ...Array<string>(7).fill('election'),
+    ...Array<string>(4).fill('languages'),
+    'land',
+    'land',
+  ]);
+});
+
 // A data file whose newest population and cattle are of 2025, as when the BFS has not yet
 // published 2026's; two municipalities.
 const MADE_UP: CharacteristicsFile = {
@@ -61,6 +72,27 @@ const MADE_UP: CharacteristicsFile = {
       ],
     ],
   },
+  bornAbroad: {
+    years: [2024, 2025],
+    counts: [
+      [3, 4],
+      [4, 5],
+    ],
+  },
+  // The second municipality's primary and tertiary sector are withheld.
+  jobs: {
+    years: [2024, 2025],
+    counts: [
+      [
+        [6, 1, 2, 3],
+        [8, null, 3, null],
+      ],
+      [
+        [7, 1, 3, 3],
+        [9, null, 4, null],
+      ],
+    ],
+  },
   elections: [{ year: 2023, day: '2023-10-22', votes: [[1, 1, 1, 1, 1, 1, 1], null] }],
   cattle: {
     years: [2024, 2025],
@@ -69,9 +101,39 @@ const MADE_UP: CharacteristicsFile = {
       [6, 0],
     ],
   },
+  // The second municipality has no farm and no farmland.
+  farms: {
+    years: [2024, 2025],
+    counts: [
+      [
+        [2, 40, 10],
+        [0, 0, 0],
+      ],
+      [
+        [2, 41, 11],
+        [0, 0, 0],
+      ],
+    ],
+  },
   languages2000: [
     [9, 8, 1, 0, 0],
     [18, 16, 2, 0, 0],
+  ],
+  religion2000: [
+    [9, 3, 4, 1],
+    [18, 6, 8, 2],
+  ],
+  education2000: [
+    [2, 3, 1],
+    [4, 6, 2],
+  ],
+  dwellings2000: [
+    [4, 1],
+    [8, 2],
+  ],
+  buildings2000: [
+    [3, 2],
+    [6, 4],
   ],
   area: [100, 200],
 };
@@ -84,26 +146,72 @@ test('a vote before the year before is published takes the newest year', () => {
 });
 
 test('the cattle take the newest year before the vote that also has the population', () => {
-  // The cattle of 2026 are published before the population at the end of 2026.
+  // The cattle of 2026 are published before the population at the end of 2026, and the farms
+  // with them.
   const file: CharacteristicsFile = {
     ...MADE_UP,
     cattle: { years: [2024, 2025, 2026], counts: [...MADE_UP.cattle.counts, [7, 0]] },
+    farms: {
+      years: [2024, 2025, 2026],
+      counts: [
+        ...MADE_UP.farms.counts,
+        [
+          [2, 42, 12],
+          [0, 0, 0],
+        ],
+      ],
+    },
   };
   const applying = applyingTo(file, '2027-03-07');
   expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2025]);
 });
 
 test('the cattle per inhabitant count the inhabitants of the cattle year', () => {
-  // The population at the end of 2025 is published before the cattle of 2025.
+  // The population at the end of 2025 is published before the cattle and the farms of 2025.
   const file: CharacteristicsFile = {
     ...MADE_UP,
     cattle: { years: [2024], counts: [MADE_UP.cattle.counts[0]] },
+    farms: { years: [2024], counts: [MADE_UP.farms.counts[0]] },
   };
   const applying = applyingTo(file, '2026-03-08');
   expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2024]);
   const cattle = DEFINITIONS[20];
   expect(nameOf(cattle, de)).toBe('Rinder je Einwohner');
   expect(cattle.value(countsOf(file, applying, 1))).toEqual({ part: 5, whole: 10 });
+});
+
+test('those born abroad published later take the newest year that has them', () => {
+  // Spec characteristics, "Those born abroad published later": their own year, as the cattle.
+  const file: CharacteristicsFile = {
+    ...MADE_UP,
+    bornAbroad: { years: [2024], counts: [MADE_UP.bornAbroad.counts[0]] },
+  };
+  const applying = applyingTo(file, '2026-03-08');
+  expect([applying.populationYear, applying.bornAbroadYear]).toEqual([2025, 2024]);
+  expect(applyingTo(MADE_UP, '2026-03-08').bornAbroadYear).toBe(2025);
+});
+
+test('the jobs published later take the newest year that has them', () => {
+  // Spec characteristics, "The jobs published later".
+  const file: CharacteristicsFile = {
+    ...MADE_UP,
+    jobs: { years: [2024], counts: [MADE_UP.jobs.counts[0]] },
+  };
+  const applying = applyingTo(file, '2026-03-08');
+  expect([applying.populationYear, applying.jobsYear]).toEqual([2025, 2024]);
+  expect(applyingTo(MADE_UP, '2026-03-08').jobsYear).toBe(2025);
+});
+
+test('a file whose farms have other years than its cattle is refused', () => {
+  // The farms take the cattle's year: both come from one table, for the same years (design of
+  // add-more-characteristics, decision 12).
+  const file: CharacteristicsFile = {
+    ...MADE_UP,
+    farms: { years: [2024], counts: [MADE_UP.farms.counts[0]] },
+  };
+  expect(() => applyingTo(file, '2026-03-08')).toThrow(
+    new RangeError('the farms are of the years 2024, the cattle of 2024, 2025'),
+  );
 });
 
 // The real data file, as the page reads it.
@@ -125,6 +233,19 @@ test('the newest vote day takes 2025 and the election of 2023', () => {
   const applying = applyingTo(REAL, '2026-03-08'); // 6850
   expect([applying.populationYear, applying.cattleYear]).toEqual([2025, 2025]);
   expect(applying.election.day).toBe('2023-10-22');
+});
+
+test('the votes of 2016-02-28 and 2015-06-14 take those born abroad and the jobs of the year before', () => {
+  const of2016 = applyingTo(REAL, '2016-02-28'); // 5960
+  expect([of2016.bornAbroadYear, of2016.jobsYear]).toEqual([2015, 2015]);
+  const of2015 = applyingTo(REAL, '2015-06-14'); // 5920
+  expect([of2015.bornAbroadYear, of2015.jobsYear]).toEqual([2014, 2014]);
+});
+
+test('the newest vote day takes those born abroad of 2025 and the jobs of 2024', () => {
+  // The data file of 2026-11-23: the newest jobs are those of 2024.
+  const applying = applyingTo(REAL, '2026-03-08'); // 6850
+  expect([applying.bornAbroadYear, applying.jobsYear]).toEqual([2025, 2024]);
 });
 
 function valuesOf(number: number, voteDate: string): (Quotient | null)[] {
@@ -220,6 +341,16 @@ test('four characteristics have a logarithmic track, the others a linear one', (
   expect(DEFINITIONS.filter((definition) => definition.scale === 'linear')).toHaveLength(17);
 });
 
+test('a rate is written with one decimal, rounded half away from zero', () => {
+  // Jobs per 100 inhabitants and farms per 1,000 (design of add-more-characteristics, 7).
+  const rate: Definition = { ...DEFINITIONS[0], unit: 'rate' };
+  expect(written(rate, { part: 100 * 468852, whole: 396955 }, de)).toBe('118.1'); // 118.1121
+  expect(written(rate, { part: 5, whole: 100 }, de)).toBe('0.1'); // 0.05
+  expect(written(rate, { part: 123456, whole: 100 }, de)).toBe("1'234.6"); // 1234.56
+  expect(written(rate, null, de)).toBe('keine Angabe');
+  expect(written(rate, { part: 3, whole: 0 }, de)).toBe('keine Angabe');
+});
+
 // How the panel wrote a value before the change add-limits, which writes it through its units
 // (design of add-limits, decision 16); the two must give the same text.
 function oldWritten(definition: Definition, value: Quotient | null): string {
@@ -235,6 +366,8 @@ function oldWritten(definition: Definition, value: Quotient | null): string {
       return `${formatQuotient(value.part, value.whole, 2)} km²`;
     case 'per-inhabitant':
       return formatQuotient(value.part, value.whole, 3);
+    case 'rate':
+      return formatQuotient(value.part, value.whole, 1);
   }
 }
 
