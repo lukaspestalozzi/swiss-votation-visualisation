@@ -84,6 +84,61 @@ test('The keys in French', async ({ page }) => {
   expect(address(page)).toBe('/fr/votes/5960/#inhabitants=-&foreigners=-');
 });
 
+test('A new characteristic in a link', async ({ page }) => {
+  await open(page, 'de/votes/5960/');
+  await addLimit(page, 'Arbeitsplätze je 100 Einwohner');
+  await waitASecond(page);
+  expect(address(page)).toBe('/de/votes/5960/#jobs=-');
+  // A bound is written as its label writes it, with one decimal, and read back.
+  await slider(page, 'Untere', 'Arbeitsplätze je 100 Einwohner').fill('500');
+  await waitASecond(page);
+  expect(address(page)).toBe('/de/votes/5960/#jobs=48.1-');
+  await page.reload();
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Arbeitsplätze je 100 Einwohner (Ende 2015): von 48.1 bis 445.5',
+  ]);
+});
+
+// The keys of the 21 characteristics the site had before it had 35 (spec share-link, "The keys of
+// the characteristics"): no link the site wrote then may stop applying.
+const KEYS_OF_BEFORE = [
+  'inhabitants',
+  'foreigners',
+  'age-0-17',
+  'age-18-34',
+  'age-35-49',
+  'age-50-64',
+  'age-65',
+  'density',
+  'fdp',
+  'centre',
+  'sp',
+  'svp',
+  'glp',
+  'greens',
+  'other-parties',
+  'german',
+  'french',
+  'italian',
+  'romansh',
+  'area',
+  'cattle',
+];
+
+test('A link of before', async ({ page }) => {
+  await page.goto('de/votes/5960/#foreigners=-19.98');
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
+  ]);
+  await page.goto('about:blank');
+  await page.goto(`de/votes/5960/#${KEYS_OF_BEFORE.map((key) => `${key}=-`).join('&')}`);
+  await expect(page.locator('.limit')).toHaveCount(21);
+  await expect(page.locator('.limit .label').nth(20)).toContainText('Rinder je Einwohner (2015)');
+  await expect(page.getByText('Diese Angaben der Adresse liessen sich nicht anwenden')).toHaveCount(
+    0,
+  );
+});
+
 test('Back leaves the page', async ({ page }) => {
   await page.goto('de/');
   await page
@@ -287,35 +342,79 @@ test('A link to a tie-break question', async ({ page }) => {
   }
 });
 
+// The names of the 21 characteristics the site had before it had 35, in their order.
+const NAMES_OF_BEFORE = [
+  'Einwohner',
+  'Ausländeranteil',
+  '0–17 Jahre',
+  '18–34 Jahre',
+  '35–49 Jahre',
+  '50–64 Jahre',
+  '65 Jahre und älter',
+  'Einwohner je km²',
+  'FDP',
+  'Die Mitte (bis 2020 CVP und BDP)',
+  'SP',
+  'SVP',
+  'GLP',
+  'Grüne',
+  'Übrige Parteien',
+  'Deutsch',
+  'Französisch',
+  'Italienisch',
+  'Rätoromanisch',
+  'Fläche',
+  'Rinder je Einwohner',
+];
+
+/**
+ * The frames after a link with the limits of `names`, each narrowed on both sides, is opened in
+ * the tab that shows the vote: the link as the page writes it, every bound at step 100 or 900.
+ */
+async function framesOfLinkWith(page: Page, names: readonly string[]) {
+  await open(page, 'de/votes/5960/');
+  for (const name of names) await addLimit(page, name);
+  const sliders = page.getByRole('slider');
+  await expect(sliders).toHaveCount(2 * names.length);
+  for (let i = 0; i < 2 * names.length; i += 1) {
+    await sliders.nth(i).fill(i % 2 === 0 ? '100' : '900');
+  }
+  await waitASecond(page);
+  const { hash } = new URL(page.url());
+  expect(hash.split('&')).toHaveLength(names.length);
+
+  await page.goto('about:blank');
+  await page.addInitScript(MEASURE_HASHCHANGE);
+  await open(page, 'de/votes/5960/');
+  await fontsLoaded(page);
+  await page.evaluate(HASHCHANGE_HANDLED);
+  await page.goto(`de/votes/5960/${hash}`);
+  await expect(page.locator('.limit')).toHaveCount(names.length);
+  const frames = await measuredFrames(page);
+  expect(frames.map((frame) => frame.type)).toEqual(['hashchange']);
+  return frames;
+}
+
 test.describe(() => {
   // A budget test runs once more when a frame exceeds its budget (spec share-link, "The budget of
   // a link"), as the limits' do.
   test.describe.configure({ retries: 1 });
 
   test('All 21 limits in the same tab', async ({ page }) => {
-    // The link, as the page writes it: every characteristic, each bound at step 100 or 900.
-    await open(page, 'de/votes/5960/');
-    const list = page.getByLabel('Merkmal hinzufügen');
-    for (let added = 0; added < 21; added += 1) {
-      const [name] = await list.locator('option:not([value=""])').allTextContents();
-      await addLimit(page, name);
-    }
-    const sliders = page.getByRole('slider');
-    await expect(sliders).toHaveCount(42);
-    for (let i = 0; i < 42; i += 1) await sliders.nth(i).fill(i % 2 === 0 ? '100' : '900');
-    await waitASecond(page);
-    const { hash } = new URL(page.url());
-    expect(hash.split('&')).toHaveLength(21);
-
-    await page.goto('about:blank');
-    await page.addInitScript(MEASURE_HASHCHANGE);
-    await open(page, 'de/votes/5960/');
-    await fontsLoaded(page);
-    await page.evaluate(HASHCHANGE_HANDLED);
-    await page.goto(`de/votes/5960/${hash}`);
-    await expect(page.locator('.limit')).toHaveCount(21);
-    const frames = await measuredFrames(page);
-    expect(frames.map((frame) => frame.type)).toEqual(['hashchange']);
+    // The 21 limits the site had before it had 35, by their names.
+    const frames = await framesOfLinkWith(page, NAMES_OF_BEFORE);
     expect(frames.filter((frame) => frame.work > 100)).toEqual([]);
+  });
+
+  test('All 35 limits in the same tab', async ({ page }) => {
+    // Every characteristic of the list, in its order (design of add-more-characteristics, 14).
+    await open(page, 'de/votes/5960/');
+    const names = await page
+      .getByLabel('Merkmal hinzufügen')
+      .locator('option:not([value=""])')
+      .allTextContents();
+    expect(names).toHaveLength(35);
+    const frames = await framesOfLinkWith(page, names);
+    expect(frames.filter((frame) => frame.work > 170)).toEqual([]);
   });
 });
