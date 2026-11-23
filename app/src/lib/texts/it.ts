@@ -244,21 +244,27 @@ export const it: Texts = {
         'Pochissimi Comuni non hanno un risultato proprio: i loro voti sono contati con quelli ' +
           'di un altro Comune. Sono tratteggiati sulla carta, e un limite non cambia alcuna ' +
           'cifra a causa loro.',
-        'Per alcuni piccoli Comuni del Cantone di Berna mancano le forze dei partiti. Un ' +
-          'Comune senza dati viene escluso non appena il limite di questa caratteristica è ' +
-          'ristretto.',
+        'Per alcuni piccoli Comuni del Cantone di Berna mancano le forze dei partiti. Per gli ' +
+          "impieghi di un settore i dati mancano dove l'UST non pubblica la cifra, e per la " +
+          "quota bio dove non c'è superficie agricola utile. Un Comune senza dati viene escluso " +
+          'non appena il limite di questa caratteristica è ristretto.',
       ],
     },
     {
       heading: 'Le caratteristiche',
       paragraphs: [
-        "Una votazione prende la popolazione e i bovini alla fine dell'ultimo anno prima del " +
-          "suo giorno, le forze dei partiti dell'ultima elezione del Consiglio nazionale prima " +
-          'del suo giorno, le lingue principali del censimento del 2000 e la superficie del 2026.',
+        'Una votazione prende la popolazione, gli impieghi, i bovini e le aziende agricole ' +
+          "dell'ultimo anno prima del suo giorno, le forze dei partiti dell'ultima elezione del " +
+          'Consiglio nazionale prima del suo giorno, la lingua principale, la religione, la ' +
+          "formazione e l'abitazione del censimento del 2000 e la superficie del 2026. Dove le " +
+          "cifre dell'ultimo anno non sono ancora pubblicate, prende le più recenti precedenti.",
+        'Gli impieghi sono quelli degli stabilimenti situati nel Comune, ovunque vivano le ' +
+          'persone che li occupano. Per la lingua principale, la religione, la formazione e ' +
+          "l'abitazione non esistono cifre più recenti per ogni Comune.",
         'Un limite confronta i valori come figurano per il Comune. I limiti di «Abitanti», ' +
-          '«Abitanti per km²», «Superficie» e «Bovini per abitante» crescono da un passo ' +
-          "all'altro dello stesso fattore, perché i loro valori si estendono su più ordini di " +
-          'grandezza.',
+          '«Abitanti per km²», «Impieghi ogni 100 abitanti», «Superficie», «Bovini per ' +
+          "abitante» e «Aziende agricole ogni 1'000 abitanti» crescono da un passo all'altro " +
+          'dello stesso fattore, perché i loro valori si estendono su più ordini di grandezza.',
       ],
     },
   ],
@@ -271,8 +277,8 @@ export const it: Texts = {
     'Comuni e carta: UST, Elenco ufficiale dei Comuni della Svizzera e confini comunali ' +
     `generalizzati, stato al ${date}; UST, ThemaKart ${String(lakesSet)} (laghi).`,
   SOURCE_CHARACTERISTICS:
-    'Caratteristiche: UST, STATPOP; UST, elezioni del Consiglio nazionale; UST, censimento ' +
-    'federale della popolazione 2000; UST, rilevazione delle strutture agricole; swisstopo, ' +
-    'swissBOUNDARIES3D 2026.',
+    'Caratteristiche: UST, STATPOP; UST, STATENT; UST, elezioni del Consiglio nazionale; UST, ' +
+    'censimento federale della popolazione 2000; UST, rilevazione delle strutture agricole; ' +
+    'swisstopo, swissBOUNDARIES3D 2026.',
   SOURCES_FILE: 'Tutti i file letti e le loro interrogazioni:',
 };

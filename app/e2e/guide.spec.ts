@@ -84,7 +84,16 @@ test('municipalities without a figure explained', async ({ page }) => {
   await expect(without).toContainText('schraffiert');
 });
 
-test('the characteristics explained: the dates of their figures, the four logarithmic tracks', async ({
+test('Jobs and farmland without a figure', async ({ page }) => {
+  // investigations/more-characteristics.md, 6 and 7.
+  await page.goto('de/guide/');
+  await expect(section(page, 'Gemeinden ohne eigenes Ergebnis oder ohne Angabe')).toContainText(
+    'Bei den Arbeitsplätzen eines Sektors fehlt die Angabe, wo das BFS die Zahl nicht ' +
+      'veröffentlicht, und beim Bio-Anteil, wo es keine landwirtschaftliche Nutzfläche gibt.',
+  );
+});
+
+test('the characteristics explained: the dates of their figures, the six logarithmic tracks', async ({
   page,
 }) => {
   await page.goto('de/guide/');
@@ -92,7 +101,8 @@ test('the characteristics explained: the dates of their figures, the four logari
   await expect(characteristics).toContainText('Volkszählung 2000');
   await expect(characteristics).toContainText('letzten Nationalratswahl vor ihrem Tag');
   await expect(characteristics).toContainText(
-    'Die Grenzen von «Einwohner», «Einwohner je km²», «Fläche» und «Rinder je Einwohner» wachsen ' +
+    'Die Grenzen von «Einwohner», «Einwohner je km²», «Arbeitsplätze je 100 Einwohner», ' +
+      "«Fläche», «Rinder je Einwohner» und «Landwirtschaftsbetriebe je 1'000 Einwohner» wachsen " +
       'von Schritt zu Schritt um den gleichen Faktor',
   );
 });
@@ -117,6 +127,33 @@ test('the sources, with the dates of the data files of 2026-11-16', async ({ pag
   await expect(record).toHaveAttribute('href', /\/data\/sources\.json$/);
   const response = await page.request.get((await record.getAttribute('href')) ?? '');
   expect(response.ok()).toBe(true);
+});
+
+test('What the jobs count', async ({ page }) => {
+  // Spec reading-guide, "The characteristics explained"; design of add-more-characteristics, 7.
+  await page.goto('de/guide/');
+  const characteristics = section(page, 'Die Merkmale');
+  await expect(characteristics).toContainText(
+    'Arbeitsplätze sind die Beschäftigten der Betriebe in der Gemeinde, wo immer diese wohnen.',
+  );
+  await expect(characteristics).toContainText(
+    'Wo die Zahlen des letzten Jahres noch nicht veröffentlicht sind, nimmt sie die neuesten davor.',
+  );
+});
+
+test('The six sources of the characteristics', async ({ page }) => {
+  await page.goto('de/guide/');
+  const sources = section(page, 'Quellen');
+  for (const name of [
+    'STATPOP',
+    'STATENT',
+    'Nationalratswahlen',
+    'Volkszählung 2000',
+    'Landwirtschaftliche Strukturerhebung',
+    'swissBOUNDARIES3D 2026',
+  ]) {
+    await expect(sources).toContainText(name);
+  }
 });
 
 // Spec reading-guide, "Every page links to the guide": from the head of every page (spec
