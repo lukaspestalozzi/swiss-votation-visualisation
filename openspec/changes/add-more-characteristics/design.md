@@ -235,7 +235,7 @@ Alternatives considered (Q):
 | Table | Queries | Its list |
 |------|------|------|
 | Place of birth, `px-x-0102010000_100` | 1 | 2025-04-06 |
-| Jobs, `px-x-0602010000_102` | 2, by halves of its years (119,392 cells) | 2024-01-01 |
+| Jobs, `px-x-0602010000_102` | 2, by halves of its sectors (119,392 cells) | 2024-01-01 |
 | Farms, `px-x-0702000000_104`, read for the cattle today | 3 more: farms, farmland, organic farmland | 2025-04-06 |
 | Religion, `px-x-4003000000_122` | 1 | 2000-12-05 |
 | Education, `px-x-4003000000_161` | 1 | 2000-12-05 |
@@ -253,6 +253,14 @@ Alternatives considered (Q):
   population's for the years both give. The farmland is not summed over Switzerland: each
   municipality's is a whole number of hectares, and 27 of 28 sums differ (investigation, 7).
 - **STAT-TAB's pace** stays the pipeline's: a pause of 0.4 seconds between queries.
+- **The jobs are asked by sectors** (Q, while applying): all jobs and the primary sector in one
+  query, the secondary and the tertiary in the other, each for every year the table gives. The
+  pipeline does not know a table's years before it asks, so a query by years would need the
+  table's description, a 62nd file in the record, or years written in the code, which a new
+  year would not reach.
+- **The organic farms are not read** (Q, while applying): the file holds the farms, the farmland
+  and the organic farmland, so only the organic farmland is compared with the farmland. A query
+  for the organic farms would serve that check alone.
 
 ### 12. The figures that apply
 

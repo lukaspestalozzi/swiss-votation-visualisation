@@ -12,7 +12,8 @@ sources: no time of the run is written.
 
 The shape of each file is decision 12 of the design of the change add-vote-data, and for
 `map.json` decision 14 of the design of the change add-result-map, for `characteristics.json`
-decision 12 of the design of the change add-characteristics.
+decision 12 of the design of the change add-characteristics and decision 10 of the design of
+the change add-more-characteristics.
 """
 
 import hashlib
@@ -208,9 +209,16 @@ def _characteristics_json(data: Data) -> str:
         f'  "referenceDate": {_dumps(data.reference_date)},\n'
         f'  "municipalities": {_dumps(numbers)},\n'
         f'  "population": {yearly(found.population)},\n'
+        f'  "bornAbroad": {yearly(found.born_abroad)},\n'
+        f'  "jobs": {yearly(found.jobs)},\n'
         f'  "elections": [\n{elections}\n  ],\n'
         f'  "cattle": {yearly(found.cattle)},\n'
+        f'  "farms": {yearly(found.farms)},\n'
         f'  "languages2000": {_compact([found.languages[n] for n in numbers])},\n'
+        f'  "religion2000": {_compact([found.religion[n] for n in numbers])},\n'
+        f'  "education2000": {_compact([found.education[n] for n in numbers])},\n'
+        f'  "dwellings2000": {_compact([found.dwellings[n] for n in numbers])},\n'
+        f'  "buildings2000": {_compact([found.buildings[n] for n in numbers])},\n'
         f'  "area": {_compact([found.areas[n] for n in numbers])}\n'
         "}\n"
     )

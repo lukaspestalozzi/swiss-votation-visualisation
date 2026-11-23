@@ -3,7 +3,9 @@
 The BFS statistics API (STAT-TAB) answers a query of a table in json-stat2: the codes and labels
 of each dimension, and one value per combination of codes, `null` where the table writes a sign
 such as "...". A municipality's label starts with six dots; some tables put its number in the
-label (`......0261 Zürich`), the others use it as the code. Every count passes `counts.count`.
+label (`......0261 Zürich`), the others use it as the code. Three tables list municipalities
+only, beside Switzerland, in a dimension "Gemeinde" whose labels start with the number, without
+dots (`0261 Zürich`). Every count passes `counts.count`.
 """
 
 import csv
@@ -25,6 +27,10 @@ AGE_GROUPS = ((0, 17), (18, 34), (35, 49), (50, 64), (65, 100))
 YEAR = "Jahr"
 PLACE = "Kanton (-) / Bezirk (>>) / Gemeinde (......)"
 NUMBERED = re.compile(r"\.{6}([0-9]{4}) ")
+# The dimension of the tables that list municipalities only, beside Switzerland.
+PLAIN_PLACE = "Gemeinde"
+PLAIN = re.compile(r"([0-9]+) ")
+SWITZERLAND = "Schweiz"
 
 
 @dataclass(frozen=True)
@@ -55,7 +61,13 @@ class Cube:
         found = {}
         for code in self.codes_of(dimension):
             label = self.label(dimension, code)
-            if label.startswith("......"):
+            if dimension == PLAIN_PLACE:
+                if label != SWITZERLAND:
+                    plain = PLAIN.match(label)
+                    if not plain:
+                        raise SourceError(f"{self.source}: {label!r} has no number")
+                    found[code] = int(plain.group(1))
+            elif label.startswith("......"):
                 numbered = NUMBERED.match(label)
                 number = numbered.group(1) if numbered else code
                 if not re.fullmatch(r"[0-9]+", number):
@@ -170,20 +182,125 @@ def _years(cube: Cube) -> dict[str, int]:
     return years
 
 
-def read_cattle(cube: Cube) -> dict[int, dict[int, int]]:
-    """Per year, per municipality: its cattle (the farm structure survey's "Tiere - Rinder")."""
+def _farm_counts(cube: Cube, figure: str, adds_up: bool = True) -> dict[int, dict[int, int]]:
+    """Per year, per municipality: the one count of an answer of the farm structure survey. The
+    municipalities add up to Switzerland, unless `adds_up` says that they do not."""
     municipalities = cube.municipalities()
-    cattle: dict[int, dict[int, int]] = {}
+    counts: dict[int, dict[int, int]] = {}
     for code, year in _years(cube).items():
-        cattle[year] = {
+        counts[year] = {
             number: cube.get(
-                _cell(cube, YEAR, code, PLACE, place), "cattle", f"municipality {number}, {year}"
+                _cell(cube, YEAR, code, PLACE, place), figure, f"municipality {number}, {year}"
             )
             for place, number in municipalities.items()
         }
-        total = sum(cattle[year].values())
-        _check_switzerland(cube, _cell(cube, YEAR, code), total, "cattle", str(year))
-    return cattle
+        if adds_up:
+            total = sum(counts[year].values())
+            _check_switzerland(cube, _cell(cube, YEAR, code), total, figure, str(year))
+    return counts
+
+
+def read_cattle(cube: Cube) -> dict[int, dict[int, int]]:
+    """Per year, per municipality: its cattle (the farm structure survey's "Tiere - Rinder")."""
+    return _farm_counts(cube, "cattle")
+
+
+def read_farms(farms: Cube, farmland: Cube, organic: Cube) -> dict[int, dict[int, list[int]]]:
+    """Per year, per municipality: its farms, their farmland, and the farmland of the organic
+    ones, in whole hectares as the table gives them. The farmland is not added up over
+    Switzerland: each municipality's is a whole number of hectares, and the sums differ
+    (investigations/more-characteristics.md, 7). A municipality's organic farmland is at most
+    its farmland."""
+    land = _farm_counts(farmland, "farmland", adds_up=False)
+    organic_land = _farm_counts(organic, "organic farmland", adds_up=False)
+    found: dict[int, dict[int, list[int]]] = {}
+    for year, by_number in _farm_counts(farms, "farms").items():
+        found[year] = {}
+        for number, held in by_number.items():
+            row = [held, land[year][number], organic_land[year][number]]
+            if row[2] > row[1]:
+                raise SourceError(
+                    f"{organic.source}, municipality {number}, {year}: its {row[2]} hectares of "
+                    f"organic farmland are more than its {row[1]} hectares of farmland"
+                )
+            found[year][number] = row
+    return found
+
+
+BIRTHPLACE = "Geburtsort"
+
+
+def read_born_abroad(
+    cube: Cube, population: Mapping[int, Mapping[int, Sequence[int]]]
+) -> dict[int, dict[int, int]]:
+    """Per year, per municipality: its permanent residents born abroad, at the end of the year.
+    `population` is the population table's, as `read_population` gives it: in a year both tables
+    give, a municipality has the same inhabitants in both."""
+    municipalities = cube.municipalities()
+    born: dict[int, dict[int, int]] = {}
+    for code, year in _years(cube).items():
+        for place, number in municipalities.items() if year in population else ():
+            where = f"municipality {number}, {year}"
+            cell = _cell(cube, YEAR, code, PLACE, place, BIRTHPLACE, "-99999")
+            inhabitants, given = cube.get(cell, "inhabitants", where), population[year][number][0]
+            if inhabitants != given:
+                raise SourceError(
+                    f"{cube.source}, {where}: its {inhabitants} inhabitants are not the {given} "
+                    "of the population table"
+                )
+        born[year] = {
+            number: cube.get(
+                _cell(cube, YEAR, code, PLACE, place, BIRTHPLACE, "2"),
+                "born abroad",
+                f"municipality {number}, {year}",
+            )
+            for place, number in municipalities.items()
+        }
+        cell = _cell(cube, YEAR, code, BIRTHPLACE, "2")
+        _check_switzerland(cube, cell, sum(born[year].values()), "born abroad", str(year))
+    return born
+
+
+SECTOR = "Wirtschaftssektor"
+# The codes of all jobs and of those of the primary, the secondary and the tertiary sector.
+SECTORS = {
+    "999": "jobs",
+    "1": "jobs of the primary sector",
+    "2": "jobs of the secondary sector",
+    "3": "jobs of the tertiary sector",
+}
+# The sign the jobs table writes in place of a count it withholds.
+WITHHELD = "X"
+
+Withheld = list[int | None]
+
+
+def read_jobs(cubes: Sequence[Cube]) -> dict[int, dict[int, Withheld]]:
+    """Per year, per municipality: the employed persons at its workplaces at the end of the year
+    (STATENT), all and of each sector, from the answers by sectors. None for a count the table
+    withholds; any other sign stops the run, as a missing count does. The sectors add up to all
+    jobs where none of the four counts is withheld. The municipalities are not added up over
+    Switzerland: with counts withheld they do not reach its figures."""
+    of_sector = {sector: cube for cube in cubes for sector in cube.codes_of(SECTOR)}
+    first = cubes[0]
+    jobs: dict[int, dict[int, Withheld]] = {}
+    for code, year in _years(first).items():
+        jobs[year] = {}
+        for place, number in first.municipalities(PLAIN_PLACE).items():
+            where = f"municipality {number}, {year}"
+            row: Withheld = []
+            for sector, name in SECTORS.items():
+                cube = of_sector[sector]
+                cell = _cell(cube, YEAR, code, PLAIN_PLACE, place, SECTOR, sector)
+                row.append(None if cube.sign(cell) == WITHHELD else cube.get(cell, name, where))
+            given = [held for held in row if held is not None]
+            if len(given) == len(row) and sum(given[1:]) != given[0]:
+                raise SourceError(
+                    f"{first.source}, {where}: its sectors add up to {sum(given[1:])}, not to "
+                    f"its {given[0]} jobs"
+                )
+            jobs[year][number] = row
+    return jobs
 
 
 # The census of 2000: the codes of all main languages and of the four national languages.
@@ -214,6 +331,120 @@ def read_languages(cube: Cube) -> dict[int, list[int]]:
         total = sum(row[i] for row in languages.values())
         _check_switzerland(cube, _cell(cube, "Hauptsprache", code), total, name, "2000")
     return languages
+
+
+def _parts_of_2000(
+    cube: Cube, dimension: str, names: Mapping[str, str], parts: str
+) -> dict[int, dict[str, int]]:
+    """Per municipality, the inhabitants of 2000 by every code of `dimension`, "0" being all of
+    them. In a municipality the other codes add up to all its inhabitants, and for every code
+    the municipalities add up to Switzerland. `names` names a code in a message, the table's
+    label the others; `parts` names what adds up ("religions")."""
+    named = {
+        code: names.get(code, cube.label(dimension, code)) for code in cube.codes_of(dimension)
+    }
+    found: dict[int, dict[str, int]] = {}
+    totals = dict.fromkeys(named, 0)
+    for place, number in cube.municipalities().items():
+        where = f"municipality {number}, 2000"
+        counts = {
+            code: cube.get(_cell(cube, PLACE, place, dimension, code), name, where)
+            for code, name in named.items()
+        }
+        added = sum(counts.values()) - counts["0"]
+        if added != counts["0"]:
+            raise SourceError(
+                f"{cube.source}, {where}: its {parts} add up to {added}, not to its "
+                f"{counts['0']} inhabitants"
+            )
+        found[number] = counts
+        for code, given in counts.items():
+            totals[code] += given
+    for code, name in named.items():
+        _check_switzerland(cube, _cell(cube, dimension, code), totals[code], name, "2000")
+    return found
+
+
+RELIGION = "Religion"
+# The census of 2000: the codes of all religions and of the three the characteristics name.
+RELIGIONS = {
+    "0": "all religions",
+    "1": "Evangelical Reformed",
+    "8": "Roman Catholic",
+    "17": "no religious affiliation",
+}
+
+
+def read_religions(cube: Cube) -> dict[int, list[int]]:
+    """Per municipality, the inhabitants of 2000 (economic residence): all of them, the
+    Evangelical Reformed, the Roman Catholic and those without a religious affiliation."""
+    return {
+        number: [counts[code] for code in RELIGIONS]
+        for number, counts in _parts_of_2000(cube, RELIGION, RELIGIONS, "religions").items()
+    }
+
+
+EDUCATION = "Höchste abgeschlossene Ausbildung"
+# The census of 2000: the codes of the levels of none or compulsory school, of upper secondary
+# and of tertiary education. Those without an answer ("11"), of school age ("12") and below it
+# ("13") are in none (design of add-more-characteristics, decision 5).
+LEVELS = (("1", "2"), ("3", "4", "5", "6"), ("7", "8", "9", "10"))
+
+
+def read_education(cube: Cube) -> dict[int, list[int]]:
+    """Per municipality, the inhabitants of 2000 (economic residence) by their highest completed
+    education: none or compulsory school, upper secondary, tertiary."""
+    return {
+        number: [sum(counts[code] for code in level) for level in LEVELS]
+        for number, counts in _parts_of_2000(cube, EDUCATION, {}, "levels of education").items()
+    }
+
+
+def _survey_of_2000(
+    cubes: Sequence[Cube], kinds: str, chosen: Sequence[str], what: str
+) -> dict[int, list[int]]:
+    """Per municipality, from answers of the buildings and dwellings survey of 2000: all that
+    the answers count, and those of them whose code of the dimension `kinds` is among `chosen`.
+    Every cell of an answer is added; `what` names what is counted."""
+    found: dict[int, list[int]] = {}
+    for cube in cubes:
+        if cube.codes_of(YEAR) != ("2000",):
+            raise SourceError(
+                f"{cube.source}: its figures are of the years {list(cube.codes_of(YEAR))}, not "
+                "of 2000 alone"
+            )
+        others = [d for d in cube.dimensions if d not in (PLAIN_PLACE, YEAR)]
+        municipalities = cube.municipalities(PLAIN_PLACE)
+        for codes in itertools.product(*(cube.codes_of(d) for d in others)):
+            cell = dict(zip(others, codes, strict=True)) | {YEAR: "2000"}
+            figure = f"{what} ({', '.join(cube.label(d, cell[d]) for d in others)})"
+            total = 0
+            for place, number in municipalities.items():
+                given = cube.get(
+                    cell | {PLAIN_PLACE: place}, figure, f"municipality {number}, 2000"
+                )
+                row = found.setdefault(number, [0, 0])
+                row[0] += given
+                row[1] += given if cell[kinds] in chosen else 0
+                total += given
+            _check_switzerland(cube, cell, total, figure, "2000", PLAIN_PLACE)
+    return found
+
+
+# The occupants who own their dwelling: the flat, the house alone, the house with others.
+OWNERS = ("3", "4", "5")
+
+
+def read_dwellings(cubes: Sequence[Cube]) -> dict[int, list[int]]:
+    """Per municipality, the occupied dwellings of 2000 and those lived in by their owner, added
+    up over the answers by number of rooms."""
+    return _survey_of_2000(cubes, "Bewohnertyp", OWNERS, "occupied dwellings")
+
+
+def read_buildings(cube: Cube) -> dict[int, list[int]]:
+    """Per municipality, the buildings with dwellings of 2000 and the single-family houses among
+    them, added up over the periods of construction."""
+    return _survey_of_2000([cube], "Gebäudekategorie", ("EFH",), "buildings with dwellings")
 
 
 def check_list(source: str, date: str, given: Iterable[int], listed: Iterable[int]) -> None:
@@ -261,13 +492,13 @@ def read_areas(content: bytes, source: str) -> dict[int, int]:
 
 
 def _check_switzerland(
-    cube: Cube, cell: dict[str, str], total: int, figure: str, where: str
+    cube: Cube, cell: dict[str, str], total: int, figure: str, where: str, place: str = PLACE
 ) -> None:
     """Stop unless the municipalities add up to the table's figure for Switzerland."""
-    swiss = [code for code in cube.codes_of(PLACE) if cube.label(PLACE, code) == "Schweiz"]
+    swiss = [code for code in cube.codes_of(place) if cube.label(place, code) == SWITZERLAND]
     if len(swiss) != 1:
         raise SourceError(f"{cube.source}: no single figure for Switzerland")
-    given = cube.get(cell | {PLACE: swiss[0]}, f"{figure} of Switzerland", where)
+    given = cube.get(cell | {place: swiss[0]}, f"{figure} of Switzerland", where)
     if total != given:
         raise SourceError(
             f"{cube.source}, {where}: the municipalities add up to {total} {figure}, not {given}"
@@ -380,12 +611,14 @@ def onto_list(
     successors: Mapping[int, set[int]],
     listed: Iterable[int],
     source: str,
+    all_parts: bool = False,
 ) -> dict[int, Counts]:
     """Counts given per municipality of an earlier list, added up per municipality of the list
     `listed`: each earlier municipality is part of the municipalities `successors` names, or of
     itself when it did not change. An earlier municipality that is part of several of today's
     makes them one group, and each member gets the group's counts. A municipality without a
-    figure (None) adds nothing."""
+    figure (None) adds nothing, as one that counts its votes with another; with `all_parts` it
+    leaves its group without a figure, as a count the source withholds."""
     today = set(listed)
     leads = {number: successors.get(number, {number}) for number in counts}
     group_of: dict[int, frozenset[int]] = {}
@@ -402,13 +635,18 @@ def onto_list(
     if missing:
         raise SourceError(f"{source}: no figures for the municipalities {missing}")
     sums: dict[frozenset[int], Counts] = {}
+    without: set[frozenset[int]] = set()
     for number, value in counts.items():
         group = group_of[min(leads[number])]
-        if value is not None:
+        if value is None:
+            without.add(group)
+        else:
             added = sums.get(group)
             sums[group] = (
                 value if added is None else [a + b for a, b in zip(added, value, strict=True)]
             )
+    if all_parts:
+        sums = {group: added for group, added in sums.items() if group not in without}
     return {member: sums.get(group_of[member]) for member in sorted(today)}
 
 
@@ -458,3 +696,19 @@ class CharacteristicsData:
     languages: dict[int, list[int]]
     # The area in ha.
     areas: dict[int, int]
+    # Per year: those born abroad.
+    born_abroad: dict[int, dict[int, int]]
+    # Per year: all jobs and those of the primary, the secondary and the tertiary sector, each
+    # None where the source withholds it (design of add-more-characteristics, decisions 7, 10).
+    jobs: dict[int, dict[int, Withheld]]
+    # Per year: the farms, their farmland and the farmland of the organic ones, in ha.
+    farms: dict[int, dict[int, list[int]]]
+    # The census of 2000: all inhabitants, the Evangelical Reformed, the Roman Catholic and those
+    # without a religious affiliation.
+    religion: dict[int, list[int]]
+    # The inhabitants with none or compulsory school, upper secondary and tertiary education.
+    education: dict[int, list[int]]
+    # The occupied dwellings and those lived in by their owner.
+    dwellings: dict[int, list[int]]
+    # The buildings with dwellings and the single-family houses among them.
+    buildings: dict[int, list[int]]

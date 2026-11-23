@@ -62,6 +62,14 @@ def characteristics() -> CharacteristicsData:
         cattle={2015: {2: 0, 1: 12}},
         languages={2: [9, 8, 1, 0, 0], 1: [4, 3, 1, 0, 0]},
         areas={2: 1062, 1: 790},
+        born_abroad={2015: {2: 3, 1: 1}},
+        # Two sectors of the second are withheld.
+        jobs={2015: {2: [9, None, 3, None], 1: [4, 1, 1, 2]}},
+        farms={2015: {2: [0, 0, 0], 1: [2, 40, 10]}},
+        religion={2: [9, 3, 4, 1], 1: [4, 2, 1, 1]},
+        education={2: [2, 3, 1], 1: [1, 2, 0]},
+        dwellings={2: [4, 1], 1: [2, 1]},
+        buildings={2: [3, 1], 1: [2, 2]},
     )
 
 
@@ -207,13 +215,26 @@ def test_the_characteristics(tmp_path: Path) -> None:
         '  "population": {"years": [2015], "counts": [\n'
         "    [[5,1,1,1,1,1,1],[8,2,1,2,2,2,1]]\n"
         "  ]},\n"
+        '  "bornAbroad": {"years": [2015], "counts": [\n'
+        "    [1,3]\n"
+        "  ]},\n"
+        '  "jobs": {"years": [2015], "counts": [\n'
+        "    [[4,1,1,2],[9,null,3,null]]\n"
+        "  ]},\n"
         '  "elections": [\n'
         '    {"year": 2015, "day": "2015-10-18", "votes": [[7,6,5,4,3,2,1],null]}\n'
         "  ],\n"
         '  "cattle": {"years": [2015], "counts": [\n'
         "    [12,0]\n"
         "  ]},\n"
+        '  "farms": {"years": [2015], "counts": [\n'
+        "    [[2,40,10],[0,0,0]]\n"
+        "  ]},\n"
         '  "languages2000": [[4,3,1,0,0],[9,8,1,0,0]],\n'
+        '  "religion2000": [[4,2,1,1],[9,3,4,1]],\n'
+        '  "education2000": [[1,2,0],[2,3,1]],\n'
+        '  "dwellings2000": [[2,1],[4,1]],\n'
+        '  "buildings2000": [[2,2],[3,1]],\n'
         '  "area": [790,1062]\n'
         "}\n"
     )
@@ -228,6 +249,13 @@ def test_the_same_counts_in_another_order_give_the_same_bytes(tmp_path: Path) ->
         cattle={y: dict(sorted(rows.items())) for y, rows in given.cattle.items()},
         languages=dict(sorted(given.languages.items())),
         areas=dict(sorted(given.areas.items())),
+        born_abroad={y: dict(sorted(rows.items())) for y, rows in given.born_abroad.items()},
+        jobs={y: dict(sorted(rows.items())) for y, rows in given.jobs.items()},
+        farms={y: dict(sorted(rows.items())) for y, rows in given.farms.items()},
+        religion=dict(sorted(given.religion.items())),
+        education=dict(sorted(given.education.items())),
+        dwellings=dict(sorted(given.dwellings.items())),
+        buildings=dict(sorted(given.buildings.items())),
     )
     first, second = tmp_path / "first", tmp_path / "second"
     for directory, counts in ((first, given), (second, reordered)):
