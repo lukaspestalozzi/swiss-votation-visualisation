@@ -810,6 +810,8 @@ def election(year: int) -> dict[str, Any]:
 FARM_UNITS = {"15": "Tiere - Rinder", "0": "Betriebe",
               "10": "LN - Landwirtschaftliche Nutzfläche Total (in ha)"}  # fmt: skip
 FARM_SYSTEMS = {"0": "Betriebssystem - Total", "1": "Biologische Betriebe"}
+# The first year of which the made-up farms table gives the organic farmland.
+ORGANIC_SINCE = 2011
 
 
 def farms(unit: str = "15", system: str = "0") -> dict[str, Any]:
@@ -825,6 +827,9 @@ def farms(unit: str = "15", system: str = "0") -> dict[str, Any]:
 
     def cell(key: tuple[str, ...]) -> int | None:
         _, place, _, year = key
+        # As the real table, which writes "..." for the organic farmland of its early years.
+        if (unit, system, year_of[year]) == ("10", "1", ORGANIC_SINCE - 1):
+            return None
         return sum(counted(n, year_of[year]) for n in places[place])
 
     return json_stat(

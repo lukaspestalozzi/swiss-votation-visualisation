@@ -182,12 +182,18 @@ def _years(cube: Cube) -> dict[str, int]:
     return years
 
 
-def _farm_counts(cube: Cube, figure: str, adds_up: bool = True) -> dict[int, dict[int, int]]:
-    """Per year, per municipality: the one count of an answer of the farm structure survey. The
+def _farm_counts(
+    cube: Cube, figure: str, adds_up: bool = True, years: Iterable[int] | None = None
+) -> dict[int, dict[int, int]]:
+    """Per year, per municipality: the one count of an answer of the farm structure survey, of
+    every year of the answer or of `years` alone, each of which the answer must give. The
     municipalities add up to Switzerland, unless `adds_up` says that they do not."""
     municipalities = cube.municipalities()
     counts: dict[int, dict[int, int]] = {}
+    wanted = None if years is None else set(years)
     for code, year in _years(cube).items():
+        if wanted is not None and year not in wanted:
+            continue
         counts[year] = {
             number: cube.get(
                 _cell(cube, YEAR, code, PLACE, place), figure, f"municipality {number}, {year}"
@@ -197,6 +203,9 @@ def _farm_counts(cube: Cube, figure: str, adds_up: bool = True) -> dict[int, dic
         if adds_up:
             total = sum(counts[year].values())
             _check_switzerland(cube, _cell(cube, YEAR, code), total, figure, str(year))
+    missing = sorted((wanted or set()) - set(counts))
+    if missing:
+        raise SourceError(f"{cube.source}: no figures of the years {missing}")
     return counts
 
 
@@ -205,16 +214,21 @@ def read_cattle(cube: Cube) -> dict[int, dict[int, int]]:
     return _farm_counts(cube, "cattle")
 
 
-def read_farms(farms: Cube, farmland: Cube, organic: Cube) -> dict[int, dict[int, list[int]]]:
-    """Per year, per municipality: its farms, their farmland, and the farmland of the organic
-    ones, in whole hectares as the table gives them. The farmland is not added up over
+def read_farms(
+    farms: Cube, farmland: Cube, organic: Cube, *, years: Iterable[int]
+) -> dict[int, dict[int, list[int]]]:
+    """Per year of `years`, per municipality: its farms, their farmland, and the farmland of the
+    organic ones, in whole hectares as the table gives them. Only these years are read: the
+    table has no organic farmland of its years before 1990. The farmland is not added up over
     Switzerland: each municipality's is a whole number of hectares, and the sums differ
     (investigations/more-characteristics.md, 7). A municipality's organic farmland is at most
     its farmland."""
-    land = _farm_counts(farmland, "farmland", adds_up=False)
-    organic_land = _farm_counts(organic, "organic farmland", adds_up=False)
+    years = list(years)
+    counted = _farm_counts(farms, "farms", years=years)
+    land = _farm_counts(farmland, "farmland", adds_up=False, years=years)
+    organic_land = _farm_counts(organic, "organic farmland", adds_up=False, years=years)
     found: dict[int, dict[int, list[int]]] = {}
-    for year, by_number in _farm_counts(farms, "farms").items():
+    for year, by_number in counted.items():
         found[year] = {}
         for number, held in by_number.items():
             row = [held, land[year][number], organic_land[year][number]]

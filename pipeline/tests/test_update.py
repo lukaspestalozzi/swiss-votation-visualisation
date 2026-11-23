@@ -563,9 +563,5 @@ def test_farms_of_other_years_than_the_cattle_stop_the_update(
     sources.answer(download.organic_farmland(), made_up.farms("10", "1"))
     status = main(["update"], fetch=sources, today=TODAY, project=directory, data=data)
     assert status == 1
-    message = (
-        f"farms.json: its years {list(range(2015, 2025))} are not those of cattle.json, "
-        f"{list(range(2015, 2026))}"
-    )
-    assert message in capsys.readouterr().err
+    assert "farms.json: no figures of the years [2025]" in capsys.readouterr().err
     assert snapshot(data) == before
