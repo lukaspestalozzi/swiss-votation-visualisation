@@ -165,12 +165,26 @@ the sources"; design, decisions 4 to 8, 10 and 11.
   the update stops" gains the sign in the jobs table and, for a table on a newer list, the script
   that finds its date; the entries on a missing year and on sums name the new tables' checks. The
   size and the time of a run are corrected in task 1.11, once measured.
-- [ ] 1.11 The data. Run `uv run --directory pipeline --locked python -m pipeline update`.
+- [x] 1.11 The data. Run `uv run --directory pipeline --locked python -m pipeline update`.
 
   Verify: `git status --short app/static/data` names `characteristics.json` and `sources.json`
   only; `characteristics.json` is 2.5 to 2.8 MB; `sources.json` names 61 answers of STAT-TAB; a
   second run with `--reuse-downloads` changes nothing; `pnpm run test` passes, 52 and 158, as the
   app does not read the new counts yet.
+
+  As built: the first run downloaded everything in 24 minutes, STAT-TAB answering slowly, and then
+  stopped: "organic_farmland.json, municipality 1, 1985: organic farmland is None". The farms table
+  goes back to 1975 and writes "..." for the organic farmland of 1975, 1980 and 1985, 6,855 cells;
+  the investigation had asked for 2012 to 2025 only. The farms' reader now reads the cattle's years
+  alone and stops when an answer lacks one of them, which replaces the check of the farms' years of
+  task 1.9. The made-up table lacks the organic farmland of its first year, so that the farms' tests
+  failed as the run had; one test more, 177 in the pipeline. The second run, with
+  `--reuse-downloads` on the files of the first, wrote the two data files; a third gave the same
+  bytes. `characteristics.json` is 2.40 MB, not 2.5 to 2.8, and 976 KB with gzip (981 estimated);
+  `sources.json` names 61 answers of STAT-TAB and the list of 2024-01-01. The counts of Zürich,
+  Oberrieden, Meienried, Rue, Bister, Hérémence and Linescio are the investigation's. `pnpm run
+  test`: 52 and 164, as tasks 2.1 to 2.4 were under way. The downloads are 190 MB;
+  `pipeline/README.md` says so.
 
 ## 2. The definitions
 
@@ -179,27 +193,49 @@ characteristics of the population", "The religion of 2000", "The education of 20
 of 2000", "The jobs", "A count the source withholds", "The farms and the organic farmland" and
 "The figures that apply to a vote"; design, decisions 1 to 5, 7 to 9 and 12.
 
-- [ ] 2.1 The types of the new counts in `vote-data.ts`. A test in `vote-data.test.ts`: each new
+- [x] 2.1 The types of the new counts in `vote-data.ts`. A test in `vote-data.test.ts`: each new
   set has a row per municipality of the list, and each yearly one its years.
 
   Verify: `pnpm --filter app exec vitest run src/lib/vote-data.test.ts` passes, one test more;
   `pnpm run check` reports nothing.
-- [ ] 2.2 The groups, for the 21 of before. Each definition names its group; `panelOf` makes the
+
+  As built: the test was written while the update of task 1.11 ran and failed against the data file
+  of before (no `bornAbroad`); it passes on the new file. 17 tests in the file, 16 before. It also
+  checks that the jobs' years run from 2012 without a gap and that each row has its counts.
+- [x] 2.2 The groups, for the 21 of before. Each definition names its group; `panelOf` makes the
   panel's groups from them. A test: the 21 definitions' groups, in the order population,
   election, languages, land.
 
   Verify: `pnpm --filter app exec vitest run src/lib/characteristics.test.ts` passes, 18 tests,
   the panel's lines as before.
-- [ ] 2.3 The years that apply. Tests in `characteristics.test.ts`, one at a time: the vote of
+
+  As built: done before task 2.1, while the update of task 1.11 ran, as it does not read the new
+  counts. The group's type has the eight groups and stands with the keys in `texts/index.ts`;
+  `panelOf` takes the four groups of before by their names. The test failed before the code (no
+  group); 18 tests, the 17 of before unchanged, the test of every value written as before among
+  them.
+- [x] 2.3 The years that apply. Tests in `characteristics.test.ts`, one at a time: the vote of
   2016-02-28 takes those born abroad and the jobs of 2015; the newest vote day takes the jobs of
   2024; made-up files for "Those born abroad published later" and "The jobs published later"; a
   file whose farms have other years than its cattle is refused. Then `applyingTo`.
 
   Verify: each run alone passes.
-- [ ] 2.4 A number with one decimal. A test of the new unit: 118.1121 is written "118.1", 0.05 as
+
+  As built: 5 tests, 24 in the file. The three with made-up files were written while the update ran,
+  and each failed before its code: those born abroad published later, the jobs published later, the
+  farms of other years than the cattle (refused with a RangeError that names both). The made-up file
+  has the seven new sets; two tests of before give their farms the years of their cattle. The two on
+  the real file passed when written and failed against a mutant each: a year of the vote's own year
+  taken, and the jobs taking the population's year. `Applying` has `bornAbroadYear` and `jobsYear`;
+  the farms take `cattleYear`.
+- [x] 2.4 A number with one decimal. A test of the new unit: 118.1121 is written "118.1", 0.05 as
   "0.1", none as "keine Angabe". Then the unit of decision 7.
 
   Verify: run alone, the test passes.
+
+  As built: the unit is `rate`, one decimal. The test failed before the unit; it also writes 1234.56
+  as "1'234.6" and a rate without a whole as "keine Angabe". 19 tests in the file. Done before tasks
+  2.1 and 2.3, while the update of task 1.11 ran.
 - [ ] 2.5 Born abroad. Its name in three languages, its key, its definition, third in the order.
   Tests, one at a time: Zürich's 41.0744% for the vote of 2016-02-28; the name and the key.
 
@@ -296,12 +332,21 @@ decision 14.
 Spec `reading-guide`, "Municipalities without a result or a figure explained", "The
 characteristics explained" and "The sources"; design, decision 16.
 
-- [ ] 6.1 The sentences. Tests of "Jobs and farmland without a figure", "What the jobs count",
+- [x] 6.1 The sentences. Tests of "Jobs and farmland without a figure", "What the jobs count",
   the six tracks in "The dates of the figures" and "The six sources of the characteristics" in
   `guide.spec.ts`, one at a time. Seen to fail: the sentences of before. Then the guide's texts
   in three languages.
 
   Verify: each run alone passes; `pnpm --filter app exec playwright test guide.spec.ts` passes.
+
+  As built: done while the update of task 1.11 ran, as the guide does not read the new counts. 15
+  tests in the file, 3 of them new; the test of the tracks of before now names six. Each failed
+  before its texts. "Die Merkmale" has three paragraphs: which figures a vote takes and the newest
+  published before; what the jobs count, and that language, religion, education and housing have no
+  newer figures per municipality; how a limit compares and the six tracks. In French the jobs are
+  "emplois" of the "établissements", in Italian "impieghi" of the "stabilimenti"; Q reviews the two
+  translations with the names. Two other tests of the file failed against the data file of before,
+  as a vote's page already read the new counts; with the new file all 15 pass.
 
 ## 7. Docs and checks
 

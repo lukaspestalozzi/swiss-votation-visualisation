@@ -245,19 +245,27 @@ export const fr: Texts = {
         "Quelques rares communes n'ont pas de résultat propre: leurs voix sont comptées avec " +
           "celles d'une autre commune. Elles sont hachurées sur la carte, et une limite ne " +
           "change aucun chiffre à cause d'elles.",
-        'Pour quelques petites communes du canton de Berne, la force des partis manque. Une ' +
-          'commune sans données est écartée dès que la limite de cette caractéristique est ' +
-          'resserrée.',
+        'Pour quelques petites communes du canton de Berne, la force des partis manque. Pour ' +
+          "les emplois d'un secteur, les données manquent là où l'OFS ne publie pas le chiffre, " +
+          "et pour la part bio, là où il n'y a pas de surface agricole utile. Une commune sans " +
+          'données est écartée dès que la limite de cette caractéristique est resserrée.',
       ],
     },
     {
       heading: 'Les caractéristiques',
       paragraphs: [
-        'Une votation prend la population et les bovins à la fin de la dernière année avant ' +
-          'son jour, la force des partis de la dernière élection du Conseil national avant son ' +
-          'jour, les langues principales du recensement de 2000 et la surface de 2026.',
+        'Une votation prend la population, les emplois, les bovins et les exploitations ' +
+          'agricoles de la dernière année avant son jour, la force des partis de la dernière ' +
+          'élection du Conseil national avant son jour, la langue principale, la religion, la ' +
+          'formation et le logement du recensement de 2000 et la surface de 2026. Là où les ' +
+          'chiffres de la dernière année ne sont pas encore publiés, elle prend les plus ' +
+          "récents d'avant.",
+        'Les emplois sont ceux des établissements situés dans la commune, où que vivent les ' +
+          'personnes qui les occupent. Pour la langue principale, la religion, la formation et ' +
+          "le logement, il n'existe pas de chiffres plus récents pour chaque commune.",
         "Une limite compare les valeurs telles qu'elles figurent pour la commune. Les limites " +
-          'de «Habitants», «Habitants par km²», «Surface» et «Bovins par habitant» croissent ' +
+          'de «Habitants», «Habitants par km²», «Emplois pour 100 habitants», «Surface», ' +
+          "«Bovins par habitant» et «Exploitations agricoles pour 1'000 habitants» croissent " +
           "d'un pas à l'autre du même facteur, parce que leurs valeurs s'étendent sur plusieurs " +
           'ordres de grandeur.',
       ],
@@ -272,8 +280,8 @@ export const fr: Texts = {
     'Communes et carte: OFS, Répertoire officiel des communes de Suisse et limites communales ' +
     `généralisées, état au ${date}; OFS, ThemaKart ${String(lakesSet)} (lacs).`,
   SOURCE_CHARACTERISTICS:
-    'Caractéristiques: OFS, STATPOP; OFS, élections au Conseil national; OFS, recensement ' +
-    'fédéral de la population 2000; OFS, relevé des structures agricoles; swisstopo, ' +
-    'swissBOUNDARIES3D 2026.',
+    'Caractéristiques: OFS, STATPOP; OFS, STATENT; OFS, élections au Conseil national; OFS, ' +
+    'recensement fédéral de la population 2000; OFS, relevé des structures agricoles; ' +
+    'swisstopo, swissBOUNDARIES3D 2026.',
   SOURCES_FILE: 'Tous les fichiers lus et leurs requêtes:',
 };

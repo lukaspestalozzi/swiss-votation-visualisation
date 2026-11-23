@@ -243,18 +243,27 @@ export const de: Texts = {
         'Einige wenige Gemeinden haben kein eigenes Ergebnis: Ihre Stimmen sind mit denen ' +
           'einer anderen Gemeinde gezählt. Sie sind auf der Karte schraffiert, und eine Grenze ' +
           'ändert durch sie keine Zahl.',
-        'Bei einigen kleinen Gemeinden des Kantons Bern fehlen die Parteistärken. Eine ' +
-          'Gemeinde ohne Angabe fällt weg, sobald die Grenze dieses Merkmals enger gestellt ist.',
+        'Bei einigen kleinen Gemeinden des Kantons Bern fehlen die Parteistärken. Bei den ' +
+          'Arbeitsplätzen eines Sektors fehlt die Angabe, wo das BFS die Zahl nicht ' +
+          'veröffentlicht, und beim Bio-Anteil, wo es keine landwirtschaftliche Nutzfläche ' +
+          'gibt. Eine Gemeinde ohne Angabe fällt weg, sobald die Grenze dieses Merkmals enger ' +
+          'gestellt ist.',
       ],
     },
     {
       heading: 'Die Merkmale',
       paragraphs: [
-        'Eine Abstimmung nimmt die Bevölkerung und die Rinder am Ende des letzten Jahres vor ' +
-          'ihrem Tag, die Parteistärken der letzten Nationalratswahl vor ihrem Tag, die ' +
-          'Hauptsprachen der Volkszählung 2000 und die Fläche von 2026.',
+        'Eine Abstimmung nimmt die Bevölkerung, die Arbeitsplätze, die Rinder und die ' +
+          'Landwirtschaftsbetriebe des letzten Jahres vor ihrem Tag, die Parteistärken der ' +
+          'letzten Nationalratswahl vor ihrem Tag, Hauptsprache, Religion, Ausbildung und ' +
+          'Wohnen der Volkszählung 2000 und die Fläche von 2026. Wo die Zahlen des letzten ' +
+          'Jahres noch nicht veröffentlicht sind, nimmt sie die neuesten davor.',
+        'Arbeitsplätze sind die Beschäftigten der Betriebe in der Gemeinde, wo immer diese ' +
+          'wohnen. Zu Hauptsprache, Religion, Ausbildung und Wohnen gibt es keine neueren ' +
+          'Zahlen für jede Gemeinde.',
         'Eine Grenze vergleicht die Werte so, wie sie bei der Gemeinde stehen. Die Grenzen von ' +
-          '«Einwohner», «Einwohner je km²», «Fläche» und «Rinder je Einwohner» wachsen von ' +
+          '«Einwohner», «Einwohner je km²», «Arbeitsplätze je 100 Einwohner», «Fläche», ' +
+          "«Rinder je Einwohner» und «Landwirtschaftsbetriebe je 1'000 Einwohner» wachsen von " +
           'Schritt zu Schritt um den gleichen Faktor, weil ihre Werte über mehrere ' +
           'Grössenordnungen reichen.',
       ],
@@ -268,7 +277,7 @@ export const de: Texts = {
     'Gemeinden und Karte: BFS, Amtliches Gemeindeverzeichnis der Schweiz und generalisierte ' +
     `Gemeindegrenzen, Stand ${date}; BFS, ThemaKart ${String(lakesSet)} (Seen).`,
   SOURCE_CHARACTERISTICS:
-    'Merkmale: BFS, STATPOP; BFS, Nationalratswahlen; BFS, Volkszählung 2000; BFS, ' +
-    'Landwirtschaftliche Strukturerhebung; swisstopo, swissBOUNDARIES3D 2026.',
+    'Merkmale: BFS, STATPOP; BFS, STATENT; BFS, Nationalratswahlen; BFS, Volkszählung 2000; ' +
+    'BFS, Landwirtschaftliche Strukturerhebung; swisstopo, swissBOUNDARIES3D 2026.',
   SOURCES_FILE: 'Alle gelesenen Dateien und ihre Abfragen:',
 };
