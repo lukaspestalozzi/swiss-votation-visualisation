@@ -30,14 +30,27 @@ and Italian:
   its yes share and its votes. Its shapes come from the Federal Statistical Office
   ("Kartengrundlage: © BFS": the register of municipalities and the ThemaKart set 2026), written
   by the pipeline to `app/static/data/map.json`;
-- beside the map, a panel lists the characteristics of the municipality last clicked: its
-  inhabitants, share of foreigners, five age groups and density at the end of the year before
-  the vote, the party strengths of the last National Council election before it, the shares of
-  the four national languages in the census of 2000, its area, and its cattle per inhabitant.
-  They come from the Federal Statistical Office's statistics and swisstopo, written by the
-  pipeline to `app/static/data/characteristics.json`;
+- beside the map, a panel lists the 35 characteristics of the municipality last clicked, in
+  eight groups:
+  - its inhabitants, the shares of foreigners and of those born abroad, five age groups and its
+    density, at the end of the year before the vote;
+  - the party strengths of the last National Council election before it;
+  - from the census of 2000, the newest figures there are per municipality: the four national
+    languages; the Evangelical Reformed, the Roman Catholic and those without a religious
+    affiliation; those with a university or higher vocational degree and those with compulsory
+    school or none; the dwellings lived in by their owner and the single-family houses;
+  - its jobs per 100 inhabitants and their shares in the primary, the secondary and the
+    tertiary sector;
+  - its area, its cattle per inhabitant, its farms per 1,000 inhabitants and the organic share
+    of its farmland.
+
+  A figure the Federal Statistical Office withholds reads "keine Angabe". The figures come from
+  its statistics (STATPOP, STATENT, the National Council elections, the census of 2000, the
+  farm structure survey) and from swisstopo, written by the pipeline to
+  `app/static/data/characteristics.json`;
 - above the map, limits on these characteristics select municipalities: you add a limit for any
-  of them, set its lower and upper bound with two sliders, and a municipality remains only when
+  of them from a list under the panel's headings, set its lower and upper bound with two
+  sliders, and a municipality remains only when
   it lies within all limits. While you drag, the map greys out the others in dark grey, and the
   result of the selection, "Mit Ihrer Auswahl", stands beside the real one, with both majorities
   and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad

@@ -257,7 +257,8 @@ the end of 2025 and the jobs of 2024.
 
 The pipeline reads this table for the cattle, on the list of 2025-04-06, with the farm survey's
 years from 2012 to 2025. It also gives the farms and their farmland in whole hectares, each in
-all and for organic farms. No cell lacks a value.
+all and for organic farms. For these years no cell lacks a value; "Found while applying" below
+has the table's earlier years.
 
 | Value | Year | Least | 1st decile | Median | 9th decile | Most |
 |------|------|------|------|------|------|------|
@@ -383,6 +384,31 @@ The newest figures, for Zürich: 44.98% born abroad at the end of 2025; 545,295 
 2024, 124.9 per 100 of its 436,551 inhabitants then; 37 farms in 2025 and 591 of 812 hectares
 organic, 72.78%.
 
+## Found while applying
+
+Found on 2026-11-23, while `add-more-characteristics` was applied:
+
+- **The farms table has no organic farmland before 1990.** The table gives 28 years back to
+  1975, and the pipeline asks for all of them, as it does for the cattle. In the answer on the
+  organic farmland, 6,855 cells carry "..." in place of a value: all 2,285 places in 1975, 1980
+  and 1985. Every later year has a value in every cell, and so has every year of the cattle,
+  the farms and the farmland of all farms. The first real run of the update stopped there
+  ("organic_farmland.json, municipality 1, 1985: organic farmland is None"). The scripts here
+  had asked for 2012 to 2025 only. The pipeline now reads the farms for the cattle's years.
+- **The data file is smaller than answer 10 says.** `characteristics.json` is 2,400,980 bytes,
+  976,058 with gzip. Answer 10 added up each group as a file of its own and came to about
+  2.67 MB; its estimate with gzip, about 981 KB, holds.
+- **The update takes longer.** With 61 queries it took 24 minutes on 2026-11-23, STAT-TAB
+  answering a query in 20 to 35 seconds, and the downloads are 190 MB.
+- **The frame after a link with 35 limits.** Measured seven times on the built site with the
+  browser test: 71.4, 77.6, 77.8, 83.4, 83.9, 113.3 and 126.0 ms. With the 21 limits of before:
+  45.0, 45.6, 46.2, 53.3, 56.2, 74.8 and 82.3 ms.
+- **The counts on the votes' list are those of answers 6 and 12:** in 2012, 2015 and 2024 the
+  data file has 0, 0 and 3 municipalities without the number of all jobs, and 62, 58 and 83
+  without a count of the primary sector, 87, 85 and 93 of the secondary, 44, 37 and 36 of the
+  tertiary. Answer 6's table counts the municipalities without a share, which adds those
+  without the number of all jobs: 85, 94 and 37 in 2024.
+
 ## Not verified
 
 - **The tax statistics.** The files were not read: their contents, their list of municipalities
@@ -394,9 +420,10 @@ organic, 72.78%.
 - **The Italian words** for the census and the farm survey (answer 11).
 - **When the jobs of a year appear.** The table gives 2024 as its newest year on 2026-11-22; its
   date of publication was not looked for.
-- **The frame after a link with 35 limits.** With 21 limits it took 55 to 94 ms, about 1.3 ms of
-  it for each track made (`investigations/share-link.md`). In proportion 35 limits would take 92
-  to 157 ms; that is an estimate, as the 14 new limits do not exist yet.
+- **The frame after a link with 35 limits**, when this was written. With 21 limits it took 55 to
+  94 ms, about 1.3 ms of it for each track made (`investigations/share-link.md`). In proportion
+  35 limits would take 92 to 157 ms; that was an estimate, as the 14 new limits did not exist
+  yet. "Found while applying" has the measurement.
 - **Loading the larger file on a phone.** The file would double (answer 10); how long a phone
   takes to read it was not measured.
 - **STAT-TAB's limit.** After the catalogue's 628 requests and some 20 queries within half an
