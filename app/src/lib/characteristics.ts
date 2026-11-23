@@ -1,9 +1,10 @@
 // The characteristics of the municipalities (spec characteristics): one definition each, which
 // everything that shows or uses a characteristic takes its name, value and date from. Their
 // counts are those of characteristics.json; the design of the change add-characteristics gives
-// the reasons (decisions 1, 11 and 15).
+// the reasons (decisions 1, 11 and 15), and the design of add-more-characteristics those of the
+// groups (decision 3).
 import { formatUnits, quotientUnits } from './format.ts';
-import type { CharacteristicKey, Texts } from './texts/index.ts';
+import type { CharacteristicGroup, CharacteristicKey, Texts } from './texts/index.ts';
 import type { CharacteristicsFile, Election } from './vote-data.ts';
 
 // The counts of one municipality that apply to a vote.
@@ -24,9 +25,12 @@ export interface Counts {
 // Where a characteristic's figures come from, which gives the date of its figures.
 export type Source = 'population' | 'election' | 'census' | 'area' | 'cattle';
 
-// How a value is written: a count, a share in percent, inhabitants per km², km², or a number
-// per inhabitant.
-export type Unit = 'count' | 'percent' | 'per-km2' | 'km2' | 'per-inhabitant';
+// The group a characteristic stands in, in the panel and in the list of the limits.
+export type Group = CharacteristicGroup;
+
+// How a value is written: a count, a share in percent, inhabitants per km², km², a number per
+// inhabitant, or a number per 100 or per 1,000 inhabitants, with one decimal (a rate).
+export type Unit = 'count' | 'percent' | 'per-km2' | 'km2' | 'per-inhabitant' | 'rate';
 
 // A value as the quotient of two counts, so that it is written exactly from them, as a vote's
 // share is. Its number is part / whole.
@@ -44,6 +48,7 @@ export interface Definition {
   readonly key: CharacteristicKey;
   readonly unit: Unit;
   readonly source: Source;
+  readonly group: Group;
   readonly scale: Scale;
   // The year of its figures, among those that apply to a vote.
   readonly year: (applying: Applying) => number;
@@ -69,10 +74,11 @@ function define(
   key: CharacteristicKey,
   unit: Unit,
   source: Source,
+  group: Group,
   scale: Scale,
   value: (counts: Counts) => Quotient | null,
 ): Definition {
-  return { key, unit, source, scale, year: YEAR_OF[source], value };
+  return { key, unit, source, group, scale, year: YEAR_OF[source], value };
 }
 
 const ofInhabitants = (i: number) => (c: Counts) => ({
@@ -93,27 +99,29 @@ const PARTIES = ['fdp', 'centre', 'sp', 'svp', 'glp', 'greens', 'other-parties']
 const LANGUAGES = ['german', 'french', 'italian', 'romansh'] as const;
 
 export const DEFINITIONS: readonly Definition[] = [
-  define('inhabitants', 'count', 'population', 'logarithmic', (c) => ({
+  define('inhabitants', 'count', 'population', 'population', 'logarithmic', (c) => ({
     part: c.population[0],
     whole: 1,
   })),
-  define('foreigners', 'percent', 'population', 'linear', ofInhabitants(1)),
+  define('foreigners', 'percent', 'population', 'population', 'linear', ofInhabitants(1)),
   ...AGE_GROUPS.map((key, i) =>
-    define(key, 'percent', 'population', 'linear', ofInhabitants(2 + i)),
+    define(key, 'percent', 'population', 'population', 'linear', ofInhabitants(2 + i)),
   ),
-  define('density', 'per-km2', 'population', 'logarithmic', (c) => ({
+  define('density', 'per-km2', 'population', 'population', 'logarithmic', (c) => ({
     part: 100 * c.population[0],
     whole: c.hectares,
   })),
-  ...PARTIES.map((key, i) => define(key, 'percent', 'election', 'linear', partyShare(i))),
+  ...PARTIES.map((key, i) =>
+    define(key, 'percent', 'election', 'election', 'linear', partyShare(i)),
+  ),
   ...LANGUAGES.map((key, i) =>
-    define(key, 'percent', 'census', 'linear', (c) => ({
+    define(key, 'percent', 'census', 'languages', 'linear', (c) => ({
       part: c.languages[1 + i],
       whole: c.languages[0],
     })),
   ),
-  define('area', 'km2', 'area', 'logarithmic', (c) => ({ part: c.hectares, whole: 100 })),
-  define('cattle', 'per-inhabitant', 'cattle', 'logarithmic', (c) => ({
+  define('area', 'km2', 'area', 'land', 'logarithmic', (c) => ({ part: c.hectares, whole: 100 })),
+  define('cattle', 'per-inhabitant', 'cattle', 'land', 'logarithmic', (c) => ({
     part: c.cattle,
     whole: c.cattleInhabitants,
   })),
@@ -128,6 +136,9 @@ export function nameOf(definition: Definition, t: Texts): string {
 export interface Applying {
   // The population at the end of this year, and the cattle of this year.
   readonly populationYear: number;
+  // Those born abroad and the jobs, each at the end of its own year.
+  readonly bornAbroadYear: number;
+  readonly jobsYear: number;
   readonly cattleYear: number;
   readonly election: Election;
 }
@@ -145,13 +156,25 @@ export function applyingTo(file: CharacteristicsFile, voteDate: string): Applyin
     .filter((candidate) => candidate.day < voteDate)
     .reduce<Election | undefined>((last, e) => (last && last.day > e.day ? last : e), undefined);
   if (election === undefined) throw new RangeError(`no election before ${voteDate}`);
+  // The farms take the cattle's year: one table gives both, for the same years.
+  if (file.farms.years.join() !== file.cattle.years.join()) {
+    throw new RangeError(
+      `the farms are of the years ${file.farms.years.join(', ')}, the cattle of ` +
+        file.cattle.years.join(', '),
+    );
+  }
+  // The last year before the vote day of which the file has these figures and the population,
+  // whose inhabitants they are counted per.
+  const lastWithPopulation = (years: readonly number[]): number =>
+    lastYearBefore(
+      years.filter((year) => file.population.years.includes(year)),
+      voteDate,
+    );
   return {
     populationYear: lastYearBefore(file.population.years, voteDate),
-    // A year with the population too, whose inhabitants the cattle are counted per.
-    cattleYear: lastYearBefore(
-      file.cattle.years.filter((year) => file.population.years.includes(year)),
-      voteDate,
-    ),
+    bornAbroadYear: lastWithPopulation(file.bornAbroad.years),
+    jobsYear: lastWithPopulation(file.jobs.years),
+    cattleYear: lastWithPopulation(file.cattle.years),
     election,
   };
 }
@@ -187,6 +210,7 @@ export const DECIMALS: Readonly<Record<Unit, number>> = {
   'per-km2': 0,
   km2: 2,
   'per-inhabitant': 3,
+  rate: 1,
 };
 
 /**
@@ -232,12 +256,13 @@ export interface PanelGroup {
 
 /**
  * The panel's four groups for a municipality's counts (spec result-map, "The characteristics of
- * a municipality beside the map"): each characteristic in the order of its definition, under the
- * heading of its figures' date; the area and the cattle name their years on their own lines.
+ * a municipality beside the map"): each characteristic in the order of its definition, in its
+ * group, under the heading of its figures' date; the area and the cattle name their years on
+ * their own lines.
  */
 export function panelOf(counts: Counts, applying: Applying, t: Texts): readonly PanelGroup[] {
-  const of = (...sources: Source[]): readonly Definition[] =>
-    DEFINITIONS.filter((definition) => sources.includes(definition.source));
+  const of = (group: Group): readonly Definition[] =>
+    DEFINITIONS.filter((definition) => definition.group === group);
   const lines = (definitions: readonly Definition[], withYear: boolean): readonly string[] =>
     definitions.map((definition) => {
       const name = nameOf(definition, t);
@@ -249,8 +274,8 @@ export function panelOf(counts: Counts, applying: Applying, t: Texts): readonly 
   const [population, election, census, land] = [
     of('population'),
     of('election'),
-    of('census'),
-    of('area', 'cattle'),
+    of('languages'),
+    of('land'),
   ];
   return [
     { heading: t.populationHeading(yearOf(population)), lines: lines(population, false) },

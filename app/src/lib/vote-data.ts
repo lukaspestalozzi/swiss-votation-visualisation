@@ -123,11 +123,30 @@ export interface CharacteristicsFile {
   // until 2020), SP, SVP, GLP, Grüne and the other parties, or null for a municipality without
   // an election result of its own.
   readonly elections: readonly Election[];
+  // Per year, the permanent residents born abroad of each municipality, at its end.
+  readonly bornAbroad: Yearly<number>;
+  // Per year, the jobs at the workplaces of each municipality at its end: all of them, and those
+  // of the primary, the secondary and the tertiary sector, each null where the source withholds
+  // the count.
+  readonly jobs: Yearly<readonly (number | null)[]>;
   // Per year, the cattle of each municipality.
   readonly cattle: Yearly<number>;
+  // Per year, of each municipality: its farms, their farmland and the farmland of the organic
+  // ones, in ha. The years are the cattle's.
+  readonly farms: Yearly<readonly number[]>;
   // The census of 2000, per municipality: all inhabitants, and those with German, French,
   // Italian and Romansh as their main language.
   readonly languages2000: readonly (readonly number[])[];
+  // All inhabitants, the Evangelical Reformed, the Roman Catholic, and those without a
+  // religious affiliation.
+  readonly religion2000: readonly (readonly number[])[];
+  // The inhabitants by their highest completed education: none or compulsory school, upper
+  // secondary, tertiary. Those of school age or below it and those without an answer are in none.
+  readonly education2000: readonly (readonly number[])[];
+  // The occupied dwellings, and those lived in by their owner.
+  readonly dwellings2000: readonly (readonly number[])[];
+  // The buildings with dwellings, and the single-family houses among them.
+  readonly buildings2000: readonly (readonly number[])[];
   // swisstopo's area of each municipality in ha, its part in a lake included.
   readonly area: readonly number[];
 }
