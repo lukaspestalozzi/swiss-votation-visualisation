@@ -198,6 +198,10 @@ Both come from the table the pipeline reads for the cattle, for the same years. 
 in whole hectares, as the table gives it; a municipality without farmland has no organic share
 (32 in 2015), through the quotient without a whole.
 
+Found while applying: the table goes back to 1975 and has no organic farmland of 1975, 1980 and
+1985. The pipeline reads the farms, the farmland and the organic farmland for the cattle's years
+alone, each of which their answers must give; the cattle are read for every year, as before.
+
 ### 9. Which tracks grow by equal factors
 
 | Characteristic | In 2015, from the least to the most | Track |
@@ -223,7 +227,8 @@ So six tracks are logarithmic, with the four of before.
 | `buildings2000` | two numbers | with dwellings, single-family houses |
 
 Each yearly set has its own years, from 2012 to the newest its table gives. The file grows from
-1.36 MB to about 2.67 MB, 568 KB to about 981 KB with gzip (investigation, 10).
+1.36 MB to about 2.67 MB, 568 KB to about 981 KB with gzip (investigation, 10). As built:
+2.40 MB, 976 KB with gzip.
 
 Alternatives considered (Q):
 - **Without the three sectors**, about 840 KB with gzip.
@@ -289,7 +294,8 @@ take 92 to 157 ms, an estimate (investigation, "Not verified"). The budget:
 - **170 ms** for a link with all 35 limits (Q): 100 ms × 35 / 21, rounded up;
 - **100 ms** stays for a link with up to 21 limits, with its test.
 
-When the measurement of 35 limits exceeds 170 ms, the work stops and Q decides.
+When the measurement of 35 limits exceeds 170 ms, the work stops and Q decides. As measured
+(task 5.2): 71 to 126 ms with 35 limits and 45 to 82 ms with the 21 of before, seven times each.
 
 Alternatives considered (Q): **keeping 100 ms** and making the reading of a link faster, work of
 unknown size; **100 ms for up to 21 limits** and no budget beyond.

@@ -451,15 +451,25 @@ characteristics explained" and "The sources"; design, decision 16.
 
 ## 7. Docs and checks
 
-- [ ] 7.1 `README.md`: the list of what the site shows names the new characteristics and their
+- [x] 7.1 `README.md`: the list of what the site shows names the new characteristics and their
   sources.
 
   Verify: `git diff README.md` shows that only.
-- [ ] 7.2 All checks. `./scripts/verify-local.sh`.
+
+  As built: `git diff README.md` shows the panel's entry, now a list of the eight groups with the
+  sources' names and "keine Angabe" for a withheld figure, and four words in the entry of the
+  limits: the list under the panel's headings.
+- [x] 7.2 All checks. `./scripts/verify-local.sh`.
 
   Verify: 11 of 11 steps pass; the counts are those planned (unit tests 52 and about 185, browser
   tests about 257, the pipeline's about 170), or the note says why not.
-- [ ] 7.3 `CLAUDE.md`: the status names `add-more-characteristics` applied and 35
+
+  As built: 11 of 11 steps passed. OpenSpec: 18 items. Unit tests: 52 and 186 (158 before, about 185
+  planned). Browser tests: 255 (243 before, about 257 planned): 3 more in the guide, 2 in the map, 3
+  in the limits, 1 on small screens, 3 on the link; tests of before were extended where the plan had
+  named new ones. The pipeline's: 177 (134 before, about 170 planned). Run after task 7.3's text was
+  written, so that one run covers both.
+- [x] 7.3 `CLAUDE.md`: the status names `add-more-characteristics` applied and 35
   characteristics; the code map changes the lines of the pipeline's `download.py`,
   `characteristics.py`, `update.py`, `write.py` and `made_up.py`, and of the app's
   `characteristics.ts`, `vote-data.ts`, the texts, `Limits.svelte`, `CharacteristicsPanel.svelte`
@@ -468,6 +478,11 @@ characteristics explained" and "The sources"; design, decision 16.
 
   Verify: every file `git diff --stat main` names under `app/`, `pipeline/` and
   `investigations/` is in `CLAUDE.md`.
+
+  As built: against `main` (2e64fe2), the change touches 39 files under `app/`, `pipeline/` and
+  `investigations/`, and `CLAUDE.md` names each of them. The status names the change applied, 35
+  characteristics and eleven investigations; the size and the time of an update are those measured.
+  The investigation gained a part "Found while applying", and the design three notes "as built".
 
 ## Workflow follow-up
 
