@@ -32,23 +32,24 @@ each canton, and is tested against seven official votes; the pipeline writes the
 counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #12, 7a, 9a and 10a of `docs/roadmap.md`,
+after every push to `main` whose checks pass. Changes #1 to #13, 7a, 9a and 10a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
 `publish-site`, `add-result-map`, `add-characteristics`, `tighten-map-budget` (the look at
 performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`,
 `add-interface-languages`, `steady-budget-tests` (the browser tests one at a time, so that no
-test runs beside a budget test), `add-small-screens`, `add-site-style`, `add-share-link` and `add-vote-comparison`, are archived, and
-`openspec/specs/` holds their specs. Change #13, `add-more-characteristics`, is applied and in
-`openspec/changes/`: 14 characteristics beyond the predecessor's (those born abroad; religion,
-education and housing of the census of 2000; the jobs by sector; the farms and the organic
-farmland), from six more STAT-TAB tables. Its specs are still deltas there.
+test runs beside a budget test), `add-small-screens`, `add-site-style`, `add-share-link`, `add-vote-comparison` and
+`add-more-characteristics` (#13: 14 characteristics beyond the predecessor's, from six more
+STAT-TAB tables: those born abroad; religion, education and housing of the census of 2000; the
+jobs by sector; the farms and the organic farmland), are archived, and
+`openspec/specs/` holds their specs.
 Eleven investigations are done: `investigations/data-sources.md`, `investigations/map-data.md`,
 `investigations/characteristics.md`, `investigations/performance.md`,
 `investigations/limits.md`, `investigations/languages.md`, `investigations/small-screens.md`,
 `investigations/site-style.md`, `investigations/share-link.md`,
 `investigations/vote-comparison.md` and `investigations/more-characteristics.md`.
-v1, changes #1 to #10a, is complete, and #11, `add-share-link`, and #12, `add-vote-comparison`,
-the first changes after v1, are archived. Next: verify and archive #13, `add-more-characteristics`.
+v1, changes #1 to #10a, is complete, and #11, `add-share-link`, #12, `add-vote-comparison`, and
+#13, `add-more-characteristics`, the changes after v1, are archived. No change is planned next:
+`docs/roadmap.md` names income per municipality and a limit on categories as open.
 `README.md` is the human-facing overview.
 
 ## Where things are
