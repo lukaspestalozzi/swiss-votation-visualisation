@@ -1,6 +1,12 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { DEFINITIONS, applyingTo, nameOf, writeUnits } from '../../../../lib/characteristics.ts';
+  import {
+    DEFINITIONS,
+    GROUPS,
+    applyingTo,
+    nameOf,
+    writeUnits,
+  } from '../../../../lib/characteristics.ts';
   import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../../lib/limits.ts';
   import type { Texts } from '../../../../lib/texts/index.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
@@ -30,11 +36,18 @@
     abroadCounted: boolean;
   } = $props();
 
-  // The characteristics that have no limit yet, in the order of their definitions.
+  // The characteristics that have no limit yet, in the order of their definitions, under the
+  // panel's groups; a group with none left is not offered (spec limits, "Adding and removing a
+  // limit").
   const offered = $derived(
-    DEFINITIONS.filter(
-      (definition) => !limits.some((limit) => limit.track.definition === definition),
-    ),
+    GROUPS.map((group) => ({
+      group,
+      definitions: DEFINITIONS.filter(
+        (definition) =>
+          definition.group === group &&
+          !limits.some((limit) => limit.track.definition === definition),
+      ),
+    })).filter(({ definitions }) => definitions.length > 0),
   );
 
   // The characteristic chosen in the list, whose limit "Hinzufügen" adds. The list only chooses:
@@ -91,8 +104,12 @@
       {t.ADD_LIMIT}
       <select bind:value={choice}>
         <option value="">{t.CHOOSE}</option>
-        {#each offered as definition (definition.key)}
-          <option value={nameOf(definition, t)}>{nameOf(definition, t)}</option>
+        {#each offered as { group, definitions } (group)}
+          <optgroup label={t.GROUP[group]}>
+            {#each definitions as definition (definition.key)}
+              <option value={nameOf(definition, t)}>{nameOf(definition, t)}</option>
+            {/each}
+          </optgroup>
         {/each}
       </select>
     </label>
@@ -152,6 +169,11 @@
 </section>
 
 <style>
+  /* A list is as wide as its longest entry, which a narrow window does not hold: it takes at
+     most the page's width (design of add-more-characteristics, decision 13). */
+  select {
+    max-width: 100%;
+  }
   .limit {
     margin: 0.5rem 0;
   }

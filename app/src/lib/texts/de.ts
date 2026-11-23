@@ -157,7 +157,16 @@ export const de: Texts = {
   educationHeading: (year) => `Ausbildung, Volkszählung ${String(year)}`,
   housingHeading: (year) => `Wohnen, Volkszählung ${String(year)}`,
   jobsHeading: (year) => `Arbeit Ende ${String(year)}`,
-  LAND_HEADING: 'Fläche und Landwirtschaft',
+  GROUP: {
+    population: 'Bevölkerung',
+    election: 'Nationalratswahl',
+    languages: 'Hauptsprache',
+    religion: 'Religion',
+    education: 'Ausbildung',
+    housing: 'Wohnen',
+    jobs: 'Arbeit',
+    land: 'Fläche und Landwirtschaft',
+  },
   ofDate: (name, date) => `${name} (${date})`,
   characteristic: (name, value) => `${name}: ${value}`,
   CHARACTERISTICS_SOURCES:

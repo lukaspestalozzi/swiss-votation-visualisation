@@ -160,7 +160,16 @@ export const it: Texts = {
   educationHeading: (year) => `Formazione, censimento ${String(year)}`,
   housingHeading: (year) => `Abitazione, censimento ${String(year)}`,
   jobsHeading: (year) => `Lavoro fine ${String(year)}`,
-  LAND_HEADING: 'Superficie e agricoltura',
+  GROUP: {
+    population: 'Popolazione',
+    election: 'Elezione del Consiglio nazionale',
+    languages: 'Lingua principale',
+    religion: 'Religione',
+    education: 'Formazione',
+    housing: 'Abitazione',
+    jobs: 'Lavoro',
+    land: 'Superficie e agricoltura',
+  },
   ofDate: (name, date) => `${name} (${date})`,
   characteristic: (name, value) => `${name}: ${value}`,
   CHARACTERISTICS_SOURCES:

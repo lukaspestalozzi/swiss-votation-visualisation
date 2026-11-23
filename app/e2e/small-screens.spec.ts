@@ -40,6 +40,43 @@ test.describe('in a window 360 pixels wide', () => {
   });
 });
 
+test.describe('the list of the limits in a window 360 pixels wide', () => {
+  test.use({ viewport: { width: 360, height: 780 } });
+
+  test('the list and the limit of the longest name fit the window, in three languages', async ({
+    page,
+  }) => {
+    // A list is as wide as its longest entry: the longest name of each language (design of
+    // add-more-characteristics, decisions 2 and 13).
+    const longest = [
+      ['de', 'Merkmal hinzufügen', 'Bio-Anteil der landwirtschaftlichen Nutzfläche', 'Hinzufügen'],
+      [
+        'fr',
+        'Ajouter une caractéristique',
+        'Haute école ou formation professionnelle supérieure',
+        'Ajouter',
+      ],
+      [
+        'it',
+        'Aggiungere una caratteristica',
+        'Scuola universitaria o formazione professionale superiore',
+        'Aggiungere',
+      ],
+    ];
+    for (const [language, list, name, add] of longest) {
+      await page.goto(`${language}/votes/5960/`);
+      await page.locator('.municipalities path').nth(2000).waitFor();
+      const select = page.getByLabel(list);
+      await expect(select).toBeVisible();
+      expect(await pageWidth(page), `${language}: the list`).toBeLessThanOrEqual(360);
+      await select.selectOption({ label: name });
+      await page.getByRole('button', { name: add, exact: true }).click();
+      await expect(page.locator('.limit .label')).toContainText(name);
+      expect(await pageWidth(page), `${language}: the limit`).toBeLessThanOrEqual(360);
+    }
+  });
+});
+
 /** The boxes of the zoom buttons and of the map, once the map has loaded. */
 async function zoomButtonsAndMap(page: Page) {
   await page.goto('de/votes/5960/');
