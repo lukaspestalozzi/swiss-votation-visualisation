@@ -669,11 +669,15 @@ def farm_cubes(**changed: dict[str, Any]) -> list[Cube]:
     ]
 
 
+# The years the data needs, here those of which the made-up table gives the organic farmland.
+FARM_YEARS_NEEDED = range(made_up.ORGANIC_SINCE, 2026)
+
+
 def test_the_farms_and_their_farmland_are_read() -> None:
-    farms = read_farms(*farm_cubes())
+    farms = read_farms(*farm_cubes(), years=FARM_YEARS_NEEDED)
     assert farms[2015][2] == made_up.farms_of(2, 2015)
     assert farms[2015][351] == [0, 0, 0]
-    assert set(farms) == set(made_up.FARM_YEARS)
+    assert set(farms) == set(FARM_YEARS_NEEDED)
     assert set(farms[2015]) == set(made_up.EARLIER)
 
 
@@ -697,7 +701,7 @@ def test_farms_that_do_not_add_up_to_switzerland_stop_the_run() -> None:
     set_value(document, farm_cell(document, "Schweiz", 2015), total + 1)
     message = f"farms.json, 2015: the municipalities add up to {total} farms, not {total + 1}"
     with pytest.raises(SourceError, match=f"^{message}$"):
-        read_farms(*farm_cubes(farms=document))
+        read_farms(*farm_cubes(farms=document), years=FARM_YEARS_NEEDED)
 
 
 def test_farmland_that_does_not_add_up_to_switzerland_is_accepted() -> None:
@@ -707,7 +711,7 @@ def test_farmland_that_does_not_add_up_to_switzerland_is_accepted() -> None:
         documents[name] = made_up.farms(*FARM_ANSWERS[name])
         total = sum(made_up.farms_of(number, 2015)[i] for number in made_up.EARLIER)
         set_value(documents[name], farm_cell(documents[name], "Schweiz", 2015), total + 3)
-    farms = read_farms(*farm_cubes(**documents))
+    farms = read_farms(*farm_cubes(**documents), years=FARM_YEARS_NEEDED)
     assert farms[2015][2] == made_up.farms_of(2, 2015)
 
 
@@ -721,4 +725,15 @@ def test_more_organic_farmland_than_farmland_stops_the_run() -> None:
         f"farmland are more than its {farmland} hectares of farmland"
     )
     with pytest.raises(SourceError, match=f"^{message}$"):
-        read_farms(*farm_cubes(organic_farmland=document))
+        read_farms(*farm_cubes(organic_farmland=document), years=FARM_YEARS_NEEDED)
+
+
+def test_a_year_the_data_does_not_need_may_lack_the_organic_farmland() -> None:
+    # The real table gives no organic farmland of 1975, 1980 and 1985 ("..."); the made-up one
+    # none of its first year. The data needs the years from the one before the first vote day.
+    farms = read_farms(*farm_cubes(), years=FARM_YEARS_NEEDED)
+    assert set(farms) == set(FARM_YEARS_NEEDED)
+    assert farms[2015][2] == made_up.farms_of(2, 2015)
+    message = "organic_farmland.json, municipality 1, 2010: organic farmland is None"
+    with pytest.raises(SourceError, match=f"^{message}, not a whole number from zero$"):
+        read_farms(*farm_cubes(), years=made_up.FARM_YEARS)

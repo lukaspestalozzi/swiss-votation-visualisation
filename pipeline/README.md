@@ -41,9 +41,10 @@ day), and again when the Federal Chancellery has validated them (some weeks late
    uv run --directory pipeline --locked python -m pipeline update
    ```
 
-   It downloads the sources into `pipeline/downloads/` (about 185 MB and a quarter of an hour,
-   most of it waiting for the BFS statistics API, which answers 50 queries in 15 seconds at
-   most; git ignores the directory), checks them, and writes the data files to `app/static/data/`. It
+   It downloads the sources into `pipeline/downloads/` (about 190 MB and a quarter of an hour
+   to 25 minutes, most of it waiting for the BFS statistics API, which answers 50 queries in
+   15 seconds at most and some days one in half a minute; git ignores the directory), checks
+   them, and writes the data files to `app/static/data/`. It
    prints the reference date of the list of municipalities, the number of votes and how many
    are validated, the votes added, the votes validated since the last run, and the votes left
    out because their result is not complete yet.
@@ -100,10 +101,12 @@ the file, the vote and, where there is one, the entry.
   `download.py` does not have: add its day, as the Federal Council's circular to the cantons
   gives it (the next is 2027-10-24).
 - **A table of the characteristics lacks a year.** The population, those born abroad, the
-  jobs, the cattle or the farms lack a year from the one before the first vote day to the
-  newest of their table, or the elections table an election from the last before the first
-  vote day; the message names the table and what is missing. The farms' years must also be the
-  cattle's, and an answer on the dwellings or the buildings must be of 2000 alone. Look at the
+  jobs or the cattle lack a year from the one before the first vote day to the newest of their
+  table, or the elections table an election from the last before the first vote day; the
+  message names the table and what is missing. The farms and their farmland are read for the
+  cattle's years only, each of which their answers must give: the table goes back to 1975 and
+  has no organic farmland before 1990. An answer on the dwellings or the buildings must be of
+  2000 alone. Look at the
   answer in `pipeline/downloads/` and run the update again later. A table that no longer gives
   an early year at all leaves the first votes without figures: that needs a change.
 - **The characteristics do not add up.** The municipalities do not add up to a table's figure

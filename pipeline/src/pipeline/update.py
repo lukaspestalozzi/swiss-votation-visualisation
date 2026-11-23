@@ -450,19 +450,18 @@ def _characteristics(
         moved = whole(download.FARMS, {n: [count] for n, count in head[year].items()}, "cattle")
         cattle[year] = {n: counts[0] for n, counts in moved.items()}
 
+    # The farms of the cattle's years, which the app takes them by; the table's earliest years
+    # have no organic farmland and are not read.
     surveyed = read_farms(
         cube(download.farms(), "farms.json", download.FARMS),
         cube(download.farmland(), "farmland.json", download.FARMS),
         cube(download.organic_farmland(), "organic_farmland.json", download.FARMS),
+        years=cattle,
     )
     farms = {
-        year: whole(download.FARMS, surveyed[year], f"the farms of {year}")
-        for year in required_years(surveyed, first_year, "farms.json")
+        year: whole(download.FARMS, by_number, f"the farms of {year}")
+        for year, by_number in surveyed.items()
     }
-    if sorted(farms) != sorted(cattle):
-        raise SourceError(
-            f"farms.json: its years {sorted(farms)} are not those of cattle.json, {sorted(cattle)}"
-        )
 
     census = read_languages(cube(download.census(), "census_2000.json", download.CENSUS_2000))
     languages = whole(download.CENSUS_2000, census, "the languages of 2000")
