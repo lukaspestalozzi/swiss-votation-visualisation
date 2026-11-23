@@ -156,10 +156,15 @@ the sources"; design, decisions 4 to 8, 10 and 11.
   jobs table's list not checked). One test more than planned: the farms' years must be the cattle's,
   as the app takes the farms of the cattle's year; it failed against a mutant without the check. A
   number from 9000 on is no municipality for the check of a list, so the made-up extra one is 8999.
-- [ ] 1.10 `pipeline/README.md`: the six new tables among the sources, the list of 2024-01-01, and
+- [x] 1.10 `pipeline/README.md`: the six new tables among the sources, the list of 2024-01-01, and
   what to do when the update stops for a sign in the jobs table or for a table on a newer list.
 
   Verify: every table of `download.py` is named in the README.
+
+  As built: the ten tables of `download.py` are named, with the four dates of `LIST_DATES`. "When
+  the update stops" gains the sign in the jobs table and, for a table on a newer list, the script
+  that finds its date; the entries on a missing year and on sums name the new tables' checks. The
+  size and the time of a run are corrected in task 1.11, once measured.
 - [ ] 1.11 The data. Run `uv run --directory pipeline --locked python -m pipeline update`.
 
   Verify: `git status --short app/static/data` names `characteristics.json` and `sources.json`

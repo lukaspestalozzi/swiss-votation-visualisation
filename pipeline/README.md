@@ -18,14 +18,16 @@ Python 3.13 with polars, run by [uv](https://docs.astral.sh/uv/), which installs
 | BFS register of municipalities | `https://www.agvchapp.bfs.admin.ch/api/communes/snapshot?date=<dd-mm-yyyy>` | The municipalities on the reference date, with their names and cantons. |
 | BFS register of municipalities, boundaries | `https://www.agvchapp.bfs.admin.ch/api/boundaries/divisions?division=<Commune\|Canton\|Country>&resolution=K4&dissolve=true&date=<dd-mm-yyyy>&format=shp` | The boundaries of the municipalities and the cantons on the reference date, and the outline of Switzerland, for `map.json`: in LV95, rounded to the metre. |
 | BFS ThemaKart set 2026 | `https://dam-api.bfs.admin.ch/hub/api/dam/assets/36390072/master` | The 37 lakes, whole, for `map.json`. They are valid for all years; a newer set is taken by changing the address in `download.py`. |
-| BFS statistics API (STAT-TAB) | `https://www.pxweb.bfs.admin.ch/api/v1/de/<table>/<table>.px` (49 queries in json-stat2, and the description of the elections table; the queries are in `download.py`) | For `characteristics.json`: the population by nationality and single year of age at the end of each year (`px-x-0102010000_101`); the party votes of each National Council election (`px-x-1702020000_105`); the cattle of each year (`px-x-0702000000_104`); the main languages of the census of 2000 (`px-x-4003000000_123`). |
-| BFS register of municipalities, lists and correspondences | `.../api/communes/snapshot?date=<dd-mm-yyyy>` and `.../api/communes/correspondances?startPeriod=<dd-mm-yyyy>&endPeriod=<dd-mm-yyyy>` | The list each STAT-TAB table gives (`LIST_DATES` in `download.py`), and what each of its municipalities is part of on the reference date. |
+| BFS statistics API (STAT-TAB) | `https://www.pxweb.bfs.admin.ch/api/v1/de/<table>/<table>.px` (61 queries in json-stat2, and the description of the elections table; the queries are in `download.py`) | For `characteristics.json`: the population by nationality and single year of age at the end of each year (`px-x-0102010000_101`), and those of it born abroad (`px-x-0102010000_100`); the jobs at the end of each year, all and by sector (`px-x-0602010000_102`); the party votes of each National Council election (`px-x-1702020000_105`); the cattle, the farms, their farmland and the organic farmland of each year (`px-x-0702000000_104`); of the census of 2000, the main languages (`px-x-4003000000_123`), the religions (`px-x-4003000000_122`), the highest completed education (`px-x-4003000000_161`), the occupied dwellings by who lives in them (`px-x-0903020000_113`) and the buildings with dwellings by kind (`px-x-0902020100_114`). |
+| BFS register of municipalities, lists and correspondences | `.../api/communes/snapshot?date=<dd-mm-yyyy>` and `.../api/communes/correspondances?startPeriod=<dd-mm-yyyy>&endPeriod=<dd-mm-yyyy>` | The list each STAT-TAB table gives (`LIST_DATES` in `download.py`: 2000-12-05 for the census, 2023-01-01 for the elections, 2024-01-01 for the jobs, 2025-04-06 for the population, the place of birth and the farms), and what each of its municipalities is part of on the reference date. |
 | swisstopo, swissBOUNDARIES3D of 2026-01 | `https://data.geo.admin.ch/ch.swisstopo.swissboundaries3d/swissboundaries3d_2026-01/swissboundaries3d_2026-01_2056_5728.shp.zip` | The area of each municipality, its part in a lake included. |
 | The Federal Council's circulars to the cantons on the National Council elections | Federal Gazette; their days are `ELECTION_DAYS` in `download.py` | The day of each election, which decides the election that applies to a vote. |
 
 `investigations/data-sources.md` describes the sources and what was found in them,
-`investigations/map-data.md` those of the map, and `investigations/characteristics.md` those of
-the characteristics.
+`investigations/map-data.md` those of the map, `investigations/characteristics.md` those of the
+characteristics, and `investigations/more-characteristics.md` the tables read since
+`add-more-characteristics`: the place of birth, the jobs, the farms and their farmland, and the
+religion, education, dwellings and buildings of 2000.
 
 ## Adding a vote day
 
@@ -47,8 +49,9 @@ day), and again when the Federal Chancellery has validated them (some weeks late
    out because their result is not complete yet.
 3. Review the diff of `app/static/data/`: the new vote files, the changed lines of
    `votes.json`, and `sources.json`. `map.json` changes only with a new list of
-   municipalities. `characteristics.json` gains a line when the BFS publishes a new year or a
-   new election (the population in August or September, the farms in spring).
+   municipalities. `characteristics.json` gains lines when the BFS publishes a new year of a
+   table or a new election (the population in August or September, the farms in spring), and
+   changes lines when it revises the figures of a year.
 4. Run `./scripts/verify-local.sh`: among its steps, a test runs the calculation over every
    vote of the data files.
 5. Commit the data files and open a pull request.
@@ -81,20 +84,35 @@ the file, the vote and, where there is one, the entry.
   gives all its years on the register's list of one date, `LIST_DATES` in `download.py`. When
   the BFS moves a table to a newer list, the message names the table, the date and the numbers
   that differ. Find the table's new date with `investigations/characteristics/` (its check
-  script compares each table's list with the register's), change it in `LIST_DATES`, and run
-  the update again.
+  script compares each table's list with the register's) or, for any table, with
+  `investigations/more-characteristics/table_lists.py`, which names the date of the register's
+  list with exactly a table's municipalities. Change it in `LIST_DATES` and run the update
+  again: it downloads the register's list of the new date and its correspondences.
+- **A sign in the jobs table.** The jobs table writes "X" in place of a count it withholds,
+  about 100 municipalities a year; the data file holds none for it, and for a municipality made
+  of several where one part has none. Any other sign in place of a count stops the update as a
+  missing count does: the message names the answer (`jobs_999.json` with all jobs and the
+  primary sector, `jobs_2.json` with the secondary and the tertiary), the municipality, the
+  year and the count. Look at the cell's `status` in the answer in `pipeline/downloads/`. A new
+  sign for a withheld count needs a change to the specs before the reader accepts it; the
+  update never writes zero for it.
 - **An election has no day.** The elections table has an election that `ELECTION_DAYS` in
   `download.py` does not have: add its day, as the Federal Council's circular to the cantons
   gives it (the next is 2027-10-24).
-- **A table of the characteristics lacks a year.** The population or the cattle lack a year
-  from the one before the first vote day to the newest, or the elections table an election from
-  the last before the first vote day; the message names the table and what is missing. Look at
-  the answer in `pipeline/downloads/` and run the update again later. A table that no longer
-  gives an early year at all leaves the first votes without figures: that needs a change.
+- **A table of the characteristics lacks a year.** The population, those born abroad, the
+  jobs, the cattle or the farms lack a year from the one before the first vote day to the
+  newest of their table, or the elections table an election from the last before the first
+  vote day; the message names the table and what is missing. The farms' years must also be the
+  cattle's, and an answer on the dwellings or the buildings must be of 2000 alone. Look at the
+  answer in `pipeline/downloads/` and run the update again later. A table that no longer gives
+  an early year at all leaves the first votes without figures: that needs a change.
 - **The characteristics do not add up.** The municipalities do not add up to a table's figure
-  for Switzerland or a district, a municipality's ages to its inhabitants, or it has more
-  foreigners than inhabitants. Look at the answer in `pipeline/downloads/` and run the update
-  again later.
+  for Switzerland or a district (the jobs and the farmland are not compared: withheld counts
+  and whole hectares keep them from adding up); a municipality's ages, religions or levels of
+  education do not add up to its inhabitants, or its three sectors to all its jobs where none
+  is withheld; its inhabitants differ between the place-of-birth and the population table; or
+  it has more foreigners than inhabitants, or more organic farmland than farmland. Look at the
+  answer in `pipeline/downloads/` and run the update again later.
 - **A vote of the data files is missing from the sources.** The update never removes a vote;
   a vote that the sources no longer give means an incomplete answer, usually the Federal
   Chancellery's. Run the update again later, and look at `pipeline/downloads/chancellery.json`.
@@ -119,7 +137,7 @@ the file, the vote and, where there is one, the entry.
 | `src/pipeline/chancellery.py` | The reader of the Federal Chancellery's answer. |
 | `src/pipeline/register.py` | The reader of the BFS register. |
 | `src/pipeline/boundaries.py` | The reader of the map's sources: the register's boundaries, checked against the list, and the ThemaKart set's lakes. |
-| `src/pipeline/characteristics.py` | The reader of the characteristics' sources: STAT-TAB's answers in json-stat2, the register's correspondences and swisstopo's areas, with their checks, and the adding up onto the list. |
+| `src/pipeline/characteristics.py` | The reader of the characteristics' sources: STAT-TAB's answers in json-stat2, the register's correspondences and swisstopo's areas, with their checks, the counts a table withholds, and the adding up onto the list. |
 | `src/pipeline/checks.py` | The checks between the sources: entries against the list, the sums, the official result. |
 | `src/pipeline/write.py` | The data files. |
 | `tests/` | The unit tests (pytest); `made_up.py` builds made-up sources in the shape of the real ones. |
