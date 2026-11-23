@@ -403,16 +403,30 @@ Spec `limits`, "Adding and removing a limit"; design, decisions 9 and 13.
 Spec `share-link`, "The keys of the characteristics" and "The budget of a link"; design,
 decision 14.
 
-- [ ] 5.1 The keys. A unit test of "The keys"; browser tests of "A new characteristic in a link"
+- [x] 5.1 The keys. A unit test of "The keys"; browser tests of "A new characteristic in a link"
   and "A link of before", one at a time.
 
   Verify: each run alone passes; `share-link.test.ts` passes.
-- [ ] 5.2 The budgets. The test "All 21 limits in the same tab" adds the 21 limits of before by
+
+  As built: the unit test of the keys is the one of task 2.9. The two browser tests passed when
+  written and failed against a built mutant each: "A new characteristic in a link" also moves a
+  bound and reads "#jobs=48.1-" back after a reload (a rate without its decimal gave "#jobs=47-");
+  "A link of before" also opens a link with the 21 keys of before, each of which makes its limit
+  (the key `foreigners` renamed left the link unused).
+- [x] 5.2 The budgets. The test "All 21 limits in the same tab" adds the 21 limits of before by
   their names, not the first 21 of the list; a test "All 35 limits in the same tab" with 170 ms.
 
   Verify: `pnpm --filter app exec playwright test share-link.spec.ts -g "limits in the same tab"`
   passes; the frames' longest times are in the note "As built". When the frame of 35 limits
   exceeds 170 ms in both measurements, stop and ask Q (design, decision 14).
+
+  As built: both tests pass in their first measurement. Over seven measurements each, the frame of a
+  link with the 21 limits of before took 45.0, 45.6, 46.2, 53.3, 56.2, 74.8 and 82.3 ms, and the
+  frame of a link with all 35 took 71.4, 77.6, 77.8, 83.4, 83.9, 113.3 and 126.0 ms: within 100 and
+  within 170, below the estimate of 92 to 157. Both tests failed against the built mutant that
+  spends 6 ms more on every track, in the first and in the second measurement. The two tests share
+  how they write and open the link; the 21 are added by their names. `share-link.spec.ts`: 23
+  passed, 20 before. The lines that printed the frames were removed.
 
 ## 6. The guide
 
