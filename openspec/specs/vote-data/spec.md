@@ -472,15 +472,16 @@ run: an update with unchanged sources SHALL leave every data file unchanged, byt
 
 #### Scenario: The record names every source file
 
-- **GIVEN** the sources as they were on 2026-11-15
+- **GIVEN** the sources as they were on 2026-11-23
 - **WHEN** the record of the sources is read
 - **THEN** it names 45 BFS vote-day files, the answer of the Federal Chancellery, the answer of
   the BFS register of municipalities, the register's three answers with the boundaries of the
   municipalities, of the cantons and of Switzerland, and the BFS ThemaKart set 2026, each with
   its address, size and checksum
-- **AND** for the characteristics it names 49 answers of the BFS statistics API (STAT-TAB) to a
+- **AND** for the characteristics it names 61 answers of the BFS statistics API (STAT-TAB) to a
   query and its description of the table of the elections, the register's lists of 2000-12-05,
-  2023-01-01 and 2025-04-06 and its correspondences from each of them to 2026-01-01, and
+  2023-01-01, 2024-01-01 and 2025-04-06 and its correspondences from each of them to 2026-01-01,
+  and
   swisstopo's swissBOUNDARIES3D of 2026-01, each with its address, size and checksum, and each
   answer of STAT-TAB and of the Federal Chancellery with its query
 
