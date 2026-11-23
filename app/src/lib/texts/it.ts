@@ -156,11 +156,15 @@ export const it: Texts = {
   populationHeading: (year) => `Popolazione fine ${String(year)}`,
   electionHeading: (year) => `Elezione del Consiglio nazionale ${String(year)}`,
   languagesHeading: (year) => `Lingua principale, censimento ${String(year)}`,
+  religionHeading: (year) => `Religione, censimento ${String(year)}`,
+  educationHeading: (year) => `Formazione, censimento ${String(year)}`,
+  housingHeading: (year) => `Abitazione, censimento ${String(year)}`,
+  jobsHeading: (year) => `Lavoro fine ${String(year)}`,
   LAND_HEADING: 'Superficie e agricoltura',
-  ofYear: (name, year) => `${name} (${String(year)})`,
+  ofDate: (name, date) => `${name} (${date})`,
   characteristic: (name, value) => `${name}: ${value}`,
   CHARACTERISTICS_SOURCES:
-    'Fonti: UST (STATPOP, elezioni del Consiglio nazionale, censimento federale della ' +
+    'Fonti: UST (STATPOP, STATENT, elezioni del Consiglio nazionale, censimento federale della ' +
     'popolazione 2000, rilevazione delle strutture agricole); swisstopo (swissBOUNDARIES3D 2026).',
 
   // The comparison of two votes (spec vote-comparison).

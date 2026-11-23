@@ -312,28 +312,55 @@ Spec `result-map`, "The characteristics of a municipality beside the map", "How 
 characteristics are written" and "The sources of the characteristics"; design, decisions 3, 4
 and 16.
 
-- [ ] 3.1 Eight groups. The test of "Zürich in 2016" in `result-map.spec.ts` gains the four new
+- [x] 3.1 Eight groups. The test of "Zürich in 2016" in `result-map.spec.ts` gains the four new
   groups and the new lines. Seen to fail: the groups of before. Then the group headings in three
   languages and the panel.
 
   Verify: run alone, the test passes.
-- [ ] 3.2 A line of another year. A unit test of `panelOf` with a made-up file, and a browser
+
+  As built: the test failed with the four groups of before (four headings missing) and passes with
+  the eight and their 35 lines, as the spec's scenario has them. `panelOf` makes a group for each of
+  `GROUPS`; a heading names its figures' year, the land's none, so its lines name theirs. The
+  headings in French and Italian: "Religion, recensement 2000", "Formation, …", "Logement, …",
+  "Travail fin 2015"; "Religione, censimento 2000", "Formazione, …", "Abitazione, …", "Lavoro fine
+  2015".
+- [x] 3.2 A line of another year. A unit test of `panelOf` with a made-up file, and a browser
   test of "A line of another year than its group" that serves the page a copy of
   `characteristics.json` without the year 2025 of those born abroad. Seen to fail: the line
   without a year.
 
   Verify: each run alone passes.
-- [ ] 3.3 Without a figure, and with one decimal. Browser tests of "Without a figure"
+
+  As built: 2 tests. The unit test, with the made-up file, failed with the line without a year and
+  passes with "Im Ausland geboren (Ende 2024): 30.00%"; the browser test serves the site's own file
+  without the year 2025 of those born abroad and failed against the build of before with "Im Ausland
+  geboren: 44.58%". A line names its date when its year is not its heading's; the date's wording by
+  source, `dateOf`, now stands in `characteristics.ts` and serves a limit's label too. The text
+  `ofYear` became `ofDate`.
+- [x] 3.3 Without a figure, and with one decimal. Browser tests of "Without a figure"
   (Oberrieden) and of the extended "Meienried's cattle"; "The figures follow the vote" with
   "Arbeit Ende 2024".
 
   Verify: each run alone passes; against a mutant that writes a withheld count as 0, "Without a
   figure" fails.
-- [ ] 3.4 The sources. The panel's sentence gains "STATENT" in three languages; its test.
+
+  As built: one new test, "Without a figure" (Oberrieden: two sectors and the organic share), and
+  three of before extended: the decimals at Meienried ("Arbeitsplätze je 100 Einwohner: 44.2",
+  "Landwirtschaftsbetriebe je 1'000 Einwohner (2015): 76.9"), the figures that follow the vote
+  (eight headings with "Arbeit Ende 2024", "Arbeitsplätze je 100 Einwohner: 124.9"), and Meienried's
+  lines without a figure, now nine with its two withheld sectors. The three of before failed with
+  their old expectations; the new one passed when written and failed against the built mutant that
+  writes a withheld count as 0. The line of the area is found by its start, as "Nutzfläche" also
+  holds "fläche".
+- [x] 3.4 The sources. The panel's sentence gains "STATENT" in three languages; its test.
 
   Verify: run alone, the test passes;
   `pnpm --filter app exec playwright test result-map.spec.ts` passes, the budget tests of a
   click among them.
+
+  As built: the test of the sources failed with the sentence of before and passes with "STATENT"
+  after "STATPOP", in three languages. `result-map.spec.ts`: 59 passed, 2 more than before, the
+  budget tests of a click among them, with 35 lines in the panel.
 
 ## 4. The limits
 

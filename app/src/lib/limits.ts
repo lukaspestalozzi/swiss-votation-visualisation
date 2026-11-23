@@ -4,12 +4,12 @@
 import { remainingMunicipalities } from 'calculation';
 import {
   countsAt,
+  dateOf,
   nameOf,
   unitsOf,
   writeUnits,
   type Applying,
   type Definition,
-  type Source,
 } from './characteristics.ts';
 import type { Texts } from './texts/index.ts';
 import type { CharacteristicsFile } from './vote-data.ts';
@@ -53,17 +53,6 @@ export function trackOf(
   return { definition, year: definition.year(applying), values, smallest, largest, aboveZero };
 }
 
-// The date of a characteristic's figures, by its source, as a limit's label writes it.
-const DATE_OF: Readonly<Record<Source, (t: Texts, year: number) => string>> = {
-  population: (t, year) => t.populationDate(year),
-  'born-abroad': (t, year) => t.populationDate(year),
-  jobs: (t, year) => t.populationDate(year),
-  election: (t, year) => t.electionHeading(year),
-  census: (t, year) => t.censusDate(year),
-  area: (_, year) => String(year),
-  cattle: (_, year) => String(year),
-};
-
 /**
  * The value of a step, in units, rounded half up. On a linear track the steps add equal
  * differences from the smallest value to the largest; on a logarithmic one they multiply by
@@ -90,7 +79,7 @@ export function labelOf(track: Track, lower: number, upper: number, t: Texts): s
   const { definition } = track;
   return t.limitLabel(
     nameOf(definition, t),
-    DATE_OF[definition.source](t, track.year),
+    dateOf(definition, track.year, t),
     writeUnits(definition, valueAt(track, lower), t),
     writeUnits(definition, valueAt(track, upper), t),
   );

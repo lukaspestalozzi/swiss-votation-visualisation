@@ -155,12 +155,16 @@ export const fr: Texts = {
   populationHeading: (year) => `Population fin ${String(year)}`,
   electionHeading: (year) => `Élection du Conseil national ${String(year)}`,
   languagesHeading: (year) => `Langue principale, recensement ${String(year)}`,
+  religionHeading: (year) => `Religion, recensement ${String(year)}`,
+  educationHeading: (year) => `Formation, recensement ${String(year)}`,
+  housingHeading: (year) => `Logement, recensement ${String(year)}`,
+  jobsHeading: (year) => `Travail fin ${String(year)}`,
   LAND_HEADING: 'Surface et agriculture',
-  ofYear: (name, year) => `${name} (${String(year)})`,
+  ofDate: (name, date) => `${name} (${date})`,
   characteristic: (name, value) => `${name}: ${value}`,
   CHARACTERISTICS_SOURCES:
-    'Sources: OFS (STATPOP, élections au Conseil national, recensement fédéral de la population ' +
-    '2000, relevé des structures agricoles); swisstopo (swissBOUNDARIES3D 2026).',
+    'Sources: OFS (STATPOP, STATENT, élections au Conseil national, recensement fédéral de la ' +
+    'population 2000, relevé des structures agricoles); swisstopo (swissBOUNDARIES3D 2026).',
 
   // The comparison of two votes (spec vote-comparison).
   COMPARE_HEADING: 'Comparer deux votations',
