@@ -121,6 +121,17 @@ test('each of the 35 characteristics has a track with its label', () => {
   );
 });
 
+test('the two new logarithmic tracks: step 500 is far below the middle of their values', () => {
+  // Spec limits, "The two new logarithmic tracks".
+  const from500 = (name: string): string => labelOf(trackFor(name, '2016-02-28'), 500, STEPS, de);
+  expect(from500('Arbeitsplätze je 100 Einwohner')).toBe(
+    'Arbeitsplätze je 100 Einwohner (Ende 2015): von 48.1 bis 445.5',
+  );
+  expect(from500("Landwirtschaftsbetriebe je 1'000 Einwohner")).toBe(
+    "Landwirtschaftsbetriebe je 1'000 Einwohner (2015): von 4.6 bis 210.5",
+  );
+});
+
 // The selections of investigations/limits.md, 5, from the data files: each limit by its
 // characteristic and the steps of its bounds.
 const listing = votesFile as Votes;

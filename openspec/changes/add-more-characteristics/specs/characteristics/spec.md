@@ -90,7 +90,7 @@ For a vote, a characteristic SHALL take:
 
 #### Scenario: The newest vote day
 
-- **GIVEN** the data file of 2026-11-22, whose newest jobs are those of 2024
+- **GIVEN** the data file of 2026-11-23, whose newest jobs are those of 2024
 - **WHEN** the characteristics apply to the vote with id 6850 of 2026-03-08
 - **THEN** they take the population and those born abroad at the end of 2025, the cattle and
   the farms of 2025, the jobs at the end of 2024 and the election of 2023-10-22
@@ -203,7 +203,7 @@ sources SHALL give the same bytes.
 
 #### Scenario: The years in the file
 
-- **GIVEN** the sources as they were on 2026-11-22
+- **GIVEN** the sources as they were on 2026-11-23
 - **WHEN** the update command has run
 - **THEN** the file holds the population and those born abroad at the end of, and the cattle and
   the farms of, each year from 2012 to 2025, the jobs at the end of each year from 2012 to 2024,
@@ -322,7 +322,7 @@ update.
 
 #### Scenario: All jobs withheld
 
-- **GIVEN** the data file of 2026-11-22
+- **GIVEN** the data file of 2026-11-23
 - **WHEN** the characteristics of Linescio (5315) apply to the vote with id 6850 of 2026-03-08,
   where the table withholds the number of all its jobs at the end of 2024
 - **THEN** its four characteristics of the jobs have no figure
@@ -398,7 +398,7 @@ The update SHALL stop when:
 
 #### Scenario: Farmland in whole hectares
 
-- **GIVEN** the farms table of 2026-11-22, whose municipalities' farmland does not add up to its
+- **GIVEN** the farms table of 2026-11-23, whose municipalities' farmland does not add up to its
   figure for Switzerland, each being a whole number of hectares
 - **WHEN** the update command runs
 - **THEN** it does not stop for that sum: the farmland is compared within a municipality only

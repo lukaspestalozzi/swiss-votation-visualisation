@@ -39,7 +39,7 @@ whose figures are of another year than its group's heading SHALL name its year.
 
 #### Scenario: The figures follow the vote
 
-- **GIVEN** the data file of 2026-11-22, whose newest jobs are those of 2024
+- **GIVEN** the data file of 2026-11-23, whose newest jobs are those of 2024
 - **WHEN** a visitor opens `/votes/6850/` and clicks Zürich
 - **THEN** the panel's groups are headed "Bevölkerung Ende 2025", "Nationalratswahl 2023" and
   "Arbeit Ende 2024", and it shows "Arbeitsplätze je 100 Einwohner: 124.9"

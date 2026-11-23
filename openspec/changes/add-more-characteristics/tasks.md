@@ -484,6 +484,36 @@ characteristics explained" and "The sources"; design, decision 16.
   characteristics and eleven investigations; the size and the time of an update are those measured.
   The investigation gained a part "Found while applying", and the design three notes "as built".
 
+## Found while verifying
+
+`/openspec-verify-change` found no critical issue, one warning and seven suggestions, all fixed
+(Q, 2026-11-23):
+- **The main `limits` spec would have named four logarithmic tracks** after the archive, where
+  the site has six (warning). The delta now modifies "The track of a limit", with a scenario
+  "The two new logarithmic tracks"; its unit test reads both labels from step 500 and failed
+  against a linear track of the farms.
+- **"The label of a limit"** listed the dates by source without those born abroad, the jobs
+  and the farms: the delta modifies it too, with a scenario of two new labels.
+- **Five scenarios dated the data file 2026-11-22**, the day of the investigation: they say
+  2026-11-23, the day the update wrote it. The farmland's sums differ from Switzerland's in 27
+  of 28 on that day too.
+- **Two scenarios were asserted in part:** the test of the population published before the
+  cattle now reads the farms too, and the test of the jobs published later their inhabitants.
+  Each failed against a mutant: the farms of the population's year, and the inhabitants of the
+  population's year.
+- **The panel's and the list's headings** are separate texts: a test reads that each heading of
+  the panel begins with the list's heading of its group, in three languages; it failed against
+  a French heading "Confession, recensement 2000".
+- **In `update.py`** the dict of the tables' dimensions is `PLACE_DIMENSIONS`, not `PLACES`,
+  the name of a dimension in `download.py`.
+- **A comment** of the years that apply said the population's year is the cattle's too.
+- **`openspec/config.yaml`** still told an artifact's author of 21 characteristics from four
+  tables and of religion as a candidate for #13: it names the 35, the ten tables, and income and
+  the categories as left open.
+
+Not a finding, left for Q: the pipeline does not check that those born abroad, or a sector's
+jobs, are at most their whole. No spec asks for it; the app refuses such a value.
+
 ## Workflow follow-up
 
 - Push, open the pull request, and watch its CI.

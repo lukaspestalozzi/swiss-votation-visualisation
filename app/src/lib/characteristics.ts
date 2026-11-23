@@ -224,11 +224,12 @@ export function nameOf(definition: Definition, t: Texts): string {
 
 // The figures that apply to a vote (spec characteristics, "The figures that apply to a vote").
 export interface Applying {
-  // The population at the end of this year, and the cattle of this year.
+  // The population at the end of this year.
   readonly populationYear: number;
   // Those born abroad and the jobs, each at the end of its own year.
   readonly bornAbroadYear: number;
   readonly jobsYear: number;
+  // The cattle and the farms of this year.
   readonly cattleYear: number;
   readonly election: Election;
 }
