@@ -161,7 +161,9 @@ export interface Texts {
   readonly educationHeading: (year: number) => string;
   readonly housingHeading: (year: number) => string;
   readonly jobsHeading: (year: number) => string;
-  readonly LAND_HEADING: string;
+  // The groups as the list of the limits heads them, without the dates of their figures; the
+  // land's heading is the panel's too.
+  readonly GROUP: Readonly<Record<CharacteristicGroup, string>>;
   // A characteristic's name with the date of its figures, where its group's heading names
   // another or none: "Im Ausland geboren (Ende 2024)".
   readonly ofDate: (name: string, date: string) => string;

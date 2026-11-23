@@ -50,24 +50,107 @@ async function addLimit(page: Page, name: string): Promise<void> {
   await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
 }
 
+/** The headings of the list "Merkmal hinzufügen", each with the number of its entries. */
+async function headings(page: Page): Promise<[string, number][]> {
+  return page
+    .getByLabel(/Merkmal hinzufügen|Ajouter une caractéristique|Aggiungere una caratteristica/)
+    .locator('optgroup')
+    .evaluateAll((groups) =>
+      groups.map((group) => [
+        (group as HTMLOptGroupElement).label,
+        group.querySelectorAll('option').length,
+      ]),
+    );
+}
+
+test('The headings of the list', async ({ page }) => {
+  // Spec limits, "The headings of the list": the panel's headings, without their dates.
+  await open(page, 'de/votes/5960/');
+  expect(await headings(page)).toEqual([
+    ['Bevölkerung', 9],
+    ['Nationalratswahl', 7],
+    ['Hauptsprache', 4],
+    ['Religion', 3],
+    ['Ausbildung', 2],
+    ['Wohnen', 2],
+    ['Arbeit', 4],
+    ['Fläche und Landwirtschaft', 4],
+  ]);
+  await page.goto('fr/votes/5960/');
+  await expect(page.getByLabel('Ajouter une caractéristique')).toBeVisible();
+  expect((await headings(page)).map(([heading]) => heading)).toEqual([
+    'Population',
+    'Élection du Conseil national',
+    'Langue principale',
+    'Religion',
+    'Formation',
+    'Logement',
+    'Travail',
+    'Surface et agriculture',
+  ]);
+  await page.goto('it/votes/5960/');
+  await expect(page.getByLabel('Aggiungere una caratteristica')).toBeVisible();
+  expect((await headings(page)).map(([heading]) => heading)).toEqual([
+    'Popolazione',
+    'Elezione del Consiglio nazionale',
+    'Lingua principale',
+    'Religione',
+    'Formazione',
+    'Abitazione',
+    'Lavoro',
+    'Superficie e agricoltura',
+  ]);
+});
+
+test('A heading without an entry left', async ({ page }) => {
+  await open(page, 'de/votes/5960/');
+  await addLimit(page, 'Hochschule oder höhere Berufsbildung');
+  expect(await headings(page)).toContainEqual(['Ausbildung', 1]);
+  await addLimit(page, 'Obligatorische Schule oder keine Ausbildung');
+  expect((await headings(page)).map(([heading]) => heading)).toEqual([
+    'Bevölkerung',
+    'Nationalratswahl',
+    'Hauptsprache',
+    'Religion',
+    'Wohnen',
+    'Arbeit',
+    'Fläche und Landwirtschaft',
+  ]);
+  await page
+    .getByRole('button', { name: 'Entfernen: Hochschule oder höhere Berufsbildung' })
+    .click();
+  expect(await headings(page)).toContainEqual(['Ausbildung', 1]);
+});
+
+test('New characteristics with their tracks', async ({ page }) => {
+  // investigations/more-characteristics.md, 12: the least and the most of 2015.
+  await open(page, 'de/votes/5960/');
+  await addLimit(page, 'Im Ausland geboren');
+  await addLimit(page, 'Arbeitsplätze je 100 Einwohner');
+  await expect(page.locator('.limit .label')).toHaveText([
+    'Im Ausland geboren (Ende 2015): von 0.00% bis 66.13%',
+    'Arbeitsplätze je 100 Einwohner (Ende 2015): von 5.2 bis 445.5',
+  ]);
+});
+
 test('adding a limit: its label, and the list offers the others', async ({ page }) => {
   await open(page, 'de/votes/5960/');
-  expect(await offered(page)).toHaveLength(21);
+  expect(await offered(page)).toHaveLength(35);
   await addLimit(page, 'Ausländeranteil');
   await expect(page.locator('.limit .label')).toHaveText([
     'Ausländeranteil (Ende 2015): von 0.00% bis 61.10%',
   ]);
   const others = await offered(page);
-  expect(others).toHaveLength(20);
+  expect(others).toHaveLength(34);
   expect(others).not.toContain('Ausländeranteil');
 });
 
-test('removing a limit: the list offers all 21 again', async ({ page }) => {
+test('removing a limit: the list offers all 35 again', async ({ page }) => {
   await open(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await page.getByRole('button', { name: 'Entfernen: Ausländeranteil' }).click();
   await expect(page.locator('.limit')).toHaveCount(0);
-  expect(await offered(page)).toHaveLength(21);
+  expect(await offered(page)).toHaveLength(35);
 });
 
 /** A slider of a limit, by its bound and its characteristic's name. */
@@ -506,7 +589,7 @@ test('characteristics that cannot be loaded: no limits, and the rest of the page
   await expect(page.locator('table tbody tr')).toHaveCount(26);
 });
 
-test('the limits follow the definitions: their names in order, four logarithmic tracks', async ({
+test('the limits follow the definitions: their names in order, six logarithmic tracks', async ({
   page,
 }) => {
   // Spec characteristics, "One definition per characteristic"; investigations/limits.md, 4.
@@ -514,6 +597,7 @@ test('the limits follow the definitions: their names in order, four logarithmic 
   expect(await offered(page)).toEqual([
     'Einwohner',
     'Ausländeranteil',
+    'Im Ausland geboren',
     '0–17 Jahre',
     '18–34 Jahre',
     '35–49 Jahre',
@@ -531,16 +615,33 @@ test('the limits follow the definitions: their names in order, four logarithmic 
     'Französisch',
     'Italienisch',
     'Rätoromanisch',
+    'Evangelisch-reformiert',
+    'Römisch-katholisch',
+    'Keine Religionszugehörigkeit',
+    'Hochschule oder höhere Berufsbildung',
+    'Obligatorische Schule oder keine Ausbildung',
+    'Vom Eigentümer bewohnte Wohnungen',
+    'Einfamilienhäuser',
+    'Arbeitsplätze je 100 Einwohner',
+    'Arbeitsplätze im Primärsektor',
+    'Arbeitsplätze im Sekundärsektor',
+    'Arbeitsplätze im Tertiärsektor',
     'Fläche',
     'Rinder je Einwohner',
+    "Landwirtschaftsbetriebe je 1'000 Einwohner",
+    'Bio-Anteil der landwirtschaftlichen Nutzfläche',
   ]);
-  // At step 500 a logarithmic track is far below its linear middle.
+  // At step 500 a logarithmic track is far below its linear middle: the six of them, and two
+  // linear ones (investigations/more-characteristics.md, 12, for the two new).
   for (const [name, middle] of [
     ['Einwohner', "3'508"],
     ['Einwohner je km²', '104'],
+    ['Arbeitsplätze je 100 Einwohner', '48.1'],
     ['Fläche', '11.85 km²'],
     ['Rinder je Einwohner', '0.090'],
+    ["Landwirtschaftsbetriebe je 1'000 Einwohner", '4.6'],
     ['Ausländeranteil', '30.55%'],
+    ['Im Ausland geboren', '33.07%'],
   ] as const) {
     await addLimit(page, name);
     await slider(page, 'Untere', name).fill('500');

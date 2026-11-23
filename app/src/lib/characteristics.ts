@@ -397,7 +397,7 @@ function headingOf(
     case 'jobs':
       return dated(t.jobsHeading, applying.jobsYear);
     case 'land':
-      return { heading: t.LAND_HEADING, year: null };
+      return { heading: t.GROUP.land, year: null };
   }
 }
 

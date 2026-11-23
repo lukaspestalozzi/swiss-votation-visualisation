@@ -5,8 +5,9 @@ import { expect, test } from 'vitest';
 import { textsOf, type Language } from './index.ts';
 
 // The texts that are the same in every language: the working title, and the dash of an empty
-// choice.
+// choice. And the one word that German and French share: the heading "Religion".
 const SAME_IN_EVERY_LANGUAGE = ['TITLE', 'CHOOSE'];
+const SAME_IN_GERMAN_AND_FRENCH = ['GROUP.religion'];
 
 /** Every string of a language's texts, by its path: "KINDS.popular-initiative", "MONTHS.2". */
 function strings(value: unknown, path = ''): Map<string, string> {
@@ -26,9 +27,12 @@ function strings(value: unknown, path = ''): Map<string, string> {
 test('no French or Italian text is the German one, apart from the working title and the dash', () => {
   const german = strings(textsOf('de'));
   for (const language of ['fr', 'it'] satisfies Language[]) {
+    const same = [
+      ...SAME_IN_EVERY_LANGUAGE,
+      ...(language === 'fr' ? SAME_IN_GERMAN_AND_FRENCH : []),
+    ];
     const copied = [...strings(textsOf(language))].filter(
-      ([path, text]) =>
-        path !== 'LANGUAGE' && !SAME_IN_EVERY_LANGUAGE.includes(path) && german.get(path) === text,
+      ([path, text]) => path !== 'LANGUAGE' && !same.includes(path) && german.get(path) === text,
     );
     expect(copied, language).toEqual([]);
   }

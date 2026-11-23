@@ -366,20 +366,37 @@ and 16.
 
 Spec `limits`, "Adding and removing a limit"; design, decisions 9 and 13.
 
-- [ ] 4.1 The list under headings. Tests of "The headings of the list" and "A heading without an
+- [x] 4.1 The list under headings. Tests of "The headings of the list" and "A heading without an
   entry left" in `limits.spec.ts`, one at a time. Seen to fail: no heading. Then the grouped list
   with its headings in three languages. The tests of before that count 21 and 20 entries count
   35 and 34.
 
   Verify: each run alone passes; `pnpm --filter app exec playwright test limits.spec.ts` passes.
-- [ ] 4.2 The new tracks. A test of "New characteristics with their tracks".
+
+  As built: 2 new tests, `limits.spec.ts`: 42 passed, 40 before. "The headings of the list" failed
+  with a flat list (no heading) and passes with the eight headings and their 9, 7, 4, 3, 2, 2, 4 and
+  4 entries; it also reads the headings in French and Italian. "A heading without an entry left"
+  passed when written and failed against the built mutant that keeps a group without entries. The
+  tests of before that count the entries count 35 and 34; the test of the names holds the 35 and
+  reads step 500 of the six logarithmic tracks ("48.1" jobs per 100 inhabitants, "4.6" farms per
+  1,000). The texts have one record `GROUP` of the eight headings; the panel takes its land heading
+  from it, and `LAND_HEADING` is gone. "Religion" is the same word in German and French, which the
+  test of untranslated texts now allows for that one text; without the allowance it fails.
+- [x] 4.2 The new tracks. A test of "New characteristics with their tracks".
 
   Verify: run alone, the test passes.
-- [ ] 4.3 The list no wider than the page. A test in `small-screens.spec.ts`: in a window 360
+
+  As built: the test passed when written, as `limits.test.ts` holds the same labels, and failed
+  against the built mutant that writes a rate without its decimal ("von 5 bis 446").
+- [x] 4.3 The list no wider than the page. A test in `small-screens.spec.ts`: in a window 360
   pixels wide, a vote's page in German, French and Italian with the limit of the longest name is
   no wider than the window. Seen to fail: the list wider than the page. Then the list's width.
 
   Verify: run alone, the test passes; `small-screens.spec.ts` and `compare.spec.ts` pass.
+
+  As built: the test failed with the list wider than the page (382 pixels in German, 426 in French),
+  and three tests of before on that width failed with it. The list takes at most the page's width.
+  `small-screens.spec.ts` and `compare.spec.ts`: 45 passed, the comparison's budgets among them.
 
 ## 5. The link
 
