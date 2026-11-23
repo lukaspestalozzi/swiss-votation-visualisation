@@ -663,7 +663,7 @@ test('a press let go outside the map does not move it later', async ({ page }) =
 });
 
 // The panel of characteristics beside the map (spec result-map); the figures are those of
-// investigations/characteristics.md.
+// investigations/characteristics.md and investigations/more-characteristics.md.
 const panel = (page: Page) => page.locator('.panel');
 
 async function pointAt(page: Page, number: number): Promise<void> {
@@ -685,11 +685,16 @@ test('the panel shows the characteristics of the municipality clicked', async ({
     'Bevölkerung Ende 2015',
     'Nationalratswahl 2015',
     'Hauptsprache, Volkszählung 2000',
+    'Religion, Volkszählung 2000',
+    'Ausbildung, Volkszählung 2000',
+    'Wohnen, Volkszählung 2000',
+    'Arbeit Ende 2015',
     'Fläche und Landwirtschaft',
   ]);
   await expect(panel(page).locator('li')).toHaveText([
     "Einwohner: 396'955",
     'Ausländeranteil: 32.03%',
+    'Im Ausland geboren: 41.07%',
     '0–17 Jahre: 15.37%',
     '18–34 Jahre: 27.13%',
     '35–49 Jahre: 25.41%',
@@ -707,20 +712,63 @@ test('the panel shows the characteristics of the municipality clicked', async ({
     'Französisch: 2.13%',
     'Italienisch: 4.70%',
     'Rätoromanisch: 0.27%',
+    'Evangelisch-reformiert: 30.28%',
+    'Römisch-katholisch: 33.27%',
+    'Keine Religionszugehörigkeit: 16.83%',
+    'Hochschule oder höhere Berufsbildung: 24.92%',
+    'Obligatorische Schule oder keine Ausbildung: 26.20%',
+    'Vom Eigentümer bewohnte Wohnungen: 7.11%',
+    'Einfamilienhäuser: 23.62%',
+    'Arbeitsplätze je 100 Einwohner: 118.1',
+    'Arbeitsplätze im Primärsektor: 0.05%',
+    'Arbeitsplätze im Sekundärsektor: 6.41%',
+    'Arbeitsplätze im Tertiärsektor: 93.54%',
     'Fläche (2026): 91.88 km²',
     'Rinder je Einwohner (2015): 0.002',
+    "Landwirtschaftsbetriebe je 1'000 Einwohner (2015): 0.1",
+    'Bio-Anteil der landwirtschaftlichen Nutzfläche (2015): 44.56%',
   ]);
 });
 
 test('the panel takes the figures that apply to the vote', async ({ page }) => {
   await page.goto('de/votes/6850/');
   await clickAt(page, 261);
+  // The data file of 2026-11-23, whose newest jobs are those of 2024.
   await expect(panel(page).locator('h4')).toHaveText([
     'Bevölkerung Ende 2025',
     'Nationalratswahl 2023',
     'Hauptsprache, Volkszählung 2000',
+    'Religion, Volkszählung 2000',
+    'Ausbildung, Volkszählung 2000',
+    'Wohnen, Volkszählung 2000',
+    'Arbeit Ende 2024',
     'Fläche und Landwirtschaft',
   ]);
+  await expect(panel(page).locator('li', { hasText: 'Arbeitsplätze je 100' })).toHaveText(
+    'Arbeitsplätze je 100 Einwohner: 124.9',
+  );
+});
+
+test('A line of another year than its group', async ({ page }) => {
+  // A data file whose newest figures of those born abroad are of 2024, the population's of 2025:
+  // the site's own file without its last year of them.
+  await page.route('**/data/characteristics.json', async (route) => {
+    const response = await route.fetch();
+    const file = (await response.json()) as {
+      bornAbroad: { years: number[]; counts: number[][] };
+    };
+    expect(file.bornAbroad.years.at(-1)).toBe(2025);
+    file.bornAbroad.years.pop();
+    file.bornAbroad.counts.pop();
+    await route.fulfill({ response, json: file });
+  });
+  await page.goto('de/votes/6850/');
+  await clickAt(page, 261);
+  await expect(panel(page).locator('h4').first()).toHaveText('Bevölkerung Ende 2025');
+  await expect(panel(page).locator('li').nth(2)).toHaveText(
+    'Im Ausland geboren (Ende 2024): 44.58%',
+  );
+  await expect(panel(page).locator('li').nth(1)).toHaveText(/^Ausländeranteil: [0-9.]+%$/);
 });
 
 test('the density, the area and the cattle are written with their decimals', async ({ page }) => {
@@ -729,11 +777,35 @@ test('the density, the area and the cattle are written with their decimals', asy
   await expect(panel(page).locator('li', { hasText: 'Einwohner je km²' })).toHaveText(
     'Einwohner je km²: 80',
   );
-  await expect(panel(page).locator('li', { hasText: 'Fläche' })).toHaveText(
+  await expect(panel(page).locator('li', { hasText: /^Fläche/ })).toHaveText(
     'Fläche (2026): 0.65 km²',
   );
   await expect(panel(page).locator('li', { hasText: 'Rinder' })).toHaveText(
     'Rinder je Einwohner (2015): 2.519',
+  );
+  // With one decimal: 23 jobs and 4 farms, 52 inhabitants.
+  await expect(panel(page).locator('li', { hasText: 'Arbeitsplätze je 100' })).toHaveText(
+    'Arbeitsplätze je 100 Einwohner: 44.2',
+  );
+  await expect(panel(page).locator('li', { hasText: 'Landwirtschaftsbetriebe' })).toHaveText(
+    "Landwirtschaftsbetriebe je 1'000 Einwohner (2015): 76.9",
+  );
+});
+
+test('Without a figure: a withheld count and no farmland', async ({ page }) => {
+  // Spec result-map, "Without a figure": Oberrieden's primary and secondary sector are
+  // withheld, and it has no farmland.
+  await page.goto('de/votes/5960/');
+  await clickAt(page, 137);
+  await expect(panel(page).locator('.name')).toHaveText('Oberrieden (ZH)');
+  await expect(panel(page).locator('li', { hasText: 'Arbeitsplätze' })).toHaveText([
+    'Arbeitsplätze je 100 Einwohner: 20.6',
+    'Arbeitsplätze im Primärsektor: keine Angabe',
+    'Arbeitsplätze im Sekundärsektor: keine Angabe',
+    'Arbeitsplätze im Tertiärsektor: 89.39%',
+  ]);
+  await expect(panel(page).locator('li', { hasText: 'Bio-Anteil' })).toHaveText(
+    'Bio-Anteil der landwirtschaftlichen Nutzfläche (2015): keine Angabe',
   );
 });
 
@@ -750,6 +822,8 @@ test('a characteristic without a figure: "keine Angabe"', async ({ page }) => {
     'GLP: keine Angabe',
     'Grüne: keine Angabe',
     'Übrige Parteien: keine Angabe',
+    'Arbeitsplätze im Sekundärsektor: keine Angabe',
+    'Arbeitsplätze im Tertiärsektor: keine Angabe',
   ]);
 });
 
@@ -757,7 +831,7 @@ test('the panel names the sources of the characteristics', async ({ page }) => {
   await page.goto('de/votes/5960/');
   await clickAt(page, 261);
   await expect(panel(page).locator('.source')).toHaveText(
-    'Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000, ' +
+    'Quellen: BFS (STATPOP, STATENT, Nationalratswahlen, Volkszählung 2000, ' +
       'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).',
   );
 });

@@ -200,6 +200,23 @@ export const DEFINITIONS: readonly Definition[] = [
   })),
 ];
 
+// The date of a characteristic's figures of a year, by its source, as a limit's label and a
+// line of the panel write it: "Ende 2015", "Nationalratswahl 2019", "Volkszählung 2000", "2026".
+const DATE_OF: Readonly<Record<Source, (t: Texts, year: number) => string>> = {
+  population: (t, year) => t.populationDate(year),
+  'born-abroad': (t, year) => t.populationDate(year),
+  jobs: (t, year) => t.populationDate(year),
+  election: (t, year) => t.electionHeading(year),
+  census: (t, year) => t.censusDate(year),
+  area: (_, year) => String(year),
+  cattle: (_, year) => String(year),
+};
+
+/** The date of a characteristic's figures of `year`, in the language of `t`. */
+export function dateOf(definition: Definition, year: number, t: Texts): string {
+  return DATE_OF[definition.source](t, year);
+}
+
 /** The name of a characteristic in the language of `t`. */
 export function nameOf(definition: Definition, t: Texts): string {
   return t.CHARACTERISTIC[definition.key];
@@ -341,33 +358,66 @@ export interface PanelGroup {
   readonly lines: readonly string[];
 }
 
+// The groups in the order of the panel and of the list of the limits.
+export const GROUPS: readonly Group[] = [
+  'population',
+  'election',
+  'languages',
+  'religion',
+  'education',
+  'housing',
+  'jobs',
+  'land',
+];
+
+// A group's heading in the panel, and the year it names; none for the land, whose figures are
+// of several years.
+function headingOf(
+  group: Group,
+  applying: Applying,
+  t: Texts,
+): { readonly heading: string; readonly year: number | null } {
+  const dated = (heading: (year: number) => string, year: number) => ({
+    heading: heading(year),
+    year,
+  });
+  switch (group) {
+    case 'population':
+      return dated(t.populationHeading, applying.populationYear);
+    case 'election':
+      return dated(t.electionHeading, applying.election.year);
+    case 'languages':
+      return dated(t.languagesHeading, CENSUS_YEAR);
+    case 'religion':
+      return dated(t.religionHeading, CENSUS_YEAR);
+    case 'education':
+      return dated(t.educationHeading, CENSUS_YEAR);
+    case 'housing':
+      return dated(t.housingHeading, CENSUS_YEAR);
+    case 'jobs':
+      return dated(t.jobsHeading, applying.jobsYear);
+    case 'land':
+      return { heading: t.LAND_HEADING, year: null };
+  }
+}
+
 /**
- * The panel's four groups for a municipality's counts (spec result-map, "The characteristics of
+ * The panel's eight groups for a municipality's counts (spec result-map, "The characteristics of
  * a municipality beside the map"): each characteristic in the order of its definition, in its
- * group, under the heading of its figures' date; the area and the cattle name their years on
- * their own lines.
+ * group, under the heading of its figures' date. A line whose figures are of another year than
+ * the heading's names its date; so does every line of the land, whose heading names no year.
  */
 export function panelOf(counts: Counts, applying: Applying, t: Texts): readonly PanelGroup[] {
-  const of = (group: Group): readonly Definition[] =>
-    DEFINITIONS.filter((definition) => definition.group === group);
-  const lines = (definitions: readonly Definition[], withYear: boolean): readonly string[] =>
-    definitions.map((definition) => {
-      const name = nameOf(definition, t);
-      const named = withYear ? t.ofYear(name, definition.year(applying)) : name;
-      return t.characteristic(named, written(definition, definition.value(counts), t));
-    });
-  const yearOf = (definitions: readonly Definition[]): number =>
-    definitions[0]?.year(applying) ?? Number.NaN;
-  const [population, election, census, land] = [
-    of('population'),
-    of('election'),
-    of('languages'),
-    of('land'),
-  ];
-  return [
-    { heading: t.populationHeading(yearOf(population)), lines: lines(population, false) },
-    { heading: t.electionHeading(yearOf(election)), lines: lines(election, false) },
-    { heading: t.languagesHeading(yearOf(census)), lines: lines(census, false) },
-    { heading: t.LAND_HEADING, lines: lines(land, true) },
-  ];
+  return GROUPS.map((group) => {
+    const { heading, year } = headingOf(group, applying, t);
+    const lines = DEFINITIONS.filter((definition) => definition.group === group).map(
+      (definition) => {
+        const name = nameOf(definition, t);
+        const own = definition.year(applying);
+        const named = own === year ? name : t.ofDate(name, dateOf(definition, own, t));
+        return t.characteristic(named, written(definition, definition.value(counts), t));
+      },
+    );
+    return { heading, lines };
+  });
 }

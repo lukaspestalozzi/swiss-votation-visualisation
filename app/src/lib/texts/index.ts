@@ -157,8 +157,14 @@ export interface Texts {
   readonly populationHeading: (year: number) => string;
   readonly electionHeading: (year: number) => string;
   readonly languagesHeading: (year: number) => string;
+  readonly religionHeading: (year: number) => string;
+  readonly educationHeading: (year: number) => string;
+  readonly housingHeading: (year: number) => string;
+  readonly jobsHeading: (year: number) => string;
   readonly LAND_HEADING: string;
-  readonly ofYear: (name: string, year: number) => string;
+  // A characteristic's name with the date of its figures, where its group's heading names
+  // another or none: "Im Ausland geboren (Ende 2024)".
+  readonly ofDate: (name: string, date: string) => string;
   readonly characteristic: (name: string, value: string) => string;
   readonly CHARACTERISTICS_SOURCES: string;
 

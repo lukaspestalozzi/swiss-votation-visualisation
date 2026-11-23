@@ -153,11 +153,15 @@ export const de: Texts = {
   populationHeading: (year) => `Bevölkerung Ende ${String(year)}`,
   electionHeading: (year) => `Nationalratswahl ${String(year)}`,
   languagesHeading: (year) => `Hauptsprache, Volkszählung ${String(year)}`,
+  religionHeading: (year) => `Religion, Volkszählung ${String(year)}`,
+  educationHeading: (year) => `Ausbildung, Volkszählung ${String(year)}`,
+  housingHeading: (year) => `Wohnen, Volkszählung ${String(year)}`,
+  jobsHeading: (year) => `Arbeit Ende ${String(year)}`,
   LAND_HEADING: 'Fläche und Landwirtschaft',
-  ofYear: (name, year) => `${name} (${String(year)})`,
+  ofDate: (name, date) => `${name} (${date})`,
   characteristic: (name, value) => `${name}: ${value}`,
   CHARACTERISTICS_SOURCES:
-    'Quellen: BFS (STATPOP, Nationalratswahlen, Volkszählung 2000, ' +
+    'Quellen: BFS (STATPOP, STATENT, Nationalratswahlen, Volkszählung 2000, ' +
     'Landwirtschaftliche Strukturerhebung); swisstopo (swissBOUNDARIES3D 2026).',
 
   // The comparison of two votes (spec vote-comparison).

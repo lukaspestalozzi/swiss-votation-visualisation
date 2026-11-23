@@ -7,6 +7,7 @@ import {
   applyingTo,
   countsOf,
   nameOf,
+  panelOf,
   written,
   type Definition,
   type Quotient,
@@ -236,6 +237,39 @@ test('a file whose farms have other years than its cattle is refused', () => {
   expect(() => applyingTo(file, '2026-03-08')).toThrow(
     new RangeError('the farms are of the years 2024, the cattle of 2024, 2025'),
   );
+});
+
+test('a line of another year than its group names its year', () => {
+  // Spec result-map, "A line of another year than its group": those born abroad of 2024 under
+  // the population at the end of 2025.
+  const later: CharacteristicsFile = {
+    ...MADE_UP,
+    bornAbroad: { years: [2024], counts: [MADE_UP.bornAbroad.counts[0]] },
+  };
+  const panel = (file: CharacteristicsFile) => {
+    const applying = applyingTo(file, '2026-03-08');
+    return panelOf(countsOf(file, applying, 1), applying, de);
+  };
+  const [population] = panel(later);
+  expect(population.heading).toBe('Bevölkerung Ende 2025');
+  expect(population.lines.slice(0, 4)).toEqual([
+    'Einwohner: 11',
+    'Ausländeranteil: 9.09%',
+    'Im Ausland geboren (Ende 2024): 30.00%', // 3 of the 10 inhabitants at the end of 2024
+    '0–17 Jahre: 27.27%',
+  ]);
+  // With every figure of the heading's year, no line of the group names one.
+  expect(panel(MADE_UP)[0].lines[2]).toBe('Im Ausland geboren: 36.36%');
+  // The land's heading names no year: each of its lines does.
+  expect(panel(MADE_UP).at(-1)).toEqual({
+    heading: 'Fläche und Landwirtschaft',
+    lines: [
+      'Fläche (2026): 1.00 km²',
+      'Rinder je Einwohner (2025): 0.545',
+      "Landwirtschaftsbetriebe je 1'000 Einwohner (2025): 181.8",
+      'Bio-Anteil der landwirtschaftlichen Nutzfläche (2025): 26.83%',
+    ],
+  });
 });
 
 // The real data file, as the page reads it.
