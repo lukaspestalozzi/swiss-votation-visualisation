@@ -30,11 +30,16 @@ test('The head of the comparison', async ({ page }) => {
     'href',
     /\/swiss-votation-visualisation\/de\/?$/,
   );
+  await expect(head.getByRole('link', { name: 'Vergleichen' })).toHaveCount(0);
+  await expect(head.getByText('Vergleichen', { exact: true })).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
   await expect(head.getByRole('link', { name: 'Lesehilfe' })).toHaveAttribute(
     'href',
     /\/swiss-votation-visualisation\/de\/guide\/?$/,
   );
-  await expect(head.getByText('Deutsch')).toHaveAttribute('aria-current', 'page');
+  await expect(languageSwitch(page).locator('[aria-current="page"]')).toHaveText('Deutsch');
   await expect(head.getByRole('link', { name: 'Français' })).toHaveAttribute(
     'href',
     /\/swiss-votation-visualisation\/fr\/compare\/?$/,

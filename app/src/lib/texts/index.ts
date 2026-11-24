@@ -172,6 +172,8 @@ export interface Texts {
 
   // The comparison of two votes (spec vote-comparison).
   readonly COMPARE_HEADING: string;
+  /** The comparison's entry in the head of every page. */
+  readonly COMPARE_ENTRY: string;
   readonly FIRST_VOTE: string;
   readonly SECOND_VOTE: string;
   readonly REAL_RESULT: string;

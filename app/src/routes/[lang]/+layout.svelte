@@ -50,31 +50,53 @@
   }
 </script>
 
-<!-- The head of every page (spec site-style, "The head of every page"; design of add-site-style,
-     decision 7): the working title, the guide and the language switch, each a link but on its
-     own page, where it is text, as the switch's own language is. On the start page and the
-     guide it is marked "narrow", by which `app.css` makes their page narrower. -->
+<!-- The head of every page (spec site-style, "The head of every page"; design of redesign-site,
+     decisions 6 and 7): the working title with its mark, the comparison, the guide and the
+     language switch, each a link but on its own page, where it is text, as the switch's own
+     language is. The mark is drawn by the style below, so that no page gains an image. A language
+     holds its code beside its name, which a narrow window writes in the name's place; a link is
+     named with both at every width. On the start page and the guide the head is marked "narrow",
+     by which `app.css` makes their page narrower. -->
 <header
   class="head"
   class:narrow={page.route.id === '/[lang]' || page.route.id === '/[lang]/guide'}
 >
   {#if page.route.id === '/[lang]'}
-    <span class="title" aria-current="page">{t.TITLE}</span>
+    <span class="title" aria-current="page"
+      ><span class="mark" aria-hidden="true"></span>{t.TITLE}</span
+    >
   {:else}
-    <a class="title" href={resolve('/[lang]', { lang: data.lang })}>{t.TITLE}</a>
+    <a class="title" href={resolve('/[lang]', { lang: data.lang })}
+      ><span class="mark" aria-hidden="true"></span>{t.TITLE}</a
+    >
   {/if}
-  {#if page.route.id === '/[lang]/guide'}
-    <span aria-current="page">{t.GUIDE_HEADING}</span>
-  {:else}
-    <a href={resolve('/[lang]/guide', { lang: data.lang })}>{t.GUIDE_HEADING}</a>
-  {/if}
+  <div class="entries">
+    {#if page.route.id === '/[lang]/compare'}
+      <span aria-current="page">{t.COMPARE_ENTRY}</span>
+    {:else}
+      <a href={resolve('/[lang]/compare', { lang: data.lang })}>{t.COMPARE_ENTRY}</a>
+    {/if}
+    {#if page.route.id === '/[lang]/guide'}
+      <span aria-current="page">{t.GUIDE_HEADING}</span>
+    {:else}
+      <a href={resolve('/[lang]/guide', { lang: data.lang })}>{t.GUIDE_HEADING}</a>
+    {/if}
+  </div>
   <nav class="languages">
     {#each LANGUAGES as language (language)}
+      {@const code = language.toUpperCase()}
       {#if language === data.lang}
-        <span lang={language} aria-current="page">{LANGUAGE_NAMES[language]}</span>
+        <span lang={language} aria-current="page" data-code={code}
+          ><span class="name">{LANGUAGE_NAMES[language]}</span></span
+        >
       {:else}
-        <a href={linkIn(language)} lang={language} hreflang={language} data-sveltekit-reload
-          >{LANGUAGE_NAMES[language]}</a
+        <a
+          href={linkIn(language)}
+          lang={language}
+          hreflang={language}
+          aria-label="{code} – {LANGUAGE_NAMES[language]}"
+          data-code={code}
+          data-sveltekit-reload><span class="name">{LANGUAGE_NAMES[language]}</span></a
         >
       {/if}
     {/each}
@@ -84,26 +106,100 @@
 {@render children()}
 
 <style>
-  /* The head wraps between its parts, never within one: in a window 360 pixels wide the switch
-     takes a second line. */
+  /* The head wraps between its parts, never within one. */
   .head {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 1.5rem;
+    align-items: center;
+    gap: 0.25rem 2rem;
     padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--hairline);
   }
   .head a,
   .head span {
     white-space: nowrap;
   }
   .title {
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    color: var(--text);
+    text-decoration: none;
+  }
+  /* The mark: a bar of yes and no, and the line of a majority across it. */
+  .mark {
+    position: relative;
+    flex: none;
+    width: 1.25rem;
+    height: 0.625rem;
+    background: linear-gradient(to right, var(--yes-bar) 0 58%, var(--no-bar) 58% 100%);
+  }
+  .mark::after {
+    content: '';
+    position: absolute;
+    left: 46%;
+    top: -4px;
+    bottom: -4px;
+    width: 2px;
+    background: var(--text);
+  }
+  .entries {
+    display: flex;
+    gap: 1.5rem;
   }
   .languages {
     display: flex;
-    gap: 0.75rem;
+    gap: 1rem;
     margin-left: auto;
+  }
+  /* An entry and a language: a link without a line until it is pointed at, the page shown and
+     its language in the text's colour above a line. */
+  .entries > *,
+  .languages > * {
+    padding: 0.25rem 0;
+  }
+  .entries a,
+  .languages a {
+    color: var(--text-secondary);
+    text-decoration: none;
+  }
+  .entries a:hover,
+  .languages a:hover {
+    color: var(--text);
+    text-decoration: underline;
+  }
+  .entries span,
+  .languages > span {
+    color: var(--text);
+    font-weight: 600;
+    box-shadow: 0 2px 0 var(--text);
+  }
+  /* A narrow window: the title with the languages, written as their codes, then the entries. A
+     name stays for assistive technology, in a box of one pixel. */
+  @media (max-width: 639.98px) {
+    .head {
+      gap: 0.25rem 1.25rem;
+      padding: 0.625rem 0;
+    }
+    .entries {
+      order: 3;
+      flex-basis: 100%;
+      gap: 1.25rem;
+    }
+    .languages {
+      gap: 0.75rem;
+    }
+    .languages > *::before {
+      content: attr(data-code);
+    }
+    .languages .name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
   }
 </style>

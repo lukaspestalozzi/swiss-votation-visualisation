@@ -115,8 +115,9 @@ test.describe('the light scheme', () => {
     await page.goto('de/guide/');
     await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(page.locator('section p').first()).toHaveCSS('color', 'rgb(28, 28, 28)');
-    await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(28, 28, 28)');
-    await expect(page.locator('a').first()).toHaveCSS('text-decoration-line', 'underline');
+    const back = page.getByRole('link', { name: 'Alle Abstimmungen' });
+    await expect(back).toHaveCSS('color', 'rgb(28, 28, 28)');
+    await expect(back).toHaveCSS('text-decoration-line', 'underline');
     // A vote's date and kind #595959; the cantonal votes of a majority not needed #767676.
     await page.goto('de/votes/5950/');
     await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(89, 89, 89)');
@@ -144,8 +145,9 @@ test.describe('the dark scheme', () => {
     await page.goto('de/guide/');
     await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(18, 18, 18)');
     await expect(page.locator('section p').first()).toHaveCSS('color', 'rgb(232, 232, 232)');
-    await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(232, 232, 232)');
-    await expect(page.locator('a').first()).toHaveCSS('text-decoration-line', 'underline');
+    const back = page.getByRole('link', { name: 'Alle Abstimmungen' });
+    await expect(back).toHaveCSS('color', 'rgb(232, 232, 232)');
+    await expect(back).toHaveCSS('text-decoration-line', 'underline');
     // A vote's date and kind #b0b0b0; the cantonal votes of a majority not needed #9a9a9a.
     await page.goto('de/votes/5950/');
     await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(176, 176, 176)');
@@ -249,17 +251,21 @@ test.describe("the verdicts in the map's colours", () => {
 });
 
 test.describe('the head of every page', () => {
-  test("on a vote's page: the title, the guide and the languages, before the heading", async ({
+  test("on a vote's page: the title, the comparison, the guide and the languages, before the heading", async ({
     page,
   }) => {
     await page.goto('fr/votes/5960/');
     const head = pageHead(page);
     await expect(head).toHaveText(
-      /^\s*Popular Vote Explorer\s*Guide de lecture\s*Deutsch\s*Français\s*Italiano\s*$/,
+      /^\s*Popular Vote Explorer\s*Comparer\s*Guide de lecture\s*Deutsch\s*Français\s*Italiano\s*$/,
     );
     await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveAttribute(
       'href',
       /\/fr\/?$/,
+    );
+    await expect(head.getByRole('link', { name: 'Comparer' })).toHaveAttribute(
+      'href',
+      /\/fr\/compare\/?$/,
     );
     await expect(head.getByRole('link', { name: 'Guide de lecture' })).toHaveAttribute(
       'href',
@@ -274,11 +280,27 @@ test.describe('the head of every page', () => {
     expect(headFirst).toBe(true);
   });
 
-  test('on the start page the title, on the guide its name, is no link', async ({ page }) => {
+  test('the entry of the page shown is no link: the title, the comparison, the guide', async ({
+    page,
+  }) => {
     const head = pageHead(page);
+    await page.goto('de/compare/');
+    await expect(head.getByRole('link', { name: 'Vergleichen' })).toHaveCount(0);
+    await expect(head.getByText('Vergleichen', { exact: true })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveAttribute(
+      'href',
+      /\/de\/?$/,
+    );
     await page.goto('de/');
     await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveCount(0);
     await expect(head.getByText('Popular Vote Explorer')).toHaveAttribute('aria-current', 'page');
+    await expect(head.getByRole('link', { name: 'Vergleichen' })).toHaveAttribute(
+      'href',
+      /\/de\/compare\/?$/,
+    );
     await expect(head.getByRole('link', { name: 'Lesehilfe' })).toHaveAttribute(
       'href',
       /\/de\/guide\/?$/,
@@ -298,32 +320,93 @@ test.describe('the head of every page', () => {
   test.describe('in a window 360 pixels wide', () => {
     test.use({ viewport: { width: 360, height: 780 } });
 
-    test('the head fits the window, and none of its parts breaks', async ({ page }) => {
+    test('the head fits the window in two lines, and none of its parts breaks', async ({
+      page,
+    }) => {
       await page.goto('it/votes/5960/');
       const lines = await page.evaluate(() => {
         const head = document.querySelector('header');
         if (head === null) return null;
-        // The lines each text of the head takes: one, if it does not break.
+        // The lines a part's text takes, one if it does not break, and the middle of its box.
+        const part = (element: Element) => {
+          const range = document.createRange();
+          // The title's text follows its mark, which is no text.
+          range.selectNodeContents(element.lastChild ?? element);
+          const tops = new Set([...range.getClientRects()].map((rect) => Math.round(rect.top)));
+          const box = element.getBoundingClientRect();
+          return { lines: tops.size, middle: Math.round(box.top + box.height / 2) };
+        };
+        const title = head.querySelector('.title');
+        if (title === null) return null;
         return {
           right: head.getBoundingClientRect().right,
-          parts: [...head.querySelectorAll('a, span')].map((part) => {
-            const range = document.createRange();
-            range.selectNodeContents(part);
-            const tops = new Set([...range.getClientRects()].map((rect) => Math.round(rect.top)));
-            return [part.textContent.trim(), tops.size];
+          title: [title.textContent.trim(), part(title)] as const,
+          entries: [...head.querySelectorAll('.entries > *')].map(
+            (entry) => [entry.textContent.trim(), part(entry)] as const,
+          ),
+          // A language writes its code before its name, which is left a box of one pixel.
+          languages: [...head.querySelectorAll('.languages > *')].map((language) => {
+            const name = language.querySelector('.name');
+            return [
+              getComputedStyle(language, '::before').content,
+              name === null ? null : name.getBoundingClientRect().width,
+              part(language).middle,
+            ] as const;
           }),
         };
       });
-      expect(lines?.right).toBeLessThanOrEqual(360);
-      expect(lines?.parts).toEqual([
-        ['Popular Vote Explorer', 1],
-        ['Guida alla lettura', 1],
-        ['Deutsch', 1],
-        ['Français', 1],
-        ['Italiano', 1],
+      if (lines === null) throw new Error('the page has no head');
+      expect(lines.right).toBeLessThanOrEqual(360);
+      const [title, titlePart] = lines.title;
+      expect([title, titlePart.lines]).toEqual(['Popular Vote Explorer', 1]);
+      // The first line: the title with the three codes.
+      expect(lines.languages.map(([code, name]) => [code, name])).toEqual([
+        ['"DE"', 1],
+        ['"FR"', 1],
+        ['"IT"', 1],
       ]);
+      for (const [, , middle] of lines.languages) {
+        expect(Math.abs(middle - titlePart.middle)).toBeLessThanOrEqual(4);
+      }
+      // The second line: the comparison and the guide.
+      expect(lines.entries.map(([text, entry]) => [text, entry.lines])).toEqual([
+        ['Confrontare', 1],
+        ['Guida alla lettura', 1],
+      ]);
+      const [first, second] = lines.entries.map(([, entry]) => entry.middle);
+      expect(first).toBe(second);
+      expect(first).toBeGreaterThan(titlePart.middle + 12);
     });
   });
+
+  test('the mark is no image: a tie-break question has none', async ({ page }) => {
+    await page.goto('de/votes/6823/');
+    const mark = await pageHead(page).locator('.mark').boundingBox();
+    expect(mark?.width).toBeGreaterThan(10);
+    expect(mark?.height).toBeGreaterThan(5);
+    await expect(page.locator('img, svg')).toHaveCount(0);
+  });
+
+  for (const [colorScheme, link, shown] of [
+    ['light', 'rgb(89, 89, 89)', 'rgb(28, 28, 28)'],
+    ['dark', 'rgb(176, 176, 176)', 'rgb(232, 232, 232)'],
+  ] as const) {
+    test(`the entries in the ${colorScheme} scheme: links without a line, the page shown in the text's colour`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.goto('de/guide/');
+      const head = pageHead(page);
+      const compare = head.getByRole('link', { name: 'Vergleichen' });
+      await expect(compare).toHaveCSS('color', link);
+      await expect(compare).toHaveCSS('text-decoration-line', 'none');
+      await compare.hover();
+      await expect(compare).toHaveCSS('text-decoration-line', 'underline');
+      const guide = head.getByText('Lesehilfe', { exact: true });
+      await expect(guide).toHaveCSS('color', shown);
+      await expect(guide).toHaveCSS('font-weight', '600');
+    });
+  }
 });
 
 test.describe('the width of a page', () => {

@@ -77,7 +77,11 @@ mockups Q saw unless it says otherwise.
 6. **The head** is the working title with a mark before it, "Vergleichen", "Lesehilfe" and the
    switch. The entry of the page shown is text, not a link. "Vergleichen" is new (Q). The mark is
    a bar of yes and no with the mark at half, drawn with CSS: it is no image, and no page gains
-   an `svg`. Rejected: an entry "Abstimmungen", as the title leads there already.
+   an `svg`. Rejected: an entry "Abstimmungen", as the title leads there already. The head's
+   links are the one exception to decision 1: as in the mockups, an entry or a language that
+   links is written in the secondary colour without a line until it is pointed at, and the page
+   shown and its language in the text's colour above a line (found while applying: the delta
+   first said every link is underlined).
 7. **The switch writes "DE", "FR", "IT" in a window narrower than 640 pixels**, so that the head
    takes two lines there, not three. Each link is named "DE – Deutsch", "FR – Français" or "IT –
    Italiano" for assistive technology at every width: the name holds what is written.

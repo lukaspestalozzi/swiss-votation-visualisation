@@ -5,9 +5,9 @@
 ### Requirement: The colours of the light scheme
 
 Unless the browser prefers a dark colour scheme, every page SHALL show its text in `#1c1c1c` on
-`#ffffff`; a vote's date and kind, and sources and notes, in `#595959`; links, underlined, and the
-ring of a focused control in the text's colour; the cantonal votes of a majority that is not
-needed in `#767676`. Every text SHALL have at least 4.5:1 against the colour behind it, text of at
+`#ffffff`; a vote's date and kind, and sources and notes, in `#595959`; links below the head,
+underlined, and the ring of a focused control in the text's colour; the cantonal votes of a
+majority that is not needed in `#767676`. Every text SHALL have at least 4.5:1 against the colour behind it, text of at
 least 24 pixels, or of 18.66 bold, at least 3:1 (WCAG 2.2, 1.4.3; `investigations/site-style.md`,
 3).
 
@@ -15,8 +15,8 @@ least 24 pixels, or of 18.66 bold, at least 3:1 (WCAG 2.2, 1.4.3; `investigation
 
 - **WHEN** a visitor opens the start page, the guide, and `/votes/5960/` with the upper bound of
   "Ausländeranteil" at step 327, in each of the three languages
-- **THEN** a paragraph is `#1c1c1c` on `#ffffff`, a link `#1c1c1c` and underlined, and every text
-  has at least 4.5:1 against the colour behind it, or 3:1 where it is large
+- **THEN** a paragraph is `#1c1c1c` on `#ffffff`, a link below the head `#1c1c1c` and underlined,
+  and every text has at least 4.5:1 against the colour behind it, or 3:1 where it is large
 
 #### Scenario: A majority that is not needed
 
@@ -27,9 +27,9 @@ least 24 pixels, or of 18.66 bold, at least 3:1 (WCAG 2.2, 1.4.3; `investigation
 ### Requirement: The dark scheme
 
 When the browser prefers a dark colour scheme, every page SHALL show its text in `#e8e8e8` on
-`#121212`; a vote's date and kind, and sources and notes, in `#b0b0b0`; links, underlined, and the
-ring of a focused control in the text's colour; the cantonal votes of a majority that is not
-needed in `#9a9a9a`, with the contrasts of the light scheme. A page SHALL follow the browser when
+`#121212`; a vote's date and kind, and sources and notes, in `#b0b0b0`; links below the head,
+underlined, and the ring of a focused control in the text's colour; the cantonal votes of a
+majority that is not needed in `#9a9a9a`, with the contrasts of the light scheme. A page SHALL follow the browser when
 its preference changes, keeping its state, with no switch of its own, no cookie and no local
 storage.
 
@@ -38,8 +38,8 @@ storage.
 - **WHEN** a visitor whose browser prefers a dark colour scheme opens the start page, the guide,
   and `/votes/5960/` with the upper bound of "Ausländeranteil" at step 327, in each of the three
   languages
-- **THEN** a paragraph is `#e8e8e8` on `#121212`, a link `#e8e8e8` and underlined, and every text
-  has at least 4.5:1 against the colour behind it, or 3:1 where it is large
+- **THEN** a paragraph is `#e8e8e8` on `#121212`, a link below the head `#e8e8e8` and underlined,
+  and every text has at least 4.5:1 against the colour behind it, or 3:1 where it is large
 
 #### Scenario: The preference changes on an open page
 
@@ -174,6 +174,25 @@ ring of 2 pixels in the text's colour (WCAG 2.2, 1.4.11). A control that cannot 
   least 3:1 against the colour behind them, and their texts at least 4.5:1
 
 ## ADDED Requirements
+
+### Requirement: The look of the head's entries
+
+In the head, the comparison, the guide and a language that link SHALL be written in `#595959`, in
+the dark scheme in `#b0b0b0`, without a line until the pointer is on them, when they are underlined
+in the text's colour. The entry of the page shown and the page's language SHALL be written in the
+text's colour, in a heavier weight, above a line of that colour. The title SHALL be in the text's
+colour and not underlined.
+
+#### Scenario: The entries on the guide
+
+- **WHEN** a visitor opens `/de/guide/`
+- **THEN** "Vergleichen" in the head is `#595959` and not underlined, and underlined while the
+  pointer is on it; "Lesehilfe" is `#1c1c1c` in a weight of 600
+
+#### Scenario: The entries in the dark scheme
+
+- **WHEN** a visitor whose browser prefers a dark colour scheme opens `/de/guide/`
+- **THEN** "Vergleichen" in the head is `#b0b0b0` and not underlined, and "Lesehilfe" is `#e8e8e8`
 
 ### Requirement: The colours of a bar
 
