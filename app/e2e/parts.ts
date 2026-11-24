@@ -4,52 +4,84 @@ import { expect, type Locator, type Page } from '@playwright/test';
 
 export type Language = 'de' | 'fr' | 'it';
 
-/** The words by which a test finds the control that adds a limit, in each language. */
-const ADDING: Record<Language, { list: string; add: string }> = {
-  de: { list: 'Merkmal hinzufügen', add: 'Hinzufügen' },
-  fr: { list: 'Ajouter une caractéristique', add: 'Ajouter' },
-  it: { list: 'Aggiungere una caratteristica', add: 'Aggiungere' },
+/** The words by which a test finds the button that adds a limit and its list, in each language. */
+const ADDING: Record<Language, { add: string; close: string }> = {
+  de: { add: 'Merkmal hinzufügen', close: 'Schliessen' },
+  fr: { add: 'Ajouter une caractéristique', close: 'Fermer' },
+  it: { add: 'Aggiungere una caratteristica', close: 'Chiudere' },
 };
 
-/** The list of the characteristics that have no limit yet. */
-export const limitList = (page: Page, language: Language = 'de'): Locator =>
-  page.getByLabel(ADDING[language].list);
-
-/** The button that adds the limit of the characteristic chosen in the list. */
+/** The button that opens the list of the characteristics that have no limit yet. */
 export const addButton = (page: Page, language: Language = 'de'): Locator =>
   page.getByRole('button', { name: ADDING[language].add, exact: true });
+
+/** The list it opens: a dialog headed as the button. */
+export const limitList = (page: Page, language: Language = 'de'): Locator =>
+  page.getByRole('dialog', { name: ADDING[language].add, exact: true });
+
+/** The entries of the list: a button for each characteristic without a limit. */
+export const listEntries = (page: Page, language: Language = 'de'): Locator =>
+  limitList(page, language).locator('li button');
+
+/** The button that closes the list without a choice. */
+export const closeButton = (page: Page, language: Language = 'de'): Locator =>
+  limitList(page, language).getByRole('button', { name: ADDING[language].close, exact: true });
 
 /** Open a vote's page and wait until the limits can be used. */
 export async function openVote(page: Page, path: string): Promise<void> {
   await page.goto(path);
-  await expect(limitList(page)).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
 }
 
-/** Add the limit of a characteristic, by a click or, on a touch screen, by a tap. */
+/** Add the limit of a characteristic, by clicks or, on a touch screen, by taps. */
 export async function addLimit(
   page: Page,
   name: string,
   language: Language = 'de',
   by: 'click' | 'tap' = 'click',
 ): Promise<void> {
-  await limitList(page, language).selectOption({ label: name });
   await addButton(page, language)[by]();
+  await limitList(page, language).getByRole('button', { name, exact: true })[by]();
 }
 
-/** The names of the characteristics a limit can be added for. */
-export const offered = (page: Page): Promise<string[]> =>
-  limitList(page).locator('option:not([value=""])').allTextContents();
+/** Close the open list with the Escape key. */
+async function closeList(page: Page, language: Language): Promise<void> {
+  await page.keyboard.press('Escape');
+  await expect(limitList(page, language)).toBeHidden();
+}
 
-/** The headings of the list of characteristics, each with the number of its entries. */
-export const listHeadings = (page: Page, language: Language = 'de'): Promise<[string, number][]> =>
-  limitList(page, language)
-    .locator('optgroup')
+/**
+ * The names of the characteristics a limit can be added for: the list is opened, read and closed.
+ * With a limit on every characteristic the button cannot be pressed, and there is none.
+ */
+export async function offered(page: Page): Promise<string[]> {
+  if (await addButton(page).isDisabled()) return [];
+  await addButton(page).click();
+  const names = await listEntries(page).allTextContents();
+  await closeList(page, 'de');
+  return names.map((name) => name.trim());
+}
+
+/**
+ * The headings of the list of characteristics, each with the number of its entries: the list is
+ * opened, read and closed.
+ */
+export async function listHeadings(
+  page: Page,
+  language: Language = 'de',
+): Promise<[string, number][]> {
+  await addButton(page, language).click();
+  const headings = await limitList(page, language)
+    .locator('.group')
     .evaluateAll((groups) =>
-      groups.map((group) => [
-        (group as HTMLOptGroupElement).label,
-        group.querySelectorAll('option').length,
+      groups.map((group): [string, number] => [
+        group.querySelector('h4')?.textContent.trim() ?? '',
+        group.querySelectorAll('li').length,
       ]),
     );
+  await closeList(page, language);
+  return headings;
+}
 
 /** A slider of a limit, by its bound and its characteristic's name, in German. */
 export const slider = (page: Page, bound: 'Untere' | 'Obere', name: string): Locator =>

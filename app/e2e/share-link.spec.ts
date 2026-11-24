@@ -4,11 +4,11 @@ import { expect, test, type Page } from '@playwright/test';
 import { HASHCHANGE_HANDLED, MEASURE_HASHCHANGE, fontsLoaded, measuredFrames } from './frames.ts';
 import {
   abroadSwitch,
+  addButton,
   addLimit,
   figuresOf,
   verdictFiguresOf,
   limitLabel,
-  limitList,
   offered,
   openVote,
   ownResult,
@@ -133,7 +133,7 @@ test('Back leaves the page', async ({ page }) => {
   await page
     .getByRole('link', { name: 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»' })
     .click();
-  await expect(limitList(page)).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await waitASecond(page);
@@ -151,7 +151,7 @@ test('Nothing is sent', async ({ page }) => {
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await waitASecond(page);
   await page.reload();
-  await expect(limitList(page)).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   expect(requested.length).toBeGreaterThan(0);
   expect(requested.filter((url) => url.includes('foreigners'))).toEqual([]);
 });
@@ -401,5 +401,7 @@ test.describe(() => {
     expect(names).toHaveLength(35);
     const frames = await framesOfLinkWith(page, names);
     expect(frames.filter((frame) => frame.work > 170)).toEqual([]);
+    // Every characteristic has its limit: there is none to add (spec limits).
+    await expect(addButton(page)).toBeDisabled();
   });
 });

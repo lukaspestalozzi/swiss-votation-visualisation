@@ -222,7 +222,7 @@ export const fr: Texts = {
     `Dans la sélection: ${remaining} des ${all} communes avec un résultat propre.`,
   NOTHING_REMAINS: 'Il ne reste aucune commune avec un résultat propre.',
   BACK_TO_REAL: 'Retour au vrai résultat',
-  ADD: 'Ajouter',
+  CLOSE_LIST: 'Fermer',
 
   // The reading guide (spec reading-guide).
   GUIDE_HEADING: 'Guide de lecture',

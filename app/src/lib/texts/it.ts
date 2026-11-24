@@ -220,7 +220,7 @@ export const it: Texts = {
     `Nella selezione: ${remaining} dei ${all} Comuni con un risultato proprio.`,
   NOTHING_REMAINS: 'Non rimane nessun Comune con un risultato proprio.',
   BACK_TO_REAL: 'Tornare al risultato reale',
-  ADD: 'Aggiungere',
+  CLOSE_LIST: 'Chiudere',
 
   // The reading guide (spec reading-guide).
   GUIDE_HEADING: 'Guida alla lettura',

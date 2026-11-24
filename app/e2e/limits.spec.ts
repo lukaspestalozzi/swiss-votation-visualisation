@@ -11,6 +11,7 @@ import {
   barDrawn,
   boxOf,
   cantonsBarOf,
+  closeButton,
   figuresOf,
   greyedOf,
   limitLabel,
@@ -87,7 +88,7 @@ test('The headings of the list', async ({ page }) => {
     ['Fläche und Landwirtschaft', 4],
   ]);
   await page.goto('fr/votes/5960/');
-  await expect(limitList(page, 'fr')).toBeVisible();
+  await expect(addButton(page, 'fr')).toBeVisible();
   expect((await listHeadings(page, 'fr')).map(([heading]) => heading)).toEqual([
     'Population',
     'Élection du Conseil national',
@@ -99,7 +100,7 @@ test('The headings of the list', async ({ page }) => {
     'Surface et agriculture',
   ]);
   await page.goto('it/votes/5960/');
-  await expect(limitList(page, 'it')).toBeVisible();
+  await expect(addButton(page, 'it')).toBeVisible();
   expect((await listHeadings(page, 'it')).map(([heading]) => heading)).toEqual([
     'Popolazione',
     'Elezione del Consiglio nazionale',
@@ -561,7 +562,7 @@ test('limits belong to the page: another vote starts without them', async ({ pag
   await abroadSwitch(page).uncheck();
   await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
   await page.locator('a[href$="/votes/5670"], a[href$="/votes/5670/"]').first().click();
-  await expect(limitList(page)).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   await expect(page).toHaveURL(/\/de\/votes\/5670\/?$/);
   await expect(page.locator('.limit')).toHaveCount(0);
   await expect(abroadSwitch(page)).toBeChecked();
@@ -585,7 +586,7 @@ test('characteristics that cannot be loaded: no limits, and the rest of the page
   await expect(
     page.locator('.limits').getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
   ).toBeVisible();
-  await expect(limitList(page)).toHaveCount(0);
+  await expect(addButton(page)).toHaveCount(0);
   await expect(figuresOf(ownResult(page)).first()).toHaveText("1'609'152");
   await expect(verdictWordsOf(ownResult(page))).toHaveText(['Nein', 'Ja']);
   await expect(page.locator('.municipalities path')).toHaveCount(2110);
@@ -739,20 +740,48 @@ test('the limits follow the definitions: their names in order, six logarithmic t
   }
 });
 
-test('the keyboard on the list only moves the choice; "Hinzufügen" adds it', async ({ page }) => {
-  // Q, 2026-11-16: in Chromium an arrow key on a closed list changes its choice at once.
+test('the keyboard only chooses: Enter opens the list, Tab moves through it, Enter adds', async ({
+  page,
+}) => {
+  // Spec limits, "The keyboard only chooses".
   await openVote(page, 'de/votes/5960/');
-  const list = limitList(page);
-  await list.focus();
-  await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('ArrowDown');
+  await addButton(page).focus();
+  await page.keyboard.press('Enter');
+  await expect(limitList(page)).toBeVisible();
+  const entry = limitList(page).getByRole('button', { name: 'Ausländeranteil', exact: true });
+  const focused = () => entry.evaluate((button) => button === document.activeElement);
+  for (let presses = 0; presses < 40 && !(await focused()); presses += 1) {
+    await page.keyboard.press('Tab');
+  }
+  await expect(entry).toBeFocused();
+  // Moving through the list has added nothing.
+  await expect(limitList(page)).toBeVisible();
   await expect(page.locator('.limit')).toHaveCount(0);
-  await expect(list).toHaveValue('Ausländeranteil');
-  await addButton(page).click();
+  await page.keyboard.press('Enter');
+  await expect(limitList(page)).toBeHidden();
   await expect(page.locator('.limit .label')).toHaveText([
     'Ausländeranteil (Ende 2015): von 0.00% bis 61.10%',
   ]);
-  await expect(list).toHaveValue('');
+  await expect(addButton(page)).toBeFocused();
+});
+
+test('closing the list without choosing: the Escape key and "Schliessen" add nothing', async ({
+  page,
+}) => {
+  // Spec limits, "Closing the list without choosing".
+  await openVote(page, 'de/votes/5960/');
+  const ways = [() => page.keyboard.press('Escape'), () => closeButton(page).click()];
+  for (const close of ways) {
+    await addButton(page).click();
+    await expect(limitList(page)).toBeVisible();
+    await expect(
+      limitList(page).getByRole('heading', { name: 'Merkmal hinzufügen' }),
+    ).toBeVisible();
+    await close();
+    await expect(limitList(page)).toBeHidden();
+    await expect(page.locator('.limit')).toHaveCount(0);
+    await expect(addButton(page)).toBeFocused();
+  }
 });
 
 // The budget of the limits (spec limits; design of add-limits, decision 8), measured as the map's
@@ -803,21 +832,23 @@ test.describe(() => {
       await page.waitForTimeout(50);
       await control.click();
     };
-    const add = addButton(page);
-    await limitList(page).selectOption({ label: 'Ausländeranteil' });
-    await press(add);
+    // Opening the list and choosing in it are two jumps (spec limits, "Jumps").
+    const add = async (name: string) => {
+      await press(addButton(page));
+      await press(limitList(page).getByRole('button', { name, exact: true }));
+    };
+    await add('Ausländeranteil');
     await page.waitForTimeout(50);
     await slider(page, 'Obere', 'Ausländeranteil').fill('327');
     await page.waitForTimeout(50);
-    await limitList(page).selectOption({ label: 'Einwohner' });
-    await press(add);
+    await add('Einwohner');
     await press(abroadSwitch(page));
     await press(abroadSwitch(page));
     await press(page.getByRole('button', { name: 'Entfernen: Einwohner' }));
     await press(page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }));
     await expect(page.locator('.limit')).toHaveCount(0);
     const frames = await measuredFrames(page);
-    expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
+    expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(8);
     expect(frames.filter((f) => f.work > 50)).toEqual([]);
   });
 });

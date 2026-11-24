@@ -6,10 +6,12 @@
     applyingTo,
     nameOf,
     writeUnits,
+    type Definition,
   } from '../../../../lib/characteristics.ts';
   import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../../lib/limits.ts';
   import type { Texts } from '../../../../lib/texts/index.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
+  import CharacteristicList from './CharacteristicList.svelte';
 
   // The section with the limits (spec limits): the page holds the limits and the switch, and
   // recalculates from them (design of add-limits, decision 21).
@@ -50,14 +52,9 @@
     })).filter(({ definitions }) => definitions.length > 0),
   );
 
-  // The characteristic chosen in the list, whose limit "Hinzufügen" adds. The list only chooses:
-  // an arrow key changes a closed list's choice at once (Q, 2026-11-16).
-  let choice = $state('');
-
-  function add(): void {
-    const definition = DEFINITIONS.find((candidate) => nameOf(candidate, t) === choice);
-    choice = '';
-    if (definition === undefined || file === null) return;
+  /** Add the limit of the characteristic chosen in the list, after those already added. */
+  function add(definition: Definition): void {
+    if (file === null) return;
     const track = trackOf(definition, file, applyingTo(file, voteDate));
     limits = [...limits, { track, lower: 0, upper: STEPS }];
   }
@@ -100,20 +97,6 @@
   {:else if file === null}
     <p>{t.PANEL_LOADING}</p>
   {:else}
-    <label>
-      {t.ADD_LIMIT}
-      <select bind:value={choice}>
-        <option value="">{t.CHOOSE}</option>
-        {#each offered as { group, definitions } (group)}
-          <optgroup label={t.GROUP[group]}>
-            {#each definitions as definition (definition.key)}
-              <option value={nameOf(definition, t)}>{nameOf(definition, t)}</option>
-            {/each}
-          </optgroup>
-        {/each}
-      </select>
-    </label>
-    <button type="button" disabled={choice === ''} onclick={add}>{t.ADD}</button>
     {#each limits as limit, index (limit.track.definition.key)}
       {@const { track, lower, upper } = limit}
       {@const name = nameOf(track.definition, t)}
@@ -155,6 +138,7 @@
         >
       </div>
     {/each}
+    <CharacteristicList {t} {offered} onchoose={add} />
     <label class="switch">
       <input type="checkbox" bind:checked={abroadCounted} />
       {t.ABROAD_SWITCH}
@@ -173,11 +157,6 @@
      limits on a vote's page"). */
   h2 {
     margin-top: 0;
-  }
-  /* A list is as wide as its longest entry, which a narrow window does not hold: it takes at
-     most the page's width (design of add-more-characteristics, decision 13). */
-  select {
-    max-width: 100%;
   }
   .limit {
     margin: 0.5rem 0;
@@ -240,11 +219,10 @@
     outline: 2px solid var(--text);
     outline-offset: 2px;
   }
-  /* On a touch screen the list, the buttons and the switch take at least 44 × 44 pixels; the
+  /* On a touch screen the buttons and the switch take at least 44 × 44 pixels; the
      switch by its label, whose text toggles it too (spec small-screens; design of
      add-small-screens, decision 10). */
   @media (pointer: coarse) {
-    select,
     button {
       min-width: 44px;
       min-height: 44px;

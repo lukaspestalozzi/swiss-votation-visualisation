@@ -514,12 +514,11 @@ test.describe('the controls', () => {
       await page.emulateMedia({ colorScheme });
       await foreignersUpTo1998(page);
       await page.locator('.municipalities path').nth(2000).waitFor();
-      // "Hinzufügen" cannot be used once its limit is added: WCAG exempts it.
       const controls = await controlContrast(page, [
         '.zoom button:nth-of-type(1)',
         '.zoom button:nth-of-type(2)',
         '.zoom button:nth-of-type(3)',
-        '.limits select',
+        '.limits .add',
         '.limit button',
         '.limits > button:last-of-type',
         '.track::before',
