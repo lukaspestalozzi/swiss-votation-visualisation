@@ -200,6 +200,8 @@ export interface Texts {
   readonly unusableParts: (parts: readonly string[]) => string;
   readonly removeLimit: (name: string) => string;
   readonly WITH_SELECTION: string;
+  /** What stands in the place of the selection's result until a selection applies. */
+  readonly SELECTION_PLACE: string;
   readonly LEGEND_SET_ASIDE: string;
   readonly SET_ASIDE: string;
   readonly remainingCount: (remaining: string, all: string) => string;

@@ -6,6 +6,7 @@ import {
   abroadSwitch,
   addLimit,
   figuresOf,
+  verdictFiguresOf,
   limitLabel,
   limitList,
   offered,
@@ -191,7 +192,7 @@ test('A link', async ({ page }) => {
   ]);
   const selection = selectionResult(page);
   await expect(selection.getByRole('heading', { name: 'Mit Ihrer Auswahl' })).toBeVisible();
-  await expect(figuresOf(selection).nth(2)).toHaveText('52.47%');
+  await expect(verdictFiguresOf(selection).first()).toHaveText('52.47%');
   await expect(page.locator('.limits .count')).toHaveText(
     "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
   );
@@ -214,8 +215,9 @@ test('A reload', async ({ page }) => {
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await abroadSwitch(page).uncheck();
+  // The selection's yes and no votes.
   const figures = figuresOf(selectionResult(page));
-  await expect(figures).toHaveCount(3);
+  await expect(figures).toHaveCount(2);
   const before = await figures.allTextContents();
   await waitASecond(page);
   await page.reload();

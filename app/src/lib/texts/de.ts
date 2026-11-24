@@ -209,6 +209,9 @@ export const de: Texts = {
     `Diese Angaben der Adresse liessen sich nicht anwenden: ${parts.map((part) => `«${part}»`).join(', ')}.`,
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
+  SELECTION_PLACE:
+    'Setzen Sie eine Grenze auf ein Merkmal: Hier steht dann das Ergebnis der Gemeinden, die ' +
+    'übrig bleiben.',
   LEGEND_SET_ASIDE: 'Nicht in der Auswahl',
   SET_ASIDE: 'Nicht in der Auswahl.',
   remainingCount: (remaining, all) =>

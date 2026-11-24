@@ -34,7 +34,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   Verify: unit tests pass for the vote 5960 (18 segments in favour, then 8 against; 16½ of 23), for
   its selection up to 19.98% foreigners (25 segments, none for BS; 18 of 22½), and for nothing left
   (no segment): `pnpm --filter app exec vitest run src/lib/vote-page.test.ts`.
-- [ ] 2.2 Add `app/src/routes/[lang]/votes/[id]/ResultRow.svelte`: the outcome, the Volksmehr with
+- [x] 2.2 Add `app/src/routes/[lang]/votes/[id]/ResultRow.svelte`: the outcome, the Volksmehr with
   its bar and votes, the Ständemehr with its bar, no bar for a majority that is not needed; use it
   in the vote's page for the vote's result and, below it, the selection's; add the sentence in
   the selection's place in three languages. Verify: browser tests of the specs' scenarios pass:

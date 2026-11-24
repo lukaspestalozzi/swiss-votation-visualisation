@@ -5,12 +5,14 @@ import { controlContrast, lowContrast, pixelAt, ratioOf, type LowContrast } from
 import { phone } from './fingers.ts';
 import {
   addLimit,
+  barDrawn,
   greyedOf,
   pageHead,
   outcomeOf,
   ownResult,
   selectionResult,
   verdictWordsOf,
+  votersBarOf,
 } from './parts.ts';
 
 /**
@@ -179,6 +181,35 @@ const YES_DARK = 'rgb(75, 193, 173)'; // #4bc1ad
 const NO_DARK = 'rgb(229, 148, 111)'; // #e5946f
 
 /** The vote's own result on its page, beside which a selection's stands. */
+
+test.describe('the colours of a bar', () => {
+  // Spec site-style, "The colours of a bar": the yes and the no part, their contrast against
+  // the ground, the text's colour and the ground (investigations/redesign.md, 5).
+  for (const [colorScheme, yes, no, contrasts, text, ground] of [
+    ['light', [0, 156, 134], [194, 103, 59], [3.44, 3.96], [28, 28, 28], [255, 255, 255]],
+    ['dark', [75, 193, 173], [229, 148, 111], [8.5, 7.85], [232, 232, 232], [18, 18, 18]],
+  ] as const) {
+    test(`the Volksmehr's bar in the ${colorScheme} scheme: yes, a gap, no, and a mark at half`, async ({
+      page,
+    }) => {
+      // The vote of 2016-02-28: 49.16% yes.
+      await page.emulateMedia({ colorScheme });
+      await page.goto('de/votes/5960/');
+      const drawn = await barDrawn(votersBarOf(ownResult(page)));
+      const y = drawn.top + drawn.height / 2;
+      const at = (x: number) => pixelAt(page, drawn.left + x, y);
+      // What the screen draws a quarter and three quarters along the bar.
+      expect(await at(drawn.width / 4)).toEqual(yes);
+      expect(await at((drawn.width * 3) / 4)).toEqual(no);
+      expect(ratioOf(yes, ground)).toBeCloseTo(contrasts[0], 2);
+      expect(ratioOf(no, ground)).toBeCloseTo(contrasts[1], 2);
+      // The gap of two pixels where the yes part ends, and the mark of two pixels at half.
+      expect(await at((drawn.parts[0]?.width ?? 0) - 1)).toEqual(ground);
+      expect(Math.abs((drawn.mark ?? 0) - drawn.width / 2)).toBeLessThanOrEqual(1);
+      expect(await at((drawn.mark ?? 0) - 1)).toEqual(text);
+    });
+  }
+});
 
 test.describe("the verdicts in the map's colours", () => {
   test('2016-02-28: "Nein" and "Abgelehnt" #934319, "Ja" #007260, also in the list', async ({

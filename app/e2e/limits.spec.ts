@@ -8,6 +8,8 @@ import {
   abroadSwitch,
   addButton,
   addLimit,
+  barDrawn,
+  cantonsBarOf,
   figuresOf,
   greyedOf,
   limitLabel,
@@ -17,10 +19,13 @@ import {
   openVote,
   outcomeOf,
   ownResult,
+  selectionHeading,
+  selectionPlace,
   selectionResult,
   slider,
   verdictFiguresOf,
   verdictWordsOf,
+  votersBarOf,
 } from './parts.ts';
 
 test('the section of a vote: between the outcome and the map, without a limit', async ({
@@ -234,13 +239,13 @@ test('without the Swiss abroad: the selection fails beside the real result', asy
   await abroadSwitch(page).uncheck();
   const selection = selectionResult(page);
   await expect(selection.getByRole('heading', { name: 'Mit Ihrer Auswahl' })).toBeVisible();
-  await expect(figuresOf(selection)).toHaveText(["1'107'734", "1'113'998", '49.86%']);
+  await expect(figuresOf(selection)).toHaveText(["1'107'734", "1'113'998"]);
   await expect(verdictWordsOf(selection)).toHaveText(['Nein', 'nicht nötig']);
   await expect(verdictFiguresOf(selection)).toHaveText(['49.86%', '6½ : 16½']);
   await expect(greyedOf(selection)).toHaveText('6½ : 16½');
   await expect(outcomeOf(selection)).toHaveText('Abgelehnt');
   const real = ownResult(page);
-  await expect(figuresOf(real).nth(2)).toHaveText('50.08%');
+  await expect(verdictFiguresOf(real).first()).toHaveText('50.08%');
   await expect(outcomeOf(real)).toHaveText('Angenommen');
 });
 
@@ -328,7 +333,7 @@ test('recalculated while dragging, before the bound is let go', async ({ page })
   const upper = slider(page, 'Obere', 'Ausländeranteil');
   await dragTo(page, upper, 1000, 327);
   // The pointer is still pressed.
-  await expect(figuresOf(selectionResult(page)).nth(2)).toHaveText('52.47%');
+  await expect(verdictFiguresOf(selectionResult(page)).first()).toHaveText('52.47%');
   await expect(municipality(page, 261)).toHaveAttribute('fill', '#2c2c2c'); // Zürich, 32.03%
   await page.mouse.up();
 });
@@ -374,7 +379,8 @@ test('a limit not moved: no selection, the official result', async ({ page }) =>
   await expect(page.locator('.limit')).toHaveCount(1);
   await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
   const figures = await figuresOf(ownResult(page)).allTextContents();
-  expect(figures.slice(0, 3)).toEqual(["1'128'522", "1'124'873", '50.08%']);
+  expect(figures.slice(0, 2)).toEqual(["1'128'522", "1'124'873"]);
+  await expect(verdictFiguresOf(ownResult(page)).first()).toHaveText('50.08%');
   await expect(outcomeOf(ownResult(page))).toHaveText('Angenommen');
   await expect(page.locator('.municipalities [fill="#2c2c2c"]')).toHaveCount(0);
 });
@@ -384,12 +390,12 @@ test('a selection that turns the verdict: foreigners up to 19.98% in 2016', asyn
   await openVote(page, 'de/votes/5960/');
   await foreignersUpTo1998(page);
   const selection = selectionResult(page);
-  await expect(figuresOf(selection)).toHaveText(["733'402", "664'373", '52.47%']);
+  await expect(figuresOf(selection)).toHaveText(["733'402", "664'373"]);
   await expect(verdictWordsOf(selection)).toHaveText(['Ja', 'Ja']);
   await expect(verdictFiguresOf(selection)).toHaveText(['52.47%', '18 : 4½']);
   await expect(outcomeOf(selection)).toHaveText('Angenommen');
   const real = ownResult(page);
-  await expect(figuresOf(real).nth(2)).toHaveText('49.16%');
+  await expect(verdictFiguresOf(real).first()).toHaveText('49.16%');
   await expect(outcomeOf(real)).toHaveText('Abgelehnt');
 });
 
@@ -399,7 +405,7 @@ test('a selection on a logarithmic track: inhabitants from 3,508 in 2016', async
   await addLimit(page, 'Einwohner');
   await slider(page, 'Untere', 'Einwohner').fill('500');
   const selection = selectionResult(page);
-  await expect(figuresOf(selection)).toHaveText(["1'137'986", "1'266'006", '47.34%']);
+  await expect(figuresOf(selection)).toHaveText(["1'137'986", "1'266'006"]);
   await expect(verdictWordsOf(selection)).toHaveText(['Nein', 'Ja']);
   await expect(verdictFiguresOf(selection)).toHaveText(['47.34%', '12½ : 10½']);
   await expect(outcomeOf(selection)).toHaveText('Abgelehnt');
@@ -414,7 +420,7 @@ test('nothing remains: no votes, no yes share, no cantonal vote, the vote fails'
   await slider(page, 'Untere', 'Deutsch').fill('1000');
   await slider(page, 'Untere', 'Französisch').fill('1000');
   const selection = selectionResult(page);
-  await expect(figuresOf(selection)).toHaveText(['0', '0', '–']);
+  await expect(figuresOf(selection)).toHaveText(['0', '0']);
   await expect(verdictWordsOf(selection)).toHaveText(['Nein', 'Nein']);
   await expect(verdictFiguresOf(selection)).toHaveText(['–', '0 : 0']);
   await expect(outcomeOf(selection)).toHaveText('Abgelehnt');
@@ -565,6 +571,93 @@ test('characteristics that cannot be loaded: no limits, and the rest of the page
   await expect(verdictWordsOf(ownResult(page))).toHaveText(['Nein', 'Ja']);
   await expect(page.locator('.municipalities path')).toHaveCount(2110);
   await expect(page.locator('table tbody tr')).toHaveCount(26);
+});
+
+test("the selection's place: a sentence until a selection applies, then its result", async ({
+  page,
+}) => {
+  // Spec verdicts, "The place of the selection's result": before a limit, and with a selection.
+  await openVote(page, 'de/votes/5960/');
+  const place = selectionPlace(page);
+  await expect(place).toHaveText(
+    'Setzen Sie eine Grenze auf ein Merkmal: Hier steht dann das Ergebnis der Gemeinden, die ' +
+      'übrig bleiben.',
+  );
+  await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
+  const bottomOfOwn = async () => {
+    const own = await ownResult(page).boundingBox();
+    if (own === null) throw new Error("the vote's result is not shown");
+    return own.y + own.height;
+  };
+  expect((await place.boundingBox())?.y).toBeGreaterThanOrEqual(await bottomOfOwn());
+  await foreignersUpTo1998(page);
+  await expect(selectionHeading(page)).toHaveText('Mit Ihrer Auswahl');
+  await expect(place).toHaveCount(0);
+  expect((await selectionResult(page).boundingBox())?.y).toBeGreaterThanOrEqual(
+    await bottomOfOwn(),
+  );
+});
+
+test("the selection's place says nothing when the characteristics cannot be loaded", async ({
+  page,
+}) => {
+  // Spec verdicts, "The characteristics' file is missing".
+  await page.route('**/data/characteristics.json', (route) => route.abort());
+  await page.goto('de/votes/5960/');
+  await expect(
+    page.locator('.limits').getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
+  ).toBeVisible();
+  await expect(outcomeOf(ownResult(page))).toHaveText('Abgelehnt');
+  await expect(selectionPlace(page)).toHaveCount(0);
+  await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
+});
+
+test('the bars of a selection: no segment for a canton with nothing left, bar below bar', async ({
+  page,
+}) => {
+  // Spec verdicts, "A canton with nothing left" and "Bar below bar": 18 of 22½ in 25 cantons
+  // (investigations/limits.md, 5).
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openVote(page, 'de/votes/5960/');
+  await foreignersUpTo1998(page);
+  const selection = selectionResult(page);
+  await expect(outcomeOf(selection)).toHaveText('Angenommen');
+  const cantons = await barDrawn(cantonsBarOf(selection));
+  expect(cantons.parts).toHaveLength(25);
+  expect(cantons.parts.map((part) => part.canton)).not.toContain('BS');
+  const inFavour = cantons.parts
+    .filter((part) => part.side === 'yes')
+    .reduce((sum, part) => sum + part.width, 0);
+  expect(Math.abs(inFavour - (cantons.width * 18) / 22.5)).toBeLessThanOrEqual(1);
+  const voters = await barDrawn(votersBarOf(selection));
+  expect(Math.abs((voters.parts[0]?.width ?? 0) - voters.width * 0.5247)).toBeLessThanOrEqual(1);
+  // Each bar of the selection below the vote's, with its left edge and its width.
+  for (const barOf of [votersBarOf, cantonsBarOf]) {
+    const real = await barDrawn(barOf(ownResult(page)));
+    const selected = await barDrawn(barOf(selection));
+    expect(Math.abs(selected.left - real.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(selected.width - real.width)).toBeLessThanOrEqual(1);
+    expect(selected.top).toBeGreaterThan(real.top + real.height);
+  }
+});
+
+test('the bars of a selection with nothing left are empty, with their marks at half', async ({
+  page,
+}) => {
+  // Spec verdicts, "Nothing remains" of "The bars of a result".
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'Deutsch');
+  await addLimit(page, 'Französisch');
+  await slider(page, 'Untere', 'Deutsch').fill('1000');
+  await slider(page, 'Untere', 'Französisch').fill('1000');
+  const selection = selectionResult(page);
+  await expect(verdictFiguresOf(selection)).toHaveText(['–', '0 : 0']);
+  for (const bar of [votersBarOf(selection), cantonsBarOf(selection)]) {
+    const drawn = await barDrawn(bar);
+    expect(drawn.parts).toEqual([]);
+    expect(drawn.width).toBeGreaterThan(100);
+    expect(Math.abs((drawn.mark ?? 0) - drawn.width / 2)).toBeLessThanOrEqual(1);
+  }
 });
 
 test('the limits follow the definitions: their names in order, six logarithmic tracks', async ({

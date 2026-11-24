@@ -103,7 +103,12 @@ mockups Q saw unless it says otherwise.
     above the other. This replaces the two boxes side by side of #4 and #8. A row follows the room
     it has, not the window: with less than 640 pixels the outcome stands above the two majorities,
     with less than 448 all three stand one below the other (Q: #10 kept the boxes side by side at
-    360). Until a selection applies, the selection's place says what will stand there.
+    360). Until a selection applies, the selection's place says what will stand there. The
+    vote's row is headed "Echtes Ergebnis", the comparison's word, as it now stands above "Mit
+    Ihrer Auswahl". The yes votes and the no votes stand below the Volksmehr's bar and the
+    turnout below the Ständemehr's, each with today's name; the yes share is written once, in
+    the Volksmehr's head, where today's page also wrote it under "Ja-Anteil" (found while
+    applying).
 11. **The bar of the voters:** the yes part from the left, as wide as the yes share; the no part
     the rest; a mark at half, 2 pixels wide, 4 pixels taller than the bar at each end. With no
     valid vote the bar is empty.

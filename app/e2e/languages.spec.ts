@@ -236,7 +236,10 @@ test('a selection in French: the same municipalities and result as in German', a
   expect(french.figures).toEqual(german.figures);
 });
 
-/** The kind, figures, verdicts, outcome and table column of the vote's own result. */
+/**
+ * The kind, figures, verdicts and outcome of the vote's own result, and the table's columns of
+ * the yes share and of the cantonal votes.
+ */
 async function verdictsShown(page: Page) {
   const own = ownResult(page);
   return {
@@ -244,6 +247,7 @@ async function verdictsShown(page: Page) {
     figures: await figureNamesOf(own).allTextContents(),
     verdicts: await majorityHeadingsOf(own).allTextContents(),
     outcome: await outcomeOf(own).textContent(),
+    share: await page.locator('thead th').nth(1).textContent(),
     column: await page.locator('thead th').nth(2).textContent(),
   };
 }
@@ -252,9 +256,10 @@ test('the verdicts in French, with the Constitution\'s "voix des cantons"', asyn
   await page.goto('fr/votes/5960/');
   expect(await verdictsShown(page)).toEqual({
     head: '28\u00a0février 2016 · Initiative populaire',
-    figures: ['Oui', 'Non', 'Pourcentage de oui', 'Participation'],
+    figures: ['Oui', 'Non', 'Participation'],
     verdicts: ['Majorité du peuple', 'Majorité des cantons'],
     outcome: 'Rejeté',
+    share: 'Pourcentage de oui',
     column: 'Voix des cantons',
   });
 });
@@ -263,9 +268,10 @@ test('the verdicts in Italian', async ({ page }) => {
   await page.goto('it/votes/5960/');
   expect(await verdictsShown(page)).toEqual({
     head: '28\u00a0febbraio 2016 · Iniziativa popolare',
-    figures: ['Sì', 'No', 'Percentuale di sì', 'Partecipazione'],
+    figures: ['Sì', 'No', 'Partecipazione'],
     verdicts: ['Maggioranza del popolo', 'Maggioranza dei Cantoni'],
     outcome: 'Respinto',
+    share: 'Percentuale di sì',
     column: 'Voti dei Cantoni',
   });
 });
