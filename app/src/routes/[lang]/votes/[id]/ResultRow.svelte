@@ -80,7 +80,7 @@
     </div>
     {#if !cantons.greyed}
       <!-- A segment per canton, as wide as its cantonal votes; its name shows on pointing. -->
-      <div class="bar cantons" aria-hidden="true">
+      <div class="bar segments" aria-hidden="true">
         {#each result.segments as segment (segment.canton)}
           <span class={segment.side} style:flex-grow={segment.weight} title={segment.canton}></span>
         {/each}
@@ -175,13 +175,14 @@
     color: var(--greyed);
   }
   /* The cantons' bar, a bar of `app.css`: a line of the ground between two cantons, and the gap
-     of two pixels between those in favour and those against. */
-  .cantons .yes,
-  .cantons .no {
+     of two pixels between those in favour and those against. Its class is not the map's
+     `cantons`. */
+  .segments .yes,
+  .segments .no {
     flex: 0 0 0;
     box-shadow: inset -1px 0 0 var(--ground);
   }
-  .cantons .yes + .no {
+  .segments .yes + .no {
     box-shadow:
       inset 1px 0 0 var(--ground),
       inset -1px 0 0 var(--ground);
