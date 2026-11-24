@@ -66,6 +66,8 @@ export interface Judged extends ResultShown {
 export interface TieBreak {
   readonly initiative: string;
   readonly counterProposal: string;
+  // What the bar draws: the initiative's share of the two in percent, none without a vote.
+  readonly initiativePercent: number | null;
   readonly cantons: string;
   readonly notJudged: string;
 }
@@ -167,6 +169,7 @@ function tieBreakOf(vote: Vote, t: Texts): TieBreak {
   return {
     initiative: t.forTheInitiative(formatCount(yes), formatShare(yes, yes + no)),
     counterProposal: t.forTheCounterProposal(formatCount(no), formatShare(no, yes + no)),
+    initiativePercent: yes + no === 0 ? null : (yes / (yes + no)) * 100,
     cantons: t.tieBreakCantons(
       formatCantonalVotes(cantonalVotesInFavour),
       formatCantonalVotes(cantonalVotesAgainst),

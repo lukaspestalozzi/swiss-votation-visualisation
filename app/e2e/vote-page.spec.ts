@@ -143,6 +143,17 @@ test('an address that names no page', async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
+test("the tie-break question's bar: the initiative's share from the left, and a mark at half", async ({
+  page,
+}) => {
+  // Spec verdicts, "The tie-break question of 2026-03-08": 37.36% for the initiative.
+  await page.goto('de/votes/6823/');
+  const bar = await barDrawn(page.locator('.bar'));
+  expect(bar.parts).toHaveLength(2);
+  expect(Math.abs((bar.parts[0]?.width ?? 0) - bar.width * 0.3736)).toBeLessThanOrEqual(1);
+  expect(Math.abs((bar.mark ?? 0) - bar.width / 2)).toBeLessThanOrEqual(1);
+});
+
 test('the outcome, the Volksmehr and the Ständemehr in one row, in a window 1,280 pixels wide', async ({
   page,
 }) => {

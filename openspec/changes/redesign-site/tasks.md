@@ -45,7 +45,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   pixels of room, all three one below the other below 448. Verify: the browser test "The verdicts
   in Italian" passes with the bars 328 pixels wide, and the page at 360, 640 and 800 pixels is no
   wider than its window.
-- [ ] 2.4 The tie-break question's bar, in the text's colour and `#8c8c8c`. Verify: the browser
+- [x] 2.4 The tie-break question's bar, in the text's colour and `#8c8c8c`. Verify: the browser
   tests of verdicts "The tie-break question of 2026-03-08" and of site-style "A bar that judges
   nothing" pass.
 - [ ] 2.5 Point the bar of a narrow window (`SelectionBar.svelte`) at the selection's row.

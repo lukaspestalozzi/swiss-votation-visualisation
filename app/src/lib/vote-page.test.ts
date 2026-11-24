@@ -159,6 +159,11 @@ test('the tie-break question shows its figures and no verdict', () => {
   });
 });
 
+test("the tie-break question's bar: the initiative's share of the two", () => {
+  // Spec verdicts, "The tie-break question of 2026-03-08": 1,098,341 of 2,939,549 votes.
+  expect(page(6823).tieBreak?.initiativePercent).toBeCloseTo(37.3643, 3);
+});
+
 test('a validated vote shows its reference', () => {
   expect(page(5670)).toMatchObject({
     source: 'Quelle: BBl 2013 3129',

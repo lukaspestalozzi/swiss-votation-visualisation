@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Texts } from '../../../../lib/texts/index.ts';
   import type { ResultShown } from '../../../../lib/vote-page.ts';
+  import ShareBar from '../../ShareBar.svelte';
 
   // A result as a row (spec verdicts, "The two verdicts side by side" and "The bars of a result";
   // design of redesign-site, decisions 10 to 13): its heading and outcome, the majority of voters
@@ -51,13 +52,7 @@
       </p>
       <p class="figure">{voters.figure}</p>
     </div>
-    <!-- The yes part from the left, as wide as the yes share; empty without a valid vote. -->
-    <div class="bar" aria-hidden="true">
-      {#if result.yesPercent !== null}
-        <span class="yes" style:width="{result.yesPercent}%"></span><span class="no"></span>
-      {/if}
-      <span class="half"></span>
-    </div>
+    <ShareBar percent={result.yesPercent} />
     <dl class="figures">
       <div>
         <dt>{t.YES_VOTES}</dt>
@@ -179,37 +174,8 @@
     /* The lightest grey with WCAG's 4.5:1 on white (4.54:1); GrayText gives only 3.95:1. */
     color: var(--greyed);
   }
-  /* A bar (spec site-style, "The colours of a bar"): its yes part, a gap of two pixels of the
-     ground, its no part, and across it the mark at half. The gap is drawn inside the two parts,
-     a pixel each, so that a part is exactly as wide as its share. */
-  .bar {
-    position: relative;
-    display: flex;
-    height: 0.875rem;
-    margin: 0.375rem 0 0.25rem;
-    background: var(--track);
-  }
-  .yes {
-    background: var(--yes-bar);
-    box-shadow: inset -1px 0 0 var(--ground);
-  }
-  .no {
-    flex: 1 0 0;
-    background: var(--no-bar);
-    box-shadow: inset 1px 0 0 var(--ground);
-  }
-  .half {
-    position: absolute;
-    left: 50%;
-    top: -4px;
-    bottom: -4px;
-    width: 2px;
-    margin-left: -1px;
-    background: var(--text);
-    box-shadow: 0 0 0 1px var(--ground);
-  }
-  /* The cantons' bar: a line of the ground between two cantons, and the gap of two pixels
-     between those in favour and those against. */
+  /* The cantons' bar, a bar of `app.css`: a line of the ground between two cantons, and the gap
+     of two pixels between those in favour and those against. */
   .cantons .yes,
   .cantons .no {
     flex: 0 0 0;
