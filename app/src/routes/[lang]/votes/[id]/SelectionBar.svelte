@@ -57,8 +57,8 @@
 
 <style>
   /* It sticks to the bottom of the window while the page scrolls, and at the end of the page it
-     stands in its own place, below the last line, so that it hides nothing. From 640 pixels the
-     box stands beside the vote's result, and there is no bar. */
+     stands in its own place, below the last line, so that it hides nothing. From 640 pixels
+     there is no bar (spec small-screens). */
   .selection-bar {
     position: sticky;
     bottom: 0;

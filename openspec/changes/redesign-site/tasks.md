@@ -48,9 +48,9 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 - [x] 2.4 The tie-break question's bar, in the text's colour and `#8c8c8c`. Verify: the browser
   tests of verdicts "The tie-break question of 2026-03-08" and of site-style "A bar that judges
   nothing" pass.
-- [ ] 2.5 Point the bar of a narrow window (`SelectionBar.svelte`) at the selection's row.
+- [x] 2.5 Point the bar of a narrow window (`SelectionBar.svelte`) at the selection's row.
   Verify: the bar's tests of `app/e2e/small-screens.spec.ts` pass.
-- [ ] 2.6 Verify the budget with the bars: the tests "the budget of dragging" and "the budget of
+- [x] 2.6 Verify the budget with the bars: the tests "the budget of dragging" and "the budget of
   jumps" of `app/e2e/limits.spec.ts` pass, in the first measurement or the second.
 
 ## 3. The workbench
