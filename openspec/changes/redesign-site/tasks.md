@@ -29,7 +29,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 2. A result as a row with its bars
 
-- [ ] 2.1 In `app/src/lib/vote-page.ts`, give each result what its bars show: the yes share as a
+- [x] 2.1 In `app/src/lib/vote-page.ts`, give each result what its bars show: the yes share as a
   number, and the cantons' segments in order, each with its canton, its weight and its side.
   Verify: unit tests pass for the vote 5960 (18 segments in favour, then 8 against; 16½ of 23), for
   its selection up to 19.98% foreigners (25 segments, none for BS; 18 of 22½), and for nothing left

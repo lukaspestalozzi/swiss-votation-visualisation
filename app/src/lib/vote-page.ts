@@ -33,12 +33,24 @@ export interface CantonRow {
   readonly forSide: Side;
 }
 
+// A canton's part of the Ständemehr's bar (spec verdicts, "The bars of a result"): its cantonal
+// votes, 1 or ½, are the part's weight, and it takes the colour of the side they count for.
+export interface Segment {
+  readonly canton: string;
+  readonly weight: number;
+  readonly side: 'yes' | 'no';
+}
+
 // The figures and verdicts of a result, and its table of the cantons: those of a vote, written
 // when the site is built, and those of a selection, written in the browser (spec verdicts).
 export interface ResultShown {
   readonly yesVotes: string;
   readonly noVotes: string;
   readonly yesShare: string;
+  // What the bars draw: the yes share in percent, none without a valid vote, and the cantons with
+  // a cantonal vote, those in favour before those against, each in the constitution's order.
+  readonly yesPercent: number | null;
+  readonly segments: readonly Segment[];
   readonly verdicts: readonly [Verdict, Verdict];
   readonly outcome: string;
   readonly outcomeSide: Side;
@@ -199,10 +211,21 @@ export function judgedOf(
   const cantonsNeeded = majorities === 'voters-and-cantons';
   const outcomes = new Map(result.cantons.map((outcome) => [outcome.canton, outcome]));
   const ofVote = new Set(cantonsOfVote);
+  const valid = result.yes + result.no;
+  const segmentsOf = (inFavour: boolean): Segment[] =>
+    result.cantons
+      .filter((outcome) => outcome.inFavour === inFavour)
+      .map((outcome) => ({
+        canton: outcome.canton,
+        weight: outcome.cantonalVotes,
+        side: inFavour ? 'yes' : 'no',
+      }));
   return {
     yesVotes: formatCount(result.yes),
     noVotes: formatCount(result.no),
     yesShare,
+    yesPercent: valid === 0 ? null : (result.yes / valid) * 100,
+    segments: [...segmentsOf(true), ...segmentsOf(false)],
     verdicts: [
       {
         heading: t.MAJORITY_OF_VOTERS,
