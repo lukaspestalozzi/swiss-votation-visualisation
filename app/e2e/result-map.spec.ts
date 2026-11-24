@@ -551,12 +551,7 @@ test('a map that cannot be loaded: a message, and the rest of the page', async (
     page.getByText('Die Karte kann nicht geladen werden.', { exact: true }),
   ).toBeVisible();
   await expect(page.locator('.municipalities')).toHaveCount(0);
-  await expect(figuresOf(ownResult(page))).toHaveText([
-    "1'609'152",
-    "1'664'224",
-    '49.16%',
-    '63.25%',
-  ]);
+  await expect(figuresOf(ownResult(page))).toHaveText(["1'609'152", "1'664'224", '63.25%']);
   await expect(verdictWordsOf(ownResult(page))).toHaveText(['Nein', 'Ja']);
   await expect(page.locator('tbody tr')).toHaveCount(26);
 });

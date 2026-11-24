@@ -4,11 +4,11 @@
 
 ### Requirement: The two verdicts side by side
 
-For every vote the calculation judges, the page SHALL show the outcome the calculation gives,
-"Angenommen" or "Abgelehnt", and after it, next to each other, the majority of voters, headed
-"Volksmehr", with its yes share, and the majority of cantons, headed "Ständemehr", with its
-cantonal votes in favour and against, each with its bar. Each SHALL read "Ja" when it is reached
-and "Nein" when it is not.
+For every vote the calculation judges, the page SHALL show, under "Echtes Ergebnis", the outcome
+the calculation gives, "Angenommen" or "Abgelehnt", and after it, next to each other, the majority
+of voters, headed "Volksmehr", with its yes share, and the majority of cantons, headed
+"Ständemehr", with its cantonal votes in favour and against, each with its bar. Each SHALL read
+"Ja" when it is reached and "Nein" when it is not.
 
 #### Scenario: The cantons in favour, the voters against
 
@@ -25,8 +25,8 @@ and "Nein" when it is not.
 #### Scenario: In a window 1,280 pixels wide
 
 - **WHEN** a visitor opens `/de/votes/5960/` in a window 1,280 pixels wide
-- **THEN** "Abgelehnt", "Volksmehr" and "Ständemehr" stand in one row, in this order from the
-  left
+- **THEN** under "Echtes Ergebnis", "Abgelehnt", "Volksmehr" and "Ständemehr" stand in one row,
+  in this order from the left
 
 ### Requirement: A majority that is not needed
 

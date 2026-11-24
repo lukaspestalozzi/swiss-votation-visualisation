@@ -210,6 +210,8 @@ export const it: Texts = {
     `Queste indicazioni dell'indirizzo non hanno potuto essere applicate: ${parts.map((part) => `«${part}»`).join(', ')}.`,
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
+  SELECTION_PLACE:
+    'Fissi un limite per una caratteristica: qui apparirà il risultato dei Comuni rimasti.',
   LEGEND_SET_ASIDE: 'Non nella selezione',
   SET_ASIDE: 'Non nella selezione.',
   remainingCount: (remaining, all) =>

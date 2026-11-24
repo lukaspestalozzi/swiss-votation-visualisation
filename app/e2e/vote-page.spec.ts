@@ -2,12 +2,16 @@
 // investigations/data-sources.md.
 import { expect, test } from '@playwright/test';
 import {
+  barDrawn,
+  cantonsBarOf,
   figuresOf,
+  majoritiesOf,
   majorityHeadingsOf,
   outcomeOf,
   ownResult,
   verdictFiguresOf,
   verdictWordsOf,
+  votersBarOf,
 } from './parts.ts';
 
 // The contrast of a colour "rgb(r, g, b)" on the white page (WCAG 2.1, relative luminance).
@@ -31,12 +35,7 @@ test('the page of a vote: head, figures, verdicts, cantons and note', async ({ p
   await expect(
     page.getByText('Braucht das Volksmehr und das Ständemehr.', { exact: true }),
   ).toBeVisible();
-  await expect(figuresOf(ownResult(page))).toHaveText([
-    "1'609'152",
-    "1'664'224",
-    '49.16%',
-    '63.25%',
-  ]);
+  await expect(figuresOf(ownResult(page))).toHaveText(["1'609'152", "1'664'224", '63.25%']);
   await expect(majorityHeadingsOf(ownResult(page))).toHaveText(['Volksmehr', 'Ständemehr']);
   await expect(verdictWordsOf(ownResult(page))).toHaveText(['Nein', 'Ja']);
   await expect(verdictFiguresOf(ownResult(page))).toHaveText(['49.16%', '16½ : 6½']);
@@ -142,4 +141,69 @@ test('an address that names no page', async ({ page }) => {
   // 9999 is the id of no vote; the server's own "not found" answers (spec publishing).
   const response = await page.goto('de/votes/9999/');
   expect(response?.status()).toBe(404);
+});
+
+test('the outcome, the Volksmehr and the Ständemehr in one row, in a window 1,280 pixels wide', async ({
+  page,
+}) => {
+  // Spec verdicts, "In a window 1,280 pixels wide".
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('de/votes/5960/');
+  const own = ownResult(page);
+  await expect(own.getByRole('heading', { name: 'Echtes Ergebnis' })).toBeVisible();
+  const [outcome, voters, cantons] = await Promise.all(
+    [outcomeOf(own), majoritiesOf(own).nth(0), majoritiesOf(own).nth(1)].map((part) =>
+      part.boundingBox(),
+    ),
+  );
+  if (outcome === null || voters === null || cantons === null) {
+    throw new Error('a part of the result is not shown');
+  }
+  // From the left: the outcome, the Volksmehr, the Ständemehr, none below another.
+  expect(outcome.x + outcome.width).toBeLessThanOrEqual(voters.x);
+  expect(voters.x + voters.width).toBeLessThanOrEqual(cantons.x);
+  expect(Math.abs(voters.y - cantons.y)).toBeLessThanOrEqual(1);
+  expect(outcome.y).toBeLessThan(voters.y + voters.height);
+  expect(outcome.y + outcome.height).toBeGreaterThan(voters.y);
+});
+
+test('the bars of 2016-02-28: the yes share, and a segment for each canton', async ({ page }) => {
+  // Spec verdicts, "The bars of 2016-02-28": 49.16% yes; 16½ of 23 cantonal votes in favour.
+  await page.goto('de/votes/5960/');
+  const own = ownResult(page);
+  const voters = await barDrawn(votersBarOf(own));
+  expect(voters.parts.map((part) => part.side)).toEqual(['yes', 'no']);
+  expect(Math.abs((voters.parts[0]?.width ?? 0) - voters.width * 0.4916)).toBeLessThanOrEqual(1);
+  expect(Math.abs((voters.mark ?? 0) - voters.width / 2)).toBeLessThanOrEqual(1);
+
+  const cantons = await barDrawn(cantonsBarOf(own));
+  // The 18 in favour in the constitution's order, then the 8 against.
+  expect(cantons.parts.map((part) => `${String(part.canton)}:${part.side}`).join(' ')).toBe(
+    [
+      ...'LU UR SZ OW NW GL ZG FR SO SH AI SG AG TG TI VS NE JU'
+        .split(' ')
+        .map((canton) => `${canton}:yes`),
+      ...'ZH BE BS BL AR GR VD GE'.split(' ').map((canton) => `${canton}:no`),
+    ].join(' '),
+  );
+  const widthOf = (canton: string) =>
+    cantons.parts.find((part) => part.canton === canton)?.width ?? 0;
+  // A half vote is half as wide as a whole one.
+  for (const half of ['OW', 'NW', 'BS', 'BL', 'AR', 'AI']) {
+    expect(Math.abs(widthOf(half) - widthOf('LU') / 2)).toBeLessThanOrEqual(1);
+  }
+  const inFavour = cantons.parts
+    .filter((part) => part.side === 'yes')
+    .reduce((sum, part) => sum + part.width, 0);
+  expect(Math.abs(inFavour - (cantons.width * 16.5) / 23)).toBeLessThanOrEqual(1);
+  expect(Math.abs((cantons.mark ?? 0) - cantons.width / 2)).toBeLessThanOrEqual(1);
+});
+
+test('a majority that is not needed has no bar; the Volksmehr has its bar', async ({ page }) => {
+  // Spec verdicts, "An optional referendum the cantons were against".
+  await page.goto('de/votes/6790/');
+  const own = ownResult(page);
+  await expect(verdictWordsOf(own)).toHaveText(['Ja', 'nicht nötig']);
+  await expect(votersBarOf(own)).toHaveCount(1);
+  await expect(cantonsBarOf(own)).toHaveCount(0);
 });

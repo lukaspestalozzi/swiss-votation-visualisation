@@ -73,7 +73,10 @@ export const selectionResult = (page: Page): Locator => page.locator('.result.se
 /** The heading of the result with the selection: "Mit Ihrer Auswahl". */
 export const selectionHeading = (page: Page): Locator => selectionResult(page).locator('h2');
 
-/** A result's figures in their order: yes votes, no votes, yes share and, for the vote, turnout. */
+/**
+ * A result's figures below its bars, in their order: yes votes, no votes and, for the vote, the
+ * turnout. The yes share is the first of `verdictFiguresOf`.
+ */
 export const figuresOf = (result: Locator): Locator => result.locator('.figures dd');
 
 /** The names of a result's figures, in the order of `figuresOf`. */
@@ -83,20 +86,62 @@ export const figureNamesOf = (result: Locator): Locator => result.locator('dt');
 export const majoritiesOf = (result: Locator): Locator => result.locator('.verdict');
 
 /** The headings of a result's two majorities. */
-export const majorityHeadingsOf = (result: Locator): Locator => result.locator('.verdict h2');
+export const majorityHeadingsOf = (result: Locator): Locator => result.locator('.verdict h3');
 
 /** The words of a result's two majorities: "Ja", "Nein" or "nicht nötig". */
 export const verdictWordsOf = (result: Locator): Locator => result.locator('.verdict .word');
 
 /** The figures of a result's two majorities: the yes share and the cantonal votes. */
-export const verdictFiguresOf = (result: Locator): Locator =>
-  result.locator('.verdict p:not(.word)');
+export const verdictFiguresOf = (result: Locator): Locator => result.locator('.verdict .figure');
 
 /** The cantonal votes of a majority that is not needed, greyed out. */
 export const greyedOf = (result: Locator): Locator => result.locator('.verdict .greyed');
 
 /** A result's outcome: "Angenommen" or "Abgelehnt". */
 export const outcomeOf = (result: Locator): Locator => result.locator('.outcome');
+
+/** The bar of a result's Volksmehr. */
+export const votersBarOf = (result: Locator): Locator =>
+  majoritiesOf(result).nth(0).locator('.bar');
+
+/** The bar of a result's Ständemehr; a majority that is not needed has none. */
+export const cantonsBarOf = (result: Locator): Locator =>
+  majoritiesOf(result).nth(1).locator('.bar');
+
+/** A bar as the screen draws it. */
+export interface BarDrawn {
+  /** The bar's box in the window. */
+  readonly left: number;
+  readonly top: number;
+  readonly width: number;
+  readonly height: number;
+  /** Its parts from the left: the side, the canton of a canton's segment, and the width. */
+  readonly parts: readonly { side: 'yes' | 'no'; canton: string | null; width: number }[];
+  /** The middle of its mark, from the bar's left edge. */
+  readonly mark: number | null;
+}
+
+/** Measure a bar: its box, its parts and its mark. */
+export const barDrawn = (bar: Locator): Promise<BarDrawn> =>
+  bar.evaluate((element) => {
+    const box = element.getBoundingClientRect();
+    const mark = element.querySelector('.half')?.getBoundingClientRect();
+    return {
+      left: box.left,
+      top: box.top,
+      width: box.width,
+      height: box.height,
+      parts: [...element.querySelectorAll('.yes, .no')].map((part) => ({
+        side: part.classList.contains('yes') ? ('yes' as const) : ('no' as const),
+        canton: part.getAttribute('title'),
+        width: part.getBoundingClientRect().width,
+      })),
+      mark: mark === undefined ? null : mark.left + mark.width / 2 - box.left,
+    };
+  });
+
+/** The sentence in the place of the selection's result, until a selection applies. */
+export const selectionPlace = (page: Page): Locator => page.locator('.results .place');
 
 /** The head of a page. */
 export const pageHead = (page: Page): Locator => page.locator('header');

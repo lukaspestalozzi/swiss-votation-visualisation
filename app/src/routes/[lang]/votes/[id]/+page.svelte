@@ -24,6 +24,7 @@
   import Limits from './Limits.svelte';
   import { loadCharacteristics } from './loaders.ts';
   import ResultMap from './ResultMap.svelte';
+  import ResultRow from './ResultRow.svelte';
   import SelectionBar from './SelectionBar.svelte';
 
   let { data }: PageProps = $props();
@@ -142,7 +143,7 @@
       ? t.NOTHING_REMAINS
       : t.remainingCount(formatCount(left), formatCount(withEntry.length));
   });
-  // The box "Mit Ihrer Auswahl", which the bar at the bottom of a narrow window repeats while it is
+  // The row "Mit Ihrer Auswahl", which the bar at the bottom of a narrow window repeats while it is
   // not wholly on the screen (spec small-screens).
   let selectionBox = $state<HTMLElement | null>(null);
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
@@ -174,90 +175,21 @@
 
 {#if data.judged !== null}
   {@const judged = data.judged}
+  <!-- The vote's result and, below it, the selection's, bar above bar; until a selection
+       applies, a sentence says what will stand there (spec verdicts, "The place of the
+       selection's result"). -->
   <div class="results">
-    <div class="result">
-      <dl class="figures">
-        <div>
-          <dt>{t.YES_VOTES}</dt>
-          <dd>{judged.yesVotes}</dd>
-        </div>
-        <div>
-          <dt>{t.NO_VOTES}</dt>
-          <dd>{judged.noVotes}</dd>
-        </div>
-        <div>
-          <dt>{t.YES_SHARE}</dt>
-          <dd>{judged.yesShare}</dd>
-        </div>
-        <div>
-          <dt>{t.TURNOUT}</dt>
-          <dd>{judged.turnout}</dd>
-        </div>
-      </dl>
-
-      <div class="verdicts">
-        {#each judged.verdicts as verdict (verdict.heading)}
-          <section class="verdict">
-            <h2>{verdict.heading}</h2>
-            <p
-              class="word"
-              class:side-yes={verdict.side === 'yes'}
-              class:side-no={verdict.side === 'no'}
-            >
-              {verdict.verdict}
-            </p>
-            <p class:greyed={verdict.greyed}>{verdict.figure}</p>
-          </section>
-        {/each}
-      </div>
-      <p
-        class="outcome"
-        class:side-yes={judged.outcomeSide === 'yes'}
-        class:side-no={judged.outcomeSide === 'no'}
-      >
-        {judged.outcome}
-      </p>
-    </div>
+    <ResultRow {t} heading={t.REAL_RESULT} result={judged} turnout={judged.turnout} />
     {#if selection !== null}
-      <section class="result selection" bind:this={selectionBox}>
-        <h2>{t.WITH_SELECTION}</h2>
-        <dl class="figures">
-          <div>
-            <dt>{t.YES_VOTES}</dt>
-            <dd>{selection.yesVotes}</dd>
-          </div>
-          <div>
-            <dt>{t.NO_VOTES}</dt>
-            <dd>{selection.noVotes}</dd>
-          </div>
-          <div>
-            <dt>{t.YES_SHARE}</dt>
-            <dd>{selection.yesShare}</dd>
-          </div>
-        </dl>
-        <div class="verdicts">
-          {#each selection.verdicts as verdict (verdict.heading)}
-            <section class="verdict">
-              <h3>{verdict.heading}</h3>
-              <p
-                class="word"
-                class:side-yes={verdict.side === 'yes'}
-                class:side-no={verdict.side === 'no'}
-              >
-                {verdict.verdict}
-              </p>
-              <p class:greyed={verdict.greyed}>{verdict.figure}</p>
-            </section>
-          {/each}
-        </div>
-        <p
-          class="outcome"
-          class:side-yes={selection.outcomeSide === 'yes'}
-          class:side-no={selection.outcomeSide === 'no'}
-        >
-          {selection.outcome}
-        </p>
-      </section>
+      <ResultRow
+        {t}
+        heading={t.WITH_SELECTION}
+        result={selection}
+        selection
+        bind:element={selectionBox}
+      />
+    {:else if data.entries !== null && !characteristicsFailed}
+      <p class="place">{t.SELECTION_PLACE}</p>
     {/if}
   </div>
 
@@ -332,66 +264,23 @@
 
 <style>
   /* A word too long for its line breaks, hyphenated where the browser knows the page's language
-     (spec small-screens; design of add-small-screens, decision 6). `anywhere`, not `break-word`:
-     it also lets the grids of the verdict boxes narrow below their longest word, which a browser
-     without a hyphenation dictionary needs from 640 pixels, two results side by side. */
-  h1,
-  .verdict {
+     (spec small-screens; design of add-small-screens, decision 6). */
+  h1 {
     overflow-wrap: anywhere;
     hyphens: auto;
-  }
-  /* The selection's result beside the vote's own from 640 pixels, below it otherwise (design of
-     add-limits, decision 9). */
-  .results {
-    display: grid;
-    gap: 1rem;
-  }
-  @media (min-width: 640px) {
-    .results {
-      grid-template-columns: 1fr 1fr;
-    }
   }
   caption {
     text-align: left;
     font-weight: bold;
   }
-  .figures {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 2rem;
-  }
-  .figures dd {
-    margin: 0;
-    font-weight: bold;
-  }
-  .verdicts {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-  .verdict {
-    border: 1px solid var(--border);
-    padding: 0 1rem;
-  }
-  /* In a narrow window the boxes keep side by side with less padding and a smaller heading, so
-     that "Maggioranza dei Cantoni" wraps between its words without hyphenation (design of
-     add-small-screens, decision 6). */
-  @media (max-width: 639.98px) {
-    .verdict {
-      padding: 0 0.5rem;
-    }
-    .verdict h2 {
-      font-size: 1.25rem;
-    }
-  }
-  .word,
-  .outcome {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  .greyed {
-    /* The lightest grey with WCAG's 4.5:1 on white (4.54:1); GrayText gives only 3.95:1. */
-    color: var(--greyed);
+  /* The place of the selection's result, below the vote's. */
+  .place {
+    max-width: none;
+    margin: 0.875rem 0 0;
+    padding: 0.75rem 1rem;
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    color: var(--text-secondary);
   }
   td,
   th {

@@ -211,6 +211,9 @@ export const fr: Texts = {
     `Ces indications de l'adresse n'ont pas pu être appliquées: ${parts.map((part) => `«${part}»`).join(', ')}.`,
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
+  SELECTION_PLACE:
+    "Fixez une limite pour une caractéristique: le résultat des communes restantes s'affichera " +
+    'ici.',
   LEGEND_SET_ASIDE: 'Pas dans la sélection',
   SET_ASIDE: 'Pas dans la sélection.',
   remainingCount: (remaining, all) =>
