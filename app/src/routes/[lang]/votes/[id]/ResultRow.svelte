@@ -112,6 +112,24 @@
     gap: 0.5rem 2.5rem;
     align-items: start;
   }
+  /* A result follows the room it has, not the window (design of redesign-site, decision 10): with
+     less than 640 pixels its outcome stands above the two majorities, with less than 448 all
+     three stand one below the other. The room is that of the element that holds a page's
+     results, which names itself a container. */
+  @container (max-width: 639.98px) {
+    .result {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.75rem 2rem;
+    }
+    .result > :first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  @container (max-width: 447.98px) {
+    .result {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
   .selection {
     margin-top: 0.875rem;
     padding-top: 0.875rem;

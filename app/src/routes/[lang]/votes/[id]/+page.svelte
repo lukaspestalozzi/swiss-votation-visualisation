@@ -273,6 +273,11 @@
     text-align: left;
     font-weight: bold;
   }
+  /* The results are as wide as the room they have, by which a result arranges its parts
+     (`ResultRow.svelte`). */
+  .results {
+    container-type: inline-size;
+  }
   /* The place of the selection's result, below the vote's. */
   .place {
     max-width: none;
