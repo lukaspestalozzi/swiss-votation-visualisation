@@ -471,6 +471,12 @@ test.describe('the width of a page', () => {
       expect(header.x + header.width).toBe(1728);
       expect((await box(page, 'h1')).x).toBe(192);
       expect((await box(page, '.limits p')).width).toBeLessThanOrEqual(640);
+      // The map, and to its right the limits' column, which ends where the page does
+      // (investigations/redesign.md, 6).
+      expect(Math.abs((await box(page, '.map svg')).width - 1104)).toBeLessThanOrEqual(1);
+      const column = await box(page, '.workbench > :nth-child(2)');
+      expect(Math.abs(column.width - 384)).toBeLessThanOrEqual(1);
+      expect(Math.abs(column.x + column.width - 1728)).toBeLessThanOrEqual(1);
     });
 
     test('the start page and the guide: a page of 1,216 pixels, 384 at each side', async ({

@@ -169,6 +169,11 @@
 </section>
 
 <style>
+  /* The section begins at its column's top, level with the result beside it (spec limits, "The
+     limits on a vote's page"). */
+  h2 {
+    margin-top: 0;
+  }
   /* A list is as wide as its longest entry, which a narrow window does not hold: it takes at
      most the page's width (design of add-more-characteristics, decision 13). */
   select {

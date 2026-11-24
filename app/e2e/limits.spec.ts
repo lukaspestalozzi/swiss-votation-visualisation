@@ -9,12 +9,14 @@ import {
   addButton,
   addLimit,
   barDrawn,
+  boxOf,
   cantonsBarOf,
   figuresOf,
   greyedOf,
   limitLabel,
   limitList,
   listHeadings,
+  mapDrawn,
   offered,
   openVote,
   outcomeOf,
@@ -28,24 +30,41 @@ import {
   votersBarOf,
 } from './parts.ts';
 
-test('the section of a vote: between the outcome and the map, without a limit', async ({
+test('the section of a vote: right of the map, level with the result, without a limit', async ({
   page,
 }) => {
+  // Spec limits, "The section of a vote".
+  await page.setViewportSize({ width: 1280, height: 800 });
   await openVote(page, 'de/votes/5960/');
+  await mapDrawn(page);
   await expect(page.getByRole('heading', { name: 'Gemeinden auswählen' })).toBeVisible();
-  const order = await page.evaluate(() => {
-    const at = (element: Element | null) =>
-      element ? [...document.querySelectorAll('*')].indexOf(element) : -1;
-    return [
-      at(document.querySelector('.outcome')),
-      at(document.querySelector('.limits')),
-      at(document.querySelector('.map')),
-    ];
-  });
-  expect(order[0]).toBeLessThan(order[1] ?? -1);
-  expect(order[1]).toBeLessThan(order[2] ?? -1);
+  const [limits, map, result] = await Promise.all(
+    ['.limits', '.map svg', '.results'].map((part) => boxOf(page, part)),
+  );
+  expect(limits.x).toBeGreaterThanOrEqual(map.x + map.width);
+  expect(Math.abs(limits.y - result.y)).toBeLessThanOrEqual(1);
   await expect(page.getByRole('slider')).toHaveCount(0);
   await expect(abroadSwitch(page)).toBeChecked();
+});
+
+test('the section in a narrow window: below the map, above the panel, as wide as the result', async ({
+  page,
+}) => {
+  // Spec limits, "The section in a narrow window" (investigations/redesign.md, 6).
+  for (const width of [1023, 360]) {
+    await page.setViewportSize({ width, height: 800 });
+    await openVote(page, 'de/votes/5960/');
+    await mapDrawn(page);
+    const [result, map, limits, panel] = await Promise.all(
+      ['.results', '.map svg', '.limits', '.panel'].map((part) => boxOf(page, part)),
+    );
+    const at = `${String(width)} pixels`;
+    expect(map.y, at).toBeGreaterThanOrEqual(result.y + result.height);
+    expect(limits.y, at).toBeGreaterThanOrEqual(map.y + map.height);
+    expect(panel.y, at).toBeGreaterThanOrEqual(limits.y + limits.height);
+    expect(Math.abs(limits.width - result.width), at).toBeLessThanOrEqual(1);
+    expect(Math.abs(limits.x - result.x), at).toBeLessThanOrEqual(1);
+  }
 });
 
 test('no limits for a tie-break question', async ({ page }) => {
