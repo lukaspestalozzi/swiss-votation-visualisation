@@ -135,12 +135,16 @@
   }
 
   /**
-   * The wheel over the map zooms around the point under the pointer, a factor of 2 per 300
-   * pixels of the wheel, and the page does not scroll. The listener is not passive, so that it
-   * may keep the page from scrolling.
+   * While Ctrl or ⌘ is held, which is also how a browser reports a pinch on a trackpad, the wheel
+   * over the map zooms around the point under the pointer, a factor of 2 per 300 pixels of the
+   * wheel, and the page does not scroll. Without such a key the wheel scrolls the page, as the
+   * map stays in the window (spec result-map, "The mouse wheel over the map"; design of
+   * redesign-site, decision 15). The listener is not passive, so that it may keep the page from
+   * scrolling.
    */
   function wheelZoom(svg: SVGSVGElement): () => void {
     const onWheel = (event: WheelEvent): void => {
+      if (!event.ctrlKey && !event.metaKey) return;
       const matrix = svg.getScreenCTM();
       if (sources === null || view === null || matrix === null) return;
       event.preventDefault();

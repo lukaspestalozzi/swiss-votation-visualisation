@@ -288,17 +288,43 @@ const toScreen = (page: Page, point: { x: number; y: number }) =>
     return { x: onScreen.x, y: onScreen.y };
   }, point);
 
-test('the wheel zooms in around the point under the pointer', async ({ page }) => {
+// The mouse wheel over the map (spec result-map, "Zoom" and "The mouse wheel over the map"; design
+// of redesign-site, decision 15): it zooms while Ctrl or ⌘ is held, and scrolls the page otherwise.
+for (const key of ['Control', 'Meta'] as const) {
+  test(`with ${key} held, the wheel zooms in around the point under the pointer`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto('de/votes/5960/');
+    const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+    await page.mouse.move(zurich.x, zurich.y);
+    const inMap = await toMap(page, zurich);
+    const whole = await viewOf(page);
+    const scrolled = await page.evaluate(() => scrollY);
+    await page.keyboard.down(key);
+    await page.mouse.wheel(0, -300);
+    await page.keyboard.up(key);
+    await expect.poll(async () => (await viewOf(page)).width).toBeLessThan(whole.width);
+    const after = await toScreen(page, inMap);
+    expect(Math.abs(after.x - zurich.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(after.y - zurich.y)).toBeLessThanOrEqual(1);
+    expect(await page.evaluate(() => scrollY)).toBe(scrolled);
+  });
+}
+
+test('the wheel alone scrolls the page, and the map still shows the whole of Switzerland', async ({
+  page,
+}) => {
+  // Spec result-map, "The wheel alone scrolls the page".
+  await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('de/votes/5960/');
   const zurich = await pointIn(page, '.municipalities [data-number="261"]');
   await page.mouse.move(zurich.x, zurich.y);
-  const inMap = await toMap(page, zurich);
   const whole = await viewOf(page);
-  await page.mouse.wheel(0, -300);
-  await expect.poll(async () => (await viewOf(page)).width).toBeLessThan(whole.width);
-  const after = await toScreen(page, inMap);
-  expect(Math.abs(after.x - zurich.x)).toBeLessThanOrEqual(1);
-  expect(Math.abs(after.y - zurich.y)).toBeLessThanOrEqual(1);
+  const scrolled = await page.evaluate(() => scrollY);
+  await page.mouse.wheel(0, 300);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(scrolled);
+  expect(await viewOf(page)).toEqual(whole);
 });
 
 // Drag the map from its centre by (dx, dy) pixels, in steps as a hand would.
@@ -607,10 +633,13 @@ test.describe(() => {
     // The first pointing at a municipality after the page has loaded (Sachseln, at the map's
     // centre) is measured too (design of tighten-map-budget, decision 4).
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    // The wheel zooms while Ctrl is held (spec result-map, "The mouse wheel over the map").
+    await page.keyboard.down('Control');
     for (let i = 0; i < 4; i += 1) {
       await page.mouse.wheel(0, -300);
       await page.waitForTimeout(50);
     }
+    await page.keyboard.up('Control');
     await drag(page, -120, 40, 50);
     for (const number of [261, 351, 6621]) {
       await showWholeSwitzerland(page);
