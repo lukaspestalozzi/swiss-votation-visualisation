@@ -177,6 +177,7 @@ export const fr: Texts = {
 
   // The comparison of two votes (spec vote-comparison).
   COMPARE_HEADING: 'Comparer deux votations',
+  COMPARE_ENTRY: 'Comparer',
   FIRST_VOTE: 'Première votation',
   SECOND_VOTE: 'Deuxième votation',
   REAL_RESULT: 'Vrai résultat',

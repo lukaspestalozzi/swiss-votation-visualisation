@@ -175,6 +175,7 @@ export const de: Texts = {
 
   // The comparison of two votes (spec vote-comparison).
   COMPARE_HEADING: 'Zwei Abstimmungen vergleichen',
+  COMPARE_ENTRY: 'Vergleichen',
   FIRST_VOTE: 'Erste Abstimmung',
   SECOND_VOTE: 'Zweite Abstimmung',
   REAL_RESULT: 'Echtes Ergebnis',

@@ -32,6 +32,50 @@ test('from German to French: the same page, in French', async ({ page }) => {
   );
 });
 
+test.describe('the switch in a narrow window', () => {
+  test.use({ viewport: { width: 360, height: 780 } });
+
+  test('it writes "DE", "FR", "IT", each still named with its word', async ({ page }) => {
+    // Spec interface-languages, "The switch in a narrow window"; design of redesign-site, 7.
+    await page.goto('de/votes/5960/');
+    const languages = switchOf(page);
+    const french = languages.getByRole('link', { name: 'FR – Français', exact: true });
+    await expect(french).toHaveAttribute('href', /\/fr\/votes\/5960\/?$/);
+    await expect(languages.getByRole('link', { name: 'IT – Italiano', exact: true })).toHaveCount(
+      1,
+    );
+    await expect(languages.getByRole('link', { name: /Deutsch/ })).toHaveCount(0);
+    // What is written: the code before a name that is left a box of one pixel.
+    const written = await languages.evaluate((switchOfPage) =>
+      [...switchOfPage.children].map((language) => [
+        getComputedStyle(language, '::before').content,
+        language.querySelector('.name')?.getBoundingClientRect().width,
+      ]),
+    );
+    expect(written).toEqual([
+      ['"DE"', 1],
+      ['"FR"', 1],
+      ['"IT"', 1],
+    ]);
+    await expect(languages.locator('[aria-current="page"]')).toHaveText('Deutsch');
+  });
+});
+
+test('the switch in a wide window writes the names, and no code', async ({ page }) => {
+  await page.goto('de/votes/5960/');
+  const written = await switchOf(page).evaluate((switchOfPage) =>
+    [...switchOfPage.children].map((language) => [
+      getComputedStyle(language, '::before').content,
+      language.textContent.trim(),
+    ]),
+  );
+  expect(written).toEqual([
+    ['none', 'Deutsch'],
+    ['none', 'Français'],
+    ['none', 'Italiano'],
+  ]);
+});
+
 test('the switch on the start page and the guide: the others are links, the own is not', async ({
   page,
 }) => {
@@ -50,7 +94,7 @@ test('the switch on the start page and the guide: the others are links, the own 
       new RegExp(`/fr/${target}?$`),
     );
     await expect(languages.getByRole('link', { name: 'Italiano' })).toHaveCount(0);
-    await expect(languages.getByText('Italiano')).toHaveAttribute('aria-current', 'page');
+    await expect(languages.locator('[aria-current="page"]')).toHaveText('Italiano');
   }
 });
 
