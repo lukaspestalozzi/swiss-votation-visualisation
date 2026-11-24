@@ -1,9 +1,21 @@
 // The site in a narrow window and on a touch screen (spec small-screens), against the built site.
 // The widths and sizes are those of investigations/small-screens.md.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { phone } from './fingers.ts';
 import { pointIn } from './pointing.ts';
-import { addButton, addLimit, limitList, selectionResult, type Language } from './parts.ts';
+import {
+  addButton,
+  addLimit,
+  barDrawn,
+  cantonsBarOf,
+  limitList,
+  majoritiesOf,
+  outcomeOf,
+  ownResult,
+  selectionResult,
+  votersBarOf,
+  type Language,
+} from './parts.ts';
 
 /** The width of the page, which is the window's when nothing reaches past it. */
 const pageWidth = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth);
@@ -303,9 +315,51 @@ test.describe('the bar on a phone', () => {
   });
 });
 
+/**
+ * How a result's parts stand: in one row, the outcome above the two majorities side by side, or
+ * all three one below the other.
+ */
+async function arrangementOf(result: Locator): Promise<string> {
+  const [outcome, voters, cantons] = await Promise.all(
+    [outcomeOf(result), majoritiesOf(result).nth(0), majoritiesOf(result).nth(1)].map((part) =>
+      part.boundingBox(),
+    ),
+  );
+  if (outcome === null || voters === null || cantons === null) {
+    throw new Error('a part of the result is not shown');
+  }
+  const outcomeAbove = outcome.y + outcome.height <= voters.y;
+  const sideBySide = Math.abs(voters.y - cantons.y) <= 1 && voters.x + voters.width <= cantons.x;
+  const below = voters.y + voters.height <= cantons.y && Math.abs(voters.x - cantons.x) <= 1;
+  if (!outcomeAbove && sideBySide && outcome.x + outcome.width <= voters.x) return 'one row';
+  if (outcomeAbove && sideBySide) return 'the outcome above';
+  if (outcomeAbove && below) return 'one below the other';
+  return 'none of the three';
+}
+
+test('a result follows the room it has: 640 pixels for one row, 448 for the majorities side by side', async ({
+  page,
+}) => {
+  // Design of redesign-site, decision 10. A page leaves 32 pixels at each side of a window, 16
+  // of one narrower than 640, so a result has 640 pixels in a window of 704 and 448 in one of 480.
+  for (const [width, arrangement] of [
+    [800, 'one row'],
+    [704, 'one row'],
+    [703, 'the outcome above'],
+    [480, 'the outcome above'],
+    [479, 'one below the other'],
+    [360, 'one below the other'],
+  ] as const) {
+    await page.setViewportSize({ width, height: 780 });
+    await page.goto('de/votes/5960/');
+    expect(await arrangementOf(ownResult(page)), `${String(width)} pixels`).toBe(arrangement);
+    expect(await pageWidth(page), `${String(width)} pixels`).toBeLessThanOrEqual(width);
+  }
+});
+
 // A browser without a dictionary for hyphenating Italian (this one has it, and breaks
-// "Maggio-ranza"): the verdict boxes must fit by breaking the word where they need to, also from
-// 640 pixels, where the selection's result stands beside the vote's.
+// "Maggio-ranza"): the heads of the majorities must fit by breaking the word where they need to,
+// in each of the three arrangements of a result.
 test('without hyphenation the Italian verdicts with a selection fit at 360, 640 and 800 pixels', async ({
   page,
 }) => {
@@ -323,9 +377,10 @@ test('without hyphenation the Italian verdicts with a selection fit at 360, 640 
 test.describe('on a touch screen 360 pixels wide', () => {
   test.use({ ...phone, viewport: { width: 360, height: 780 } });
 
-  test('the verdicts in Italian stand side by side, and the page fits the window', async ({
+  test('the verdicts in Italian stand one below the other, each bar as wide as the result', async ({
     page,
   }) => {
+    // Spec small-screens, "The verdicts in Italian".
     await page.goto('it/votes/5960/');
     await addLimit(page, 'Quota di stranieri', 'it', 'tap');
     await page.getByRole('slider', { name: 'Limite superiore: Quota di stranieri' }).fill('327');
@@ -336,11 +391,17 @@ test.describe('on a touch screen 360 pixels wide', () => {
     await page.touchscreen.tap(zurich.x, zurich.y);
     await expect(page.getByText("Abitanti: 396'955")).toBeVisible();
     expect(await pageWidth(page)).toBeLessThanOrEqual(360);
-    // Side by side: each box's heading level with the other's, for the vote and the selection.
-    for (const level of [2, 3]) {
-      const top = async (name: string) =>
-        (await page.getByRole('heading', { level, name, exact: true }).boundingBox())?.y;
-      expect(await top('Maggioranza dei Cantoni')).toBe(await top('Maggioranza del popolo'));
+    // "Maggioranza del popolo" above "Maggioranza dei Cantoni", for the vote and the selection,
+    // each of their bars as wide as the window less 16 pixels at each side.
+    for (const result of [ownResult(page), selectionResult(page)]) {
+      await expect(majoritiesOf(result).locator('h3')).toHaveText([
+        'Maggioranza del popolo',
+        'Maggioranza dei Cantoni',
+      ]);
+      expect(await arrangementOf(result)).toBe('one below the other');
+      for (const bar of [votersBarOf(result), cantonsBarOf(result)]) {
+        expect(Math.abs((await barDrawn(bar)).width - 328)).toBeLessThanOrEqual(1);
+      }
     }
   });
 });

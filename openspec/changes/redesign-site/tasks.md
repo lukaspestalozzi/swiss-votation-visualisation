@@ -41,7 +41,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   verdicts "The two verdicts side by side" (three), "A majority that is not needed", "The result
   of the selection" (six), "The bars of a result" (three), "The place of the selection's result"
   (three); site-style "The colours of a bar" (the first two).
-- [ ] 2.3 Let a result follow the room it has: the outcome above the two majorities below 640
+- [x] 2.3 Let a result follow the room it has: the outcome above the two majorities below 640
   pixels of room, all three one below the other below 448. Verify: the browser test "The verdicts
   in Italian" passes with the bars 328 pixels wide, and the page at 360, 640 and 800 pixels is no
   wider than its window.
