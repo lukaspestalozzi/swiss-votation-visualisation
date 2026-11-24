@@ -1,6 +1,7 @@
 // The reading guide (spec reading-guide), against the built site. The figures are those of
 // investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
+import { pageHead } from './parts.ts';
 
 /** A section of the guide, by its heading. */
 const section = (page: Page, heading: string) =>
@@ -163,14 +164,14 @@ test('from the start page: "Lesehilfe" in its head, and no other link below its 
 }) => {
   await page.goto('de/');
   await expect(page.getByRole('link', { name: 'Lesehilfe und Quellen' })).toHaveCount(0);
-  await page.locator('header').getByRole('link', { name: 'Lesehilfe' }).click();
+  await pageHead(page).getByRole('link', { name: 'Lesehilfe' }).click();
   await expect(page).toHaveURL(/\/de\/guide\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });
 
 test('from a vote\'s page: "Lesehilfe" in its head', async ({ page }) => {
   await page.goto('de/votes/5960/');
-  await page.locator('header').getByRole('link', { name: 'Lesehilfe' }).click();
+  await pageHead(page).getByRole('link', { name: 'Lesehilfe' }).click();
   await expect(page).toHaveURL(/\/de\/guide\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });

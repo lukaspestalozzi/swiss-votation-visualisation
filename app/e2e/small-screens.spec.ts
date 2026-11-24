@@ -3,6 +3,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { phone } from './fingers.ts';
 import { pointIn } from './pointing.ts';
+import { addButton, addLimit, limitList, selectionResult, type Language } from './parts.ts';
 
 /** The width of the page, which is the window's when nothing reaches past it. */
 const pageWidth = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth);
@@ -49,28 +50,16 @@ test.describe('the list of the limits in a window 360 pixels wide', () => {
     // A list is as wide as its longest entry: the longest name of each language (design of
     // add-more-characteristics, decisions 2 and 13).
     const longest = [
-      ['de', 'Merkmal hinzufügen', 'Bio-Anteil der landwirtschaftlichen Nutzfläche', 'Hinzufügen'],
-      [
-        'fr',
-        'Ajouter une caractéristique',
-        'Haute école ou formation professionnelle supérieure',
-        'Ajouter',
-      ],
-      [
-        'it',
-        'Aggiungere una caratteristica',
-        'Scuola universitaria o formazione professionale superiore',
-        'Aggiungere',
-      ],
-    ];
-    for (const [language, list, name, add] of longest) {
+      ['de', 'Bio-Anteil der landwirtschaftlichen Nutzfläche'],
+      ['fr', 'Haute école ou formation professionnelle supérieure'],
+      ['it', 'Scuola universitaria o formazione professionale superiore'],
+    ] as const;
+    for (const [language, name] of longest) {
       await page.goto(`${language}/votes/5960/`);
       await page.locator('.municipalities path').nth(2000).waitFor();
-      const select = page.getByLabel(list);
-      await expect(select).toBeVisible();
+      await expect(limitList(page, language)).toBeVisible();
       expect(await pageWidth(page), `${language}: the list`).toBeLessThanOrEqual(360);
-      await select.selectOption({ label: name });
-      await page.getByRole('button', { name: add, exact: true }).click();
+      await addLimit(page, name, language);
       await expect(page.locator('.limit .label')).toContainText(name);
       expect(await pageWidth(page), `${language}: the limit`).toBeLessThanOrEqual(360);
     }
@@ -118,15 +107,14 @@ test.describe('on a phone', () => {
   test('the controls are at least 44 × 44 pixels', async ({ page }) => {
     await page.goto('de/votes/5960/');
     await page.locator('.municipalities path').nth(2000).waitFor();
-    await page.getByLabel('Merkmal hinzufügen').selectOption('Ausländeranteil');
-    await page.getByRole('button', { name: 'Hinzufügen', exact: true }).tap();
+    await addLimit(page, 'Ausländeranteil', 'de', 'tap');
     await page.getByRole('slider', { name: 'Obere Grenze: Ausländeranteil' }).fill('327');
     const controls = {
       '+': page.getByRole('button', { name: 'Vergrössern' }),
       '−': page.getByRole('button', { name: 'Verkleinern' }),
       'Ganze Schweiz': page.getByRole('button', { name: 'Ganze Schweiz' }),
-      'Merkmal hinzufügen': page.getByLabel('Merkmal hinzufügen'),
-      Hinzufügen: page.getByRole('button', { name: 'Hinzufügen', exact: true }),
+      'Merkmal hinzufügen': limitList(page),
+      Hinzufügen: addButton(page),
       Entfernen: page.getByRole('button', { name: 'Entfernen: Ausländeranteil' }),
       'Zurück zum echten Ergebnis': page.getByRole('button', {
         name: 'Zurück zum echten Ergebnis',
@@ -145,8 +133,7 @@ test.describe('on a phone', () => {
 
   test('a thumb takes a press 20 pixels beside its centre', async ({ page }) => {
     await page.goto('de/votes/5960/');
-    await page.getByLabel('Merkmal hinzufügen').selectOption('Ausländeranteil');
-    await page.getByRole('button', { name: 'Hinzufügen', exact: true }).tap();
+    await addLimit(page, 'Ausländeranteil', 'de', 'tap');
     const upper = page.getByRole('slider', { name: 'Obere Grenze: Ausländeranteil' });
     const lower = page.getByRole('slider', { name: 'Untere Grenze: Ausländeranteil' });
     await upper.fill('327');
@@ -182,11 +169,11 @@ const bar = (page: Page) => page.locator('.selection-bar');
 async function foreignersUpTo1998(
   page: Page,
   path = 'de/votes/5960/',
-  labels = { list: 'Merkmal hinzufügen', add: 'Hinzufügen', name: 'Ausländeranteil' },
+  language: Language = 'de',
+  name = 'Ausländeranteil',
 ) {
   await page.goto(path);
-  await page.getByLabel(labels.list).selectOption(labels.name);
-  await page.getByRole('button', { name: labels.add, exact: true }).click();
+  await addLimit(page, name, language);
   const upper = page.getByRole('slider').last();
   await upper.fill('327');
   await upper.evaluate((slider) => {
@@ -214,7 +201,7 @@ test.describe('the bar on a phone', () => {
   }) => {
     await foreignersUpTo1998(page);
     await expect(bar(page)).toBeVisible();
-    await page.locator('.selection').evaluate((box) => {
+    await selectionResult(page).evaluate((box) => {
       box.scrollIntoView({ block: 'center' });
     });
     await expect(bar(page)).toBeHidden();
@@ -247,7 +234,7 @@ test.describe('the bar on a phone', () => {
     await abroad.evaluate((box) => {
       (box as HTMLInputElement).click();
     });
-    const selection = page.locator('.selection');
+    const selection = selectionResult(page);
     await expect(selection).toBeVisible();
     await page.waitForTimeout(300);
     const [top, bottom, height] = await selection.evaluate((box) => [
@@ -291,11 +278,7 @@ test.describe('the bar on a phone', () => {
   });
 
   test('in French', async ({ page }) => {
-    await foreignersUpTo1998(page, 'fr/votes/5960/', {
-      list: 'Ajouter une caractéristique',
-      add: 'Ajouter',
-      name: 'Part des étrangers',
-    });
+    await foreignersUpTo1998(page, 'fr/votes/5960/', 'fr', 'Part des étrangers');
     await expect(bar(page).locator('p')).toHaveText([
       'Avec votre sélection: Accepté',
       'Majorité du peuple: Oui · Majorité des cantons: Oui',
@@ -330,8 +313,7 @@ test('without hyphenation the Italian verdicts with a selection fit at 360, 640 
     await page.setViewportSize({ width, height: 780 });
     await page.goto('it/votes/5960/');
     await page.addStyleTag({ content: '* { hyphens: manual !important; }' });
-    await page.getByLabel('Aggiungere una caratteristica').selectOption('Quota di stranieri');
-    await page.getByRole('button', { name: 'Aggiungere', exact: true }).click();
+    await addLimit(page, 'Quota di stranieri', 'it');
     await page.getByRole('slider', { name: 'Limite superiore: Quota di stranieri' }).fill('327');
     await expect(page.getByRole('heading', { name: 'Con la Sua selezione' })).toBeVisible();
     expect(await pageWidth(page), `${String(width)} pixels`).toBeLessThanOrEqual(width);
@@ -345,8 +327,7 @@ test.describe('on a touch screen 360 pixels wide', () => {
     page,
   }) => {
     await page.goto('it/votes/5960/');
-    await page.getByLabel('Aggiungere una caratteristica').selectOption('Quota di stranieri');
-    await page.getByRole('button', { name: 'Aggiungere', exact: true }).tap();
+    await addLimit(page, 'Quota di stranieri', 'it', 'tap');
     await page.getByRole('slider', { name: 'Limite superiore: Quota di stranieri' }).fill('327');
     await expect(page.getByRole('heading', { name: 'Con la Sua selezione' })).toBeVisible();
     // A page wider than the window is shown smaller, and a tap would miss: the width comes first.

@@ -8,7 +8,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 1. The tests' helpers, the colours, the width and the head
 
-- [ ] 1.1 Move what the browser tests share into `app/e2e/parts.ts`: opening a vote's page, adding
+- [x] 1.1 Move what the browser tests share into `app/e2e/parts.ts`: opening a vote's page, adding
   a limit, the switch for the Swiss abroad, reading a result (the vote's and the selection's) and
   reading the head; use them in every spec file that has its own copy, with no assertion changed.
   Verify: `pnpm run build && pnpm run test:e2e` passes with 255 tests, as before the task.

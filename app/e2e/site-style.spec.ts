@@ -3,6 +3,15 @@
 import { expect, test, type Page } from '@playwright/test';
 import { controlContrast, lowContrast, pixelAt, ratioOf, type LowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
+import {
+  addLimit,
+  greyedOf,
+  pageHead,
+  outcomeOf,
+  ownResult,
+  selectionResult,
+  verdictWordsOf,
+} from './parts.ts';
 
 /**
  * The fonts Chrome renders the text of the first element matching `selector` in, by the DevTools
@@ -31,9 +40,7 @@ const FOREIGNERS = { de: 'Ausländeranteil', fr: 'Part des étrangers', it: 'Quo
 async function foreignersUpTo1998(page: Page, path = 'de/votes/5960/'): Promise<void> {
   await page.goto(path);
   const language = path.slice(0, 2) as keyof typeof FOREIGNERS;
-  await page.locator('.limits select').selectOption({ label: FOREIGNERS[language] });
-  // The first button of the limits is the one that adds.
-  await page.locator('.limits button').first().click();
+  await addLimit(page, FOREIGNERS[language], language);
   const upper = page.getByRole('slider').last();
   await upper.fill('327');
   await upper.evaluate((slider) => {
@@ -75,7 +82,7 @@ test.describe('the font', () => {
     const fonts = await renderedFonts(page, 'h1');
     expect(fonts).toHaveLength(1);
     expect(fonts[0]).not.toMatch(/Source Sans 3|Serif/);
-    await expect(page.locator('.selection .outcome')).toHaveText('Angenommen');
+    await expect(outcomeOf(selectionResult(page))).toHaveText('Angenommen');
     await expect(page.locator('.municipalities path:not([fill="url(#hatch)"])')).toHaveCount(2103);
   });
 });
@@ -93,7 +100,7 @@ async function contrastOfThePages(page: Page): Promise<[string, LowContrast[]][]
     }
     const path = `${language}/votes/5960/`;
     await foreignersUpTo1998(page, path);
-    await expect(page.locator('.selection .outcome')).toBeVisible();
+    await expect(outcomeOf(selectionResult(page))).toBeVisible();
     await page.locator('.municipalities path').nth(2000).waitFor();
     found.push([path, await lowContrast(page)]);
   }
@@ -110,17 +117,17 @@ test.describe('the light scheme', () => {
     // A vote's date and kind #595959; the cantonal votes of a majority not needed #767676.
     await page.goto('de/votes/5950/');
     await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(89, 89, 89)');
-    await expect(page.locator('.verdict .greyed').first()).toHaveCSS('color', 'rgb(118, 118, 118)');
+    await expect(greyedOf(ownResult(page)).first()).toHaveCSS('color', 'rgb(118, 118, 118)');
   });
 
   test('a majority that is not needed: its word #1c1c1c, its cantonal votes #767676', async ({
     page,
   }) => {
     await page.goto('de/votes/5950/');
-    const standesmehr = page.locator('.verdict').nth(1);
-    await expect(standesmehr.locator('.word')).toHaveText('nicht nötig');
-    await expect(standesmehr.locator('.word')).toHaveCSS('color', 'rgb(28, 28, 28)');
-    await expect(standesmehr.locator('.greyed')).toHaveCSS('color', 'rgb(118, 118, 118)');
+    const standesmehr = verdictWordsOf(ownResult(page)).nth(1);
+    await expect(standesmehr).toHaveText('nicht nötig');
+    await expect(standesmehr).toHaveCSS('color', 'rgb(28, 28, 28)');
+    await expect(greyedOf(ownResult(page))).toHaveCSS('color', 'rgb(118, 118, 118)');
   });
 });
 
@@ -136,7 +143,7 @@ test.describe('the dark scheme', () => {
     // A vote's date and kind #b0b0b0; the cantonal votes of a majority not needed #9a9a9a.
     await page.goto('de/votes/5950/');
     await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(176, 176, 176)');
-    await expect(page.locator('.verdict .greyed').first()).toHaveCSS('color', 'rgb(154, 154, 154)');
+    await expect(greyedOf(ownResult(page)).first()).toHaveCSS('color', 'rgb(154, 154, 154)');
   });
 });
 
@@ -153,7 +160,7 @@ test('the preference changes on an open page: dark at once, the selection kept',
   await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(18, 18, 18)');
   expect(await page.evaluate(() => (window as unknown as { mark?: string }).mark)).toBe('kept');
   await expect(page.getByRole('slider').last()).toHaveValue('327');
-  await expect(page.locator('.selection .outcome')).toHaveText('Angenommen');
+  await expect(outcomeOf(selectionResult(page))).toHaveText('Angenommen');
 });
 
 // The map's darkest classes, and in the dark scheme its class 2 (spec site-style, "The verdicts in
@@ -164,7 +171,6 @@ const YES_DARK = 'rgb(75, 193, 173)'; // #4bc1ad
 const NO_DARK = 'rgb(229, 148, 111)'; // #e5946f
 
 /** The vote's own result on its page, beside which a selection's stands. */
-const ownResult = (page: Page) => page.locator('.results > .result:not(.selection)');
 
 test.describe("the verdicts in the map's colours", () => {
   test('2016-02-28: "Nein" and "Abgelehnt" #934319, "Ja" #007260, also in the list', async ({
@@ -176,8 +182,8 @@ test.describe("the verdicts in the map's colours", () => {
     await expect(words).toHaveText(['Nein', 'Ja']);
     await expect(words.first()).toHaveCSS('color', NO);
     await expect(words.last()).toHaveCSS('color', YES);
-    await expect(ownResult(page).locator('.outcome')).toHaveText('Abgelehnt');
-    await expect(ownResult(page).locator('.outcome')).toHaveCSS('color', NO);
+    await expect(outcomeOf(ownResult(page))).toHaveText('Abgelehnt');
+    await expect(outcomeOf(ownResult(page))).toHaveCSS('color', NO);
     const zurich = page.getByRole('row', { name: /^ZH / }).locator('td').last();
     await expect(zurich).toHaveText('Nein');
     await expect(zurich).toHaveCSS('color', NO);
@@ -204,8 +210,8 @@ test.describe("the verdicts in the map's colours", () => {
       page,
     }) => {
       await foreignersUpTo1998(page);
-      await expect(page.locator('.selection .outcome')).toHaveText('Angenommen');
-      await expect(page.locator('.selection .outcome')).toHaveCSS('color', YES);
+      await expect(outcomeOf(selectionResult(page))).toHaveText('Angenommen');
+      await expect(outcomeOf(selectionResult(page))).toHaveCSS('color', YES);
       const words = page.locator('.selection-bar span');
       await expect(words).toHaveText(['Angenommen', 'Ja', 'Ja']);
       for (const word of await words.all()) await expect(word).toHaveCSS('color', YES);
@@ -230,8 +236,8 @@ test.describe("the verdicts in the map's colours", () => {
       await expect(words).toHaveText(['Non', 'Oui']);
       await expect(words.first()).toHaveCSS('color', NO_DARK);
       await expect(words.last()).toHaveCSS('color', YES_DARK);
-      await expect(ownResult(page).locator('.outcome')).toHaveText('Rejeté');
-      await expect(ownResult(page).locator('.outcome')).toHaveCSS('color', NO_DARK);
+      await expect(outcomeOf(ownResult(page))).toHaveText('Rejeté');
+      await expect(outcomeOf(ownResult(page))).toHaveCSS('color', NO_DARK);
     });
   });
 });
@@ -241,7 +247,7 @@ test.describe('the head of every page', () => {
     page,
   }) => {
     await page.goto('fr/votes/5960/');
-    const head = page.locator('header');
+    const head = pageHead(page);
     await expect(head).toHaveText(
       /^\s*Popular Vote Explorer\s*Guide de lecture\s*Deutsch\s*Français\s*Italiano\s*$/,
     );
@@ -263,7 +269,7 @@ test.describe('the head of every page', () => {
   });
 
   test('on the start page the title, on the guide its name, is no link', async ({ page }) => {
-    const head = page.locator('header');
+    const head = pageHead(page);
     await page.goto('de/');
     await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveCount(0);
     await expect(head.getByText('Popular Vote Explorer')).toHaveAttribute('aria-current', 'page');
