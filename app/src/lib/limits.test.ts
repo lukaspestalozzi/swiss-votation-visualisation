@@ -8,12 +8,15 @@ import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
 import { DEFINITIONS, applyingTo, nameOf, writeUnits, type Definition } from './characteristics.ts';
 import {
+  BINS,
   STEPS,
+  histogramOf,
   isNarrowed,
   labelOf,
   remainingOf,
   remainingUnder,
   setAsideOf,
+  stepOf,
   trackOf,
   valueAt,
   type Track,
@@ -289,4 +292,56 @@ test('the set-aside municipalities are those with an entry that do not remain', 
 test('the count: how many of the municipalities with an entry remain', () => {
   expect(remainingOf([12, 7, 30, 4], new Set([7, 4, 99]))).toBe(2);
   expect(remainingOf([12, 30], new Set([7]))).toBe(0);
+});
+
+/** The value of a municipality on a track, by its number. */
+function valueOf(track: Track, number: number): number {
+  const value = track.values[file.municipalities.indexOf(number)];
+  if (typeof value !== 'number') throw new Error(`no figure of ${String(number)}`);
+  return value;
+}
+
+test('the histogram of a linear track: the foreigners of 2016-02-28', () => {
+  // Spec limits, "The foreigners of 2015" (investigations/redesign.md, "Output" of hist.mjs).
+  const track = trackFor('Ausländeranteil', '2016-02-28');
+  const bars = histogramOf(track);
+  expect(bars).toHaveLength(BINS);
+  expect(bars[0]).toBe(10);
+  expect(bars[8]).toBe(140);
+  expect(Math.max(...bars)).toBe(140);
+  expect(bars.reduce((sum, bar) => sum + bar, 0)).toBe(
+    track.values.filter((value) => value !== null).length,
+  );
+});
+
+test('the step of a value: the lowest step whose value is not below it', () => {
+  // Zürich, 32.03%: step 524 is below it, step 525, 32.08%, is not (spec limits, "The foreigners
+  // of 2015"). Köniz, 18.02% and 40,214 inhabitants: steps 295 and 758 ("Köniz on two tracks").
+  const foreigners = trackFor('Ausländeranteil', '2016-02-28');
+  const zurich = valueOf(foreigners, 261);
+  expect(at(foreigners, 525)).toBe('32.08%');
+  expect(valueAt(foreigners, 524)).toBeLessThan(zurich);
+  expect(stepOf(foreigners, zurich)).toBe(525);
+  expect(stepOf(foreigners, valueOf(foreigners, 355))).toBe(295);
+  const inhabitants = trackFor('Einwohner', '2016-02-28');
+  expect(stepOf(inhabitants, valueOf(inhabitants, 355))).toBe(758);
+  // The ends of a track: its smallest value at step 0, its largest at the last step.
+  expect(stepOf(foreigners, foreigners.smallest)).toBe(0);
+  expect(stepOf(inhabitants, inhabitants.largest)).toBe(STEPS);
+});
+
+test('the histogram of a logarithmic track: the inhabitants of 2016-02-28', () => {
+  // Spec limits, "A logarithmic track": the 21st bar, of steps 400 to 419, with 146.
+  const bars = histogramOf(trackFor('Einwohner', '2016-02-28'));
+  expect(bars[20]).toBe(146);
+  expect(Math.max(...bars)).toBe(146);
+  // The last bar holds step 1,000 too: Zürich, the largest.
+  expect(bars[BINS - 1]).toBeGreaterThanOrEqual(1);
+});
+
+test('the histogram counts no municipality without a figure: the SVP of 2021-03-07', () => {
+  // Spec limits, "Municipalities without a figure": six have no party figure in the election
+  // of 2019 (investigations/limits.md, 5).
+  const bars = histogramOf(trackFor('SVP', '2021-03-07'));
+  expect(bars.reduce((sum, bar) => sum + bar, 0)).toBe(2104);
 });
