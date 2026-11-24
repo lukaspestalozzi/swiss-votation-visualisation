@@ -72,7 +72,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 4. The limits
 
-- [ ] 4.1 In `app/src/lib/limits.ts`, add a track's histogram, 50 counts, and the step of a value.
+- [x] 4.1 In `app/src/lib/limits.ts`, add a track's histogram, 50 counts, and the step of a value.
   Verify: unit tests pass for "Ausländeranteil" of the vote day 2016-02-28 (the first bar 10, the
   ninth 140, Zürich at step 525), "Einwohner" (the 21st bar 146) and "SVP" of the vote 6400
   (2,104 municipalities): `pnpm --filter app exec vitest run src/lib/limits.test.ts`.

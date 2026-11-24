@@ -72,6 +72,48 @@ export function valueAt(track: Track, step: number): number {
 }
 
 /**
+ * The lowest step of a track whose value is not below `value`: where a municipality with that
+ * value lies on the track (spec limits, "Where the municipalities lie on a track"). `valueAt`
+ * never falls from one step to the next, so the step is found by halving.
+ */
+export function stepOf(track: Track, value: number): number {
+  return lowestStep((step) => valueAt(track, step), value);
+}
+
+/** The lowest step from 0 to STEPS whose value, given by `at`, is not below `value`. */
+function lowestStep(at: (step: number) => number, value: number): number {
+  let low = 0;
+  let high = STEPS;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (at(middle) < value) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+}
+
+/** The bars of a track's histogram, each for the same number of steps. */
+export const BINS = 50;
+
+/**
+ * How many municipalities lie in each bar of a track's histogram: 50 bars of 20 steps each, the
+ * last with step 1,000 (spec limits, "Where the municipalities lie on a track"; design of
+ * redesign-site, decision 21). A municipality counts at its step; one without a figure in no
+ * bar. The values of the steps are worked out once, not for every municipality.
+ */
+export function histogramOf(track: Track): number[] {
+  const values = Array.from({ length: STEPS + 1 }, (_, step) => valueAt(track, step));
+  const at = (step: number) => values[step] ?? Infinity;
+  const bars = new Array<number>(BINS).fill(0);
+  for (const value of track.values) {
+    if (value === null) continue;
+    const bar = Math.min(BINS - 1, Math.floor((lowestStep(at, value) * BINS) / STEPS));
+    bars[bar] = (bars[bar] ?? 0) + 1;
+  }
+  return bars;
+}
+
+/**
  * The label of a limit with its bounds at the steps `lower` and `upper`: "Ausländeranteil (Ende
  * 2015): von 0.00% bis 19.98%" (spec limits, "The label of a limit").
  */
