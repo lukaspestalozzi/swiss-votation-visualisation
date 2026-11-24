@@ -62,11 +62,26 @@ html {
   background: var(--ground);
 }
 
-/* The page fills its window, 16 pixels from each side, with no limit on its width; a paragraph
-   is at most 40rem wide, about 70 characters a line (decision 8). */
+/* A page is at most 100rem wide, 1,600 pixels, in the middle of a wider window, with 32 pixels
+   between its content and each side, 16 in a window narrower than 640; the start page and the
+   guide, which the layout marks, at most 76rem, 1,216 pixels. A paragraph is at most 40rem wide,
+   about 70 characters a line (spec site-style, "The width of a page"; design of redesign-site,
+   decision 5). */
 body {
-  margin: 0;
-  padding: 0 16px;
+  box-sizing: border-box;
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+body:has(.head.narrow) {
+  max-width: 76rem;
+}
+
+@media (max-width: 639.98px) {
+  body {
+    padding: 0 16px;
+  }
 }
 
 p {

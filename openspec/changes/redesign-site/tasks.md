@@ -17,7 +17,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   2); change the tests of `app/e2e/site-style.spec.ts` that name `#1a5fb4` and `#8ab4f8`. Verify:
   the tests "every text has its contrast" in both schemes and "a ring of 2 pixels" pass, and
   `python3 investigations/redesign/colours.py` prints the contrasts of decision 2.
-- [ ] 1.3 Make a page at most 1,600 pixels wide, the start page and the guide 1,216, with 32
+- [x] 1.3 Make a page at most 1,600 pixels wide, the start page and the guide 1,216, with 32
   pixels at each side and 16 below 640 (spec site-style, "The width of a page"). Verify: browser
   tests of its three scenarios pass (192 pixels at 1,920; the start page 1,216 wide; 16 at 360).
 - [ ] 1.4 The head: the mark drawn with CSS, the entry "Vergleichen" in three languages, the entry
