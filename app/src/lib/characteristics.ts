@@ -404,7 +404,7 @@ function headingOf(
 
 /**
  * The panel's eight groups for a municipality's counts (spec result-map, "The characteristics of
- * a municipality beside the map"): each characteristic in the order of its definition, in its
+ * a municipality"): each characteristic in the order of its definition, in its
  * group, under the heading of its figures' date. A line whose figures are of another year than
  * the heading's names its date; so does every line of the land, whose heading names no year.
  */
