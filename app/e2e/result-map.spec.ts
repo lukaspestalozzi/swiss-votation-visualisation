@@ -5,6 +5,7 @@ import config from '../playwright.config.ts';
 import { fingersOn, phone } from './fingers.ts';
 import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
+import { addLimit, figuresOf, outcomeOf, ownResult, verdictWordsOf } from './parts.ts';
 
 const municipality = (page: Page, number: number) =>
   page.locator(`.municipalities [data-number="${String(number)}"]`);
@@ -34,7 +35,7 @@ test('the map of a vote: between the outcome and the table of the cantons', asyn
   });
   expect(order[0]).toBeLessThan(order[1] ?? -1);
   expect(order[1]).toBeLessThan(order[2] ?? -1);
-  await expect(page.locator('.outcome')).toHaveText('Abgelehnt');
+  await expect(outcomeOf(ownResult(page))).toHaveText('Abgelehnt');
 });
 
 test('no map for a tie-break question', async ({ page }) => {
@@ -550,13 +551,13 @@ test('a map that cannot be loaded: a message, and the rest of the page', async (
     page.getByText('Die Karte kann nicht geladen werden.', { exact: true }),
   ).toBeVisible();
   await expect(page.locator('.municipalities')).toHaveCount(0);
-  await expect(page.locator('.figures dd')).toHaveText([
+  await expect(figuresOf(ownResult(page))).toHaveText([
     "1'609'152",
     "1'664'224",
     '49.16%',
     '63.25%',
   ]);
-  await expect(page.locator('.verdict .word')).toHaveText(['Nein', 'Ja']);
+  await expect(verdictWordsOf(ownResult(page))).toHaveText(['Nein', 'Ja']);
   await expect(page.locator('tbody tr')).toHaveCount(26);
 });
 
@@ -928,8 +929,7 @@ test('the municipality last clicked is outlined, also while pointing at another'
 test('a set-aside municipality is outlined too', async ({ page }) => {
   // Zürich set aside by "Ausländeranteil" up to step 327 (investigations/limits.md, 3).
   await page.goto('de/votes/5960/');
-  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
-  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await addLimit(page, 'Ausländeranteil');
   await page
     .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
     .fill('327');
@@ -953,8 +953,7 @@ test.describe('in the dark scheme', () => {
     page,
   }) => {
     await page.goto('de/votes/5960/');
-    await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
-    await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+    await addLimit(page, 'Ausländeranteil');
     await page
       .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
       .fill('327');

@@ -2,25 +2,21 @@
 // investigations/limits.md and investigations/share-link.md.
 import { expect, test, type Page } from '@playwright/test';
 import { HASHCHANGE_HANDLED, MEASURE_HASHCHANGE, fontsLoaded, measuredFrames } from './frames.ts';
+import {
+  abroadSwitch,
+  addLimit,
+  figuresOf,
+  limitLabel,
+  limitList,
+  offered,
+  openVote,
+  ownResult,
+  selectionResult,
+  slider,
+} from './parts.ts';
 
 // The site's path, before the addresses the spec names.
 const SITE = '/swiss-votation-visualisation';
-
-/** Open a vote's page and wait until the limits can be used. */
-async function open(page: Page, path: string): Promise<void> {
-  await page.goto(path);
-  await expect(page.getByLabel('Merkmal hinzufügen')).toBeVisible();
-}
-
-/** Add the limit of a characteristic from the list. */
-async function addLimit(page: Page, name: string): Promise<void> {
-  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: name });
-  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
-}
-
-/** A slider of a limit, by its bound and its characteristic's name. */
-const slider = (page: Page, bound: 'Untere' | 'Obere', name: string) =>
-  page.getByRole('slider', { name: `${bound} Grenze: ${name}`, exact: true });
 
 /** The page's address as the spec writes it: its path below the site's, and its hash. */
 function address(page: Page): string {
@@ -32,19 +28,15 @@ function address(page: Page): string {
 const waitASecond = (page: Page) => page.waitForTimeout(1000);
 
 test('A limit', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-19.98');
 });
 
-/** The switch for the Swiss abroad. */
-const abroadSwitch = (page: Page) =>
-  page.getByRole('checkbox', { name: /Auslandschweizerinnen und Auslandschweizer mitzählen/ });
-
 test('Two limits and the switch', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await addLimit(page, 'Einwohner');
@@ -55,14 +47,14 @@ test('Two limits and the switch', async ({ page }) => {
 });
 
 test('A limit that sets nothing aside', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-');
 });
 
 test('Back to the real result', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-');
@@ -75,17 +67,13 @@ test('Back to the real result', async ({ page }) => {
 
 test('The keys in French', async ({ page }) => {
   await page.goto('fr/votes/5960/');
-  const list = page.getByLabel('Ajouter une caractéristique');
-  for (const name of ['Habitants', 'Part des étrangers']) {
-    await list.selectOption({ label: name });
-    await page.getByRole('button', { name: 'Ajouter', exact: true }).click();
-  }
+  for (const name of ['Habitants', 'Part des étrangers']) await addLimit(page, name, 'fr');
   await waitASecond(page);
   expect(address(page)).toBe('/fr/votes/5960/#inhabitants=-&foreigners=-');
 });
 
 test('A new characteristic in a link', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Arbeitsplätze je 100 Einwohner');
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#jobs=-');
@@ -144,7 +132,7 @@ test('Back leaves the page', async ({ page }) => {
   await page
     .getByRole('link', { name: 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»' })
     .click();
-  await expect(page.getByLabel('Merkmal hinzufügen')).toBeVisible();
+  await expect(limitList(page)).toBeVisible();
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await waitASecond(page);
@@ -157,12 +145,12 @@ test('Back leaves the page', async ({ page }) => {
 test('Nothing is sent', async ({ page }) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await waitASecond(page);
   await page.reload();
-  await expect(page.getByLabel('Merkmal hinzufügen')).toBeVisible();
+  await expect(limitList(page)).toBeVisible();
   expect(requested.length).toBeGreaterThan(0);
   expect(requested.filter((url) => url.includes('foreigners'))).toEqual([]);
 });
@@ -180,7 +168,7 @@ test('A held key', async ({ page }) => {
     };
   });
   const replaced = () => page.evaluate(() => (window as unknown as { replaced: number }).replaced);
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await waitASecond(page);
   await page.evaluate(() => {
@@ -196,18 +184,14 @@ test('A held key', async ({ page }) => {
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-54.99');
 });
 
-/** The label of the limit of a characteristic. */
-const label = (page: Page, name: string) =>
-  page.locator('.limit .label').filter({ hasText: new RegExp(`^${name} \\(`) });
-
 test('A link', async ({ page }) => {
   await page.goto('de/votes/5960/#foreigners=-19.98');
   await expect(page.locator('.limit .label')).toHaveText([
     'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
   ]);
-  const selection = page.locator('.result.selection');
+  const selection = selectionResult(page);
   await expect(selection.getByRole('heading', { name: 'Mit Ihrer Auswahl' })).toBeVisible();
-  await expect(selection.locator('.figures dd').nth(2)).toHaveText('52.47%');
+  await expect(figuresOf(selection).nth(2)).toHaveText('52.47%');
   await expect(page.locator('.limits .count')).toHaveText(
     "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
   );
@@ -215,20 +199,22 @@ test('A link', async ({ page }) => {
 
 test('A value no step has', async ({ page }) => {
   await page.goto('de/votes/5960/#foreigners=-20&inhabitants=3000-');
-  await expect(label(page, 'Ausländeranteil')).toHaveText(
+  await expect(limitLabel(page, 'Ausländeranteil')).toHaveText(
     'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
   );
-  await expect(label(page, 'Einwohner')).toHaveText("Einwohner (Ende 2015): von 2'987 bis 396'955");
+  await expect(limitLabel(page, 'Einwohner')).toHaveText(
+    "Einwohner (Ende 2015): von 2'987 bis 396'955",
+  );
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-19.98&inhabitants=2987-');
 });
 
 test('A reload', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await abroadSwitch(page).uncheck();
-  const figures = page.locator('.result.selection .figures dd');
+  const figures = figuresOf(selectionResult(page));
   await expect(figures).toHaveCount(3);
   const before = await figures.allTextContents();
   await waitASecond(page);
@@ -246,14 +232,14 @@ test('The characteristics cannot be loaded', async ({ page }) => {
   await expect(
     page.locator('.limits').getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
   ).toBeVisible();
-  await expect(page.locator('.figures dd').first()).toHaveText("1'609'152");
+  await expect(figuresOf(ownResult(page)).first()).toHaveText("1'609'152");
   await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-19.98');
 });
 
 test('Another link to the same vote', async ({ page }) => {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Einwohner');
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#inhabitants=-');
@@ -272,7 +258,7 @@ test('Another link to the same vote', async ({ page }) => {
 
 test('A value no step has, in the same tab', async ({ page }) => {
   // The same selection, written otherwise: the page writes the address anew, as when it opens.
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await addLimit(page, 'Ausländeranteil');
   await slider(page, 'Obere', 'Ausländeranteil').fill('327');
   await waitASecond(page);
@@ -372,7 +358,7 @@ const NAMES_OF_BEFORE = [
  * the tab that shows the vote: the link as the page writes it, every bound at step 100 or 900.
  */
 async function framesOfLinkWith(page: Page, names: readonly string[]) {
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   for (const name of names) await addLimit(page, name);
   const sliders = page.getByRole('slider');
   await expect(sliders).toHaveCount(2 * names.length);
@@ -385,7 +371,7 @@ async function framesOfLinkWith(page: Page, names: readonly string[]) {
 
   await page.goto('about:blank');
   await page.addInitScript(MEASURE_HASHCHANGE);
-  await open(page, 'de/votes/5960/');
+  await openVote(page, 'de/votes/5960/');
   await fontsLoaded(page);
   await page.evaluate(HASHCHANGE_HANDLED);
   await page.goto(`de/votes/5960/${hash}`);
@@ -408,11 +394,8 @@ test.describe(() => {
 
   test('All 35 limits in the same tab', async ({ page }) => {
     // Every characteristic of the list, in its order (design of add-more-characteristics, 14).
-    await open(page, 'de/votes/5960/');
-    const names = await page
-      .getByLabel('Merkmal hinzufügen')
-      .locator('option:not([value=""])')
-      .allTextContents();
+    await openVote(page, 'de/votes/5960/');
+    const names = await offered(page);
     expect(names).toHaveLength(35);
     const frames = await framesOfLinkWith(page, names);
     expect(frames.filter((frame) => frame.work > 170)).toEqual([]);

@@ -4,6 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { lowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
 import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
+import { addButton, addLimit, pageHead, languageSwitch, limitList } from './parts.ts';
 
 /** The language a page declares in its markup. */
 const languageOf = (page: Page) => page.locator('html').getAttribute('lang');
@@ -24,7 +25,7 @@ test('A page in each language', async ({ page }) => {
 
 test('The head of the comparison', async ({ page }) => {
   await page.goto('de/compare/');
-  const head = page.locator('header.head');
+  const head = pageHead(page);
   await expect(head.getByRole('link', { name: 'Popular Vote Explorer' })).toHaveAttribute(
     'href',
     /\/swiss-votation-visualisation\/de\/?$/,
@@ -274,7 +275,7 @@ test('The language switch carries the comparison', async ({ page }) => {
   );
   await page.getByLabel('Zweite Abstimmung').selectOption('5970');
   await expect(page).toHaveURL(/#votes=5960,5970&foreigners=-19\.98$/);
-  await page.locator('nav.languages').getByRole('link', { name: 'Français' }).click();
+  await languageSwitch(page).getByRole('link', { name: 'Français' }).click();
   await expect(page).toHaveURL(/\/fr\/compare\/?#votes=5960,5970&foreigners=-19\.98$/);
   expect(await languageOf(page)).toBe('fr');
   await expect(page.getByLabel('Première votation')).toHaveValue('5960');
@@ -327,8 +328,7 @@ test('A link without votes', async ({ page }) => {
 
 test('From a vote with a selection', async ({ page }) => {
   await page.goto('de/votes/5960/');
-  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
-  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await addLimit(page, 'Ausländeranteil');
   await page
     .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
     .fill('327');
@@ -529,8 +529,8 @@ test.describe(() => {
       await page.waitForTimeout(50);
       await control.click();
     };
-    await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Einwohner' });
-    await press(page.getByRole('button', { name: 'Hinzufügen', exact: true }));
+    await limitList(page).selectOption({ label: 'Einwohner' });
+    await press(addButton(page));
     const abroad = page.getByRole('checkbox', {
       name: /Auslandschweizerinnen und Auslandschweizer mitzählen/,
     });

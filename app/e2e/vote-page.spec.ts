@@ -1,6 +1,14 @@
 // A vote's page (spec verdicts), against the built site. The figures are those of
 // investigations/data-sources.md.
 import { expect, test } from '@playwright/test';
+import {
+  figuresOf,
+  majorityHeadingsOf,
+  outcomeOf,
+  ownResult,
+  verdictFiguresOf,
+  verdictWordsOf,
+} from './parts.ts';
 
 // The contrast of a colour "rgb(r, g, b)" on the white page (WCAG 2.1, relative luminance).
 function contrastOnWhite(colour: string): number {
@@ -23,16 +31,16 @@ test('the page of a vote: head, figures, verdicts, cantons and note', async ({ p
   await expect(
     page.getByText('Braucht das Volksmehr und das Ständemehr.', { exact: true }),
   ).toBeVisible();
-  await expect(page.locator('.figures dd')).toHaveText([
+  await expect(figuresOf(ownResult(page))).toHaveText([
     "1'609'152",
     "1'664'224",
     '49.16%',
     '63.25%',
   ]);
-  await expect(page.locator('.verdict h2')).toHaveText(['Volksmehr', 'Ständemehr']);
-  await expect(page.locator('.verdict .word')).toHaveText(['Nein', 'Ja']);
-  await expect(page.locator('.verdict p:not(.word)')).toHaveText(['49.16%', '16½ : 6½']);
-  await expect(page.locator('.outcome')).toHaveText('Abgelehnt');
+  await expect(majorityHeadingsOf(ownResult(page))).toHaveText(['Volksmehr', 'Ständemehr']);
+  await expect(verdictWordsOf(ownResult(page))).toHaveText(['Nein', 'Ja']);
+  await expect(verdictFiguresOf(ownResult(page))).toHaveText(['49.16%', '16½ : 6½']);
+  await expect(outcomeOf(ownResult(page))).toHaveText('Abgelehnt');
   const rows = page.locator('tbody tr');
   await expect(rows).toHaveCount(26);
   await expect(rows.first().locator('th, td')).toHaveText(['ZH', '43.46%', '1', 'Nein']);
@@ -60,8 +68,8 @@ test("a vote's page without the final slash", async ({ page }) => {
 test('a majority that is not needed: its cantonal votes greyed out', async ({ page }) => {
   await page.goto('de/votes/6790/');
   await expect(page.getByText('Braucht nur das Volksmehr.', { exact: true })).toBeVisible();
-  await expect(page.locator('.verdict .word')).toHaveText(['Ja', 'nicht nötig']);
-  const figures = page.locator('.verdict p:not(.word)');
+  await expect(verdictWordsOf(ownResult(page))).toHaveText(['Ja', 'nicht nötig']);
+  const figures = verdictFiguresOf(ownResult(page));
   await expect(figures).toHaveText(['50.39%', '7½ : 15½']);
   await expect(figures.nth(1)).toHaveClass(/\bgreyed\b/);
   const colour = (index: number) =>
@@ -69,7 +77,7 @@ test('a majority that is not needed: its cantonal votes greyed out', async ({ pa
   expect(await colour(1)).not.toBe(await colour(0));
   // Greyed, but still readable: WCAG's minimum for text of normal size.
   expect(contrastOnWhite(await colour(1))).toBeGreaterThanOrEqual(4.5);
-  await expect(page.locator('.outcome')).toHaveText('Angenommen');
+  await expect(outcomeOf(ownResult(page))).toHaveText('Angenommen');
 });
 
 test('the tie-break question: its figures, and no verdicts', async ({ page }) => {
@@ -93,8 +101,8 @@ test('the calculated figures, with a note where they differ from the validated r
   page,
 }) => {
   await page.goto('de/votes/6650/');
-  await expect(page.locator('.figures dd').nth(1)).toHaveText("1'350'525");
-  await expect(page.locator('.outcome')).toHaveText('Angenommen');
+  await expect(figuresOf(ownResult(page)).nth(1)).toHaveText("1'350'525");
+  await expect(outcomeOf(ownResult(page))).toHaveText('Angenommen');
   await expect(
     page.getByText(
       "Das erwahrte Ergebnis zählt 1'350'325 Nein-Stimmen (BBl 2024 996); die Zahlen der " +

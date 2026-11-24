@@ -2,12 +2,23 @@
 // investigations/languages.md.
 import { expect, test, type Page } from '@playwright/test';
 import { pointIn } from './pointing.ts';
+import {
+  addLimit,
+  figureNamesOf,
+  figuresOf,
+  languageSwitch,
+  majorityHeadingsOf,
+  outcomeOf,
+  ownResult,
+  selectionHeading,
+  selectionResult,
+} from './parts.ts';
 
 /** The language a page declares in its markup. */
 const languageOf = (page: Page) => page.locator('html').getAttribute('lang');
 
 /** The switch at the top of a page. */
-const switchOf = (page: Page) => page.locator('nav.languages');
+const switchOf = (page: Page) => languageSwitch(page);
 
 test('from German to French: the same page, in French', async ({ page }) => {
   await page.goto('de/votes/5960/');
@@ -49,8 +60,7 @@ test('A selection goes along: the other language opens the page anew with it', a
   const zurich = await pointIn(page, '.municipalities [data-number="261"]');
   await page.mouse.click(zurich.x, zurich.y);
   await expect(page.locator('.map .outlined path')).toHaveCount(2);
-  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Ausländeranteil' });
-  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await addLimit(page, 'Ausländeranteil');
   await page
     .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
     .fill('327');
@@ -60,7 +70,7 @@ test('A selection goes along: the other language opens the page anew with it', a
   await expect(page.locator('.limit .label')).toHaveText([
     'Quota di stranieri (fine 2015): da 0.00% a 19.98%',
   ]);
-  await expect(page.locator('.selection h2')).toHaveText('Con la Sua selezione');
+  await expect(selectionHeading(page)).toHaveText('Con la Sua selezione');
   // Wait until the Italian page's map is there before looking at what it outlines.
   await expect(page.locator('.municipalities [data-number="261"]')).toBeVisible();
   await expect(page.locator('.map .outlined path')).toHaveCount(0);
@@ -72,8 +82,7 @@ test('A selection goes along: the other language opens the page anew with it', a
 test('A selection goes along after a link opened in the same tab', async ({ page }) => {
   // The browser's address changes, not SvelteKit's, which the switch carries: the page writes it.
   await page.goto('de/votes/5960/');
-  await page.getByLabel('Merkmal hinzufügen').selectOption({ label: 'Einwohner' });
-  await page.getByRole('button', { name: 'Hinzufügen', exact: true }).click();
+  await addLimit(page, 'Einwohner');
   await page.waitForTimeout(1000);
   await page.goto('de/votes/5960/#foreigners=-19.98');
   await expect(page.locator('.limit .label')).toHaveText([
@@ -145,18 +154,16 @@ test('the details of a municipality in Italian: the same figures under Italian n
   ]);
 });
 
-/** Add a limit and move its upper bound to a step, with the labels of the page's language. */
+/** Add a limit and move its upper bound to a step, with the words of the page's language. */
 async function upperTo(
   page: Page,
-  labels: { add: string; button: string; upper: string },
+  language: 'de' | 'fr',
   name: string,
   step: number,
 ): Promise<void> {
-  await page.getByLabel(labels.add).selectOption({ label: name });
-  await page.getByRole('button', { name: labels.button, exact: true }).click();
-  await page
-    .getByRole('slider', { name: `${labels.upper}: ${name}`, exact: true })
-    .fill(String(step));
+  await addLimit(page, name, language);
+  const upper = { de: 'Obere Grenze', fr: 'Limite supérieure' }[language];
+  await page.getByRole('slider', { name: `${upper}: ${name}`, exact: true }).fill(String(step));
 }
 
 /** What a selection shows: the count, the dark grey municipalities, the selection's figures. */
@@ -164,29 +171,19 @@ async function selectionShown(page: Page) {
   return {
     count: await page.locator('.limits .count').textContent(),
     aside: await page.locator('.municipalities [fill="#2c2c2c"]').count(),
-    figures: await page.locator('.selection dd').allTextContents(),
+    figures: await figuresOf(selectionResult(page)).allTextContents(),
   };
 }
 
 test('a selection in French: the same municipalities and result as in German', async ({ page }) => {
   // The share of foreigners up to step 327, 19.98% (investigations/limits.md, 5).
   await page.goto('de/votes/5960/');
-  await upperTo(
-    page,
-    { add: 'Merkmal hinzufügen', button: 'Hinzufügen', upper: 'Obere Grenze' },
-    'Ausländeranteil',
-    327,
-  );
-  await expect(page.locator('.selection')).toHaveCount(1);
+  await upperTo(page, 'de', 'Ausländeranteil', 327);
+  await expect(selectionResult(page)).toHaveCount(1);
   const german = await selectionShown(page);
   await page.goto('fr/votes/5960/');
-  await upperTo(
-    page,
-    { add: 'Ajouter une caractéristique', button: 'Ajouter', upper: 'Limite supérieure' },
-    'Part des étrangers',
-    327,
-  );
-  await expect(page.locator('.selection h2')).toHaveText('Avec votre sélection');
+  await upperTo(page, 'fr', 'Part des étrangers', 327);
+  await expect(selectionHeading(page)).toHaveText('Avec votre sélection');
   const french = await selectionShown(page);
   expect(german.count).toBe("In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.");
   expect(french.count).toBe("Dans la sélection: 1'455 des 2'103 communes avec un résultat propre.");
@@ -197,12 +194,12 @@ test('a selection in French: the same municipalities and result as in German', a
 
 /** The kind, figures, verdicts, outcome and table column of the vote's own result. */
 async function verdictsShown(page: Page) {
-  const own = page.locator('.results > .result').first();
+  const own = ownResult(page);
   return {
     head: await page.locator('h1 + p').textContent(),
-    figures: await own.locator('dt').allTextContents(),
-    verdicts: await own.locator('.verdict h2').allTextContents(),
-    outcome: await own.locator('.outcome').textContent(),
+    figures: await figureNamesOf(own).allTextContents(),
+    verdicts: await majorityHeadingsOf(own).allTextContents(),
+    outcome: await outcomeOf(own).textContent(),
     column: await page.locator('thead th').nth(2).textContent(),
   };
 }
