@@ -1,9 +1,22 @@
 // What a vote's page shows (spec verdicts), from the data files and the calculation. The figures
 // are those of investigations/data-sources.md and of the data files of 2026-11-14.
 import { expect, test } from 'vitest';
+import characteristicsFile from '../../static/data/characteristics.json';
+import mapData from '../../static/data/map.json';
+import municipalitiesFile from '../../static/data/municipalities.json';
 import votesFile from '../../static/data/votes.json';
-import type { Vote, VoteFile, Votes } from './vote-data.ts';
-import { calculateResult, majoritiesNeeded } from 'calculation';
+import type {
+  CharacteristicsFile,
+  MapFile,
+  Municipalities,
+  Vote,
+  VoteFile,
+  Votes,
+} from './vote-data.ts';
+import { calculateResult, entriesThatRemain, majoritiesNeeded } from 'calculation';
+import { DEFINITIONS, applyingTo } from './characteristics.ts';
+import { remainingUnder, trackOf } from './limits.ts';
+import { voteEntriesOf } from './result-map.ts';
 import { textsOf } from './texts/index.ts';
 import { judgedOf, judgedOfFile, votePage } from './vote-page.ts';
 
@@ -279,4 +292,84 @@ test("a vote's result from its file, as its page gives it, for every judged vote
       votePage(vote, file, de).judged,
     );
   }
+});
+
+/** The cantons of a result's segments in favour and against, and the weights of each group. */
+function segmentsShown(segments: NonNullable<ReturnType<typeof page>['judged']>['segments']) {
+  const of = (side: 'yes' | 'no') => segments.filter((segment) => segment.side === side);
+  const weight = (side: 'yes' | 'no') => of(side).reduce((sum, segment) => sum + segment.weight, 0);
+  return {
+    order: segments.map((segment) => segment.side),
+    yes: of('yes').map((segment) => segment.canton),
+    no: of('no').map((segment) => segment.canton),
+    weights: [weight('yes'), weight('no')],
+    halves: segments.filter((segment) => segment.weight === 0.5).map((segment) => segment.canton),
+  };
+}
+
+test('the bars of 2016-02-28: the yes share, and the cantons in favour before those against', () => {
+  // Spec verdicts, "The bars of a result": 1,609,152 yes of 3,273,376 valid votes; 16½ of 23.
+  const judged = page(5960).judged;
+  if (judged === null) throw new Error('the vote 5960 is judged');
+  expect(judged.yesPercent).toBeCloseTo(49.1588, 4);
+  const shown = segmentsShown(judged.segments);
+  expect(shown.order).toEqual([...Array<string>(18).fill('yes'), ...Array<string>(8).fill('no')]);
+  expect(shown.yes.join(' ')).toBe('LU UR SZ OW NW GL ZG FR SO SH AI SG AG TG TI VS NE JU');
+  expect(shown.no.join(' ')).toBe('ZH BE BS BL AR GR VD GE');
+  expect(shown.weights).toEqual([16.5, 6.5]);
+  expect(shown.halves.join(' ')).toBe('OW NW AI BS BL AR');
+});
+
+/**
+ * The result of the vote 5960 as its page writes it under limits, each a characteristic's key with
+ * its lower and upper step.
+ */
+function selectionOf5960(limits: readonly (readonly [string, number, number])[]) {
+  const characteristics = characteristicsFile as unknown as CharacteristicsFile;
+  const voteFile = fileOf.get(5960);
+  if (voteFile === undefined) throw new Error('no file of the vote 5960');
+  const { cantons } = voteEntriesOf(
+    voteFile,
+    (mapData as unknown as MapFile).municipalities.map(([number]) => number),
+    Object.values((municipalitiesFile as unknown as Municipalities).swissAbroad),
+  );
+  const applying = applyingTo(characteristics, '2016-02-28');
+  const remaining = remainingUnder(
+    characteristics.municipalities,
+    limits.map(([key, lower, upper]) => {
+      const definition = DEFINITIONS.find((candidate) => candidate.key === key);
+      if (definition === undefined) throw new Error(`there is no characteristic ${key}`);
+      return { track: trackOf(definition, characteristics, applying), lower, upper };
+    }),
+  );
+  return judgedOf(
+    calculateResult(entriesThatRemain(cantons, remaining, true), 'voters-and-cantons'),
+    'voters-and-cantons',
+    cantons.map((canton) => canton.canton),
+    de,
+  );
+}
+
+test('the bars of a selection: a canton with nothing left has no segment', () => {
+  // Spec verdicts, "A canton with nothing left": foreigners up to 19.98%, 733,402 yes of
+  // 1,397,775 valid votes, 18 of 22½ (investigations/limits.md, 5).
+  const selection = selectionOf5960([['foreigners', 0, 327]]);
+  expect(selection.yesPercent).toBeCloseTo(52.4692, 4);
+  const shown = segmentsShown(selection.segments);
+  expect(selection.segments).toHaveLength(25);
+  expect([...shown.yes, ...shown.no]).not.toContain('BS');
+  expect(shown.weights).toEqual([18, 4.5]);
+  expect(shown.order.indexOf('no')).toBe(shown.yes.length);
+});
+
+test('the bars of a result with nothing left: no yes share and no segment', () => {
+  // Spec verdicts, "Nothing remains": both bars are empty.
+  const nothing = judgedOf(
+    calculateResult([], 'voters-and-cantons'),
+    'voters-and-cantons',
+    ['ZH', 'BE'],
+    de,
+  );
+  expect(nothing.yesPercent).toBeNull();
+  expect(nothing.segments).toEqual([]);
 });
