@@ -7,17 +7,30 @@
 
 /* Every colour of the page, named once (decision 3). Each text has at least 4.5:1 on the ground,
    each border at least 3:1 (investigations/site-style.md, 3). The map's own colours are in
-   src/lib/result-map.ts. */
+   src/lib/result-map.ts.
+
+   Colour means a result (design of redesign-site, decisions 1 and 2;
+   investigations/redesign.md, 5): links, controls and the ring of focus take the text's colour.
+   The two parts of a bar take the map's class 3, in the dark scheme its class 2, each at least
+   3:1 as a graphic; the bins of a histogram outside a limit 3.36:1. The ground of a row pointed
+   at, the empty part of a track and the hairline between rows are below 3:1 and carry no meaning
+   of their own. The grey of a majority that is not needed stays on the ground: on the ground of
+   a row pointed at it has 4.13:1. */
 :root {
   color-scheme: light dark;
   --ground: #ffffff;
   --text: #1c1c1c;
   --text-secondary: #595959;
-  --link: #1a5fb4;
   --greyed: #767676;
   --border: #767676;
   --yes: #007260;
   --no: #934319;
+  --yes-bar: #009c86;
+  --no-bar: #c2673b;
+  --bins-outside: #8c8c8c;
+  --hover: #f4f4f4;
+  --track: #e4e4e4;
+  --hairline: #dedede;
 }
 
 /* The dark scheme follows the browser, also when its preference changes on an open page; there
@@ -27,11 +40,16 @@
     --ground: #121212;
     --text: #e8e8e8;
     --text-secondary: #b0b0b0;
-    --link: #8ab4f8;
     --greyed: #9a9a9a;
     --border: #9a9a9a;
     --yes: #4bc1ad;
     --no: #e5946f;
+    --yes-bar: #4bc1ad;
+    --no-bar: #e5946f;
+    --bins-outside: #6e6e6e;
+    --hover: #1c1c1c;
+    --track: #303030;
+    --hairline: #333333;
   }
 }
 
@@ -62,8 +80,15 @@ h4 {
   line-height: 1.25;
 }
 
+/* A link is the text's colour, underlined; the underline thickens when it is pointed at. */
 a {
-  color: var(--link);
+  color: var(--text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
 }
 
 /* A vote's date and kind, sources and notes. */
@@ -108,12 +133,13 @@ button:disabled {
 }
 
 input[type='checkbox'] {
-  accent-color: var(--link);
+  accent-color: var(--text);
 }
 
 /* Whatever has the focus from the keyboard, links included, shows a ring of 2 pixels in the
-   colour of links (decision 10); the thumbs of a limit draw theirs in Limits.svelte. */
+   text's colour (decision 10; design of redesign-site, decision 1); the thumbs of a limit draw
+   theirs in Limits.svelte. */
 :focus-visible {
-  outline: 2px solid var(--link);
+  outline: 2px solid var(--text);
   outline-offset: 2px;
 }

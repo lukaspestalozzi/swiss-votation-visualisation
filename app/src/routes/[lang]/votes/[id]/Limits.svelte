@@ -228,11 +228,11 @@
     pointer-events: auto;
   }
   .track input:focus-visible::-webkit-slider-thumb {
-    outline: 2px solid var(--link);
+    outline: 2px solid var(--text);
     outline-offset: 2px;
   }
   .track input:focus-visible::-moz-range-thumb {
-    outline: 2px solid var(--link);
+    outline: 2px solid var(--text);
     outline-offset: 2px;
   }
   /* On a touch screen the list, the buttons and the switch take at least 44 × 44 pixels; the
