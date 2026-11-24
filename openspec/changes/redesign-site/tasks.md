@@ -66,7 +66,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 - [x] 3.2 Let the wheel zoom the map only while Ctrl or ⌘ is held. Verify: browser tests of
   result-map "Zooming with the wheel" and "The wheel alone scrolls the page" pass, and the
   budget test of zooming, which now holds Ctrl, passes.
-- [ ] 3.3 Run every test of `app/e2e/result-map.spec.ts` in the new layout, the three budget tests
+- [x] 3.3 Run every test of `app/e2e/result-map.spec.ts` in the new layout, the three budget tests
   and the tests that point at a municipality among them, and change only what names the old
   place of the panel. Verify: all its tests pass.
 
