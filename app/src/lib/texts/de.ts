@@ -220,7 +220,7 @@ export const de: Texts = {
     `In der Auswahl: ${remaining} von ${all} Gemeinden mit eigenem Ergebnis.`,
   NOTHING_REMAINS: 'Keine Gemeinde mit eigenem Ergebnis ist übrig.',
   BACK_TO_REAL: 'Zurück zum echten Ergebnis',
-  ADD: 'Hinzufügen',
+  CLOSE_LIST: 'Schliessen',
 
   // The reading guide (spec reading-guide).
   GUIDE_HEADING: 'Lesehilfe',

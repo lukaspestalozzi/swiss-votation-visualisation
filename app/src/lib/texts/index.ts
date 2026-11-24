@@ -210,7 +210,8 @@ export interface Texts {
   readonly remainingCount: (remaining: string, all: string) => string;
   readonly NOTHING_REMAINS: string;
   readonly BACK_TO_REAL: string;
-  readonly ADD: string;
+  /** The button that closes the list of characteristics without a choice. */
+  readonly CLOSE_LIST: string;
 
   // The reading guide (spec reading-guide).
   readonly GUIDE_HEADING: string;

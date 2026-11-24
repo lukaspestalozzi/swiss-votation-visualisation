@@ -76,7 +76,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   Verify: unit tests pass for "Ausländeranteil" of the vote day 2016-02-28 (the first bar 10, the
   ninth 140, Zürich at step 525), "Einwohner" (the 21st bar 146) and "SVP" of the vote 6400
   (2,104 municipalities): `pnpm --filter app exec vitest run src/lib/limits.test.ts`.
-- [ ] 4.2 Replace the list and "Hinzufügen" by the button "Merkmal hinzufügen" and a dialog,
+- [x] 4.2 Replace the list and "Hinzufügen" by the button "Merkmal hinzufügen" and a dialog,
   `CharacteristicList.svelte`: the characteristics without a limit under the eight headings,
   "Schliessen" in three languages, the button not usable when none is left; change the tests'
   helper that adds a limit. Verify: browser tests of limits "Adding and removing a limit" (eight

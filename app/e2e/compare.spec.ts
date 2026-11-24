@@ -231,7 +231,7 @@ test('A link to a comparison', async ({ page }) => {
 
 test('The address follows the choice', async ({ page }) => {
   await page.goto('de/compare/#votes=5960');
-  await expect(page.locator('.limits select')).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   await page.getByLabel('Zweite Abstimmung').selectOption('5970');
   await expect(page).toHaveURL(/\/de\/compare\/#votes=5960,5970$/);
 });
@@ -250,7 +250,7 @@ test('A vote the comparison cannot use', async ({ page }) => {
 
 test('A link to a comparison in the same tab', async ({ page }) => {
   await page.goto('de/compare/#votes=5960,5970');
-  await expect(page.locator('.limits select')).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   await page.goto('de/compare/#votes=6310,5960&foreigners=-19.98');
   await expect(page.getByLabel('Erste Abstimmung')).toHaveValue('6310');
   await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('5960');
@@ -297,7 +297,7 @@ test('The language switch carries the comparison', async ({ page }) => {
 test('A link without votes in the same tab', async ({ page }) => {
   // The address keeps a selection that waits for a first vote, as when the page opens with it.
   await page.goto('de/compare/#votes=5960');
-  await expect(page.locator('.limits select')).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   await page.goto('de/compare/#foreigners=-19.98');
   await expect(page.getByLabel('Erste Abstimmung')).toHaveValue('');
   await expect(page.locator('.limit')).toHaveCount(0);
@@ -313,7 +313,7 @@ test('A link without votes in the same tab', async ({ page }) => {
 test('The second vote chosen as the first', async ({ page }) => {
   // Design, decision 9: the second choice is emptied.
   await page.goto('de/compare/#votes=5960,5970');
-  await expect(page.locator('.limits select')).toBeVisible();
+  await expect(addButton(page)).toBeVisible();
   await page.getByLabel('Erste Abstimmung').selectOption('5970');
   await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('');
   await expect(page.locator('[data-vote]')).toHaveCount(1);
@@ -534,8 +534,8 @@ test.describe(() => {
       await page.waitForTimeout(50);
       await control.click();
     };
-    await limitList(page).selectOption({ label: 'Einwohner' });
     await press(addButton(page));
+    await press(limitList(page).getByRole('button', { name: 'Einwohner', exact: true }));
     const abroad = page.getByRole('checkbox', {
       name: /Auslandschweizerinnen und Auslandschweizer mitzählen/,
     });

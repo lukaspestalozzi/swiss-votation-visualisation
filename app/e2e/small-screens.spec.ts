@@ -9,6 +9,7 @@ import {
   barDrawn,
   cantonsBarOf,
   limitList,
+  listEntries,
   majoritiesOf,
   outcomeOf,
   ownResult,
@@ -59,8 +60,8 @@ test.describe('the list of the limits in a window 360 pixels wide', () => {
   test('the list and the limit of the longest name fit the window, in three languages', async ({
     page,
   }) => {
-    // A list is as wide as its longest entry: the longest name of each language (design of
-    // add-more-characteristics, decisions 2 and 13).
+    // The list holds the longest name of each language (design of add-more-characteristics,
+    // decisions 2 and 13), and is no wider than the window.
     const longest = [
       ['de', 'Bio-Anteil der landwirtschaftlichen Nutzfläche'],
       ['fr', 'Haute école ou formation professionnelle supérieure'],
@@ -69,8 +70,14 @@ test.describe('the list of the limits in a window 360 pixels wide', () => {
     for (const [language, name] of longest) {
       await page.goto(`${language}/votes/5960/`);
       await page.locator('.municipalities path').nth(2000).waitFor();
-      await expect(limitList(page, language)).toBeVisible();
+      await addButton(page, language).click();
+      const list = await limitList(page, language).boundingBox();
+      expect(list?.x, `${language}: the list`).toBeGreaterThanOrEqual(0);
+      expect((list?.x ?? 0) + (list?.width ?? 361), `${language}: the list`).toBeLessThanOrEqual(
+        360,
+      );
       expect(await pageWidth(page), `${language}: the list`).toBeLessThanOrEqual(360);
+      await page.keyboard.press('Escape');
       await addLimit(page, name, language);
       await expect(page.locator('.limit .label')).toContainText(name);
       expect(await pageWidth(page), `${language}: the limit`).toBeLessThanOrEqual(360);
@@ -125,8 +132,7 @@ test.describe('on a phone', () => {
       '+': page.getByRole('button', { name: 'Vergrössern' }),
       '−': page.getByRole('button', { name: 'Verkleinern' }),
       'Ganze Schweiz': page.getByRole('button', { name: 'Ganze Schweiz' }),
-      'Merkmal hinzufügen': limitList(page),
-      Hinzufügen: addButton(page),
+      'Merkmal hinzufügen': addButton(page),
       Entfernen: page.getByRole('button', { name: 'Entfernen: Ausländeranteil' }),
       'Zurück zum echten Ergebnis': page.getByRole('button', {
         name: 'Zurück zum echten Ergebnis',
@@ -141,6 +147,29 @@ test.describe('on a phone', () => {
       }),
     );
     expect(sizes).toEqual(Object.keys(controls).map((name) => [name, [true, true]]));
+  });
+
+  test('the list of characteristics: each entry and "Schliessen" at least 44 × 44 pixels', async ({
+    page,
+  }) => {
+    // Spec small-screens, "The list of characteristics on a phone".
+    await page.goto('de/votes/5960/');
+    await addButton(page).tap();
+    await expect(limitList(page)).toBeVisible();
+    await expect(listEntries(page)).toHaveCount(35);
+    const small = await limitList(page)
+      .locator('button')
+      .evaluateAll((buttons) =>
+        buttons
+          .map((button) => [button.textContent.trim(), button.getBoundingClientRect()] as const)
+          .filter(([, box]) => box.width < 44 || box.height < 44)
+          .map(([name, box]) => `${name}: ${String(box.width)} × ${String(box.height)}`),
+      );
+    expect(small).toEqual([]);
+    const list = await limitList(page).boundingBox();
+    const width = page.viewportSize()?.width ?? 0;
+    expect(list?.x).toBeGreaterThanOrEqual(0);
+    expect((list?.x ?? 0) + (list?.width ?? width + 1)).toBeLessThanOrEqual(width);
   });
 
   test('a thumb takes a press 20 pixels beside its centre', async ({ page }) => {
