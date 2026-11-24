@@ -121,6 +121,48 @@ a:hover {
   color: var(--no);
 }
 
+/* A bar (spec site-style, "The colours of a bar"): its yes part, a gap of two pixels of the
+   ground, its no part, and across it the mark at half. The gap is drawn inside the two parts, a
+   pixel each, so that a part is exactly as wide as its share. */
+.bar {
+  position: relative;
+  display: flex;
+  height: 0.875rem;
+  margin: 0.375rem 0 0.25rem;
+  background: var(--track);
+}
+
+.bar > .yes {
+  background: var(--yes-bar);
+  box-shadow: inset -1px 0 0 var(--ground);
+}
+
+.bar > .no {
+  flex: 1 0 0;
+  background: var(--no-bar);
+  box-shadow: inset 1px 0 0 var(--ground);
+}
+
+.bar > .half {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  box-shadow: 0 0 0 1px var(--ground);
+}
+
+/* A bar that judges nothing takes no side's colour. */
+.bar.neutral > .yes {
+  background: var(--text);
+}
+
+.bar.neutral > .no {
+  background: var(--bins-outside);
+}
+
 /* Controls take the page's font, which browsers do not give them by themselves. */
 button,
 input,

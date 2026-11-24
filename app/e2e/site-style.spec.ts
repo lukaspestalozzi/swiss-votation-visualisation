@@ -211,6 +211,17 @@ test.describe('the colours of a bar', () => {
   }
 });
 
+test("a bar that judges nothing takes no side's colour: the tie-break question's", async ({
+  page,
+}) => {
+  // Spec site-style, "A bar that judges nothing": the text's colour and #8c8c8c.
+  await page.goto('de/votes/6823/');
+  const drawn = await barDrawn(page.locator('.bar'));
+  const y = drawn.top + drawn.height / 2;
+  expect(await pixelAt(page, drawn.left + drawn.width / 8, y)).toEqual([28, 28, 28]);
+  expect(await pixelAt(page, drawn.left + (drawn.width * 7) / 8, y)).toEqual([140, 140, 140]);
+});
+
 test.describe("the verdicts in the map's colours", () => {
   test('2016-02-28: "Nein" and "Abgelehnt" #934319, "Ja" #007260, also in the list', async ({
     page,

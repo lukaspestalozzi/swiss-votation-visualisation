@@ -25,6 +25,7 @@
   import { loadCharacteristics } from './loaders.ts';
   import ResultMap from './ResultMap.svelte';
   import ResultRow from './ResultRow.svelte';
+  import ShareBar from '../../ShareBar.svelte';
   import SelectionBar from './SelectionBar.svelte';
 
   let { data }: PageProps = $props();
@@ -236,9 +237,12 @@
 {/if}
 
 {#if data.tieBreak !== null}
-  <section>
+  <!-- The tie-break question is not judged, so its bar takes no side's colour (design of
+       redesign-site, decision 14). -->
+  <section class="tie-break">
     <p>{data.tieBreak.initiative}</p>
     <p>{data.tieBreak.counterProposal}</p>
+    <ShareBar percent={data.tieBreak.initiativePercent} neutral />
     <p>{data.tieBreak.cantons}</p>
     <p>{data.tieBreak.notJudged}</p>
   </section>
@@ -277,6 +281,10 @@
      (`ResultRow.svelte`). */
   .results {
     container-type: inline-size;
+  }
+  /* The tie-break question's bar is no wider than its lines of text. */
+  .tie-break {
+    max-width: 36rem;
   }
   /* The place of the selection's result, below the vote's. */
   .place {
