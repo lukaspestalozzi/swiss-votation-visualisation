@@ -1,0 +1,1626 @@
+/* The stylesheet of the mockups of redesign-site (investigations/redesign.md, 6): the look the
+   change's design describes. Throwaway: not product code. The later rules of a part, from the
+   mockups' second round, override the earlier ones. */
+
+/* ---------- Tokens ---------- */
+:root {
+  color-scheme: light dark;
+  --ground: #ffffff;
+  --surface: #f4f4f4;
+  --text: #1c1c1c;
+  --text-secondary: #595959;
+  --greyed: #6e6e6e;
+  --hairline: #dedede;
+  --control: #767676;
+  --ink: #1c1c1c;
+  --on-ink: #ffffff;
+  --yes: #007260;
+  --no: #934319;
+  --yes-fill: #009c86;
+  --no-fill: #c2673b;
+  --rest: #e4e4e4;
+  --lake: #9fb8e8;
+  --canton-line: #333333;
+  --hatch: #999999;
+  --halo: #ffffff;
+  --outline: #000000;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --ground: #121212;
+    --surface: #1c1c1c;
+    --text: #e8e8e8;
+    --text-secondary: #b0b0b0;
+    --greyed: #9a9a9a;
+    --hairline: #333333;
+    --control: #9a9a9a;
+    --ink: #e8e8e8;
+    --on-ink: #121212;
+    --yes: #4bc1ad;
+    --no: #e5946f;
+    --yes-fill: #4bc1ad;
+    --no-fill: #e5946f;
+    --rest: #303030;
+  }
+}
+:root[data-theme='dark'] {
+  --ground: #121212;
+  --surface: #1c1c1c;
+  --text: #e8e8e8;
+  --text-secondary: #b0b0b0;
+  --greyed: #9a9a9a;
+  --hairline: #333333;
+  --control: #9a9a9a;
+  --ink: #e8e8e8;
+  --on-ink: #121212;
+  --yes: #4bc1ad;
+  --no: #e5946f;
+  --yes-fill: #4bc1ad;
+  --no-fill: #e5946f;
+  --rest: #303030;
+}
+
+/* ---------- Base ---------- */
+* {
+  box-sizing: border-box;
+}
+html {
+  font-family: 'Source Sans 3 Variable', sans-serif;
+  font-size: 100%;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--ground);
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+}
+h1,
+h2,
+h3,
+p,
+ul,
+dl,
+dd {
+  margin: 0;
+}
+ul {
+  padding: 0;
+  list-style: none;
+}
+a {
+  color: var(--ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+a:hover {
+  text-decoration-thickness: 2px;
+}
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.secondary {
+  color: var(--text-secondary);
+}
+.side-yes {
+  color: var(--yes);
+}
+.side-no {
+  color: var(--no);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.small {
+  font-size: 0.875rem;
+}
+
+/* ---------- Head of every page ---------- */
+.head {
+  border-bottom: 1px solid var(--hairline);
+}
+.head-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 2rem;
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: 0.75rem 2rem;
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.wordmark svg {
+  display: block;
+}
+.nav {
+  display: flex;
+  gap: 1.5rem;
+}
+.nav a,
+.languages a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 0.25rem 0;
+}
+.nav a:hover,
+.languages a:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+.nav [aria-current],
+.languages [aria-current] {
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 2px 0 var(--ink);
+}
+.languages {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+}
+.languages .short {
+  display: none;
+}
+
+/* ---------- Page ---------- */
+.page {
+  max-width: 100rem;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 4rem;
+}
+.start .page,
+.start .head-inner {
+  max-width: 76rem;
+}
+.back {
+  display: inline-block;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.back:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+.vote-head {
+  margin: 0.75rem 0 1.5rem;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  color: var(--text-secondary);
+}
+.tag {
+  display: inline-block;
+  padding: 0.0625rem 0.5rem;
+  border: 1px solid var(--control);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+.title {
+  max-width: 30em;
+  margin-top: 0.375rem;
+  font-size: clamp(1.625rem, 1.1rem + 1.6vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+h2 {
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+h3 {
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+/* ---------- Buttons ---------- */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--control);
+  border-radius: 8px;
+  background: var(--ground);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+.button:hover {
+  border-color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.button.wide {
+  width: 100%;
+}
+.text-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+@media (pointer: coarse) {
+  .button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ---------- The result: the real one above the selection's, bar above bar ---------- */
+.result {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.5rem 2.5rem;
+  align-items: start;
+}
+.result + .result {
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--hairline);
+}
+.result-label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.result .word {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.meter-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+}
+.meter-name {
+  font-weight: 600;
+}
+.meter-head .figure {
+  margin-left: auto;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.meter-head .verdict {
+  font-weight: 600;
+}
+.bar {
+  position: relative;
+  display: flex;
+  height: 0.875rem;
+  margin: 0.375rem 0 0.25rem;
+  background: var(--rest);
+}
+.bar .yes {
+  background: var(--yes-fill);
+}
+.bar .no {
+  flex: 1;
+  background: var(--no-fill);
+}
+/* The line a proposal has to cross: half of the votes. */
+.bar .half {
+  position: absolute;
+  left: 50%;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  box-shadow: 0 0 0 1px var(--ground);
+}
+.bar.cantons span {
+  border-right: 1px solid var(--ground);
+}
+.meter-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.result.empty {
+  display: block;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--control);
+  border-radius: 10px;
+  color: var(--text-secondary);
+}
+.result + .result.empty {
+  margin-top: 1rem;
+}
+.result.empty b {
+  color: var(--text);
+}
+
+/* ---------- The map ---------- */
+.map-frame {
+  position: relative;
+}
+.map-frame > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.map .municipalities path {
+  stroke: var(--ground);
+  stroke-width: 0.5px;
+  vector-effect: non-scaling-stroke;
+}
+.map .hatch-ground {
+  fill: var(--ground);
+}
+.map .cantons path {
+  fill: none;
+  stroke: var(--canton-line);
+  stroke-width: 1.25px;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.map .outlined path {
+  fill: none;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.map .outlined .halo {
+  stroke: var(--halo);
+  stroke-width: 7px;
+}
+.map .outlined .line {
+  stroke: var(--outline);
+  stroke-width: 3px;
+}
+.details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  min-width: 11rem;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ground) 94%, transparent);
+  font-size: 0.9375rem;
+}
+.details .name {
+  font-weight: 700;
+}
+.details .bar {
+  height: 0.5rem;
+}
+.details .figures {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.zoom {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--control);
+  border-radius: 8px;
+  background: var(--ground);
+  overflow: hidden;
+}
+.zoom button {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.zoom button + button {
+  border-top: 1px solid var(--hairline);
+}
+.zoom button:hover {
+  background: var(--surface);
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem 2rem;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+}
+.scale {
+  flex: 0 1 22rem;
+  min-width: 15rem;
+}
+.scale-name {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.125rem;
+}
+.scale-name .side-no,
+.scale-name .side-yes {
+  font-weight: 600;
+}
+.scale-steps {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  height: 0.625rem;
+}
+.scale-ticks {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+.scale-ticks span {
+  text-align: right;
+  transform: translateX(50%);
+}
+.scale-ticks span:last-child {
+  visibility: hidden;
+  transform: none;
+}
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+}
+.keys li {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.swatch {
+  display: inline-block;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid var(--control);
+}
+.source {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+}
+
+/* ---------- The limits ---------- */
+.rail h2 {
+  margin-bottom: 0.5rem;
+}
+.intro {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+.count {
+  margin: 1.25rem 0 0.5rem;
+}
+.count p {
+  font-variant-numeric: tabular-nums;
+}
+.count b {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+.count-bar {
+  height: 0.25rem;
+  margin-top: 0.25rem;
+  background: var(--rest);
+}
+.count-bar span {
+  display: block;
+  height: 100%;
+  background: var(--text);
+}
+.limit {
+  padding: 1rem 0 1.125rem;
+  border-top: 1px solid var(--hairline);
+}
+.limits {
+  margin-top: 1rem;
+  border-bottom: 1px solid var(--hairline);
+}
+.limit-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.limit-head p {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.limit-values {
+  margin-left: auto;
+  padding-top: 0.0625rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.hist {
+  display: block;
+  width: calc(100% - 1.25rem);
+  height: 2.5rem;
+  margin: 0.5rem 0.625rem 0;
+}
+.hist .in {
+  fill: var(--text);
+}
+.hist .out {
+  fill: var(--rest);
+}
+.track {
+  position: relative;
+  height: 1.5rem;
+  margin: 0 0.625rem;
+}
+.track::before {
+  content: '';
+  position: absolute;
+  left: -0.625rem;
+  right: -0.625rem;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--control);
+}
+.track .range {
+  position: absolute;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  background: var(--ink);
+}
+.track .thumb {
+  position: absolute;
+  top: 50%;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: -0.625rem 0 0 -0.625rem;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--ground);
+}
+.here {
+  position: relative;
+  height: 1.375rem;
+  margin: 0.125rem 0.625rem 0;
+  font-size: 0.8125rem;
+}
+.here span {
+  position: absolute;
+  top: 0;
+  padding-top: 0.375rem;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.here span::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  margin-left: -4px;
+  border: 4px solid transparent;
+  border-top: 0;
+  border-bottom: 6px solid var(--text);
+}
+.here span.from-left {
+  transform: translateX(-1rem);
+}
+.here span.from-left::before {
+  left: 1rem;
+}
+.add {
+  margin-top: 1rem;
+}
+.switch {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.125rem 0.75rem;
+  align-items: center;
+  margin-top: 1.25rem;
+  cursor: pointer;
+}
+.switch input {
+  position: absolute;
+  opacity: 0;
+}
+.switch .knob {
+  width: 2.5rem;
+  height: 1.5rem;
+  padding: 2px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+}
+.switch .knob::after {
+  content: '';
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  margin-left: 1rem;
+  border-radius: 50%;
+  background: var(--on-ink);
+}
+.switch small {
+  grid-column: 2;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.rail-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 1.25rem;
+}
+
+/* ---------- Layout B: what you watch beside what you set ---------- */
+.layout-b .workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
+  gap: 3rem;
+  align-items: start;
+}
+.layout-b .watch {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.layout-b .rail {
+  padding-left: 2rem;
+  border-left: 1px solid var(--hairline);
+}
+@media (min-width: 960px) and (min-height: 700px) {
+  .layout-b .watch {
+    position: sticky;
+    top: 1rem;
+  }
+  .layout-b .map-frame > svg {
+    max-height: calc(100vh - 17rem);
+  }
+}
+
+/* ---------- The municipality's characteristics ---------- */
+.section {
+  margin-top: 4rem;
+}
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+}
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 2rem 3rem;
+}
+.group h3 {
+  margin-bottom: 0.375rem;
+}
+.rows .share {
+  grid-column: 2;
+  grid-row: 1;
+  height: 0.5rem;
+  background: linear-gradient(var(--text), var(--text)) left / var(--share) 100% no-repeat
+    var(--rest);
+}
+
+/* ---------- The cantons ---------- */
+.canton-table {
+  columns: 2;
+  column-gap: 4rem;
+  max-width: 64rem;
+}
+.diverging {
+  position: relative;
+  height: 0.75rem;
+  background: linear-gradient(var(--rest), var(--rest)) center / 100% 2px no-repeat;
+}
+.diverging i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+.diverging .yes {
+  left: 50%;
+  background: var(--yes-fill);
+}
+.diverging .no {
+  right: 50%;
+  background: var(--no-fill);
+}
+.diverging .half {
+  left: 50%;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--text);
+}
+.diverging .real {
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--text);
+  box-shadow: 0 0 0 1px var(--ground);
+}
+.canton-note {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.notes {
+  max-width: 40rem;
+}
+.notes h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.125rem;
+}
+.notes p {
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+
+/* ---------- The bar of a narrow window ---------- */
+.selection-bar {
+  display: none;
+}
+
+/* ---------- The start page ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
+  gap: 3rem;
+  align-items: center;
+  padding: 2.5rem 0 3.5rem;
+}
+.hero h1 {
+  font-size: clamp(2rem, 1rem + 3.2vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lead {
+  max-width: 34rem;
+  margin-top: 1.25rem;
+  font-size: 1.1875rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+.hero .lead a {
+  white-space: nowrap;
+}
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--ground);
+}
+.toolbar h2 {
+  margin-right: auto;
+}
+.years {
+  display: flex;
+  flex-basis: 100%;
+  gap: 0.25rem 1rem;
+  overflow-x: auto;
+  font-variant-numeric: tabular-nums;
+}
+.years a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.years a:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+.search {
+  flex: 0 1 18rem;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--control);
+  border-radius: 8px;
+  background: var(--ground);
+}
+.chips {
+  display: flex;
+  gap: 0.375rem;
+}
+.chip {
+  min-height: 2.5rem;
+  padding: 0.25rem 0.875rem;
+  border: 1px solid var(--control);
+  border-radius: 999px;
+  background: var(--ground);
+  cursor: pointer;
+}
+.chip[aria-pressed='true'] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-ink);
+  font-weight: 600;
+}
+.year {
+  display: grid;
+  grid-template-columns: 5rem minmax(0, 1fr);
+  gap: 0 1.5rem;
+  padding-top: 2rem;
+  scroll-margin-top: 7rem;
+}
+.year > h3 {
+  position: sticky;
+  top: 7rem;
+  align-self: start;
+  font-size: 2rem;
+  font-weight: 300;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.day {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 0 1.5rem;
+  border-top: 1px solid var(--control);
+}
+.day-date {
+  padding-top: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--text-secondary);
+}
+.vote-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 5.5rem 4.25rem 9.75rem;
+  gap: 0 1.25rem;
+  align-items: baseline;
+  padding: 0.5rem;
+  margin: 0 -0.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+.vote-row + .vote-row {
+  border-top: 1px solid var(--hairline);
+}
+.vote-row:hover {
+  background: var(--surface);
+}
+.vote-row:hover .vote-title {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+.vote-title {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.vote-kind {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.vote-row .bar {
+  align-self: center;
+  height: 0.5rem;
+  margin: 0;
+}
+.vote-row .bar .half {
+  top: -3px;
+  bottom: -3px;
+}
+.vote-share {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.vote-verdict {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vote-verdict .tag {
+  margin-left: 0.125rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.no-match {
+  display: none;
+  padding: 2rem 0;
+  color: var(--text-secondary);
+}
+
+/* ---------- The mockup's own switches: not part of the design ---------- */
+.mock-tools {
+  position: fixed;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.375rem 0.5rem;
+  border: 1px solid #b3b3b3;
+  border-radius: 10px;
+  background: #fffbe6;
+  color: #1c1c1c;
+  font-size: 0.8125rem;
+}
+.mock-tools button {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid #767676;
+  border-radius: 6px;
+  background: #fff;
+  color: #1c1c1c;
+  cursor: pointer;
+}
+html.clean .mock-tools {
+  display: none;
+}
+
+/* ---------- Narrower windows ---------- */
+@media (max-width: 959.98px) {
+  .layout-b .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  .layout-b .rail {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+    padding: 1.5rem 0 2.5rem;
+  }
+}
+@media (max-width: 639.98px) {
+  .head-inner {
+    gap: 0.25rem 1.25rem;
+    padding: 0.625rem 1rem;
+  }
+  .nav {
+    order: 3;
+    flex-basis: 100%;
+    gap: 1.25rem;
+  }
+  .languages {
+    gap: 0.75rem;
+  }
+  .languages .long {
+    display: none;
+  }
+  .languages .short {
+    display: inline;
+  }
+  .page {
+    padding: 1rem 1rem 3rem;
+  }
+  .vote-head {
+    margin: 0.75rem 0 1.5rem;
+  }
+  .result {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+  }
+  .result + .result {
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+  }
+  /* The map from edge to edge, its buttons in a row above it. */
+  .map-frame {
+    display: flex;
+    flex-direction: column;
+    margin: 0 -1rem;
+  }
+  .zoom {
+    position: static;
+    order: -1;
+    flex-direction: row;
+    align-self: flex-end;
+    margin: 0 1rem 0.5rem;
+  }
+  .zoom button {
+    width: 44px;
+    height: 44px;
+  }
+  .zoom button + button {
+    border-top: 0;
+    border-left: 1px solid var(--hairline);
+  }
+  .details {
+    left: 1rem;
+  }
+  .section {
+    margin-top: 3rem;
+  }
+  .canton-table {
+    columns: 1;
+  }
+  .selection-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.75rem;
+    padding: 0.625rem 1rem;
+    border-top: 1px solid var(--hairline);
+    background: var(--ground);
+    font-size: 0.9375rem;
+  }
+  .selection-bar b {
+    font-size: 1.0625rem;
+  }
+  .year {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 1.5rem;
+  }
+  .year > h3 {
+    position: static;
+    margin-bottom: 0.5rem;
+    font-size: 1.75rem;
+  }
+  .day {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .day-date {
+    padding: 0.5rem 0 0;
+  }
+  .vote-row {
+    grid-template-columns: 5rem auto minmax(0, 1fr);
+    gap: 0.125rem 0.75rem;
+    align-items: center;
+  }
+  .vote-row .vote-title {
+    grid-column: 1 / -1;
+  }
+  .vote-row .bar {
+    grid-column: 1;
+  }
+  .vote-share {
+    text-align: left;
+  }
+  .toolbar h2 {
+    flex-basis: 100%;
+  }
+  .search {
+    flex: 1 1 100%;
+  }
+  .chip,
+  .search {
+    min-height: 44px;
+  }
+}
+
+/* ---------- Second round: today's wording kept, the remaining pages ---------- */
+:root {
+  --bins-out: #8c8c8c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bins-out: #6e6e6e;
+  }
+}
+:root[data-theme='dark'] {
+  --bins-out: #6e6e6e;
+}
+
+/* The head: a mark drawn with CSS, the page's own entry as text. */
+.mark {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 1.25rem;
+  height: 0.625rem;
+  background: linear-gradient(to right, var(--yes-fill) 0 58%, var(--no-fill) 58% 100%);
+}
+.mark::after {
+  content: '';
+  position: absolute;
+  left: 46%;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: var(--text);
+}
+.nav span[aria-current],
+.languages > span {
+  padding: 0.25rem 0;
+  color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 2px 0 var(--text);
+}
+.guide .page,
+.guide .head-inner {
+  max-width: 76rem;
+}
+
+/* A bar: a gap of the ground between its two sides. */
+.bar .yes {
+  box-sizing: border-box;
+  border-right: 2px solid var(--ground);
+}
+.bar.cantons .yes {
+  border-right-width: 1px;
+}
+.bar.neutral .yes {
+  background: var(--text);
+}
+.bar.neutral .no {
+  background: var(--bins-out);
+}
+.hist .out {
+  fill: var(--bins-out);
+}
+.unneeded .meter-name {
+  color: var(--text);
+}
+.unneeded .verdict {
+  font-weight: 400;
+}
+.unneeded .figure {
+  font-weight: 400;
+  color: var(--greyed);
+}
+
+/* The map's own picture. */
+.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.details ul {
+  margin: 0;
+  padding: 0;
+}
+.details li {
+  font-size: 0.9375rem;
+  font-variant-numeric: tabular-nums;
+}
+.details-bar .bar {
+  height: 0.5rem;
+  margin: 0.25rem 0 0.375rem;
+}
+.zoom {
+  flex-direction: row;
+}
+.zoom button + button {
+  border-top: 0;
+  border-left: 1px solid var(--hairline);
+}
+.zoom .whole {
+  width: auto;
+  padding: 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* A limit: its label as today, in three parts. */
+.label .name {
+  font-weight: 700;
+}
+.label .date {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.label .bounds {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+.remove {
+  flex: none;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.count b {
+  font-size: 1.25rem;
+}
+.add-wrap {
+  position: relative;
+  margin-top: 1rem;
+}
+.add-wrap .add {
+  margin-top: 0;
+}
+.switch {
+  align-items: start;
+}
+.switch .knob {
+  margin-top: 0.125rem;
+}
+
+/* The list of "Merkmal hinzufügen", open. */
+.picker {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  width: min(46rem, calc(100vw - 2rem));
+  padding: 1rem 1.25rem 0.5rem;
+  border: 1px solid var(--control);
+  border-radius: 12px;
+  background: var(--ground);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.2);
+}
+.picker-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.picker-groups {
+  columns: 3 12rem;
+  column-gap: 2rem;
+}
+.picker-groups > div {
+  break-inside: avoid;
+  padding-bottom: 1rem;
+}
+.picker h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.picker li button {
+  display: block;
+  width: calc(100% + 1rem);
+  margin: 0 -0.5rem;
+  padding: 0.25rem 0.5rem;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.picker li button:hover {
+  background: var(--surface);
+}
+
+/* Below the workbench: the municipality beside the cantons. */
+.below {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 25rem);
+  gap: 3rem;
+  align-items: start;
+  margin-top: 4rem;
+}
+.below h3 {
+  font-size: 1.375rem;
+  line-height: 1.2;
+}
+.panel .name {
+  font-weight: 700;
+}
+.panel .groups {
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1.75rem 2.5rem;
+}
+.group h4 {
+  margin: 0 0 0.375rem;
+  font-size: 1rem;
+  line-height: 1.3;
+}
+.rows li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 4rem 4.75rem;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.1875rem 0;
+  border-top: 1px solid var(--hairline);
+  font-size: 0.9375rem;
+}
+.rows .row-value {
+  grid-column: 3;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.canton-table {
+  columns: auto;
+  width: 100%;
+  max-width: none;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.canton-table caption {
+  padding-bottom: 0.25rem;
+  text-align: left;
+  color: var(--text-secondary);
+}
+.canton-table th,
+.canton-table td {
+  padding: 0.25rem 0.75rem 0.25rem 0;
+  border-top: 1px solid var(--hairline);
+  text-align: left;
+  white-space: nowrap;
+}
+.canton-table thead th {
+  border-top: 0;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.canton-table .num {
+  text-align: right;
+}
+.canton-table td:last-child,
+.canton-table th:last-child {
+  padding-right: 0;
+}
+.share-cell {
+  width: 100%;
+}
+.share-cell > span {
+  display: inline-block;
+  width: 3.75rem;
+}
+.share-cell .diverging {
+  display: inline-block;
+  width: calc(100% - 4.25rem);
+  min-width: 4rem;
+  vertical-align: middle;
+}
+.canton-table .none {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* The comparison: the two votes one below the other, bar above bar. */
+.layout-b.compare .watch {
+  position: static;
+  gap: 0;
+}
+.compared + .compared {
+  margin-top: 2.25rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--control);
+}
+.choose {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+.choose span {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.choose select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--control);
+  border-radius: 8px;
+  background: var(--ground);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+}
+.compared-count {
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+}
+.same {
+  max-width: 40rem;
+  margin-top: 2rem;
+  color: var(--text-secondary);
+}
+
+/* The guide: a column of text. */
+.prose {
+  max-width: 42rem;
+}
+.prose section + section {
+  margin-top: 2.5rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--hairline);
+}
+.prose h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1.5rem;
+}
+.prose p {
+  max-width: none;
+  margin-top: 0.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.prose ul {
+  margin-top: 0.75rem;
+  padding-left: 1.25rem;
+  list-style: disc;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+
+/* Single states. */
+.part-note {
+  max-width: 52rem;
+  margin: 4rem 0 1.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #b3b3b3;
+  border-radius: 8px;
+  background: #fffbe6;
+  color: #1c1c1c;
+  font-size: 0.875rem;
+}
+.part-note:first-child {
+  margin-top: 0;
+}
+.results.narrow {
+  max-width: 54rem;
+}
+.tiebreak {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 36rem;
+  font-variant-numeric: tabular-nums;
+}
+.picker-demo {
+  position: relative;
+  max-width: 24rem;
+  min-height: 62rem;
+}
+.picker-demo .rail {
+  padding-left: 0;
+  border-left: 0;
+}
+
+/* The start page's rows: the share with its side, the verdict as today's word. */
+.vote-row {
+  grid-template-columns: minmax(0, 1fr) 5.5rem 5.25rem 9.25rem;
+}
+.vote-verdict.plain {
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+.selection-bar p {
+  margin: 0;
+}
+
+@media (max-width: 959.98px) {
+  .below {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 3rem;
+  }
+}
+@media (max-width: 639.98px) {
+  .zoom .whole {
+    height: 44px;
+  }
+  .selection-bar {
+    display: block;
+  }
+  .vote-row {
+    grid-template-columns: 5rem auto minmax(0, 1fr);
+  }
+  .rows li {
+    grid-template-columns: minmax(0, 1fr) 3rem 4.75rem;
+    gap: 0.5rem;
+  }
+  .picker-groups {
+    columns: 1;
+  }
+}
+@media (max-width: 639.98px) {
+  .canton-table .none {
+    white-space: normal;
+  }
+  .canton-table th,
+  .canton-table td {
+    padding-right: 0.5rem;
+  }
+  .share-cell .diverging {
+    min-width: 3rem;
+  }
+}
+
+/* The start page opens with its question and one sentence. */
+.hero.plain {
+  display: block;
+  padding: 2.5rem 0 3rem;
+}
+.hero.plain h1 {
+  max-width: 17em;
+}
+@media (max-width: 639.98px) {
+  .hero.plain {
+    padding: 1.25rem 0 2rem;
+  }
+}
+
+/* The workbench from 1,024 pixels: below that the limits' column leaves the map too little. */
+.layout-b .workspace {
+  grid-template-columns: minmax(0, 1fr) clamp(19rem, 30vw, 24rem);
+}
+@media (max-width: 1023.98px) {
+  .layout-b .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  .layout-b .rail {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .layout-b .watch {
+    position: static;
+  }
+  .layout-b .map-frame > svg {
+    max-height: none;
+  }
+}
+
+/* A result by the room it has: in a row, the verdict above the two majorities, or all stacked. */
+.results {
+  container-type: inline-size;
+}
+@container (max-width: 40rem) {
+  .result {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 0.75rem 2rem;
+  }
+  .result > :first-child {
+    grid-column: 1 / -1;
+  }
+}
+@container (max-width: 28rem) {
+  .result {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
