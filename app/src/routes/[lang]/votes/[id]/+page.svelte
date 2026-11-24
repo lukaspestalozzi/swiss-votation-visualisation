@@ -21,7 +21,9 @@
   import { judgedOf } from '../../../../lib/vote-page.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import type { PageProps } from './$types';
+  import CharacteristicsPanel from './CharacteristicsPanel.svelte';
   import Limits from './Limits.svelte';
+  import MapNotes from './MapNotes.svelte';
   import { loadCharacteristics } from './loaders.ts';
   import ResultMap from './ResultMap.svelte';
   import ResultRow from './ResultRow.svelte';
@@ -147,6 +149,8 @@
   // The row "Mit Ihrer Auswahl", which the bar at the bottom of a narrow window repeats while it is
   // not wholly on the screen (spec small-screens).
   let selectionBox = $state<HTMLElement | null>(null);
+  // The municipality last clicked or tapped on the map, whose characteristics the panel shows.
+  let clicked = $state.raw<{ readonly number: number; readonly name: string } | null>(null);
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
   const aside = $derived.by((): ReadonlySet<number> => {
     if (remaining === null || data.entries === null) return new Set();
@@ -176,64 +180,95 @@
 
 {#if data.judged !== null}
   {@const judged = data.judged}
-  <!-- The vote's result and, below it, the selection's, bar above bar; until a selection
-       applies, a sentence says what will stand there (spec verdicts, "The place of the
-       selection's result"). -->
-  <div class="results">
-    <ResultRow {t} heading={t.REAL_RESULT} result={judged} turnout={judged.turnout} />
-    {#if selection !== null}
-      <ResultRow
-        {t}
-        heading={t.WITH_SELECTION}
-        result={selection}
-        selection
-        bind:element={selectionBox}
-      />
-    {:else if data.entries !== null && !characteristicsFailed}
-      <p class="place">{t.SELECTION_PLACE}</p>
+  <!-- The workbench (design of redesign-site, decisions 8 and 9): what a visitor watches, the
+       result and the map, beside what they set, the limits, in a window at least 1,024 pixels
+       wide; in a narrower one the result, the map, the limits. -->
+  <div class="workbench">
+    <div class="watch">
+      <div class="stay">
+        <!-- The vote's result and, below it, the selection's, bar above bar; until a selection
+             applies, a sentence says what will stand there (spec verdicts, "The place of the
+             selection's result"). -->
+        <div class="results">
+          <ResultRow {t} heading={t.REAL_RESULT} result={judged} turnout={judged.turnout} />
+          {#if selection !== null}
+            <ResultRow
+              {t}
+              heading={t.WITH_SELECTION}
+              result={selection}
+              selection
+              bind:element={selectionBox}
+            />
+          {:else if data.entries !== null && !characteristicsFailed}
+            <p class="place">{t.SELECTION_PLACE}</p>
+          {/if}
+        </div>
+        {#if data.entries !== null}
+          <ResultMap {t} entries={data.entries} {aside} title={data.title} bind:clicked />
+        {/if}
+      </div>
+      {#if data.entries !== null}
+        <MapNotes {t} entries={data.entries} />
+      {/if}
+    </div>
+    {#if data.entries !== null}
+      <div class="setting">
+        <Limits
+          {t}
+          file={characteristics}
+          failed={characteristicsFailed}
+          voteDate={data.voteDate}
+          {count}
+          {unusable}
+          bind:limits
+          bind:abroadCounted
+        />
+        <p><a href={comparison}>{t.COMPARE_LINK}</a></p>
+      </div>
     {/if}
   </div>
 
-  {#if data.entries !== null}
-    <Limits
-      {t}
-      file={characteristics}
-      failed={characteristicsFailed}
-      voteDate={data.voteDate}
-      {count}
-      {unusable}
-      bind:limits
-      bind:abroadCounted
-    />
-    <p><a href={comparison}>{t.COMPARE_LINK}</a></p>
-    <ResultMap {t} entries={data.entries} {aside} title={data.title} voteDate={data.voteDate} />
-  {/if}
-
-  <table>
-    {#if selection !== null}
-      <caption>{t.WITH_SELECTION}</caption>
+  <!-- Below the workbench: the municipality last clicked and, beside it in a window at least 960
+       pixels wide, the cantons (spec result-map, "Where the panel stands"). -->
+  <div class="below">
+    {#if data.entries !== null}
+      <CharacteristicsPanel
+        {t}
+        file={characteristics}
+        failed={characteristicsFailed}
+        number={clicked?.number ?? null}
+        name={clicked?.name ?? null}
+        voteDate={data.voteDate}
+      />
     {/if}
-    <thead>
-      <tr>
-        <th scope="col">{t.CANTON}</th>
-        <th scope="col">{t.YES_SHARE}</th>
-        <th scope="col">{t.CANTONAL_VOTES}</th>
-        <th scope="col">{t.SIDE}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each (selection ?? judged).cantons as row (row.canton)}
-        <tr>
-          <th scope="row">{row.canton}</th>
-          <td>{row.yesShare}</td>
-          <td>{row.cantonalVotes}</td>
-          <td class:side-yes={row.forSide === 'yes'} class:side-no={row.forSide === 'no'}>
-            {row.side}
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
+    <section class="canton-results">
+      <table>
+        {#if selection !== null}
+          <caption>{t.WITH_SELECTION}</caption>
+        {/if}
+        <thead>
+          <tr>
+            <th scope="col">{t.CANTON}</th>
+            <th scope="col">{t.YES_SHARE}</th>
+            <th scope="col">{t.CANTONAL_VOTES}</th>
+            <th scope="col">{t.SIDE}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each (selection ?? judged).cantons as row (row.canton)}
+            <tr>
+              <th scope="row">{row.canton}</th>
+              <td>{row.yesShare}</td>
+              <td>{row.cantonalVotes}</td>
+              <td class:side-yes={row.forSide === 'yes'} class:side-no={row.forSide === 'no'}>
+                {row.side}
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </section>
+  </div>
 {/if}
 
 {#if data.tieBreak !== null}
@@ -276,6 +311,59 @@
   caption {
     text-align: left;
     font-weight: bold;
+  }
+  /* The workbench: one column, and from 1,024 pixels the result and the map beside the limits,
+     whose column is 304 to 384 pixels wide. */
+  .workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  .watch {
+    min-width: 0;
+  }
+  .stay {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 1024px) {
+    .workbench {
+      grid-template-columns: minmax(0, 1fr) clamp(19rem, 30vw, 24rem);
+      gap: 3rem;
+    }
+    .setting {
+      align-self: start;
+      padding-left: 2rem;
+      border-left: 1px solid var(--hairline);
+    }
+  }
+  /* In a window that is also at least 700 pixels high, the result and the map with its legend
+     stay in it while the page scrolls along the limits (spec result-map, "The result and the map
+     stay in the window"). Their column is as tall as the limits', so that they can; the lines
+     below the legend scroll with the page and pass behind them, which is why they have the
+     page's ground, from the window's top edge on. */
+  @media (min-width: 1024px) and (min-height: 700px) {
+    .stay {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      margin-top: -1rem;
+      padding-top: 1rem;
+      background: var(--ground);
+    }
+  }
+  .below {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+  @media (min-width: 960px) {
+    .below {
+      grid-template-columns: minmax(0, 1fr) minmax(19rem, 25rem);
+      align-items: start;
+      margin-top: 4rem;
+    }
   }
   /* The results are as wide as the room they have, by which a result arranges its parts
      (`ResultRow.svelte`). */

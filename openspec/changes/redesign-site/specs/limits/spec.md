@@ -27,7 +27,7 @@ SHALL show none.
 
 - **WHEN** a visitor opens `/de/votes/5960/` in a window 1,023 pixels wide, and in one 360 wide
 - **THEN** "Gemeinden auswählen" stands below the map and above "Merkmale der Gemeinde", as wide
-  as the map (`investigations/redesign.md`, 6)
+  as the result (`investigations/redesign.md`, 6)
 
 ### Requirement: Adding and removing a limit
 

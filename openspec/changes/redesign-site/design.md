@@ -95,7 +95,14 @@ mockups Q saw unless it says otherwise.
    window's height less 17rem tall. Below the columns stand the panel and the table of the
    cantons. Rejected: today's order restyled, which leaves the map two screens down (mockup A);
    the limits on the left, as the result is what a visitor reads first; and 960 pixels as the
-   threshold, where the map would be 464 pixels wide.
+   threshold, where the map would be 464 pixels wide. Found while applying: what stays is the
+   result, the map and its legend; the two lines below the legend, the map's source and the Swiss
+   abroad, scroll with the page (`MapNotes.svelte`), as with them the column was 856 to 938
+   pixels tall in a window 800 high and was pushed out of it at the end of the limits. The map
+   keeps its shape where its height is capped: its frame, with the zoom buttons and the
+   details, is then narrower than its column and stands in its middle, as the map's moves count
+   in pixels of a box of the view's shape. The panel shows its first sentence also when the map
+   cannot be loaded.
 9. **In a narrower window** the order is result, map, limits, panel, cantons: the map moves above
    the limits. Nothing stays in the window but #10's bar at the bottom.
 10. **A result is a row (Q saw it in both rounds):** the outcome, then the majority of voters, then
@@ -105,10 +112,11 @@ mockups Q saw unless it says otherwise.
     with less than 448 all three stand one below the other (Q: #10 kept the boxes side by side at
     360). Until a selection applies, the selection's place says what will stand there. The
     vote's row is headed "Echtes Ergebnis", the comparison's word, as it now stands above "Mit
-    Ihrer Auswahl". The yes votes and the no votes stand below the Volksmehr's bar and the
-    turnout below the Ständemehr's, each with today's name; the yes share is written once, in
-    the Volksmehr's head, where today's page also wrote it under "Ja-Anteil" (found while
-    applying).
+    Ihrer Auswahl". The yes votes and the no votes stand below the Volksmehr's bar under "Ja" and
+    "Nein", as the mockups wrote them and as French and Italian name them already: "Ja-Stimmen"
+    and "Nein-Stimmen" took two lines in a window 1,280 pixels wide. The turnout stands below
+    the Ständemehr's bar under today's name. The yes share is written once, in the Volksmehr's
+    head, where today's page also wrote it under "Ja-Anteil" (found while applying).
 11. **The bar of the voters:** the yes part from the left, as wide as the yes share; the no part
     the rest; a mark at half, 2 pixels wide, 4 pixels taller than the bar at each end. With no
     valid vote the bar is empty.

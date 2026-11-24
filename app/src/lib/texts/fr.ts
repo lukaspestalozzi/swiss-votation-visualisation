@@ -51,6 +51,8 @@ export const fr: Texts = {
   MARK_PROVISIONAL: 'provisoire',
 
   // A vote's page: the figures.
+  YES: 'Oui',
+  NO: 'Non',
   YES_VOTES: 'Oui',
   NO_VOTES: 'Non',
   YES_SHARE: 'Pourcentage de oui',

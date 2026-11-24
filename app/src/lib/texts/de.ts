@@ -48,6 +48,8 @@ export const de: Texts = {
   MARK_PROVISIONAL: 'vorläufig',
 
   // A vote's page: the figures.
+  YES: 'Ja',
+  NO: 'Nein',
   YES_VOTES: 'Ja-Stimmen',
   NO_VOTES: 'Nein-Stimmen',
   YES_SHARE: 'Ja-Anteil',

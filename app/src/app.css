@@ -106,6 +106,17 @@ a:hover {
   text-decoration-thickness: 2px;
 }
 
+/* What assistive technology reads and the eye does not see: a box of one pixel, cut away. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* A vote's date and kind, sources and notes. */
 .secondary {
   color: var(--text-secondary);

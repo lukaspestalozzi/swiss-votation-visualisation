@@ -55,7 +55,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 3. The workbench
 
-- [ ] 3.1 Lay a vote's page out in two columns from 1,024 pixels: the result and the map on the
+- [x] 3.1 Lay a vote's page out in two columns from 1,024 pixels: the result and the map on the
   left, staying in a window at least 700 pixels high, the map at most the window's height less
   272 pixels; the limits on the right, `clamp(19rem, 30vw, 24rem)` wide. Below 1,024 pixels:
   result, map, limits. Move the panel out of `ResultMap.svelte` to below both columns; hide the

@@ -1,9 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import type { MapSources } from '../../../../lib/map-data.ts';
-  import { loadCharacteristics, loadMap } from './loaders.ts';
-  import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
-  import CharacteristicsPanel from './CharacteristicsPanel.svelte';
+  import { loadMap } from './loaders.ts';
   import {
     HATCH_LINE,
     LAKE_COLOUR,
@@ -15,7 +13,6 @@
     legendSetAsideOf,
     type VoteEntries,
   } from '../../../../lib/result-map.ts';
-  import { formatDate } from '../../../../lib/format.ts';
   import {
     moveBy,
     pinchFrom,
@@ -27,27 +24,28 @@
   } from '../../../../lib/map-view.ts';
   import type { Texts } from '../../../../lib/texts/index.ts';
 
-  // The map of a vote (spec result-map): its entries are written into the page when the site is
-  // built; the shapes and the names are loaded in the browser.
+  // The map of a vote (spec result-map) with its legend: its entries are written into the page
+  // when the site is built; the shapes and the names are loaded in the browser. The lines below
+  // it are `MapNotes.svelte`'s.
   let {
     t,
     entries,
     aside,
     title,
-    voteDate,
+    clicked = $bindable(null),
   }: {
     t: Texts;
     entries: VoteEntries;
     // The municipalities the selection sets aside (spec limits).
     aside: ReadonlySet<number>;
     title: string;
-    voteDate: string;
+    // The municipality last clicked or tapped, with its name as its details write it: the page
+    // shows its characteristics below the map (design of redesign-site, decision 17).
+    clicked?: { readonly number: number; readonly name: string } | null;
   } = $props();
 
   // Each municipality's [number, yes, no], from the entries of every canton.
   const figures = $derived(entries.cantons.flatMap((canton) => canton.municipalities));
-  // The entries of Swiss abroad, which are not on the map.
-  const swissAbroad = $derived(entries.cantons.filter((canton) => canton.abroad !== null).length);
 
   // The loaded files are raw state: a new value replaces the old one whole, and nothing changes
   // them inside, which spares the proxies of deep state (design of tighten-map-budget, decision 2).
@@ -56,9 +54,6 @@
   let view = $state<View | null>(null);
   // Whether the shapes or the names could not be loaded.
   let failed = $state(false);
-  // The characteristics, null until they are loaded, and whether they could not be.
-  let characteristics = $state.raw<CharacteristicsFile | null>(null);
-  let characteristicsFailed = $state(false);
 
   // The fill of each municipality by its number: its class, or the hatching without a result.
   const fills = $derived(
@@ -108,10 +103,9 @@
     new Map(figures.map(([number, yes, no]) => [number, [yes, no] as const])),
   );
 
-  // The municipality pointed at, or clicked or tapped; and the one last clicked or tapped, which
-  // the panel shows (design of add-characteristics, decision 14).
+  // The municipality pointed at, or clicked or tapped. The one last clicked or tapped is
+  // `clicked`, which the panel shows (design of add-characteristics, decision 14).
   let selected = $state<number | null>(null);
-  let last = $state<number | null>(null);
   const details = $derived.by(() => {
     const named = selected === null ? undefined : names.get(selected);
     if (selected === null || named === undefined) return null;
@@ -123,15 +117,10 @@
   const legend = $derived(aside.size > 0 ? [...legendOf(t), legendSetAsideOf(t)] : legendOf(t));
   // The shape of the municipality last clicked or tapped, which the map outlines (design of
   // add-small-screens, decision 3).
-  const outlined = $derived(
-    last === null || sources === null
-      ? null
-      : (sources.map.municipalities.find(([number]) => number === last)?.[1] ?? null),
-  );
-  const lastName = $derived.by(() => {
-    const named = last === null ? undefined : names.get(last);
-    if (last === null || named === undefined) return null;
-    return detailsOf(named.name, named.canton, null, t).name;
+  const outlined = $derived.by(() => {
+    if (clicked === null || sources === null) return null;
+    const { number: last } = clicked;
+    return sources.map.municipalities.find(([number]) => number === last)?.[1] ?? null;
   });
 
   function showWholeSwitzerland(): void {
@@ -285,18 +274,13 @@
     const target = event.target;
     const number = target instanceof SVGPathElement ? target.dataset.number : undefined;
     selected = number === undefined ? null : Number(number);
-    if (event.type === 'click' && selected !== null) last = selected;
+    const named = selected === null ? undefined : names.get(selected);
+    if (event.type === 'click' && selected !== null && named !== undefined) {
+      clicked = { number: selected, name: detailsOf(named.name, named.canton, null, t).name };
+    }
   }
 
   onMount(() => {
-    loadCharacteristics().then(
-      (loaded) => {
-        characteristics = loaded;
-      },
-      () => {
-        characteristicsFailed = true;
-      },
-    );
     loadMap().then(
       (loaded) => {
         sources = loaded;
@@ -310,107 +294,101 @@
 </script>
 
 <section class="map">
-  <h2>{t.MAP_HEADING}</h2>
+  <!-- The heading names the map for assistive technology and takes no room (spec result-map, "A
+       map on the page of a vote"). -->
+  <h2 class="visually-hidden">{t.MAP_HEADING}</h2>
   {#if failed}
     <p>{t.MAP_FAILED}</p>
   {/if}
   {#if sources !== null}
     {@const map = sources.map}
-    <div class="beside">
-      <div class="frame">
-        <div class="picture">
-          <div class="details" aria-live="polite">
-            {#if details !== null}
-              <p class="name">{details.name}</p>
-              <ul>
-                {#each details.lines as line (line)}
-                  <li>{line}</li>
-                {/each}
-              </ul>
-            {/if}
-          </div>
-          <!-- Pointing, clicking and tapping show a municipality's details (spec result-map); keyboards
+    <!-- The frame knows the map's shape, its width by its height, which the view keeps at every
+         zoom: by it the style below caps the frame's width where the map's height is capped. -->
+    <div class="frame" style:--shape={map.width / map.height}>
+      <div class="picture">
+        <div class="details" aria-live="polite">
+          {#if details !== null}
+            <p class="name">{details.name}</p>
+            <ul>
+              {#each details.lines as line (line)}
+                <li>{line}</li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+        <!-- Pointing, clicking and tapping show a municipality's details (spec result-map); keyboards
              and screen readers read the table of the cantons (design of add-result-map, decision 20). -->
-          <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
-          <svg
-            {@attach wheelZoom}
-            role="img"
-            aria-label={t.mapLabel(title)}
-            viewBox={view === null
-              ? undefined
-              : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}
-            onpointerover={pointUnlessDragged}
-            onclick={pointUnlessDragged}
-            onpointerdown={down}
-            onpointermove={drag}
-            onpointerup={up}
-            onpointercancel={cancel}
-            onpointerleave={() => (selected = null)}
-          >
-            <defs>
-              <!-- In metres of the map: a line every 1.5 km, a third of it wide. -->
-              <pattern
-                id="hatch"
-                width="1500"
-                height="1500"
-                patternUnits="userSpaceOnUse"
-                patternTransform="rotate(45)"
-              >
-                <rect class="hatch-ground" width="1500" height="1500" />
-                <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
-              </pattern>
-            </defs>
-            <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
-            <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
-            <g class="municipalities" bind:this={group}>
-              {#each map.municipalities as [number, path] (number)}
-                <path d={path} data-number={number} fill={fills.get(number)} />
-              {/each}
+        <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -->
+        <svg
+          {@attach wheelZoom}
+          role="img"
+          aria-label={t.mapLabel(title)}
+          viewBox={view === null
+            ? undefined
+            : `${String(view.x)} ${String(view.y)} ${String(view.width)} ${String(view.height)}`}
+          onpointerover={pointUnlessDragged}
+          onclick={pointUnlessDragged}
+          onpointerdown={down}
+          onpointermove={drag}
+          onpointerup={up}
+          onpointercancel={cancel}
+          onpointerleave={() => (selected = null)}
+        >
+          <defs>
+            <!-- In metres of the map: a line every 1.5 km, a third of it wide. -->
+            <pattern
+              id="hatch"
+              width="1500"
+              height="1500"
+              patternUnits="userSpaceOnUse"
+              patternTransform="rotate(45)"
+            >
+              <rect class="hatch-ground" width="1500" height="1500" />
+              <line x1="0" y1="0" x2="0" y2="1500" stroke={HATCH_LINE} stroke-width="500" />
+            </pattern>
+          </defs>
+          <!-- Switzerland in the lakes' colour: every hole of the municipalities shows as water. -->
+          <path class="outline" d={map.outline} fill={LAKE_COLOUR} />
+          <g class="municipalities" bind:this={group}>
+            {#each map.municipalities as [number, path] (number)}
+              <path d={path} data-number={number} fill={fills.get(number)} />
+            {/each}
+          </g>
+          <g class="lakes">
+            {#each map.lakes as path, i (i)}
+              <path d={path} fill={LAKE_COLOUR} />
+            {/each}
+          </g>
+          <g class="cantons">
+            {#each map.cantons as [canton, path] (canton)}
+              <path d={path} data-canton={canton} />
+            {/each}
+          </g>
+          {#if outlined !== null}
+            <g class="outlined">
+              <path class="halo" d={outlined} />
+              <path class="line" d={outlined} />
             </g>
-            <g class="lakes">
-              {#each map.lakes as path, i (i)}
-                <path d={path} fill={LAKE_COLOUR} />
-              {/each}
-            </g>
-            <g class="cantons">
-              {#each map.cantons as [canton, path] (canton)}
-                <path d={path} data-canton={canton} />
-              {/each}
-            </g>
-            {#if outlined !== null}
-              <g class="outlined">
-                <path class="halo" d={outlined} />
-                <path class="line" d={outlined} />
-              </g>
-            {/if}
-          </svg>
-        </div>
-        <div class="zoom">
-          <button
-            type="button"
-            aria-label={t.ZOOM_IN}
-            onclick={() => {
-              zoom(2);
-            }}>+</button
-          >
-          <button
-            type="button"
-            aria-label={t.ZOOM_OUT}
-            onclick={() => {
-              zoom(0.5);
-            }}>−</button
-          >
-          <button type="button" onclick={showWholeSwitzerland}>{t.WHOLE_SWITZERLAND}</button>
-        </div>
+          {/if}
+        </svg>
       </div>
-      <CharacteristicsPanel
-        {t}
-        file={characteristics}
-        failed={characteristicsFailed}
-        number={last}
-        name={lastName}
-        {voteDate}
-      />
+      <div class="zoom">
+        <button
+          type="button"
+          aria-label={t.ZOOM_IN}
+          onclick={() => {
+            zoom(2);
+          }}>+</button
+        >
+        <button
+          type="button"
+          aria-label={t.ZOOM_OUT}
+          onclick={() => {
+            zoom(0.5);
+          }}>−</button
+        >
+        <button type="button" onclick={showWholeSwitzerland}>{t.WHOLE_SWITZERLAND}</button>
+      </div>
     </div>
     <ul class="legend">
       {#each legend as entry (entry.label)}
@@ -428,26 +406,10 @@
         </li>
       {/each}
     </ul>
-    <p class="source secondary">{t.mapSource(formatDate(map.referenceDate, t), map.lakesSet)}</p>
-    {#if swissAbroad > 0}
-      <p>{t.swissAbroadNotOnTheMap(swissAbroad)}</p>
-    {/if}
   {/if}
 </section>
 
 <style>
-  /* The panel to the right of the map in a window at least 960 pixels wide, below it otherwise
-     (spec result-map, "Where the panel stands"). */
-  .beside {
-    display: grid;
-    gap: 1rem;
-  }
-  @media (min-width: 960px) {
-    .beside {
-      grid-template-columns: minmax(0, 1fr) 20rem;
-      align-items: start;
-    }
-  }
   .frame,
   .picture {
     position: relative;
@@ -489,6 +451,11 @@
       order: -1;
       justify-content: flex-end;
       margin-bottom: 0.25rem;
+    }
+    /* The map reaches from one side of the window to the other, past the page's 16 pixels (spec
+       result-map, "The result and the map stay in the window"). */
+    .picture {
+      margin: 0 -16px;
     }
   }
   .details:empty {
@@ -539,10 +506,12 @@
     vector-effect: non-scaling-stroke;
     pointer-events: none;
   }
+  /* The legend stays in the window with the map: it takes no more room than it needs. */
   .legend {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem 1rem;
+    margin: 0.75rem 0 0;
     padding: 0;
     list-style: none;
   }
@@ -562,5 +531,16 @@
     width: 100%;
     height: auto;
     touch-action: none;
+  }
+  /* Where the result and the map stay in the window, the map is no taller than the window less
+     17rem, the room of the result above it and the legend below (design of redesign-site,
+     decision 8). It keeps its shape, as its moves count in pixels of a box of the view's shape:
+     its frame, with the zoom buttons and the details, is then narrower than its column and
+     stands in the column's middle. */
+  @media (min-width: 1024px) and (min-height: 700px) {
+    .frame {
+      max-width: calc((100vh - 17rem) * var(--shape));
+      margin: 0 auto;
+    }
   }
 </style>

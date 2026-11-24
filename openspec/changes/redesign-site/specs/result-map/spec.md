@@ -224,9 +224,9 @@ page, as it does elsewhere.
 
 ### Requirement: The result and the map stay in the window
 
-In a window at least 1,024 pixels wide and 700 pixels high, the result and the map SHALL stay in
-the window while the page scrolls along the limits beside them, and the map SHALL be no taller
-than the window's height less 272 pixels. In any other window they SHALL scroll with the page. In
+In a window at least 1,024 pixels wide and 700 pixels high, the result and the map with its legend
+SHALL stay in the window while the page scrolls along the limits beside them, and the map SHALL be
+no taller than the window's height less 272 pixels. In any other window they SHALL scroll with the page. In
 a window narrower than 640 pixels the map SHALL reach from one side of the window to the other.
 
 #### Scenario: Scrolling along five limits
@@ -239,8 +239,9 @@ a window narrower than 640 pixels the map SHALL reach from one side of the windo
 #### Scenario: A wide and a low window
 
 - **WHEN** a visitor opens that page in a window 1,600 by 900 pixels, and in one 1,280 by 600
-- **THEN** in the first the map's box is 628 pixels high, the window's height less 272, with the
-  map whole in its middle; in the second the result and the map scroll away with the page
+- **THEN** in the first the map is 628 pixels high, the window's height less 272, keeps its shape
+  and stands in the middle of its column; in the second the result and the map scroll away with
+  the page
 
 #### Scenario: A phone
 

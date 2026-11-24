@@ -5,15 +5,27 @@ import config from '../playwright.config.ts';
 import { fingersOn, phone } from './fingers.ts';
 import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
-import { addLimit, figuresOf, outcomeOf, ownResult, verdictWordsOf } from './parts.ts';
+import {
+  addLimit,
+  boxOf,
+  figuresOf,
+  mapDrawn,
+  outcomeOf,
+  ownResult,
+  verdictWordsOf,
+} from './parts.ts';
 
 const municipality = (page: Page, number: number) =>
   page.locator(`.municipalities [data-number="${String(number)}"]`);
 
 test('the map of a vote: between the outcome and the table of the cantons', async ({ page }) => {
   await page.goto('de/votes/5960/');
+  // The map's heading names it for a screen reader and takes no room: a box of one pixel.
   const heading = page.getByRole('heading', { name: 'Karte der Gemeinden' });
-  await expect(heading).toBeVisible();
+  await expect(heading).toHaveCount(1);
+  const room = await heading.boundingBox();
+  expect(room?.width).toBeLessThanOrEqual(1);
+  expect(room?.height).toBeLessThanOrEqual(1);
   await expect(page.locator('.municipalities path')).toHaveCount(2110);
   // To assistive technology the map is an image, named after the vote, that points to the table.
   await expect(
@@ -658,7 +670,7 @@ test('a press let go outside the map does not move it later', async ({ page }) =
   expect(await viewOf(page)).toEqual(before);
 });
 
-// The panel of characteristics beside the map (spec result-map); the figures are those of
+// The panel of characteristics below the map (spec result-map); the figures are those of
 // investigations/characteristics.md and investigations/more-characteristics.md.
 const panel = (page: Page) => page.locator('.panel');
 
@@ -967,25 +979,129 @@ test.describe('in the dark scheme', () => {
   });
 });
 
-test('in a wide window the panel stands to the right of the map', async ({ page }) => {
+test('in a wide window the panel stands below the map and the limits, the cantons to its right', async ({
+  page,
+}) => {
+  // Spec result-map, "Where the panel stands", "A wide window".
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('de/votes/5960/');
-  await page.locator('.municipalities path').nth(2000).waitFor();
-  const map = await page.locator('.map svg').boundingBox();
-  const beside = await panel(page).boundingBox();
-  if (map === null || beside === null) throw new Error('the map or the panel is not shown');
-  expect(beside.x).toBeGreaterThanOrEqual(map.x + map.width);
-  expect(Math.abs(beside.y - map.y)).toBeLessThan(1);
+  await mapDrawn(page);
+  const [map, limits, below, cantons] = await Promise.all(
+    ['.map svg', '.limits', '.panel', '.canton-results'].map((part) => boxOf(page, part)),
+  );
+  expect(below.y).toBeGreaterThanOrEqual(map.y + map.height);
+  expect(below.y).toBeGreaterThanOrEqual(limits.y + limits.height);
+  expect(cantons.x).toBeGreaterThanOrEqual(below.x + below.width);
+  expect(Math.abs(cantons.y - below.y)).toBeLessThanOrEqual(1);
 });
 
-test('in a narrow window the panel stands below the map', async ({ page }) => {
+test('in a narrow window the panel stands below the limits, the cantons below the panel', async ({
+  page,
+}) => {
+  // Spec result-map, "Where the panel stands", "A narrow window".
   await page.setViewportSize({ width: 800, height: 900 });
   await page.goto('de/votes/5960/');
-  await page.locator('.municipalities path').nth(2000).waitFor();
-  const map = await page.locator('.map svg').boundingBox();
-  const below = await panel(page).boundingBox();
-  if (map === null || below === null) throw new Error('the map or the panel is not shown');
-  expect(below.y).toBeGreaterThanOrEqual(map.y + map.height);
+  await mapDrawn(page);
+  const [limits, below, cantons] = await Promise.all(
+    ['.limits', '.panel', '.canton-results'].map((part) => boxOf(page, part)),
+  );
+  expect(below.y).toBeGreaterThanOrEqual(limits.y + limits.height);
+  expect(cantons.y).toBeGreaterThanOrEqual(below.y + below.height);
+});
+
+// The result and the map stay in the window (spec result-map; design of redesign-site, decision
+// 8); the sizes are those of investigations/redesign.md, 6.
+const backToReal = (page: Page) =>
+  page.getByRole('button', { name: 'Zurück zum echten Ergebnis', exact: true });
+const FIVE = ['Einwohner', 'Ausländeranteil', 'Deutsch', 'Französisch', 'SVP'];
+const FIVE_MORE = ['Italienisch', 'FDP', 'SP', 'GLP', 'Grüne'];
+
+/** Scroll no further than until "Zurück zum echten Ergebnis" lies in the window. */
+const scrollToBack = (page: Page) =>
+  backToReal(page).evaluate((button) => {
+    button.scrollIntoView({ block: 'nearest' });
+  });
+
+/** Open the vote of 2016-02-28 and add limits, which lengthen the limits' column. */
+async function openWithLimits(page: Page, names: readonly string[]): Promise<void> {
+  await page.goto('de/votes/5960/');
+  await mapDrawn(page);
+  for (const name of names) await addLimit(page, name);
+  await expect(page.locator('.limit')).toHaveCount(names.length);
+}
+
+test('the result and the map stay in the window while the page scrolls along the limits', async ({
+  page,
+}) => {
+  // Spec result-map, "Scrolling along five limits".
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await openWithLimits(page, FIVE);
+  await scrollToBack(page);
+  const [result, map] = await Promise.all(
+    ['.results', '.map svg'].map((part) => boxOf(page, part)),
+  );
+  expect(result.y).toBeGreaterThanOrEqual(0);
+  expect(map.y).toBeGreaterThanOrEqual(0);
+  expect(map.y).toBeLessThan(800);
+  expect(Math.abs(map.width - 784)).toBeLessThanOrEqual(1);
+  expect(Math.abs(map.height - 496)).toBeLessThanOrEqual(1);
+  // With ten limits the page scrolls much further than the result stands down the page, and the
+  // result is still there.
+  for (const name of FIVE_MORE) await addLimit(page, name);
+  await scrollToBack(page);
+  expect(await page.evaluate(() => scrollY)).toBeGreaterThan(400);
+  expect((await boxOf(page, '.results')).y).toBeGreaterThanOrEqual(0);
+  expect((await boxOf(page, '.map svg')).y).toBeLessThan(800);
+});
+
+test('a high window: the map no taller than the window less 272 pixels, whole in its middle', async ({
+  page,
+}) => {
+  // Spec result-map, "A wide and a low window": 900 less 272 is 628.
+  await page.setViewportSize({ width: 1600, height: 900 });
+  await page.goto('de/votes/5960/');
+  await mapDrawn(page);
+  const [map, outline, column] = await Promise.all(
+    ['.map svg', '.map .outline', '.map'].map((part) => boxOf(page, part)),
+  );
+  expect(Math.abs(map.height - 628)).toBeLessThanOrEqual(1);
+  // The map keeps its shape, so its box is narrower than its column, 1,104 pixels, and stands
+  // in the column's middle, with Switzerland whole within it.
+  const left = map.x - column.x;
+  const right = column.x + column.width - (map.x + map.width);
+  expect(left).toBeGreaterThan(40);
+  expect(Math.abs(left - right)).toBeLessThanOrEqual(1);
+  expect(outline.x).toBeGreaterThanOrEqual(map.x);
+  expect(outline.x + outline.width).toBeLessThanOrEqual(map.x + map.width);
+  expect(outline.y).toBeGreaterThanOrEqual(map.y);
+  expect(outline.y + outline.height).toBeLessThanOrEqual(map.y + map.height);
+});
+
+test('in a low window the result and the map scroll away with the page', async ({ page }) => {
+  // Spec result-map, "A wide and a low window": 600 pixels high.
+  await page.setViewportSize({ width: 1280, height: 600 });
+  await openWithLimits(page, [...FIVE, ...FIVE_MORE]);
+  await scrollToBack(page);
+  const result = await boxOf(page, '.results');
+  expect(result.y + result.height).toBeLessThan(0);
+});
+
+test('on a screen 360 pixels wide the map reaches from side to side and scrolls with the page', async ({
+  page,
+}) => {
+  // Spec result-map, "A phone".
+  await page.setViewportSize({ width: 360, height: 740 });
+  await page.goto('de/votes/5960/');
+  await mapDrawn(page);
+  const map = await boxOf(page, '.map svg');
+  expect(map.x).toBe(0);
+  expect(Math.abs(map.width - 360)).toBeLessThanOrEqual(1);
+  expect(Math.abs(map.height - 228)).toBeLessThanOrEqual(1);
+  await page.evaluate(() => {
+    scrollBy(0, 200);
+  });
+  expect(Math.abs((await boxOf(page, '.map svg')).y - (map.y - 200))).toBeLessThanOrEqual(1);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
 });
 
 test('characteristics that cannot be loaded: a message, and the map works', async ({ page }) => {

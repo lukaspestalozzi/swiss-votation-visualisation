@@ -352,7 +352,8 @@ test("the Swiss abroad in French and Italian: the Swiss Abroad Act's words", asy
   for (const [language, term] of Object.entries(words)) {
     await page.goto(`${language}/votes/5960/`);
     await expect(page.getByRole('checkbox', { name: new RegExp(term) })).toBeChecked();
-    await expect(page.locator('.map')).toContainText(term);
+    // Below the map: the sentence on those who are not on it.
+    await expect(page.locator('.watch')).toContainText(term);
   }
 });
 

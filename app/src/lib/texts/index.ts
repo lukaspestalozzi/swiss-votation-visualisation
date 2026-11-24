@@ -94,6 +94,9 @@ export interface Texts {
   readonly MARK_PROVISIONAL: string;
 
   // A vote's page: the figures.
+  /** The two sides, as a result's row names their votes below its bar. */
+  readonly YES: string;
+  readonly NO: string;
   readonly YES_VOTES: string;
   readonly NO_VOTES: string;
   readonly YES_SHARE: string;

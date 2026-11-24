@@ -387,7 +387,9 @@ test.describe('on a touch screen 360 pixels wide', () => {
     await expect(page.getByRole('heading', { name: 'Con la Sua selezione' })).toBeVisible();
     // A page wider than the window is shown smaller, and a tap would miss: the width comes first.
     expect(await pageWidth(page)).toBeLessThanOrEqual(360);
-    const zurich = await pointIn(page, '.municipalities [data-number="261"]');
+    // A point four pixels inside Zürich, which is a dozen pixels wide here: Chrome moves a tap
+    // at a point up to two pixels inside to a neighbour (investigations/small-screens.md, 8).
+    const zurich = await pointIn(page, '.municipalities [data-number="261"]', 4);
     await page.touchscreen.tap(zurich.x, zurich.y);
     await expect(page.getByText("Abitanti: 396'955")).toBeVisible();
     expect(await pageWidth(page)).toBeLessThanOrEqual(360);

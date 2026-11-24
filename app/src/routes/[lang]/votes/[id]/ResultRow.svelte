@@ -55,11 +55,11 @@
     <ShareBar percent={result.yesPercent} />
     <dl class="figures">
       <div>
-        <dt>{t.YES_VOTES}</dt>
+        <dt>{t.YES}</dt>
         <dd>{result.yesVotes}</dd>
       </div>
       <div>
-        <dt>{t.NO_VOTES}</dt>
+        <dt>{t.NO}</dt>
         <dd>{result.noVotes}</dd>
       </div>
     </dl>

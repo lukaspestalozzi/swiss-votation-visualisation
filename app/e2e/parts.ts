@@ -143,6 +143,20 @@ export const barDrawn = (bar: Locator): Promise<BarDrawn> =>
 /** The sentence in the place of the selection's result, until a selection applies. */
 export const selectionPlace = (page: Page): Locator => page.locator('.results .place');
 
+/** The box of the first element a selector finds, on the screen. */
+export async function boxOf(
+  page: Page,
+  selector: string,
+): Promise<{ x: number; y: number; width: number; height: number }> {
+  const box = await page.locator(selector).first().boundingBox();
+  if (box === null) throw new Error(`${selector} is not shown`);
+  return box;
+}
+
+/** Wait until the map of a vote's page has drawn its municipalities. */
+export const mapDrawn = (page: Page): Promise<void> =>
+  page.locator('.municipalities path').nth(2000).waitFor();
+
 /** The head of a page. */
 export const pageHead = (page: Page): Locator => page.locator('header');
 
