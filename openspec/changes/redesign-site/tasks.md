@@ -12,7 +12,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   a limit, the switch for the Swiss abroad, reading a result (the vote's and the selection's) and
   reading the head; use them in every spec file that has its own copy, with no assertion changed.
   Verify: `pnpm run build && pnpm run test:e2e` passes with 255 tests, as before the task.
-- [ ] 1.2 In `app/src/app.css`, give links, controls and the ring of focus the text's colour, a
+- [x] 1.2 In `app/src/app.css`, give links, controls and the ring of focus the text's colour, a
   link its underline, and name the added colours once, light and dark (design, decisions 1 and
   2); change the tests of `app/e2e/site-style.spec.ts` that name `#1a5fb4` and `#8ab4f8`. Verify:
   the tests "every text has its contrast" in both schemes and "a ring of 2 pixels" pass, and

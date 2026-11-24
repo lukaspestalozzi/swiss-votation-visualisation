@@ -108,12 +108,15 @@ async function contrastOfThePages(page: Page): Promise<[string, LowContrast[]][]
 }
 
 test.describe('the light scheme', () => {
-  test('every text has its contrast; text #1c1c1c on #ffffff, links #1a5fb4', async ({ page }) => {
+  test('every text has its contrast; text #1c1c1c on #ffffff, links underlined in it', async ({
+    page,
+  }) => {
     for (const [path, low] of await contrastOfThePages(page)) expect(low, path).toEqual([]);
     await page.goto('de/guide/');
     await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(page.locator('section p').first()).toHaveCSS('color', 'rgb(28, 28, 28)');
-    await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(26, 95, 180)');
+    await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(28, 28, 28)');
+    await expect(page.locator('a').first()).toHaveCSS('text-decoration-line', 'underline');
     // A vote's date and kind #595959; the cantonal votes of a majority not needed #767676.
     await page.goto('de/votes/5950/');
     await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(89, 89, 89)');
@@ -134,12 +137,15 @@ test.describe('the light scheme', () => {
 test.describe('the dark scheme', () => {
   test.use({ colorScheme: 'dark' });
 
-  test('every text has its contrast; text #e8e8e8 on #121212, links #8ab4f8', async ({ page }) => {
+  test('every text has its contrast; text #e8e8e8 on #121212, links underlined in it', async ({
+    page,
+  }) => {
     for (const [path, low] of await contrastOfThePages(page)) expect(low, path).toEqual([]);
     await page.goto('de/guide/');
     await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(18, 18, 18)');
     await expect(page.locator('section p').first()).toHaveCSS('color', 'rgb(232, 232, 232)');
-    await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(138, 180, 248)');
+    await expect(page.locator('a').first()).toHaveCSS('color', 'rgb(232, 232, 232)');
+    await expect(page.locator('a').first()).toHaveCSS('text-decoration-line', 'underline');
     // A vote's date and kind #b0b0b0; the cantonal votes of a majority not needed #9a9a9a.
     await page.goto('de/votes/5950/');
     await expect(page.locator('p.secondary').first()).toHaveCSS('color', 'rgb(176, 176, 176)');
@@ -409,10 +415,10 @@ test.describe('the controls', () => {
 
 test.describe('a control focused from the keyboard', () => {
   for (const [colorScheme, ring] of [
-    ['light', 'rgb(26, 95, 180)'], // #1a5fb4
-    ['dark', 'rgb(138, 180, 248)'], // #8ab4f8
+    ['light', 'rgb(28, 28, 28)'], // #1c1c1c
+    ['dark', 'rgb(232, 232, 232)'], // #e8e8e8
   ] as const) {
-    test(`in the ${colorScheme} scheme: a ring of 2 pixels in the colour of links`, async ({
+    test(`in the ${colorScheme} scheme: a ring of 2 pixels in the text's colour`, async ({
       page,
     }) => {
       await page.emulateMedia({ colorScheme });
