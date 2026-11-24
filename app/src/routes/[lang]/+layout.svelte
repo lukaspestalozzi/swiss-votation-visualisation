@@ -52,8 +52,12 @@
 
 <!-- The head of every page (spec site-style, "The head of every page"; design of add-site-style,
      decision 7): the working title, the guide and the language switch, each a link but on its
-     own page, where it is text, as the switch's own language is. -->
-<header class="head">
+     own page, where it is text, as the switch's own language is. On the start page and the
+     guide it is marked "narrow", by which `app.css` makes their page narrower. -->
+<header
+  class="head"
+  class:narrow={page.route.id === '/[lang]' || page.route.id === '/[lang]/guide'}
+>
   {#if page.route.id === '/[lang]'}
     <span class="title" aria-current="page">{t.TITLE}</span>
   {:else}

@@ -330,22 +330,34 @@ test.describe('the width of a page', () => {
   test.describe('in a window 1,920 pixels wide', () => {
     test.use({ viewport: { width: 1920, height: 1080 } });
 
-    test('16 pixels at the left, the map 1,552 wide beside its panel, a paragraph at most 640', async ({
+    const box = async (page: Page, selector: string) => {
+      const found = await page.locator(selector).first().boundingBox();
+      if (found === null) throw new Error(`${selector} has no box`);
+      return found;
+    };
+
+    test('a page of 1,600 pixels in the middle: 192 at each side, a paragraph at most 640', async ({
       page,
     }) => {
       await page.goto('de/votes/5960/');
       await page.locator('.municipalities path').nth(2000).waitFor();
-      const box = async (selector: string) => {
-        const found = await page.locator(selector).first().boundingBox();
-        if (found === null) throw new Error(`${selector} has no box`);
-        return found;
-      };
-      expect((await box('header')).x).toBe(16);
-      expect((await box('h1')).x).toBe(16);
-      const map = await box('.map svg');
-      expect(Math.abs(map.width - 1552)).toBeLessThanOrEqual(1);
-      expect((await box('.panel')).x).toBeGreaterThan(map.x + map.width);
-      expect((await box('.limits p')).width).toBeLessThanOrEqual(640);
+      const header = await box(page, 'header');
+      expect(header.x).toBe(192);
+      expect(header.x + header.width).toBe(1728);
+      expect((await box(page, 'h1')).x).toBe(192);
+      expect((await box(page, '.limits p')).width).toBeLessThanOrEqual(640);
+    });
+
+    test('the start page and the guide: a page of 1,216 pixels, 384 at each side', async ({
+      page,
+    }) => {
+      for (const path of ['de/', 'de/guide/']) {
+        await page.goto(path);
+        const header = await box(page, 'header');
+        expect(Math.abs(header.x - 384), path).toBeLessThanOrEqual(1);
+        expect(Math.abs(header.x + header.width - 1536), path).toBeLessThanOrEqual(1);
+        expect(Math.abs((await box(page, 'h1')).x - 384), path).toBeLessThanOrEqual(1);
+      }
     });
   });
 

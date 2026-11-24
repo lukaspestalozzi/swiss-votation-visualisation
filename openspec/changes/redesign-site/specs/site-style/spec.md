@@ -141,9 +141,9 @@ and the guide SHALL be at most 1,216 pixels wide. A paragraph of text SHALL be a
 
 #### Scenario: The start page in a wide window
 
-- **WHEN** a visitor opens `/de/` in a window 1,920 pixels wide
-- **THEN** the head and the list are 1,216 pixels wide, give or take 1, in the middle of the
-  window
+- **WHEN** a visitor opens `/de/` and `/de/guide/` in a window 1,920 pixels wide
+- **THEN** the page is 1,216 pixels wide in the middle of the window: its head begins 384 pixels
+  from the window's left edge and ends 384 pixels from its right edge, give or take 1
 
 ### Requirement: The controls
 
