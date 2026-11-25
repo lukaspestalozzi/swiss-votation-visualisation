@@ -161,7 +161,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 - [x] 8.3 Add "Found while applying" to `investigations/redesign.md`: the budget tests' frames in
   the new layout, and whatever the mockups did not show. Verify: each figure in it comes from a
   command the file names.
-- [ ] 8.4 Update `CLAUDE.md` (the status, "Where things are", the code map with every file added,
+- [x] 8.4 Update `CLAUDE.md` (the status, "Where things are", the code map with every file added,
   moved or removed), `README.md` and the row #14 of `docs/roadmap.md`. Verify: every file the
   change added or removed under `app/` is in the code map: `git diff --stat main -- app` against
   the map.
