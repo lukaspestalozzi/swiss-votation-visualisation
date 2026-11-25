@@ -23,6 +23,7 @@
     type View,
   } from '../../../../lib/map-view.ts';
   import type { Texts } from '../../../../lib/texts/index.ts';
+  import ShareBar from '../../ShareBar.svelte';
 
   // The map of a vote (spec result-map) with its legend: its entries are written into the page
   // when the site is built; the shapes and the names are loaded in the browser. The lines below
@@ -316,8 +317,15 @@
           {#if details !== null}
             <p class="name">{details.name}</p>
             <ul>
-              {#each details.lines as line (line)}
-                <li>{line}</li>
+              <!-- The first line is the yes share, which a bar below it draws, as a result's
+                   (spec result-map, "Pointing at a municipality"). -->
+              {#each details.lines as line, at (line)}
+                <li>
+                  {line}
+                  {#if at === 0 && details.yesPercent !== null}
+                    <ShareBar percent={details.yesPercent} />
+                  {/if}
+                </li>
               {/each}
             </ul>
           {/if}
@@ -494,9 +502,15 @@
     display: none;
   }
   .details ul {
+    min-width: 9rem;
     margin: 0 0 0.5rem;
     padding: 0;
     list-style: none;
+  }
+  /* The bar of the yes share, lower than a result's. */
+  .details :global(.bar) {
+    height: 0.5rem;
+    margin: 0.25rem 0 0.375rem;
   }
   .name {
     margin: 0.5rem 0 0;

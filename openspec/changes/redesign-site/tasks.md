@@ -103,7 +103,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   for assistive technology and the seven yes shares, then the entries; in `ResultMap.svelte` the
   scale and "Ja-Anteil in %" in three languages. Verify: the unit test of the legend and the
   browser tests of result-map "The legend of a vote" and "The legend of a selection" pass.
-- [ ] 5.2 A bar in a municipality's details. Verify: the browser test of result-map "The details
+- [x] 5.2 A bar in a municipality's details. Verify: the browser test of result-map "The details
   of a municipality" passes with the bar at 31.85%, and the budget test of pointing passes.
 - [ ] 5.3 The panel in columns of groups, each share with its bar: `app/src/lib/characteristics.ts`
   gives a line its share or none. Verify: a unit test of the lines' shares passes; the browser

@@ -7,6 +7,7 @@ import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 import {
   addLimit,
+  barDrawn,
   boxOf,
   figuresOf,
   mapDrawn,
@@ -223,6 +224,21 @@ test('pointing at a municipality shows its details', async ({ page }) => {
     "Nein-Stimmen: 99'614",
   ]);
   await expect(details(page)).toHaveAttribute('aria-live', 'polite');
+  // A bar of its yes share, drawn as a result's: 31.85% of its width, a mark at half.
+  const bar = await barDrawn(details(page).locator('.bar'));
+  expect(bar.parts.map((part) => part.side)).toEqual(['yes', 'no']);
+  expect(bar.width).toBeGreaterThan(80);
+  expect(Math.abs((bar.parts[0]?.width ?? 0) - bar.width * 0.3185)).toBeLessThanOrEqual(1);
+  expect(Math.abs((bar.mark ?? 0) - bar.width / 2)).toBeLessThanOrEqual(1);
+});
+
+test('the details of a municipality without a result draw no bar', async ({ page }) => {
+  // Meienried counts with another municipality: its details say so, and have no yes share.
+  await page.goto('de/votes/5960/');
+  const meienried = await pointIn(page, '.municipalities [data-number="389"]');
+  await page.mouse.move(meienried.x, meienried.y);
+  await expect(details(page).locator('.name')).toHaveText('Meienried (BE)');
+  await expect(details(page).locator('.bar')).toHaveCount(0);
 });
 
 test('a name that holds its canton is shown once with it', async ({ page }) => {
