@@ -113,7 +113,12 @@ mockups Q saw unless it says otherwise.
     above the other. This replaces the two boxes side by side of #4 and #8. A row follows the room
     it has, not the window: with less than 640 pixels the outcome stands above the two majorities,
     with less than 448 all three stand one below the other (Q: #10 kept the boxes side by side at
-    360). Until a selection applies, the selection's place says what will stand there. The
+    360). Until a selection applies, the selection's place says what will stand there. Found
+    while applying: the place was 33 pixels lower than a result, so the map moved and the page
+    scrolled under the pointer in the frame a drag began, the frame the budget tests found
+    longest; beside the limits the place is now as tall as a result, and the browser does not
+    anchor the page's scroll in the map's column (`investigations/redesign.md`, "Found while
+    applying"). The
     vote's row is headed "Echtes Ergebnis", the comparison's word, as it now stands above "Mit
     Ihrer Auswahl". The yes votes and the no votes stand below the Volksmehr's bar under "Ja" and
     "Nein", as the mockups wrote them and as French and Italian name them already: "Ja-Stimmen"

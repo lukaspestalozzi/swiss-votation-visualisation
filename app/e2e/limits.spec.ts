@@ -808,6 +808,33 @@ test("the selection's place: a sentence until a selection applies, then its resu
   );
 });
 
+test("beside the limits, the selection's result takes its place: the map and the limits stay", async ({
+  page,
+}) => {
+  // Spec verdicts, "The place of the selection's result": where the limits stand beside the map,
+  // the place is as tall as the result that takes it. Five limits, so that the page has scrolled
+  // when the last one is moved.
+  for (const [width, height] of [
+    [1280, 800],
+    [1024, 768],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await openVote(page, 'de/votes/5960/');
+    await mapDrawn(page);
+    for (const name of ['Ausländeranteil', 'Einwohner', 'Deutsch', 'Französisch', 'SVP']) {
+      await addLimit(page, name);
+    }
+    const lower = slider(page, 'Untere', 'SVP');
+    await lower.scrollIntoViewIfNeeded();
+    const tops = async () => [(await boxOf(page, '.map svg')).y, (await lower.boundingBox())?.y];
+    const before = await tops();
+    await expect(selectionPlace(page)).toBeVisible();
+    await lower.fill('50');
+    await expect(selectionHeading(page)).toBeVisible();
+    expect(await tops(), `${String(width)} × ${String(height)}`).toEqual(before);
+  }
+});
+
 test("the selection's place says nothing when the characteristics cannot be loaded", async ({
   page,
 }) => {

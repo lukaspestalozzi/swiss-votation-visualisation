@@ -368,6 +368,12 @@
       grid-template-columns: minmax(0, 1fr) clamp(19rem, 30vw, 24rem);
       gap: 3rem;
     }
+    /* What grows in this column, as the legend does by a line when it gains the key of the
+       set-aside municipalities, moves nothing in the limits' column: the browser keeps the
+       page where it is by a part of the limits, not by one of this column. */
+    .watch {
+      overflow-anchor: none;
+    }
     .setting {
       align-self: start;
       padding-left: 2rem;
@@ -413,12 +419,32 @@
   }
   /* The place of the selection's result, below the vote's. */
   .place {
+    display: flex;
+    align-items: center;
     max-width: none;
     margin: 0.875rem 0 0;
     padding: 0.75rem 1rem;
     border: 1px dashed var(--border);
     border-radius: 10px;
     color: var(--text-secondary);
+  }
+  /* Beside the limits, the place is as tall as the result that takes it, so that neither the
+     map nor the limits move under the pointer when a selection first applies (spec verdicts,
+     "The place of the selection's result"): the two are rows of one height. The room between
+     them and the selection's line are then the vote's row's, below it, as tall as the
+     selection's own room and line above it (`ResultRow.svelte`). */
+  @media (min-width: 1024px) {
+    .results {
+      display: grid;
+      grid-auto-rows: 1fr;
+    }
+    .results > :global(.result:first-child) {
+      padding-bottom: calc(0.875rem + 1px);
+    }
+    .results > :global(.result.selection),
+    .place {
+      margin-top: 0;
+    }
   }
   /* The cantons: a heading as the panel's, above a line; a table as wide as its column, a line
      between its rows. */
