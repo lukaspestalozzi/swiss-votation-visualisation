@@ -34,7 +34,7 @@ layout and in what is drawn.
 - **A vote's page is a workbench.** In a window at least 1,024 pixels wide the result and the map
   stand in a column that stays in the window, and the limits in a column to their right. Below
   both stand the panel of characteristics and, beside it, the table of the cantons. In a narrower
-  window the order is result, map, limits, panel, cantons.
+  window the order is result, limits, map, panel, cantons (Q, after the merge).
 - **A result is drawn.** Each result is a row: its outcome, the majority of voters as a bar with
   a mark at half and the votes below it, and the cantons as a bar of one segment per canton. The
   result with the selection stands below the real one, bar above bar. A majority that is not

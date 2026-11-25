@@ -8,7 +8,7 @@ For every vote the calculation judges, the vote's page SHALL show a section head
 auswählen" with the sentence of the reading guide, the number of municipalities that remain, the
 limits added, the button "Merkmal hinzufügen", the switch for the Swiss abroad and, while there
 is something to undo, the button back to the real result: right of the result and the map in a
-window at least 1,024 pixels wide, below the map in a narrower one. A tie-break question's page
+window at least 1,024 pixels wide, between them in a narrower one. A tie-break question's page
 SHALL show none.
 
 #### Scenario: The section of a vote
@@ -26,8 +26,9 @@ SHALL show none.
 #### Scenario: The section in a narrow window
 
 - **WHEN** a visitor opens `/de/votes/5960/` in a window 1,023 pixels wide, and in one 360 wide
-- **THEN** "Gemeinden auswählen" stands below the map and above "Merkmale der Gemeinde", as wide
-  as the result (`investigations/redesign.md`, 6)
+- **THEN** "Gemeinden auswählen" stands below the result and above the map, which stands above
+  "Merkmale der Gemeinde", and is as wide as the result (`investigations/redesign.md`, "Found
+  after the merge")
 
 ### Requirement: Adding and removing a limit
 
