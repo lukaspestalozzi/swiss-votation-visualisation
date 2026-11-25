@@ -360,6 +360,29 @@ exceeds it.
   Playwright does not click a part another element lies over, so the test of the whole row
   clicks the row at the share's place.
 
+### Found by the verification
+
+`/openspec-verify-change` on 2026-11-25, by four readers of the specs, the code and the tests,
+none of whom had written them:
+
+- **A single half canton filled half its bar.** A segment's width is its cantonal votes as a
+  share of the flex line, and weights that add up to less than 1 fill only that part of the
+  line: a bar of 400 pixels drew one half canton 200 wide, one whole canton 400. The weights are
+  now 2 and 1. The browser test keeps Basel alone, the one municipality with 150,000 to 180,000
+  inhabitants at the end of 2015.
+- **Three paragraphs were exempt from the page's 40rem:** the selection's place, 1,104 pixels in
+  a window 1,920 wide, the note under the cantons and the comparison's notes. The place is now a
+  box around a paragraph.
+- **A requirement of 503 characters.** OpenSpec's validation warns above 500, for an added
+  requirement in a change and for every requirement of a spec, not for a modified one in a
+  change: the change validated, and the merged spec would not have, which a trial of the archive
+  in a copy of `openspec/` showed.
+- **A slider's thumb tells no script its size.** `getComputedStyle(slider,
+  '::-webkit-slider-thumb')` gave 380 by 44 pixels on the tests' phone, the slider's own box. The
+  thumb's 44 pixels are tested by a press 20 pixels beside its centre.
+- **A step by key** took at most 13.1 ms of the 16 allowed, in the new budget test of thirty
+  steps (`pnpm --filter app exec playwright test e2e/limits.spec.ts -g "step by key"`).
+
 ## Not verified
 
 Of the five points below, applying the change settled four: the browser tests open the built
