@@ -162,7 +162,7 @@ function tableFor(
     table: [
       row('Ja-Stimmen', (result) => result.yesVotes),
       row('Nein-Stimmen', (result) => result.noVotes),
-      row('Ja-Anteil', (result) => result.yesShare),
+      row('Ja-Anteil', (result) => result.verdicts[0].figure),
       row('Volksmehr', verdict(0)),
       row('Ständemehr', verdict(1)),
       row('Vorlage', (result) => result.outcome),

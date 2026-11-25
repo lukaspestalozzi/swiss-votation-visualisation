@@ -205,7 +205,6 @@ export const fr: Texts = {
   FIRST_VOTE: 'Première votation',
   SECOND_VOTE: 'Deuxième votation',
   REAL_RESULT: 'Vrai résultat',
-  PROPOSAL: 'Objet',
   VOTE_LOADING: 'Les résultats sont en cours de chargement.',
   VOTE_FAILED: 'Les résultats de cette votation ne peuvent pas être chargés.',
   SAME_MUNICIPALITIES:

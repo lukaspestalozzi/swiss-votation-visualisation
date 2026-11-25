@@ -205,7 +205,6 @@ export const it: Texts = {
   FIRST_VOTE: 'Prima votazione',
   SECOND_VOTE: 'Seconda votazione',
   REAL_RESULT: 'Risultato reale',
-  PROPOSAL: 'Oggetto',
   VOTE_LOADING: 'I risultati vengono caricati.',
   VOTE_FAILED: 'I risultati di questa votazione non possono essere caricati.',
   SAME_MUNICIPALITIES:

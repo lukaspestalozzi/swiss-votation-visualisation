@@ -10,10 +10,13 @@ import { DEFINITIONS, applyingTo, nameOf, writeUnits, type Definition } from './
 import {
   BINS,
   STEPS,
+  barHeightsOf,
+  barsPathOf,
   histogramOf,
   isNarrowed,
   labelOf,
   labelPartsOf,
+  markOn,
   remainingOf,
   remainingUnder,
   setAsideOf,
@@ -345,6 +348,40 @@ test('the histogram counts no municipality without a figure: the SVP of 2021-03-
   // of 2019 (investigations/limits.md, 5).
   const bars = histogramOf(trackFor('SVP', '2021-03-07'));
   expect(bars.reduce((sum, bar) => sum + bar, 0)).toBe(2104);
+});
+
+test('the heights of the bars: against the fullest, a bar with a municipality at least 2', () => {
+  // Spec limits, "Where the municipalities lie on a track": in hundredths of the fullest bar's
+  // height, to two decimals; 1 of 146 would be 0.68 and is drawn 2 tall, so that it is seen.
+  expect(barHeightsOf([140, 10, 0, 70])).toEqual([100, 7.14, 0, 50]);
+  expect(barHeightsOf([146, 1, 2, 3, 0])).toEqual([100, 2, 2, 2.05, 0]);
+  // No municipality with a figure: no bar.
+  expect(barHeightsOf([0, 0])).toEqual([0, 0]);
+});
+
+test('the bars as one path: 50 bars, each four fifths of its fiftieth wide', () => {
+  const path = barsPathOf(trackFor('Ausländeranteil', '2016-02-28'));
+  // The first bar, 10 of 140, and the ninth, the fullest.
+  expect(path.startsWith('M0.1,100v-7.14h0.8v7.14z')).toBe(true);
+  expect(path).toContain('M8.1,100v-100h0.8v100z');
+  expect(path.match(/M/g)).toHaveLength(BINS);
+});
+
+test('the mark of a municipality on a track: its place and its value', () => {
+  // Spec limits, "Köniz on two tracks": 18.02% at step 295, 40,214 inhabitants at step 758.
+  const koniz = file.municipalities.indexOf(355);
+  expect(markOn(trackFor('Ausländeranteil', '2016-02-28'), koniz, de)).toEqual({
+    place: 29.5,
+    value: '18.02%',
+  });
+  expect(markOn(trackFor('Einwohner', '2016-02-28'), koniz, de)).toEqual({
+    place: 75.8,
+    value: "40'214",
+  });
+  // No municipality clicked, and one without a figure: no mark.
+  expect(markOn(trackFor('Einwohner', '2016-02-28'), -1, de)).toBeNull();
+  const svp = trackFor('SVP', '2021-03-07');
+  expect(markOn(svp, svp.values.indexOf(null), de)).toBeNull();
 });
 
 test("a label's three parts: its name, its date in brackets and its bounds, in each language", () => {

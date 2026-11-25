@@ -257,7 +257,7 @@
          from the middle to the share, in its side's colour; under a selection, a mark at the
          canton's real share. A row without a yes share has neither. -->
     <section class="canton-results">
-      <h3>{t.CANTONS_HEADING}</h3>
+      <h2>{t.CANTONS_HEADING}</h2>
       <table>
         {#if selection !== null}
           <caption>{t.WITH_SELECTION}</caption>
@@ -347,7 +347,7 @@
     font-weight: bold;
   }
   /* The workbench: one column, and from 1,024 pixels the result and the map beside the limits,
-     whose column is 304 to 384 pixels wide. */
+     whose column is 307 to 384 pixels wide. */
   .workbench {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -451,7 +451,7 @@
   }
   /* The cantons: a heading as the panel's, above a line; a table as wide as its column, a line
      between its rows. */
-  .canton-results h3 {
+  .canton-results h2 {
     margin: 0 0 1.25rem;
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--hairline);

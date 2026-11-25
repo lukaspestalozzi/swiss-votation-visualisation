@@ -9,7 +9,8 @@ import {
   countsOf,
   nameOf,
   panelOf,
-  written,
+  unitsOf,
+  writeUnits,
   type Definition,
   type Quotient,
 } from './characteristics.ts';
@@ -18,6 +19,10 @@ import { textsOf, type CharacteristicKey } from './texts/index.ts';
 import type { CharacteristicsFile } from './vote-data.ts';
 
 const de = textsOf('de');
+
+/** A value as the panel writes it: "keine Angabe" where there is no figure. */
+const written = (definition: Definition, value: Quotient | null, t: typeof de): string =>
+  writeUnits(definition, unitsOf(definition, value), t);
 
 /** A definition by its key: the tests name a characteristic, not its place among the others. */
 function definitionOf(key: CharacteristicKey): Definition {
@@ -262,7 +267,9 @@ test('a line of another year than its group names its year', () => {
   };
   const [population] = panel(later);
   expect(population.heading).toBe('Bevölkerung Ende 2025');
-  const texts = (lines: readonly { text: string }[]) => lines.map((line) => line.text);
+  // A line as the panel writes it: its name, a colon and its value.
+  const texts = (lines: readonly { name: string; value: string }[]) =>
+    lines.map((line) => `${line.name}: ${line.value}`);
   expect(texts(population.lines).slice(0, 4)).toEqual([
     'Einwohner: 11',
     'Ausländeranteil: 9.09%',
@@ -270,7 +277,7 @@ test('a line of another year than its group names its year', () => {
     '0–17 Jahre: 27.27%',
   ]);
   // With every figure of the heading's year, no line of the group names one.
-  expect(panel(MADE_UP)[0].lines[2].text).toBe('Im Ausland geboren: 36.36%');
+  expect(texts(panel(MADE_UP)[0].lines)[2]).toBe('Im Ausland geboren: 36.36%');
   // The land's heading names no year: each of its lines does.
   const land = panel(MADE_UP).at(-1);
   expect(land?.heading).toBe('Fläche und Landwirtschaft');
@@ -293,7 +300,6 @@ test('a line of the panel: its name, its value, and its share where it is one, f
   expect(zurich[1]).toEqual({
     name: 'Ausländeranteil',
     value: '32.03%',
-    text: 'Ausländeranteil: 32.03%',
     share: 32.03,
   });
   expect(zurich.filter((line) => line.share !== null)).toHaveLength(29);
@@ -309,11 +315,14 @@ test('a line of the panel: its name, its value, and its share where it is one, f
   const without = linesOf(137).filter((line) => line.value === 'keine Angabe');
   expect(without.map((line) => line.name)).toContain('Arbeitsplätze im Primärsektor');
   expect(without.every((line) => line.share === null)).toBe(true);
-  // A line's text is its name, a colon and its value, in each language: the panel writes the
-  // colon itself, between the two.
+  // What the panel writes between a line's name and its value, in each language: the texts'
+  // sentence of a characteristic without either.
   for (const language of ['de', 'fr', 'it'] as const) {
-    for (const line of linesOf(261, textsOf(language))) {
-      expect(line.text).toBe(`${line.name}: ${line.value}`);
+    const t = textsOf(language);
+    for (const line of linesOf(261, t)) {
+      expect(`${line.name}${t.characteristic('', '')}${line.value}`).toBe(
+        t.characteristic(line.name, line.value),
+      );
     }
   }
 });
