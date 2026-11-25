@@ -25,9 +25,12 @@ export interface Verdict {
 }
 
 // A row of the table of the cantons: `side` is the word, `forSide` the side it stands for.
+// `yesPercent` is what its bar draws, the yes share in percent: none without a valid vote, and
+// for a canton with nothing left (spec verdicts, "The bar of a canton").
 export interface CantonRow {
   readonly canton: string;
   readonly yesShare: string;
+  readonly yesPercent: number | null;
   readonly cantonalVotes: string;
   readonly side: string;
   readonly forSide: Side;
@@ -261,14 +264,17 @@ export function judgedOf(
           return {
             canton: abbreviation,
             yesShare: '–',
+            yesPercent: null,
             cantonalVotes: t.NOTHING_LEFT,
             side: '–',
             forSide: null,
           };
         }
+        const votes = outcome.yes + outcome.no;
         return {
           canton: abbreviation,
-          yesShare: formatShare(outcome.yes, outcome.yes + outcome.no),
+          yesShare: formatShare(outcome.yes, votes),
+          yesPercent: votes === 0 ? null : (outcome.yes / votes) * 100,
           cantonalVotes: formatCantonalVotes(outcome.cantonalVotes),
           side: outcome.inFavour ? t.REACHED : t.NOT_REACHED,
           forSide: outcome.inFavour ? 'yes' : 'no',

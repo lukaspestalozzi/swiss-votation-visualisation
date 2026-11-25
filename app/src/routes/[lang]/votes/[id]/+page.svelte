@@ -154,6 +154,11 @@
   // The row "Mit Ihrer Auswahl", which the bar at the bottom of a narrow window repeats while it is
   // not wholly on the screen (spec small-screens).
   let selectionBox = $state<HTMLElement | null>(null);
+  // Each canton's yes share in the vote's real result, in percent, which a mark shows in the table
+  // of the cantons while a selection applies (spec verdicts, "The bar of a canton").
+  const realShares = $derived(
+    new Map((data.judged?.cantons ?? []).map((row) => [row.canton, row.yesPercent])),
+  );
   // The municipality last clicked or tapped on the map, whose characteristics the panel shows.
   let clicked = $state.raw<{ readonly number: number; readonly name: string } | null>(null);
   // The municipalities with an entry that the selection sets aside, dark grey on the map.
@@ -247,7 +252,12 @@
         voteDate={data.voteDate}
       />
     {/if}
+    <!-- The cantons (spec verdicts, "The table of the cantons" and "The bar of a canton"; design
+         of redesign-site, decision 18): each row's yes share with a bar on a track of 0 to 100%,
+         from the middle to the share, in its side's colour; under a selection, a mark at the
+         canton's real share. A row without a yes share has neither. -->
     <section class="canton-results">
+      <h3>{t.CANTONS_HEADING}</h3>
       <table>
         {#if selection !== null}
           <caption>{t.WITH_SELECTION}</caption>
@@ -262,9 +272,24 @@
         </thead>
         <tbody>
           {#each (selection ?? judged).cantons as row (row.canton)}
+            {@const share = row.yesPercent}
+            {@const real = selection === null ? null : (realShares.get(row.canton) ?? null)}
             <tr>
               <th scope="row">{row.canton}</th>
-              <td>{row.yesShare}</td>
+              <!-- The cell's text is the share alone: nothing stands between its parts. -->
+              <td class="share"
+                ><span class="figure">{row.yesShare}</span>{#if share !== null}<span
+                    class="canton-bar"
+                    aria-hidden="true"
+                    ><span
+                      class="fill"
+                      class:yes={row.forSide === 'yes'}
+                      style:left="{Math.min(share, 50)}%"
+                      style:width="{Math.abs(share - 50)}%"
+                    ></span>{#if real !== null}<span class="real" style:left="{real}%"
+                      ></span>{/if}</span
+                  >{/if}</td
+              >
               <td>{row.cantonalVotes}</td>
               <td class:side-yes={row.forSide === 'yes'} class:side-no={row.forSide === 'no'}>
                 {row.side}
@@ -273,6 +298,9 @@
           {/each}
         </tbody>
       </table>
+      <p class="canton-note secondary">
+        {selection === null ? t.CANTON_BARS : t.CANTON_BARS_SELECTION}
+      </p>
     </section>
   </div>
 {/if}
@@ -392,9 +420,93 @@
     border-radius: 10px;
     color: var(--text-secondary);
   }
+  /* The cantons: a heading as the panel's, above a line; a table as wide as its column, a line
+     between its rows. */
+  .canton-results h3 {
+    margin: 0 0 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--hairline);
+    font-size: 1.375rem;
+    line-height: 1.2;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: tabular-nums;
+  }
   td,
   th {
-    padding: 0.125rem 0.75rem 0.125rem 0;
+    padding: 0.25rem 0.75rem 0.25rem 0;
+    border-top: 1px solid var(--hairline);
     text-align: left;
+    white-space: nowrap;
+  }
+  thead th {
+    border-top: 0;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+  td:last-child,
+  th:last-child {
+    padding-right: 0;
+  }
+  /* The yes share's cell takes the room the other columns leave: the figure, then its bar. */
+  .share {
+    width: 100%;
+  }
+  .figure {
+    display: inline-block;
+    width: 3.75rem;
+  }
+  /* A canton's bar: a thin track of 0 to 100% with a line at its middle, the fill from the
+     middle to the yes share, and the mark of the real share. */
+  .canton-bar {
+    position: relative;
+    display: inline-block;
+    width: calc(100% - 4.25rem);
+    min-width: 4rem;
+    height: 0.75rem;
+    vertical-align: middle;
+    background:
+      linear-gradient(var(--text), var(--text)) center / 1px 100% no-repeat,
+      linear-gradient(var(--track), var(--track)) center / 100% 2px no-repeat;
+  }
+  .fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--no-bar);
+  }
+  .fill.yes {
+    background: var(--yes-bar);
+  }
+  .real {
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    margin-left: -1px;
+    background: var(--text);
+    box-shadow: 0 0 0 1px var(--ground);
+  }
+  .canton-note {
+    max-width: none;
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+  }
+  /* In a narrow window the table still fits: less room between its columns, a shorter bar, and
+     "keine Gemeinde übrig" on as many lines as it needs (spec small-screens). */
+  @media (max-width: 639.98px) {
+    td,
+    th {
+      padding-right: 0.5rem;
+    }
+    td:nth-child(3) {
+      white-space: normal;
+    }
+    .canton-bar {
+      min-width: 3rem;
+    }
   }
 </style>

@@ -70,6 +70,11 @@ export const it: Texts = {
   cantonalVotes: (inFavour, against) => `${inFavour} : ${against}`,
 
   // A vote's page: the table of the cantons.
+  CANTONS_HEADING: 'Cantoni',
+  CANTON_BARS: 'Ogni barra va dal 50% alla percentuale di sì del Cantone.',
+  CANTON_BARS_SELECTION:
+    'Ogni barra va dal 50% alla percentuale di sì del Cantone; il trattino indica il suo ' +
+    'risultato reale.',
   CANTON: 'Cantone',
   CANTONAL_VOTES: 'Voti dei Cantoni',
   SIDE: 'Esito',

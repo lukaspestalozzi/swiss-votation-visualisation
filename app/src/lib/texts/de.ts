@@ -67,6 +67,11 @@ export const de: Texts = {
   cantonalVotes: (inFavour, against) => `${inFavour} : ${against}`,
 
   // A vote's page: the table of the cantons.
+  CANTONS_HEADING: 'Kantone',
+  CANTON_BARS: 'Jeder Balken reicht von 50% bis zum Ja-Anteil des Kantons.',
+  CANTON_BARS_SELECTION:
+    'Jeder Balken reicht von 50% bis zum Ja-Anteil des Kantons; der Strich zeigt sein echtes ' +
+    'Ergebnis.',
   CANTON: 'Kanton',
   CANTONAL_VOTES: 'Standesstimmen',
   SIDE: 'Seite',

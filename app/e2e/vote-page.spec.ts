@@ -3,6 +3,8 @@
 import { expect, test } from '@playwright/test';
 import {
   barDrawn,
+  cantonBar,
+  cantonRow,
   cantonsBarOf,
   figuresOf,
   majoritiesOf,
@@ -217,4 +219,42 @@ test('a majority that is not needed has no bar; the Volksmehr has its bar', asyn
   await expect(verdictWordsOf(own)).toHaveText(['Ja', 'nicht nötig']);
   await expect(votersBarOf(own)).toHaveCount(1);
   await expect(cantonsBarOf(own)).toHaveCount(0);
+});
+
+// The table of the cantons (spec verdicts, "The table of the cantons" and "The bar of a canton";
+// design of redesign-site, decision 18).
+test("the cantons' bars of 2016-02-28: from the middle to the yes share, in the side's colour", async ({
+  page,
+}) => {
+  // ZH 43.46% and JU 60.07% (investigations/data-sources.md).
+  await page.goto('de/votes/5960/');
+  const cantons = page.locator('.canton-results');
+  await expect(cantons.getByRole('heading', { name: 'Kantone', exact: true })).toBeVisible();
+  await expect(cantons.locator('tbody tr')).toHaveCount(26);
+  const zurich = await cantonBar(page, 'ZH');
+  expect(zurich.width).toBeGreaterThanOrEqual(60);
+  expect(Math.abs(zurich.to - zurich.width / 2)).toBeLessThanOrEqual(1);
+  expect(Math.abs(zurich.to - zurich.from - zurich.width * 0.0654)).toBeLessThanOrEqual(1);
+  expect(zurich.colour).toBe('rgb(194, 103, 59)'); // #c2673b
+  expect(zurich.real).toBeNull();
+  const jura = await cantonBar(page, 'JU');
+  expect(Math.abs(jura.from - jura.width / 2)).toBeLessThanOrEqual(1);
+  expect(Math.abs(jura.to - jura.from - jura.width * 0.1007)).toBeLessThanOrEqual(1);
+  expect(jura.colour).toBe('rgb(0, 156, 134)'); // #009c86
+  await expect(
+    cantons.getByText('Jeder Balken reicht von 50% bis zum Ja-Anteil des Kantons.', {
+      exact: true,
+    }),
+  ).toBeVisible();
+  // A row still reads its four cells.
+  await expect(cantonRow(page, 'ZH').locator('th, td')).toHaveText(['ZH', '43.46%', '1', 'Nein']);
+});
+
+test("a canton's bar for a share far from half: ZH with 70.20%", async ({ page }) => {
+  // Spec verdicts, "A share far from half": the track runs from 0 to 100%.
+  await page.goto('de/votes/5680/');
+  await expect(cantonRow(page, 'ZH').locator('td').first()).toHaveText('70.20%');
+  const zurich = await cantonBar(page, 'ZH');
+  expect(Math.abs(zurich.from - zurich.width / 2)).toBeLessThanOrEqual(1);
+  expect(Math.abs(zurich.to - zurich.from - zurich.width * 0.202)).toBeLessThanOrEqual(1);
 });
