@@ -83,10 +83,13 @@
       <p class="figure" class:greyed={cantons.greyed}>{cantons.figure}</p>
     </div>
     {#if !cantons.greyed}
-      <!-- A segment per canton, as wide as its cantonal votes; its name shows on pointing. -->
+      <!-- A segment per canton, as wide as its cantonal votes; its name shows on pointing. The
+           weights are doubled, 2 and 1: weights that add up to less than 1, as a single half
+           canton's would, fill only that part of the bar. -->
       <div class="bar segments" aria-hidden="true">
         {#each result.segments as segment (segment.canton)}
-          <span class={segment.side} style:flex-grow={segment.weight} title={segment.canton}></span>
+          <span class={segment.side} style:flex-grow={segment.weight * 2} title={segment.canton}
+          ></span>
         {/each}
         <span class="half"></span>
       </div>

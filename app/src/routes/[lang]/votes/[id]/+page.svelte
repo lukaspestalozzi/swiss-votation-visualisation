@@ -210,7 +210,7 @@
               bind:element={selectionBox}
             />
           {:else if data.entries !== null && !characteristicsFailed}
-            <p class="place">{t.SELECTION_PLACE}</p>
+            <div class="place"><p>{t.SELECTION_PLACE}</p></div>
           {/if}
         </div>
         {#if data.entries !== null}
@@ -417,16 +417,19 @@
   .tie-break {
     max-width: 36rem;
   }
-  /* The place of the selection's result, below the vote's. */
+  /* The place of the selection's result, below the vote's: a box as wide as the results, its
+     sentence a paragraph of the page's width. */
   .place {
     display: flex;
     align-items: center;
-    max-width: none;
     margin: 0.875rem 0 0;
     padding: 0.75rem 1rem;
     border: 1px dashed var(--border);
     border-radius: 10px;
     color: var(--text-secondary);
+  }
+  .place p {
+    margin: 0;
   }
   /* Beside the limits, the place is as tall as the result that takes it, so that neither the
      map nor the limits move under the pointer when a selection first applies (spec verdicts,
@@ -517,7 +520,6 @@
     box-shadow: 0 0 0 1px var(--ground);
   }
   .canton-note {
-    max-width: none;
     margin: 0.75rem 0 0;
     font-size: 0.875rem;
   }
