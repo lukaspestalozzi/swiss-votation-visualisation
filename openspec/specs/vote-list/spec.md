@@ -47,7 +47,7 @@ build SHALL fail.
 - **THEN** its heading is "Wie hätte die Schweiz abgestimmt, wenn nur ein Teil der Gemeinden an
   die Urne gegangen wäre?", followed by "Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden
   ein: nach Einwohnerzahl, Alter, Parteistärke und 32 weiteren Merkmalen. Karte und Ergebnis
-  rechnen sofort neu. Ein Gedankenexperiment, keine Prognose."
+  werden sofort neu berechnet. Ein Gedankenexperiment, keine Prognose."
 - **AND** the page's title in the browser is still "Popular Vote Explorer"
 
 #### Scenario: The vote days of a year
