@@ -92,6 +92,16 @@ export interface Texts {
   readonly START_HEADING: string;
   /** The sentence below it, with the number of characteristics beyond the three it names. */
   readonly startLead: (furtherCharacteristics: number) => string;
+  /** The search field of the list, and the sentence when no vote is left. */
+  readonly SEARCH_TITLES: string;
+  readonly NO_MATCH: string;
+  /** The three buttons that keep the votes by their result, and their name as a group. */
+  readonly KEPT: string;
+  readonly KEEP_ALL: string;
+  readonly KEEP_ACCEPTED: string;
+  readonly KEEP_REJECTED: string;
+  /** The name of the links to the years of the list. */
+  readonly YEARS: string;
   readonly LIST_PASSED: string;
   readonly LIST_FAILED: string;
   readonly listShare: (yesShare: string) => string;

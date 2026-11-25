@@ -10,6 +10,8 @@ import {
   pageHead,
   outcomeOf,
   ownResult,
+  keptButton,
+  searchField,
   selectionResult,
   verdictOf,
   verdictWordsOf,
@@ -589,6 +591,43 @@ test.describe('the controls', () => {
   }
 });
 
+test.describe("the start page's controls", () => {
+  for (const colorScheme of ['light', 'dark'] as const) {
+    test(`in the ${colorScheme} scheme: borders at least 3:1, texts 4.5:1`, async ({ page }) => {
+      await page.emulateMedia({ colorScheme });
+      await page.goto('de/');
+      // "Alle" is pressed at first; "Angenommen" pressed in its place shows "Alle" at rest.
+      for (const pressed of ['Alle', 'Angenommen'] as const) {
+        await keptButton(page, pressed).click();
+        const controls = await controlContrast(page, [
+          '.finder .search',
+          '.finder button:nth-of-type(1)',
+          '.finder button:nth-of-type(2)',
+          '.finder button:nth-of-type(3)',
+        ]);
+        expect(
+          controls.filter((c) => c.boundary < 3 || (c.text !== null && c.text < 4.5)),
+          pressed,
+        ).toEqual([]);
+        expect(controls.map((c) => c.text === null)).toEqual([true, false, false, false]);
+      }
+      // The field's own texts: what is typed, and the words it shows while it is empty.
+      const colours = await searchField(page).evaluate((field) =>
+        [
+          getComputedStyle(field).color,
+          getComputedStyle(field, '::placeholder').color,
+          getComputedStyle(field).backgroundColor,
+        ].map((colour) => (colour.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number)),
+      );
+      const [typed, placeholder, fill] = colours;
+      expect(ratioOf(typed, fill)).toBeGreaterThanOrEqual(4.5);
+      expect(ratioOf(placeholder, fill)).toBeGreaterThanOrEqual(4.5);
+      // Every text of the page keeps its contrast with a button pressed.
+      expect(await lowContrast(page)).toEqual([]);
+    });
+  }
+});
+
 test.describe('a control focused from the keyboard', () => {
   for (const [colorScheme, ring] of [
     ['light', 'rgb(28, 28, 28)'], // #1c1c1c
@@ -620,8 +659,14 @@ test('nothing stored: no switch of the scheme, no cookie, no local storage', asy
     await page.emulateMedia({ colorScheme });
     await page.goto('de/');
     await expect(page.locator('h1')).toBeVisible();
-    // The start page has no control at all, so none that switches the scheme.
-    await expect(page.locator('button, input, select')).toHaveCount(0);
+    // The start page's controls are its search field and its three buttons: none switches the
+    // scheme.
+    await expect(page.locator('input, select')).toHaveCount(1);
+    await expect(searchField(page)).toBeVisible();
+    await expect(page.getByRole('button')).toHaveText(['Alle', 'Angenommen', 'Abgelehnt']);
+    // Nothing typed is stored either (spec vote-list, "Finding a vote by its title").
+    await searchField(page).fill('ahv');
+    await keptButton(page, 'Angenommen').click();
     expect(await page.evaluate(() => [document.cookie, localStorage.length]), colorScheme).toEqual([
       '',
       0,

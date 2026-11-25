@@ -52,6 +52,14 @@ export const fr: Texts = {
     "Choisissez une votation et délimitez les communes: selon le nombre d'habitants, l'âge, la " +
     `force des partis et ${String(furtherCharacteristics)} autres caractéristiques. La carte et ` +
     'le résultat sont recalculés aussitôt. Une expérience de pensée, pas une prévision.',
+  SEARCH_TITLES: 'Rechercher un titre',
+  NO_MATCH: 'Aucune votation ne correspond à cette recherche.',
+  KEPT: 'Résultat',
+  // The objects put to the vote, as the rows say "accepté" and "rejeté".
+  KEEP_ALL: 'Tous',
+  KEEP_ACCEPTED: 'Acceptés',
+  KEEP_REJECTED: 'Rejetés',
+  YEARS: 'Années',
   LIST_PASSED: 'accepté',
   LIST_FAILED: 'rejeté',
   listShare: (yesShare) => `${yesShare} de oui`,

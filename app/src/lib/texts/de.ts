@@ -47,6 +47,13 @@ export const de: Texts = {
     'Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden ein: nach Einwohnerzahl, Alter, ' +
     `Parteistärke und ${String(furtherCharacteristics)} weiteren Merkmalen. Karte und Ergebnis ` +
     'rechnen sofort neu. Ein Gedankenexperiment, keine Prognose.',
+  SEARCH_TITLES: 'Titel suchen',
+  NO_MATCH: 'Keine Abstimmung passt zu dieser Suche.',
+  KEPT: 'Ergebnis',
+  KEEP_ALL: 'Alle',
+  KEEP_ACCEPTED: 'Angenommen',
+  KEEP_REJECTED: 'Abgelehnt',
+  YEARS: 'Jahre',
   LIST_PASSED: 'angenommen',
   LIST_FAILED: 'abgelehnt',
   listShare: (yesShare) => `${yesShare} Ja`,
