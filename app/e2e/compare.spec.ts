@@ -353,8 +353,13 @@ test('The second vote chosen as the first', async ({ page }) => {
 });
 
 test('A link without votes', async ({ page }) => {
-  // Its selection waits for a first vote, on whose tracks the page reads it.
+  // Its selection waits for a first vote, on whose tracks the page reads it. The vote is chosen
+  // once the page is in the browser, which it shows by asking for the characteristics: the
+  // built page shows its lists before its scripts run, and a choice made then is lost
+  // (investigations/redesign.md, "Found while applying").
+  const inTheBrowser = page.waitForResponse(/data\/characteristics\.json$/);
   await page.goto('de/compare/#foreigners=-19.98');
+  await inTheBrowser;
   await expect(page.locator('.limit')).toHaveCount(0);
   await page.getByLabel('Erste Abstimmung').selectOption('5960');
   await expect(page.locator('.limit .label')).toHaveText(
