@@ -119,12 +119,12 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 6. The start page
 
-- [ ] 6.1 In `app/src/lib/vote-list.ts`, group a year's votes by vote day, give each entry its yes
+- [x] 6.1 In `app/src/lib/vote-list.ts`, group a year's votes by vote day, give each entry its yes
   share as a number, its side and its day as day and month, and add the test of a search: the
   words typed against a title. Verify: unit tests pass for the days of 2026 (2, 2 and 6 votes),
   "ahv" (7 votes), "AHV Rente" (the vote 6650), "mariage" in French (2), and 52 accepted and 72
   rejected votes: `pnpm --filter app exec vitest run src/lib/vote-list.test.ts`.
-- [ ] 6.2 The start page's heading and sentence in three languages, the sentence with the number
+- [x] 6.2 The start page's heading and sentence in three languages, the sentence with the number
   of characteristics from their definitions; the votes by year and day; a row as the mockup's,
   the whole row a link. Verify: browser tests of vote-list "The list of votes" (five scenarios)
   and "What an entry of the list shows" (five), and of site-style "The colours of rows" pass;

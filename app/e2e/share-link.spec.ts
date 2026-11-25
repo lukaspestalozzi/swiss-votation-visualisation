@@ -139,7 +139,9 @@ test('Back leaves the page', async ({ page }) => {
   await waitASecond(page);
   expect(address(page)).toBe('/de/votes/5960/#foreigners=-19.98');
   await page.goBack();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+    /^Wie hätte die Schweiz abgestimmt/,
+  );
   expect(address(page)).toBe('/de/');
 });
 

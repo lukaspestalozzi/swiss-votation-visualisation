@@ -6,12 +6,17 @@ import {
   addLimit,
   figureNamesOf,
   figuresOf,
+  kindOf,
   languageSwitch,
   majorityHeadingsOf,
   outcomeOf,
   ownResult,
+  pageHead,
+  placeOf,
   selectionHeading,
   selectionResult,
+  shareOf,
+  verdictOf,
 } from './parts.ts';
 
 /** The language a page declares in its markup. */
@@ -160,9 +165,19 @@ test('the three pages of a vote, each in its language, and every vote in each', 
 });
 
 test('the start page and the guide in each language: the same working title', async ({ page }) => {
-  for (const language of ['fr', 'it']) {
+  // The start page's heading is the question in its language (spec vote-list, "The list of
+  // votes"); the French one holds a word joiner, which keeps "aurait-elle" on one line.
+  const questions = {
+    fr:
+      'Comment la Suisse aurait-\u2060elle voté si seule une partie des communes ' +
+      "s'était rendue aux urnes?",
+    it: 'Come avrebbe votato la Svizzera se solo una parte dei Comuni si fosse recata alle urne?',
+  };
+  for (const [language, question] of Object.entries(questions)) {
     await page.goto(`${language}/`);
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(question);
+    await expect(page).toHaveTitle('Popular Vote Explorer');
+    await expect(pageHead(page).getByText('Popular Vote Explorer')).toBeVisible();
     expect(await languageOf(page)).toBe(language);
   }
   await page.goto('fr/guide/');
@@ -283,18 +298,26 @@ const entryOf = (page: Page, language: string, id: number) =>
     .filter({ has: page.locator(`a[href$="/${language}/votes/${String(id)}"]`) });
 
 test("the list's verdicts in French and Italian", async ({ page }) => {
+  // The share and the result of the votes 5960 and 6790.
   const results = {
-    fr: ['rejeté, 49.16% de oui', 'accepté, 50.39% de oui'],
-    it: ['respinto, 49.16% di sì', 'accettato, 50.39% di sì'],
+    fr: [
+      ['49.16% de oui', 'rejeté'],
+      ['50.39% de oui', 'accepté'],
+    ],
+    it: [
+      ['49.16% di sì', 'respinto'],
+      ['50.39% di sì', 'accettato'],
+    ],
   };
   for (const [language, [failed, passed]] of Object.entries(results)) {
     await page.goto(`${language}/`);
-    await expect(entryOf(page, language, 5960).locator('span:not(.mark)').nth(2)).toHaveText(
-      failed,
-    );
-    await expect(entryOf(page, language, 6790).locator('span:not(.mark)').nth(2)).toHaveText(
-      passed,
-    );
+    for (const [id, [share, verdict]] of [
+      [5960, failed],
+      [6790, passed],
+    ] as const) {
+      await expect(shareOf(entryOf(page, language, id))).toHaveText(share);
+      await expect(verdictOf(entryOf(page, language, id))).toHaveText(verdict);
+    }
   }
 });
 
@@ -442,22 +465,22 @@ test('the same vote in French and Italian on the start page, linked in its langu
   // Spec vote-list, "The same vote in French and Italian".
   const entries = {
     fr: [
-      '28 février 2016',
+      '28 février',
       'Initiative populaire «Pour le couple et la famille - Non à la pénalisation du mariage»',
       'Initiative populaire',
     ],
     it: [
-      '28 febbraio 2016',
+      '28 febbraio',
       'Iniziativa popolare «Per il matrimonio e la famiglia - No agli svantaggi per le coppie sposate»',
       'Iniziativa popolare',
     ],
   };
-  for (const [language, [date, title, kind]] of Object.entries(entries)) {
+  for (const [language, [day, title, kind]] of Object.entries(entries)) {
     await page.goto(`${language}/`);
     const entry = entryOf(page, language, 5960);
-    await expect(entry.locator('span:not(.mark)').nth(0)).toHaveText(date);
+    expect(await placeOf(entry)).toEqual(['2016', day]);
     await expect(entry.getByRole('link')).toHaveText(title);
-    await expect(entry.locator('span:not(.mark)').nth(1)).toHaveText(kind);
+    await expect(kindOf(entry)).toHaveText(kind);
   }
 });
 
@@ -491,7 +514,7 @@ test.describe('a browser that prefers French', () => {
   test('the address without a language opens the French start page', async ({ page }) => {
     await page.goto('./');
     await expect(page).toHaveURL('fr/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(/^Comment la Suisse aurait/);
   });
 });
 
@@ -507,7 +530,9 @@ test.describe('a browser without scripts', () => {
   test('the address without a language opens the German start page', async ({ page }) => {
     await page.goto('./');
     await expect(page).toHaveURL('de/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      /^Wie hätte die Schweiz abgestimmt/,
+    );
   });
 });
 
@@ -540,7 +565,9 @@ test.describe('a browser that prefers German', () => {
     // Spec app-shell, "The built files are served by a static file server".
     await page.goto('./');
     await expect(page).toHaveURL('de/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Popular Vote Explorer');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      /^Wie hätte die Schweiz abgestimmt/,
+    );
   });
 
   test('the choice is not remembered', async ({ page }) => {

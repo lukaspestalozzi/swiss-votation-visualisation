@@ -277,3 +277,59 @@ export const pageHead = (page: Page): Locator => page.locator('header');
 
 /** The switch between the languages, in the head. */
 export const languageSwitch = (page: Page): Locator => page.locator('nav.languages');
+
+/** A row of the start page's list, by its vote's id. */
+export const voteRow = (page: Page, id: number): Locator =>
+  page.locator('.vote-row', { has: page.locator(`a[href$="/votes/${String(id)}"]`) });
+
+/** The rows of the start page's list that are shown, in their order. */
+export const voteRows = (page: Page): Locator => page.locator('.vote-row');
+
+/** The ids of the votes whose rows the start page's list shows, in their order. */
+export const votesShown = (page: Page): Promise<number[]> =>
+  page
+    .locator('.vote-row a')
+    .evaluateAll((links) =>
+      links.map((link) => Number(/\/votes\/(\d+)$/.exec(link.getAttribute('href') ?? '')?.[1])),
+    );
+
+/** The year and the vote day a row of the start page's list stands under. */
+export const placeOf = (row: Locator): Promise<[string, string]> =>
+  row.evaluate((element): [string, string] => {
+    const written = (part: Element | null | undefined) =>
+      (part?.textContent ?? '').replace(/\u00a0/g, ' ').trim();
+    return [
+      written(element.closest('.year')?.querySelector('h2')),
+      written(element.closest('.day')?.querySelector('.day-date')),
+    ];
+  });
+
+/** The headings of the years the start page's list shows. */
+export const yearHeadings = (page: Page): Locator => page.locator('.year h2');
+
+/**
+ * The vote days of a year of the start page's list, from the newest: each with the number of
+ * its rows.
+ */
+export const voteDays = (page: Page, year: string): Promise<[string, number][]> =>
+  page
+    .locator('.year', { has: page.getByRole('heading', { level: 2, name: year, exact: true }) })
+    .locator('.day')
+    .evaluateAll((days) =>
+      days.map((day): [string, number] => [
+        (day.querySelector('.day-date')?.textContent ?? '').replace(/\u00a0/g, ' ').trim(),
+        day.querySelectorAll('.vote-row').length,
+      ]),
+    );
+
+/** The kind of a row's vote, below its title. */
+export const kindOf = (row: Locator): Locator => row.locator('.vote-kind');
+
+/** A row's yes share as it writes it: "49.16% Ja". */
+export const shareOf = (row: Locator): Locator => row.locator('.vote-share');
+
+/** A row's official result: "angenommen" or "abgelehnt". */
+export const verdictOf = (row: Locator): Locator => row.locator('.vote-verdict');
+
+/** A row's marks: "Hinweis", "vorläufig". */
+export const marksOf = (row: Locator): Locator => row.locator('.mark');

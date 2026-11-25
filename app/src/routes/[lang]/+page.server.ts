@@ -1,5 +1,6 @@
 // The start page's list of votes, written at build time (spec vote-list): the page's data holds
 // only what an entry shows.
+import { DEFINITIONS } from '../../lib/characteristics.ts';
 import { LANGUAGES, textsOf } from '../../lib/texts/index.ts';
 import type { Votes } from '../../lib/vote-data.ts';
 import { voteList } from '../../lib/vote-list.ts';
@@ -11,5 +12,9 @@ export const entries: EntryGenerator = () => LANGUAGES.map((lang) => ({ lang }))
 
 export const load: PageServerLoad = async ({ parent }) => {
   const { lang } = await parent();
-  return { years: voteList(votesFile as Votes, textsOf(lang)) };
+  return {
+    years: voteList(votesFile as Votes, textsOf(lang)),
+    // The page's sentence names three characteristics and counts the others.
+    furtherCharacteristics: DEFINITIONS.length - 3,
+  };
 };

@@ -29,6 +29,7 @@ export const it: Texts = {
   // The first day of a month as the Constitution's footnotes write it: "1°".
   // The day and the month joined by a non-breaking space, so that a line never parts them.
   date: (day, month, year) => `${day === 1 ? '1°' : String(day)}\u00a0${month} ${String(year)}`,
+  day: (day, month) => `${day === 1 ? '1°' : String(day)}\u00a0${month}`,
   KINDS: {
     'mandatory-referendum': 'Referendum obbligatorio',
     'optional-referendum': 'Referendum facoltativo',
@@ -43,9 +44,15 @@ export const it: Texts = {
   },
 
   // The list.
+  START_HEADING:
+    'Come avrebbe votato la Svizzera se solo una parte dei Comuni si fosse recata alle urne?',
+  startLead: (furtherCharacteristics) =>
+    'Scelga una votazione e delimiti i Comuni: per numero di abitanti, età, forza dei partiti e ' +
+    `altre ${String(furtherCharacteristics)} caratteristiche. La carta e il risultato vengono ` +
+    'ricalcolati subito. Un esperimento mentale, non una previsione.',
   LIST_PASSED: 'accettato',
   LIST_FAILED: 'respinto',
-  listResult: (verdict, yesShare) => `${verdict}, ${yesShare} di sì`,
+  listShare: (yesShare) => `${yesShare} di sì`,
   listTieBreak: (initiativeShare) => `${initiativeShare} per l'iniziativa`,
   MARK_NOTE: 'Nota',
   MARK_PROVISIONAL: 'provvisorio',
