@@ -204,6 +204,54 @@ it. The map SHALL keep its shape in both.
   limits' bottom edge, and the top edge of the table of the cantons below the panel's bottom
   edge
 
+### Requirement: The map's performance budget
+
+Of the frames the browser draws after a zoom step, a move of the map, pointing at a
+municipality (the first time after the page has loaded included) or clicking one, which fills
+the panel, at least nine in ten of a measurement SHALL take at most 16 ms of work on the page's
+main thread, handling the input and drawing, and none more than 50 ms. The browser tests measure
+it one test at a time, with 50 ms between a pointer's arrival and a click, and once more when a
+measurement exceeds it.
+
+#### Scenario: Zooming, moving and pointing
+
+- **WHEN** the browser tests open `/votes/5960/`, wait until the characteristics have loaded,
+  move the pointer onto the map, zoom in four times, drag the map, and point at three
+  municipalities
+- **THEN** at least nine in ten of the frames after these inputs, the first pointing at a
+  municipality included, took at most 16 ms of work on the main thread and none more than 50 ms,
+  in the first measurement or, when it exceeded this, in the second (`investigations/redesign.md`, "Found after the merge")
+
+#### Scenario: Clicking municipalities
+
+- **WHEN** the browser tests click three municipalities on `/votes/5960/` once the
+  characteristics have loaded, each after showing the whole of Switzerland, pointing at it and
+  waiting 50 ms
+- **THEN** at least nine in ten of the frames after these inputs took at most 16 ms of work on
+  the main thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
+
+#### Scenario: No other test beside a budget test
+
+- **WHEN** the browser tests run, by `pnpm run test:e2e`, in `scripts/verify-local.sh` or in CI
+- **THEN** they run one test at a time, so no other test runs while a budget test measures, the
+  budget tests of the limits included
+
+### Requirement: The budget of fingers
+
+Of the frames the browser draws after a step of one finger or two moving on the map, or after a
+tap on a municipality, which fills the panel, at least nine in ten of a measurement SHALL take at
+most 16 ms of work on the page's main thread and none more than 50 ms, as for the map's other
+inputs. The browser tests measure it on a touch screen's emulation, and once more when a
+measurement exceeds it.
+
+#### Scenario: Pinching, moving and tapping
+
+- **WHEN** the browser tests, on a touch screen 412 pixels wide, open `/de/votes/5960/`, wait
+  until the characteristics have loaded, zoom in twice with two fingers, move the map with one
+  finger, and tap three municipalities, each after showing the whole of Switzerland
+- **THEN** at least nine in ten of the frames after these inputs took at most 16 ms of work on
+  the main thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
+
 ## ADDED Requirements
 
 ### Requirement: The mouse wheel over the map

@@ -194,17 +194,17 @@ no second vote chosen. The page of the tie-break question SHALL NOT.
 
 ### Requirement: The budget of the comparison
 
-With two votes chosen, each frame while a bound is dragged SHALL take at most 16 ms of work on the
-page's main thread, and each frame after a jump at most 50 ms, as the `limits` capability's budget
-says for a vote's page. The browser tests measure them as they do there, and once more when a frame
-exceeds its budget.
+With two votes chosen, at least nine in ten of the frames while a bound is dragged SHALL take at
+most 16 ms of work on the page's main thread and none more than 50 ms, and each frame after a jump
+at most 50 ms, as the `limits` capability's budget says for a vote's page. The browser tests
+measure them as they do there, and once more when a measurement exceeds its budget.
 
 #### Scenario: Dragging a bound with two votes
 
 - **WHEN** the browser tests open `/de/compare/#votes=5960,5970&foreigners=-`, wait until both
   results show, and drag the upper bound of "Ausländeranteil"
-- **THEN** no frame of the drag took more than 16 ms of work on the main thread, in the first
-  measurement or, when a frame exceeded it, in the second
+- **THEN** at least nine in ten of the frames of the drag took at most 16 ms of work on the main
+  thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
 
 #### Scenario: Jumps with two votes
 

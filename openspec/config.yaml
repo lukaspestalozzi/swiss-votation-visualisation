@@ -40,10 +40,11 @@ context: |
      the number of cantonal votes needed shrinks accordingly. When nothing remains, the vote
      has failed.
   3. Recalculates immediately. The map and both verdicts update while a limit is being dragged,
-     without a button. Each frame while a limit is dragged takes at most 16 ms of work on the main
-     thread, as the map's frames do; each frame after a jump (a limit added or removed, the switch
-     for the Swiss abroad, the return to the real result) at most 50 ms. The design of the
-     archived change add-limits gives the reasons.
+     without a button. Of the frames while a limit is dragged, at least nine in ten of a
+     measurement take at most 16 ms of work on the main thread and none more than 50 ms, as the
+     map's frames do; each frame after a jump (a limit added or removed, the switch for the Swiss
+     abroad, the return to the real result) at most 50 ms. The designs of the changes add-limits
+     and redesign-site (decision 31) give the reasons.
   4. Public data, reproducible, private. Only public sources, each named. Every data file the
      app loads can be regenerated from them by the pipeline. No accounts and no tracking of
      users.

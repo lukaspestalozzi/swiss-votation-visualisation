@@ -246,12 +246,27 @@ mockups Q saw unless it says otherwise.
     rewritten before the tests that use them, and the class names that still name a part stay
     (`.result`, `.selection`, `.limit .label`, `.details`, `.panel`, `.legend`), so a test changes
     only where its assertion does.
-30. **The budgets stay.** 16 ms per frame while a bound is dragged, with the bars, the segments,
-    the cantons' bars and the histograms' clips redrawn in it; 50 ms per frame after a jump, to
-    which opening the list, choosing in it, a key in the search field and a press of a filter now
-    belong; 100 and 170 ms for the frame after a link with up to 21 and with all 35 limits, whose
-    histograms are worked out in it. Added to today's page, the drawings cost 1 to 2 ms of a
-    frame (`investigations/redesign.md`, 4). No dependency is added.
+30. **The budgets stayed with the redesign.** 16 ms per frame while a bound is dragged, with the
+    bars, the segments, the cantons' bars and the histograms' clips redrawn in it; 50 ms per frame
+    after a jump, to which opening the list, choosing in it, a key in the search field and a press
+    of a filter now belong; 100 and 170 ms for the frame after a link with up to 21 and with all
+    35 limits, whose histograms are worked out in it. Added to today's page, the drawings cost 1
+    to 2 ms of a frame (`investigations/redesign.md`, 4). No dependency is added.
+31. **The budgets hold on a slower machine (Q, after the merge).** Of the frames after a step of a
+    slider or an input of the map, at least nine in ten of a measurement take at most 16 ms, and
+    none more than 50 ms; the frame after a link takes at most 150 ms with up to 21 limits and
+    250 ms with all 35. A jump keeps its 50 ms. On the machine the change was built on, seven of
+    nine full runs of the browser tests failed a budget, six a step's and one the link's: of
+    4,443 frames of the tests with 16 ms per
+    frame, 31 took longer, 3 more than 33 ms and none more than 50, while the median frame was
+    7 to 10 ms; with the change or without it, alike (`investigations/redesign.md`, "Found after
+    the merge"). CI's runner passed each time. The rule keeps what a visitor sees, a frame per
+    step, and lets a busy machine's few slow frames pass; a page that grew slow would still put
+    more than a tenth of its frames over 16 ms. It changes hard constraint 3 of
+    `openspec/config.yaml`, which says the same from now on. Rejected: every frame within 50 ms,
+    one number, under which a drag ten times slower would pass on CI, where its frame takes about
+    5 ms; every frame within 33 ms, which 2 of 15 measurements of the drag with five limits
+    exceeded; leaving the budgets and trying the checks until they pass.
 
 ## Risks / Trade-offs
 

@@ -393,7 +393,7 @@ test.describe(() => {
   test('All 21 limits in the same tab', async ({ page }) => {
     // The 21 limits the site had before it had 35, by their names.
     const frames = await framesOfLinkWith(page, NAMES_OF_BEFORE);
-    expect(frames.filter((frame) => frame.work > 100)).toEqual([]);
+    expect(frames.filter((frame) => frame.work > 150)).toEqual([]);
   });
 
   test('All 35 limits in the same tab', async ({ page }) => {
@@ -402,7 +402,7 @@ test.describe(() => {
     const names = await offered(page);
     expect(names).toHaveLength(35);
     const frames = await framesOfLinkWith(page, names);
-    expect(frames.filter((frame) => frame.work > 170)).toEqual([]);
+    expect(frames.filter((frame) => frame.work > 250)).toEqual([]);
     // Every characteristic has its limit: there is none to add (spec limits).
     await expect(addButton(page)).toBeDisabled();
   });
