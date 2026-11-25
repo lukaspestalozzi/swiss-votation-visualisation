@@ -16,6 +16,7 @@ import {
   ownResult,
   searchField,
   selectionResult,
+  slider,
   votersBarOf,
   type Language,
 } from './parts.ts';
@@ -463,6 +464,30 @@ test.describe('on a touch screen 360 pixels wide', () => {
       for (const bar of [votersBarOf(result), cantonsBarOf(result)]) {
         expect(Math.abs((await barDrawn(bar)).width - 328)).toBeLessThanOrEqual(1);
       }
+    }
+  });
+});
+
+test.describe('on a phone 360 by 740 pixels', () => {
+  test.use({ ...phone, viewport: { width: 360, height: 740 } });
+
+  test("the selection's result and the first limit's sliders lie in one window", async ({
+    page,
+  }) => {
+    // Spec small-screens, "The result and the first limit in one window": the limits stand
+    // between the result and the map (design of redesign-site, decision 9;
+    // investigations/redesign.md, "Found after the merge").
+    await page.goto('de/votes/5960/');
+    await addLimit(page, 'Einwohner', 'de', 'tap');
+    await slider(page, 'Untere', 'Einwohner').fill('50');
+    const result = selectionResult(page);
+    await expect(result).toBeVisible();
+    await result.evaluate((row) => {
+      scrollTo(0, row.getBoundingClientRect().top + scrollY);
+    });
+    expect(Math.abs((await result.boundingBox())?.y ?? NaN)).toBeLessThanOrEqual(1);
+    for (const bound of ['Untere', 'Obere'] as const) {
+      await expect(slider(page, bound, 'Einwohner')).toBeInViewport({ ratio: 1 });
     }
   });
 });

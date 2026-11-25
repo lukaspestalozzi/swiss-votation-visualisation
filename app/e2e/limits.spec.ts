@@ -63,10 +63,11 @@ test('the section of a vote: right of the map, level with the result, without a 
   expect(narrower.x).toBeGreaterThanOrEqual(itsMap.x + itsMap.width);
 });
 
-test('the section in a narrow window: below the map, above the panel, as wide as the result', async ({
+test('the section in a narrow window: below the result, above the map, as wide as the result', async ({
   page,
 }) => {
-  // Spec limits, "The section in a narrow window" (investigations/redesign.md, 6).
+  // Spec limits, "The section in a narrow window" (investigations/redesign.md, "Found after the
+  // merge"; design of redesign-site, decision 9): the limits between the result and the map.
   for (const width of [1023, 360]) {
     await page.setViewportSize({ width, height: 800 });
     await openVote(page, 'de/votes/5960/');
@@ -75,9 +76,9 @@ test('the section in a narrow window: below the map, above the panel, as wide as
       ['.results', '.map svg', '.limits', '.panel'].map((part) => boxOf(page, part)),
     );
     const at = `${String(width)} pixels`;
-    expect(map.y, at).toBeGreaterThanOrEqual(result.y + result.height);
-    expect(limits.y, at).toBeGreaterThanOrEqual(map.y + map.height);
-    expect(panel.y, at).toBeGreaterThanOrEqual(limits.y + limits.height);
+    expect(limits.y, at).toBeGreaterThanOrEqual(result.y + result.height);
+    expect(map.y, at).toBeGreaterThanOrEqual(limits.y + limits.height);
+    expect(panel.y, at).toBeGreaterThanOrEqual(map.y + map.height);
     expect(Math.abs(limits.width - result.width), at).toBeLessThanOrEqual(1);
     expect(Math.abs(limits.x - result.x), at).toBeLessThanOrEqual(1);
   }
@@ -858,6 +859,34 @@ test("beside the limits, the selection's result takes its place: the map and the
     await lower.fill('50');
     await expect(selectionHeading(page)).toBeVisible();
     expect(await tops(), `${String(width)} × ${String(height)}`).toEqual(before);
+  }
+});
+
+test("in a narrow window, the selection's result takes its place: the limit stays under the finger", async ({
+  page,
+}) => {
+  // Spec verdicts, "Nothing moves in a narrow window": the limits stand directly below the result
+  // there (design of redesign-site, decision 9), and the place is as tall as the result that
+  // takes it. The place lies in the window, so that the browser does not keep the page where it
+  // is by scrolling.
+  for (const [width, height] of [
+    [360, 740],
+    [800, 1000],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await openVote(page, 'de/votes/5960/');
+    await mapDrawn(page);
+    await addLimit(page, 'Einwohner');
+    await selectionPlace(page).evaluate((place) => {
+      scrollTo(0, place.getBoundingClientRect().top + scrollY);
+    });
+    const lower = slider(page, 'Untere', 'Einwohner');
+    await expect(lower).toBeInViewport({ ratio: 1 });
+    const top = async () => (await lower.boundingBox())?.y;
+    const before = await top();
+    await lower.fill('50');
+    await expect(selectionHeading(page)).toBeVisible();
+    expect(await top(), `${String(width)} × ${String(height)}`).toEqual(before);
   }
 });
 

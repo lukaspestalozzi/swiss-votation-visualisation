@@ -191,11 +191,11 @@ show nothing there. That place SHALL be as tall as the result that takes it.
   768, adds five limits and moves the lower bound of the last, "SVP", to step 50
 - **THEN** the map and that limit's slider stand where they stood in the window
 
-#### Scenario: Nothing moves under the finger on a phone
+#### Scenario: Nothing moves in a narrow window
 
-- **WHEN** a visitor on `/de/votes/5960/`, on a phone 360 pixels wide, and in a window 800
-  pixels wide, adds the limit "Einwohner" and moves its lower bound until "Mit Ihrer Auswahl"
-  stands
+- **WHEN** a visitor on `/de/votes/5960/`, in a window 360 by 740 pixels and in one 800 by
+  1,000, adds the limit "Einwohner", scrolls until the sentence in the selection's place lies at
+  the top of the window, and moves that limit's lower bound to step 50
 - **THEN** that limit's slider stands where it stood in the window
 
 #### Scenario: The characteristics' file is missing
