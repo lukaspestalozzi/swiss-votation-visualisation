@@ -21,6 +21,8 @@ import {
   limitLabel,
   limitList,
   limitOf,
+  markOf,
+  markPlace,
   listHeadings,
   mapDrawn,
   offered,
@@ -598,6 +600,75 @@ test('the bars of a logarithmic track: the 21st is the tallest', async ({ page }
   expect(heights.indexOf(100)).toBe(20);
 });
 
+// The municipality last clicked on a track (spec limits; design of redesign-site, decision 22);
+// the steps are those of investigations/redesign.md, "Output" of hist.mjs.
+async function clickOn(page: Page, number: number): Promise<void> {
+  const point = await pointIn(page, `.municipalities [data-number="${String(number)}"]`);
+  await page.mouse.click(point.x, point.y);
+}
+
+test('the municipality clicked is marked under each track: Köniz on two', async ({ page }) => {
+  // Spec limits, "Köniz on two tracks": 18.02% at step 295, 40,214 inhabitants at step 758.
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'Ausländeranteil');
+  await addLimit(page, 'Einwohner');
+  await clickOn(page, 355);
+  for (const [name, text, step] of [
+    ['Ausländeranteil', 'Köniz (BE): 18.02%', 295],
+    ['Einwohner', "Köniz (BE): 40'214", 758],
+  ] as const) {
+    const limit = limitOf(page, name);
+    await expect(markOf(limit)).toHaveText(text);
+    const place = await markPlace(limit);
+    expect(Math.abs(place.at - (place.width * step) / 1000), name).toBeLessThanOrEqual(1);
+    // Below the track.
+    const [track, mark] = await Promise.all(
+      ['.track', '.here'].map((part) => limit.locator(part).boundingBox()),
+    );
+    if (track === null || mark === null) throw new Error('the track or the mark is not shown');
+    expect(mark.y, name).toBeGreaterThanOrEqual(track.y + track.height - 1);
+  }
+});
+
+test('before a click a limit shows no mark', async ({ page }) => {
+  // Spec limits, "Before a click".
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'Ausländeranteil');
+  await expect(page.locator('.limit')).toHaveCount(1);
+  await expect(markOf(limitOf(page, 'Ausländeranteil'))).toHaveCount(0);
+});
+
+test('the mark follows the municipality clicked: Zürich at the end of the track, then Bern', async ({
+  page,
+}) => {
+  // Spec limits, "Another municipality": Zürich has the most inhabitants.
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'Einwohner');
+  const limit = limitOf(page, 'Einwohner');
+  await clickOn(page, 261);
+  await expect(markOf(limit)).toHaveText("Zürich (ZH): 396'955");
+  const place = await markPlace(limit);
+  expect(Math.abs(place.at - place.width)).toBeLessThanOrEqual(1);
+  // Its words end where the track ends: they do not reach past the section.
+  const [words, section] = await Promise.all(
+    [limit.locator('.here .at'), page.locator('.limits')].map((part) => part.boundingBox()),
+  );
+  if (words === null || section === null) throw new Error('the mark is not shown');
+  expect(words.x + words.width).toBeLessThanOrEqual(section.x + section.width + 1);
+  await clickOn(page, 351);
+  await expect(markOf(limit)).toHaveText("Bern (BE): 131'554");
+});
+
+test('a municipality without a figure has no mark: Meienried and the SVP', async ({ page }) => {
+  // Spec limits, "A municipality without a figure": Meienried has no election result.
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'SVP');
+  await addLimit(page, 'Einwohner');
+  await clickOn(page, 389);
+  await expect(markOf(limitOf(page, 'Einwohner'))).toContainText('Meienried (BE): ');
+  await expect(markOf(limitOf(page, 'SVP'))).toHaveCount(0);
+});
+
 test("a limit's label in three parts: the name, the date, and the bounds on a line of their own", async ({
   page,
 }) => {
@@ -881,13 +952,8 @@ test('closing the list without choosing: the Escape key and "Schliessen" add not
 test.describe(() => {
   test.describe.configure({ retries: 1 });
 
-  test('the budget of dragging: no frame while a bound is dragged takes more than 16 ms', async ({
-    page,
-  }) => {
-    await page.addInitScript(MEASURE_FRAMES);
-    await openVote(page, 'de/votes/5960/');
-    await fontsLoaded(page);
-    await addLimit(page, 'Einwohner');
+  /** The frames while the lower bound of "Einwohner" is dragged across its track and back. */
+  async function framesOfDragging(page: Page) {
     const lower = slider(page, 'Untere', 'Einwohner');
     await lower.scrollIntoViewIfNeeded();
     const box = await lower.boundingBox();
@@ -904,7 +970,37 @@ test.describe(() => {
     await page.mouse.move(right, y, { steps: 20 });
     await page.mouse.move(left, y, { steps: 20 });
     await page.mouse.up();
-    const frames = await measuredFrames(page);
+    return measuredFrames(page);
+  }
+
+  test('the budget of dragging: no frame while a bound is dragged takes more than 16 ms', async ({
+    page,
+  }) => {
+    await page.addInitScript(MEASURE_FRAMES);
+    await openVote(page, 'de/votes/5960/');
+    await fontsLoaded(page);
+    await addLimit(page, 'Einwohner');
+    const frames = await framesOfDragging(page);
+    expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
+    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+  });
+
+  test('the budget of dragging with five limits and a municipality clicked: no frame over 16 ms', async ({
+    page,
+  }) => {
+    // Spec limits, "Dragging with five limits and a municipality clicked": five tracks with
+    // their bars and their marks of Köniz, in the window that shows the map beside them.
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.addInitScript(MEASURE_FRAMES);
+    await openVote(page, 'de/votes/5960/');
+    await mapDrawn(page);
+    await fontsLoaded(page);
+    await clickOn(page, 355);
+    for (const name of ['Ausländeranteil', 'Einwohner', 'Deutsch', 'Französisch', 'SVP']) {
+      await addLimit(page, name);
+    }
+    await expect(page.locator('.limit .here')).toHaveCount(5);
+    const frames = await framesOfDragging(page);
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
     expect(frames.filter((f) => f.work > 16)).toEqual([]);
   });

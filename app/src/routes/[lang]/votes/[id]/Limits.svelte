@@ -12,6 +12,7 @@
     STEPS,
     histogramOf,
     labelPartsOf,
+    stepOf,
     trackOf,
     valueAt,
     type LimitSetting,
@@ -30,6 +31,7 @@
     voteDate,
     count,
     unusable,
+    clicked,
     limits = $bindable(),
     abroadCounted = $bindable(),
   }: {
@@ -43,6 +45,9 @@
     count: { readonly text: string; readonly share: number } | null;
     // The parts of the page's address it could not use (spec share-link).
     unusable: readonly string[];
+    // The municipality last clicked or tapped on the map, which each track marks (spec limits,
+    // "The municipality last clicked on a track"); none before a click, and on the comparison.
+    clicked: { readonly number: number; readonly name: string } | null;
     limits: readonly LimitSetting[];
     abroadCounted: boolean;
   } = $props();
@@ -80,6 +85,26 @@
       drawn.set(track, bars);
     }
     return bars;
+  }
+
+  // Where the municipality last clicked stands in the file's list, in whose order a track holds
+  // its values; found once for a click, not at every step.
+  const clickedAt = $derived(
+    clicked === null || file === null ? -1 : file.municipalities.indexOf(clicked.number),
+  );
+
+  /**
+   * The mark of the municipality last clicked under a track: its place along the track, in
+   * hundredths, and its name with its value as the panel writes it. None before a click, and for
+   * a municipality without a figure of the track's characteristic.
+   */
+  function markOf(track: Track): { readonly place: number; readonly text: string } | null {
+    const value = clickedAt < 0 ? null : (track.values[clickedAt] ?? null);
+    if (clicked === null || value === null) return null;
+    return {
+      place: stepOf(track, value) / 10,
+      text: t.characteristic(clicked.name, writeUnits(track.definition, value, t)),
+    };
   }
 
   /** Add the limit of the characteristic chosen in the list, after those already added. */
@@ -139,6 +164,7 @@
           {@const { track, lower, upper } = limit}
           {@const label = labelPartsOf(track, lower, upper, t)}
           {@const bars = barsOf(track)}
+          {@const mark = markOf(track)}
           <li class="limit">
             <div class="limit-head">
               <!-- The label is one text, "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%", in
@@ -203,6 +229,19 @@
                 }}
               />
             </div>
+            {#if mark !== null}
+              <!-- The municipality last clicked: a mark at its step, and its name and value,
+                   which begin at the mark at the track's start, end at it at the track's end,
+                   and so never reach past the track. -->
+              <p class="here">
+                <span class="mark" style:left="{mark.place}%"></span>
+                <span
+                  class="at"
+                  style:left="{mark.place}%"
+                  style:transform="translateX(-{mark.place}%)">{mark.text}</span
+                >
+              </p>
+            {/if}
           </li>
         {/each}
       </ul>
@@ -383,6 +422,30 @@
   .track input:focus-visible::-moz-range-thumb {
     outline: 2px solid var(--text);
     outline-offset: 2px;
+  }
+  /* The mark of the municipality last clicked, below the track, along the way of a thumb's
+     middle (spec limits, "The municipality last clicked on a track"). */
+  .here {
+    position: relative;
+    height: 1.5rem;
+    margin: 0.125rem calc(var(--thumb) / 2) 0;
+    font-size: 0.8125rem;
+  }
+  .mark {
+    position: absolute;
+    top: 0;
+    margin-left: -4px;
+    border: 4px solid transparent;
+    border-top: 0;
+    border-bottom: 6px solid var(--text);
+  }
+  .at {
+    position: absolute;
+    top: 0.375rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   /* The switch (design of redesign-site, decision 20): the checkbox lies over its drawing and is
      not seen; on, the drawing is filled with the text's colour, its dot at the right. */
