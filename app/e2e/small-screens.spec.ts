@@ -16,7 +16,6 @@ import {
   ownResult,
   searchField,
   selectionResult,
-  slider,
   votersBarOf,
   type Language,
 } from './parts.ts';
@@ -468,26 +467,36 @@ test.describe('on a touch screen 360 pixels wide', () => {
   });
 });
 
-test.describe('on a phone 360 by 740 pixels', () => {
-  test.use({ ...phone, viewport: { width: 360, height: 740 } });
+// The bound of spec small-screens, "The selection's result while a limit is set on a phone": a
+// phone held upright, in a window 700 pixels high, where at most 666 are needed
+// (investigations/redesign.md, "Found after the merge").
+const PHONE_LIMIT = {
+  de: ['Einwohner', 'Untere Grenze: Einwohner'],
+  fr: ['Habitants', 'Limite inférieure: Habitants'],
+  it: ['Abitanti', 'Limite inferiore: Abitanti'],
+} as const;
 
-  test("the selection's result and the first limit's sliders lie in one window", async ({
-    page,
-  }) => {
-    // Spec small-screens, "The result and the first limit in one window": the limits stand
-    // between the result and the map (design of redesign-site, decision 9;
-    // investigations/redesign.md, "Found after the merge").
-    await page.goto('de/votes/5960/');
-    await addLimit(page, 'Einwohner', 'de', 'tap');
-    await slider(page, 'Untere', 'Einwohner').fill('50');
-    const result = selectionResult(page);
-    await expect(result).toBeVisible();
-    await result.evaluate((row) => {
-      scrollTo(0, row.getBoundingClientRect().top + scrollY);
+test.describe('on a phone 360 by 700 pixels', () => {
+  test.use({ ...phone, viewport: { width: 360, height: 700 } });
+
+  for (const [language, [name, lower]] of Object.entries(PHONE_LIMIT)) {
+    test(`the selection's result and the first limit's sliders lie in one window, ${language}`, async ({
+      page,
+    }) => {
+      // Spec small-screens, "The result and the first limit in one window": the limits stand
+      // between the result and the map (design of redesign-site, decision 9).
+      await page.goto(`${language}/votes/5960/`);
+      await addLimit(page, name, language as Language, 'tap');
+      await page.getByRole('slider', { name: lower, exact: true }).fill('50');
+      const result = selectionResult(page);
+      await expect(result).toBeVisible();
+      await result.evaluate((row) => {
+        scrollTo(0, row.getBoundingClientRect().top + scrollY);
+      });
+      expect(Math.abs((await result.boundingBox())?.y ?? NaN)).toBeLessThanOrEqual(1);
+      for (const slider of await page.locator('.limit').first().getByRole('slider').all()) {
+        await expect(slider).toBeInViewport({ ratio: 1 });
+      }
     });
-    expect(Math.abs((await result.boundingBox())?.y ?? NaN)).toBeLessThanOrEqual(1);
-    for (const bound of ['Untere', 'Obere'] as const) {
-      await expect(slider(page, bound, 'Einwohner')).toBeInViewport({ ratio: 1 });
-    }
-  });
+  }
 });
