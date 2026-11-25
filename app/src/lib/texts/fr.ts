@@ -257,7 +257,7 @@ export const fr: Texts = {
           'partir des chiffres des communes selon les règles de la Constitution fédérale: la ' +
           "majorité du peuple et, là où l'objet le requiert, la majorité des cantons.",
         "Ce n'est que lorsque vous choisissez des communes qu'un second résultat, recalculé, " +
-          'apparaît à côté sous «Avec votre sélection». Le vrai résultat reste affiché.',
+          'apparaît au-dessous: «Avec votre sélection». Le vrai résultat reste affiché.',
       ],
     },
     {

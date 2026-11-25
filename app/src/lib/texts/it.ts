@@ -253,8 +253,8 @@ export const it: Texts = {
         'In cima alla pagina di una votazione figura il suo risultato ufficiale. È calcolato a ' +
           'partire dalle cifre dei Comuni secondo le regole della Costituzione federale: la ' +
           "maggioranza del popolo e, dove l'oggetto lo richiede, la maggioranza dei Cantoni.",
-        'Solo quando sceglie dei Comuni compare accanto, sotto «Con la Sua selezione», un ' +
-          'secondo risultato, ricalcolato. Il risultato reale rimane.',
+        'Solo quando sceglie dei Comuni compare sotto un secondo risultato, ricalcolato: «Con ' +
+          'la Sua selezione». Il risultato reale rimane.',
       ],
     },
     {

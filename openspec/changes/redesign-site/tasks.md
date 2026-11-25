@@ -145,7 +145,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   results as the vote's page takes them. Verify: `comparison.test.ts` passes; browser tests of
   vote-comparison "The results of a vote" (four scenarios) and "The comparison on a phone"
   (three) pass, and `app/e2e/compare.spec.ts` passes, its two budget tests among them.
-- [ ] 7.2 The guide in one column of 42rem, and its sentence on the selection's result in three
+- [x] 7.2 The guide in one column of 42rem, and its sentence on the selection's result in three
   languages. Verify: the browser test of reading-guide "Where the selection's result stands"
   passes, and `app/e2e/guide.spec.ts` passes.
 

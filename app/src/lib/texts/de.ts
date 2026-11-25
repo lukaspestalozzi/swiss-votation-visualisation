@@ -252,8 +252,8 @@ export const de: Texts = {
         'Oben auf der Seite einer Abstimmung steht ihr amtliches Ergebnis. Es ist aus den ' +
           'Zahlen der Gemeinden nach den Regeln der Bundesverfassung berechnet: dem Volksmehr ' +
           'und, wo die Vorlage es braucht, dem Ständemehr.',
-        'Erst wenn Sie Gemeinden auswählen, steht daneben unter «Mit Ihrer Auswahl» ein ' +
-          'zweites, neu berechnetes Ergebnis. Das echte bleibt stehen.',
+        'Erst wenn Sie Gemeinden auswählen, steht darunter ein zweites, neu berechnetes ' +
+          'Ergebnis: «Mit Ihrer Auswahl». Das echte bleibt stehen.',
       ],
     },
     {
