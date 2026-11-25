@@ -91,6 +91,44 @@ export const slider = (page: Page, bound: 'Untere' | 'Obere', name: string): Loc
 export const limitLabel = (page: Page, name: string): Locator =>
   page.locator('.limit .label').filter({ hasText: new RegExp(`^${name} \\(`) });
 
+/** A limit, by its characteristic's name: its label, its bars, its track and "Entfernen". */
+export const limitOf = (page: Page, name: string): Locator =>
+  page
+    .locator('.limit')
+    .filter({ has: page.locator('.label', { hasText: new RegExp(`^${name} \\(`) }) });
+
+/**
+ * The heights of the 50 bars above a limit's track, in hundredths of the fullest bar's, as the
+ * grey drawing of them holds them; the drawing in the text's colour is the same, clipped.
+ */
+export const barHeights = (limit: Locator): Promise<number[]> =>
+  limit
+    .locator('.hist .out path')
+    .evaluate((path) =>
+      [...(path.getAttribute('d') ?? '').matchAll(/v-([\d.]+)/g)].map((match) => Number(match[1])),
+    );
+
+/**
+ * Where the drawing of a limit's bars in the text's colour begins and ends, in hundredths of
+ * the bars' width: it is clipped to the part between the two bounds.
+ */
+export const barsBetween = (limit: Locator): Promise<{ from: number; to: number }> =>
+  limit.locator('.hist .in').evaluate((drawing) => {
+    const clip = getComputedStyle(drawing).clipPath;
+    const inset = /^inset\(([^)]*)\)$/.exec(clip);
+    if (inset === null) throw new Error(`no inset: ${clip}`);
+    // Top, right, bottom and left, in the short forms a browser writes when edges are equal.
+    const [top = '0', right = top, , left = right] = inset[1].split(' ');
+    return { from: parseFloat(left), to: 100 - parseFloat(right) };
+  });
+
+/** The bar of the municipalities that remain, below their number: how much of it is filled. */
+export const countBarFilled = (page: Page): Promise<{ width: number; filled: number }> =>
+  page.locator('.limits .count-bar').evaluate((bar) => ({
+    width: bar.getBoundingClientRect().width,
+    filled: bar.firstElementChild?.getBoundingClientRect().width ?? 0,
+  }));
+
 /** The switch for the Swiss abroad, by its German name. */
 export const abroadSwitch = (page: Page): Locator =>
   page.getByRole('checkbox', { name: /Auslandschweizerinnen und Auslandschweizer mitzählen/ });

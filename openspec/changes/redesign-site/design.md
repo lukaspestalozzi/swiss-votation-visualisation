@@ -161,7 +161,11 @@ mockups Q saw unless it says otherwise.
 20. **A limit keeps its label**, "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%", as one text
     in three parts: the name bold, the date after it, the bounds on the next line. "Entfernen"
     stays a button with that word. The two sliders stay the browser's range inputs, and the switch
-    stays a checkbox, drawn as a switch. So the tests' events and names hold.
+    stays a checkbox, drawn as a switch. So the tests' events and names hold. Found while
+    applying: "Entfernen" and the list's "Schliessen" are quiet buttons, underlined text without
+    a border, so the rule of a border of 3:1 exempts them; the button "Merkmal hinzufügen"
+    carries no "+" before its words, as that would be part of its name; and the count's sentence
+    is written whole, its number not in bold.
 21. **The histogram of a track:** 50 bins of 20 steps each, the last with step 1,000; a
     municipality with a figure counts in the bin of the lowest step whose value is not below its
     own. A bin is as tall as its count against the fullest bin's. It is drawn twice, grey and in

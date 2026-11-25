@@ -13,6 +13,7 @@ import {
   histogramOf,
   isNarrowed,
   labelOf,
+  labelPartsOf,
   remainingOf,
   remainingUnder,
   setAsideOf,
@@ -344,4 +345,22 @@ test('the histogram counts no municipality without a figure: the SVP of 2021-03-
   // of 2019 (investigations/limits.md, 5).
   const bars = histogramOf(trackFor('SVP', '2021-03-07'));
   expect(bars.reduce((sum, bar) => sum + bar, 0)).toBe(2104);
+});
+
+test("a label's three parts: its name, its date in brackets and its bounds, in each language", () => {
+  // Design of redesign-site, decision 20: the section writes the parts apart, and together, with
+  // a colon after the date, they are the label.
+  const definition = definitionNamed('Ausländeranteil');
+  const track = trackOf(definition, file, applyingTo(file, '2016-02-28'));
+  expect(labelPartsOf(track, 0, 327, de)).toEqual({
+    name: 'Ausländeranteil',
+    date: '(Ende 2015)',
+    bounds: 'von 0.00% bis 19.98%',
+  });
+  for (const t of [de, textsOf('fr'), textsOf('it')]) {
+    const { name, date, bounds } = labelPartsOf(track, 0, 327, t);
+    expect(`${name} ${date}: ${bounds}`).toBe(labelOf(track, 0, 327, t));
+  }
+  expect(labelPartsOf(track, 0, 327, textsOf('fr')).bounds).toBe('de 0.00% à 19.98%');
+  expect(labelPartsOf(track, 0, 327, textsOf('it')).bounds).toBe('da 0.00% a 19.98%');
 });

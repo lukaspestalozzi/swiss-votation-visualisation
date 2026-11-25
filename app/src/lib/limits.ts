@@ -127,6 +127,27 @@ export function labelOf(track: Track, lower: number, upper: number, t: Texts): s
   );
 }
 
+/**
+ * A limit's label in the three parts the section writes apart (design of redesign-site, decision
+ * 20): its characteristic's name, the date of its figures in brackets, and its bounds. Together,
+ * with a colon after the date, they are `labelOf`'s text, in every language.
+ */
+export function labelPartsOf(
+  track: Track,
+  lower: number,
+  upper: number,
+  t: Texts,
+): { readonly name: string; readonly date: string; readonly bounds: string } {
+  const name = nameOf(track.definition, t);
+  const date = `(${dateOf(track.definition, track.year, t)})`;
+  const label = labelOf(track, lower, upper, t);
+  const head = `${name} ${date}: `;
+  if (!label.startsWith(head)) {
+    throw new Error(`the label "${label}" does not begin with its name and date`);
+  }
+  return { name, date, bounds: label.slice(head.length) };
+}
+
 /** A limit as the page holds it: its track, and the steps of its lower and upper bound. */
 export interface LimitSetting {
   readonly track: Track;

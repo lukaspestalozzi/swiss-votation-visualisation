@@ -519,23 +519,30 @@ test.describe('the controls', () => {
         '.zoom button:nth-of-type(2)',
         '.zoom button:nth-of-type(3)',
         '.limits .add',
-        '.limit button',
         '.limits > button:last-of-type',
+        '.switch .knob',
         '.track::before',
       ]);
       expect(controls.filter((c) => c.boundary < 3 || (c.text !== null && c.text < 4.5))).toEqual(
         [],
       );
-      // The switch's box and the thumbs are drawn by the browser: their pixels on the screen.
+      // "Entfernen" is a quiet button, underlined text without a border or a fill.
+      const [remove] = await controlContrast(page, ['.limit .remove']);
+      expect(remove.text).toBeGreaterThanOrEqual(4.5);
+      await expect(page.locator('.limit .remove')).toHaveCSS('text-decoration-line', 'underline');
+      // The bars above the track: those outside the bounds #8c8c8c, or #6e6e6e in the dark scheme.
+      await expect(page.locator('.limit .hist .out path')).toHaveCSS(
+        'fill',
+        colorScheme === 'light' ? 'rgb(140, 140, 140)' : 'rgb(110, 110, 110)',
+      );
+      // The thumbs are drawn by the browser: their pixels on the screen.
       const ground = (
         await page.evaluate(() => getComputedStyle(document.documentElement).backgroundColor)
       )
         .match(/\d+/g)
         ?.slice(0, 3)
         .map(Number) ?? [0, 0, 0];
-      const box = await page.locator('.switch input').boundingBox();
-      if (box === null) throw new Error('the switch has no box');
-      const drawn: [string, number[]][] = [['switch', await pixelAt(page, box.x + 3, box.y + 3)]];
+      const drawn: [string, number[]][] = [];
       const track = await page.getByRole('slider').last().boundingBox();
       if (track === null) throw new Error('the slider has no box');
       // The thumb's centre runs from half a thumb inside one end of the input to the other.

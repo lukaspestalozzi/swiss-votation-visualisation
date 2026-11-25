@@ -83,7 +83,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   scenarios, the headings in three languages) and of small-screens "The list of characteristics
   on a phone" pass, and `limits.spec.ts`, `share-link.spec.ts`, `compare.spec.ts` and
   `languages.spec.ts` pass with the new helper.
-- [ ] 4.3 Draw a limit as the mockups do: its label in three parts with the same text, "Entfernen"
+- [x] 4.3 Draw a limit as the mockups do: its label in three parts with the same text, "Entfernen"
   as a quiet button, the histogram in grey and, clipped to the part between the thumbs, in the
   text's colour, the switch drawn as a switch, the count with its bar. Verify: browser tests of
   limits "Where the municipalities lie on a track" (the first three scenarios) and "The number of

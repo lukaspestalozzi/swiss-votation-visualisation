@@ -4,11 +4,19 @@
     DEFINITIONS,
     GROUPS,
     applyingTo,
-    nameOf,
     writeUnits,
     type Definition,
   } from '../../../../lib/characteristics.ts';
-  import { STEPS, labelOf, trackOf, valueAt, type LimitSetting } from '../../../../lib/limits.ts';
+  import {
+    BINS,
+    STEPS,
+    histogramOf,
+    labelPartsOf,
+    trackOf,
+    valueAt,
+    type LimitSetting,
+    type Track,
+  } from '../../../../lib/limits.ts';
   import type { Texts } from '../../../../lib/texts/index.ts';
   import type { CharacteristicsFile } from '../../../../lib/vote-data.ts';
   import CharacteristicList from './CharacteristicList.svelte';
@@ -29,9 +37,10 @@
     file: CharacteristicsFile | null;
     failed: boolean;
     voteDate: string;
-    // How many municipalities remain, as the section says it; none on the comparison, which says
-    // it below each vote's table (design of add-vote-comparison, decision 6).
-    count: string | null;
+    // How many municipalities remain: the sentence the section says, and their share of those
+    // with a result, from 0 to 1, for its bar. None on the comparison, which says it below each
+    // vote's result (design of add-vote-comparison, decision 6).
+    count: { readonly text: string; readonly share: number } | null;
     // The parts of the page's address it could not use (spec share-link).
     unusable: readonly string[];
     limits: readonly LimitSetting[];
@@ -51,6 +60,27 @@
       ),
     })).filter(({ definitions }) => definitions.length > 0),
   );
+
+  // The bars above a track, as the path of their drawing: 50 side by side, each as tall as its
+  // count against the fullest bar's, in hundredths, and one with a municipality at least 2 tall,
+  // so that it is seen. Worked out once for a track, when its limit is first drawn (design of
+  // redesign-site, decision 21); a step of a slider only moves the clip of the second drawing.
+  const drawn = new WeakMap<Track, string>();
+  function barsOf(track: Track): string {
+    let bars = drawn.get(track);
+    if (bars === undefined) {
+      const counts = histogramOf(track);
+      const fullest = Math.max(...counts);
+      bars = counts
+        .map((count, bar) => {
+          const height = count === 0 ? 0 : Math.max(2, Math.round((count / fullest) * 10000) / 100);
+          return `M${String(bar + 0.1)},100v-${String(height)}h0.8v${String(height)}z`;
+        })
+        .join('');
+      drawn.set(track, bars);
+    }
+    return bars;
+  }
 
   /** Add the limit of the characteristic chosen in the list, after those already added. */
   function add(definition: Definition): void {
@@ -85,7 +115,7 @@
 
 <section class="limits">
   <h2>{t.LIMITS_HEADING}</h2>
-  <p>
+  <p class="intro">
     {t.THOUGHT_EXPERIMENT}
     <a href={resolve('/[lang]/guide', { lang: t.LANGUAGE })}>{t.GUIDE_LINK}</a>
   </p>
@@ -97,57 +127,97 @@
   {:else if file === null}
     <p>{t.PANEL_LOADING}</p>
   {:else}
-    {#each limits as limit, index (limit.track.definition.key)}
-      {@const { track, lower, upper } = limit}
-      {@const name = nameOf(track.definition, t)}
-      <div class="limit">
-        <p class="label">{labelOf(track, lower, upper, t)}</p>
-        <div class="track">
-          <input
-            type="range"
-            min="0"
-            max={STEPS}
-            step="1"
-            value={lower}
-            style:z-index={lower === STEPS ? 1 : undefined}
-            aria-label={t.lowerBound(name)}
-            aria-valuetext={writeUnits(track.definition, valueAt(track, lower), t)}
-            oninput={(event) => {
-              move(index, 'lower', event.currentTarget);
-            }}
-          />
-          <input
-            type="range"
-            min="0"
-            max={STEPS}
-            step="1"
-            value={upper}
-            aria-label={t.upperBound(name)}
-            aria-valuetext={writeUnits(track.definition, valueAt(track, upper), t)}
-            oninput={(event) => {
-              move(index, 'upper', event.currentTarget);
-            }}
-          />
-        </div>
-        <button
-          type="button"
-          aria-label={t.removeLimit(name)}
-          onclick={() => {
-            remove(index);
-          }}>{t.REMOVE_LIMIT}</button
-        >
-      </div>
-    {/each}
-    <CharacteristicList {t} {offered} onchoose={add} />
-    <label class="switch">
-      <input type="checkbox" bind:checked={abroadCounted} />
-      {t.ABROAD_SWITCH}
-    </label>
     {#if count !== null}
-      <p class="count">{count}</p>
+      <p class="count">{count.text}</p>
+      <div class="count-bar" aria-hidden="true">
+        <span style:width="{count.share * 100}%"></span>
+      </div>
     {/if}
+    {#if limits.length > 0}
+      <ul class="added">
+        {#each limits as limit, index (limit.track.definition.key)}
+          {@const { track, lower, upper } = limit}
+          {@const label = labelPartsOf(track, lower, upper, t)}
+          {@const bars = barsOf(track)}
+          <li class="limit">
+            <div class="limit-head">
+              <!-- The label is one text, "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%", in
+                   three parts; the colon is read, and not seen before the line of the bounds. -->
+              <p class="label">
+                <span class="name">{label.name}</span>
+                <span class="date">{label.date}</span><span class="visually-hidden">:</span>
+                <span class="bounds">{label.bounds}</span>
+              </p>
+              <button
+                type="button"
+                class="remove"
+                aria-label={t.removeLimit(label.name)}
+                onclick={() => {
+                  remove(index);
+                }}>{t.REMOVE_LIMIT}</button
+              >
+            </div>
+            <!-- Where the municipalities lie on the track: the bars drawn twice, grey and in the
+                 text's colour, the second clipped to the part between the two bounds. -->
+            <div class="hist" aria-hidden="true">
+              <svg class="out" viewBox="0 0 {BINS} 100" preserveAspectRatio="none">
+                <path d={bars} />
+              </svg>
+              <svg
+                class="in"
+                viewBox="0 0 {BINS} 100"
+                preserveAspectRatio="none"
+                style:clip-path="inset(0 {(STEPS - upper) / 10}% 0 {lower / 10}%)"
+              >
+                <path d={bars} />
+              </svg>
+            </div>
+            <div class="track">
+              <span class="way">
+                <span class="range" style:left="{lower / 10}%" style:right="{(STEPS - upper) / 10}%"
+                ></span>
+              </span>
+              <input
+                type="range"
+                min="0"
+                max={STEPS}
+                step="1"
+                value={lower}
+                style:z-index={lower === STEPS ? 1 : undefined}
+                aria-label={t.lowerBound(label.name)}
+                aria-valuetext={writeUnits(track.definition, valueAt(track, lower), t)}
+                oninput={(event) => {
+                  move(index, 'lower', event.currentTarget);
+                }}
+              />
+              <input
+                type="range"
+                min="0"
+                max={STEPS}
+                step="1"
+                value={upper}
+                aria-label={t.upperBound(label.name)}
+                aria-valuetext={writeUnits(track.definition, valueAt(track, upper), t)}
+                oninput={(event) => {
+                  move(index, 'upper', event.currentTarget);
+                }}
+              />
+            </div>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+    <CharacteristicList {t} {offered} onchoose={add} />
+    <!-- The switch is a checkbox, drawn as a switch: the box lies over the drawing, unseen. -->
+    <label class="switch">
+      <span class="box">
+        <input type="checkbox" bind:checked={abroadCounted} />
+        <span class="knob"></span>
+      </span>
+      <span>{t.ABROAD_SWITCH}</span>
+    </label>
     {#if limits.length > 0 || !abroadCounted}
-      <button type="button" onclick={backToReal}>{t.BACK_TO_REAL}</button>
+      <button type="button" class="back" onclick={backToReal}>{t.BACK_TO_REAL}</button>
     {/if}
   {/if}
 </section>
@@ -156,13 +226,96 @@
   /* The section begins at its column's top, level with the result beside it (spec limits, "The
      limits on a vote's page"). */
   h2 {
+    margin: 0 0 0.5rem;
+  }
+  .intro {
     margin-top: 0;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+  }
+  /* The number of municipalities that remain, and a bar filled to their share (spec limits, "The
+     number of municipalities that remain"). */
+  .count {
+    margin: 1.25rem 0 0.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .count-bar {
+    max-width: 30rem;
+    height: 0.25rem;
+    background: var(--track);
+  }
+  .count-bar span {
+    display: block;
+    height: 100%;
+    background: var(--text);
+  }
+  /* The limits added, a line between them. The width of a thumb is named once: half of it lies
+     at each end of a track beyond the way of the thumb's middle, along which the bars and the
+     range between the bounds are drawn. */
+  .added {
+    --thumb: 1.1rem;
+    max-width: 30rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--hairline);
   }
   .limit {
-    margin: 0.5rem 0;
+    padding: 1rem 0 1.125rem;
+    border-top: 1px solid var(--hairline);
+  }
+  .limit-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
   }
   .label {
     margin: 0;
+  }
+  .name {
+    font-weight: 700;
+  }
+  .date {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  .bounds {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  /* "Entfernen" is a quiet button: underlined text. */
+  .remove {
+    flex: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  /* The bars above the track (spec limits, "Where the municipalities lie on a track"): those
+     outside the bounds grey, those between them in the text's colour. */
+  .hist {
+    position: relative;
+    height: 2.5rem;
+    margin: 0.5rem calc(var(--thumb) / 2) 0;
+  }
+  .hist svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .out path {
+    fill: var(--bins-outside);
+  }
+  .in path {
+    fill: var(--text);
   }
   /* Two sliders laid over one track: the inputs take no pointer, their thumbs do, so that each
      thumb can be dragged (design of add-limits, decision 7). The upper one lies on top, except
@@ -171,17 +324,29 @@
   .track {
     position: relative;
     height: 1.5rem;
-    max-width: 30rem;
   }
   .track::before {
     content: '';
     position: absolute;
     left: 0;
     right: 0;
+    top: calc(50% - 1px);
+    height: 2px;
+    background: var(--border);
+  }
+  /* The way of a thumb's middle, and on it the range between the two bounds. */
+  .way {
+    position: absolute;
+    left: calc(var(--thumb) / 2);
+    right: calc(var(--thumb) / 2);
     top: calc(50% - 2px);
     height: 4px;
-    border-radius: 2px;
-    background: var(--border);
+  }
+  .range {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: var(--text);
   }
   .track input {
     position: absolute;
@@ -193,8 +358,8 @@
     appearance: none;
   }
   .track input::-webkit-slider-thumb {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: var(--thumb);
+    height: var(--thumb);
     border: 2px solid var(--ground);
     border-radius: 50%;
     background: var(--text);
@@ -203,8 +368,8 @@
     appearance: none;
   }
   .track input::-moz-range-thumb {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: var(--thumb);
+    height: var(--thumb);
     border: 2px solid var(--ground);
     border-radius: 50%;
     background: var(--text);
@@ -219,41 +384,87 @@
     outline: 2px solid var(--text);
     outline-offset: 2px;
   }
-  /* On a touch screen the buttons and the switch take at least 44 × 44 pixels; the
-     switch by its label, whose text toggles it too (spec small-screens; design of
-     add-small-screens, decision 10). */
+  /* The switch (design of redesign-site, decision 20): the checkbox lies over its drawing and is
+     not seen; on, the drawing is filled with the text's colour, its dot at the right. */
+  .switch {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    margin-top: 1.25rem;
+    cursor: pointer;
+  }
+  .box {
+    position: relative;
+    display: block;
+    margin-top: 0.125rem;
+  }
+  .box input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .knob {
+    display: block;
+    box-sizing: border-box;
+    width: 2.5rem;
+    height: 1.5rem;
+    padding: 2px;
+    border: 2px solid var(--text);
+    border-radius: 999px;
+    background: var(--ground);
+  }
+  .knob::after {
+    content: '';
+    display: block;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    background: var(--text);
+  }
+  .box input:checked + .knob {
+    background: var(--text);
+  }
+  .box input:checked + .knob::after {
+    margin-left: 1rem;
+    background: var(--ground);
+  }
+  .box input:focus-visible + .knob {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+  }
+  .back {
+    margin-top: 1.25rem;
+  }
+  /* On a touch screen the buttons and the switch take at least 44 × 44 pixels; the switch by
+     its label, whose text toggles it too (spec small-screens; design of add-small-screens,
+     decision 10). */
   @media (pointer: coarse) {
     button {
       min-width: 44px;
       min-height: 44px;
     }
     .switch {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
       min-height: 44px;
-    }
-    .switch input {
-      flex: none;
-      width: 24px;
-      height: 24px;
-      margin: 0;
     }
     /* Each thumb takes a 44-pixel square whose border is transparent, so that the dot a visitor
        sees keeps its size, its white ring drawn inside; the track is as tall. */
+    .added {
+      --thumb: 44px;
+    }
     .track {
       height: 44px;
     }
     .track input::-webkit-slider-thumb {
-      width: 44px;
-      height: 44px;
       border: 13px solid transparent;
       background-clip: padding-box;
       box-shadow: inset 0 0 0 2px var(--ground);
     }
     .track input::-moz-range-thumb {
-      width: 44px;
-      height: 44px;
       border: 13px solid transparent;
       background-clip: padding-box;
       box-shadow: inset 0 0 0 2px var(--ground);

@@ -150,15 +150,16 @@ and the guide SHALL be at most 1,216 pixels wide. A paragraph of text SHALL be a
 Every control a page shows, its buttons, fields, lists, switches and a limit's sliders, SHALL be
 drawn in the colours of the page's scheme. Its border or fill SHALL have at least 3:1 against the
 colour behind it, its text at least 4.5:1, and, when focused from the keyboard, it SHALL show a
-ring of 2 pixels in the text's colour (WCAG 2.2, 1.4.11). A control that cannot be used is exempt.
+ring of 2 pixels in the text's colour (WCAG 2.2, 1.4.11). A control that cannot be used is exempt,
+and a button of underlined text needs no border.
 
 #### Scenario: The controls in both schemes
 
 - **WHEN** a visitor opens `/de/votes/5960/`, adds the limit "Ausländeranteil" and moves its upper
   bound to step 327, in the light and in the dark scheme
-- **THEN** the borders or fills of "+", "−", "Ganze Schweiz", "Merkmal hinzufügen", "Entfernen",
-  "Zurück zum echten Ergebnis", the switch, the track and both thumbs have at least 3:1 against
-  the colour behind them, and their texts at least 4.5:1
+- **THEN** the borders or fills of "+", "−", "Ganze Schweiz", "Merkmal hinzufügen", "Zurück zum
+  echten Ergebnis", the switch, the track and both thumbs have at least 3:1 against the colour
+  behind them, and their texts at least 4.5:1; "Entfernen" is underlined text of at least 4.5:1
 
 #### Scenario: A control focused from the keyboard
 
