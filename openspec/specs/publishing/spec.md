@@ -19,8 +19,9 @@ checks. The addresses the specs name, such as `/votes/5960/`, are under this add
   the four checks of the pipeline
 - **THEN** the same CI run publishes the site, and afterwards
   `https://lukaspestalozzi.github.io/swiss-votation-visualisation/` shows the start page with the
-  heading "Popular Vote Explorer", and `/votes/5960/` under it the page of the vote of
-  2016-02-28 with the heading "Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»"
+  heading "Wie hätte die Schweiz abgestimmt, wenn nur ein Teil der Gemeinden an die Urne gegangen
+  wäre?", and `/votes/5960/` under it the page of the vote of 2016-02-28 with the heading
+  "Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»"
 
 ### Requirement: Nothing is published unless every check passed
 

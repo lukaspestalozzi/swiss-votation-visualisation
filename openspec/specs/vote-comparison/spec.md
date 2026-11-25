@@ -4,7 +4,7 @@
 
 One selection of municipalities applied to two votes, on a page of its own: the same
 municipalities, kept by the figures that apply to the first vote, count in both, and each vote's
-real result stands beside its result with the selection.
+result with the selection stands below its real result.
 
 The votes' entries are the files of entries of the `vote-data` capability, which the pipeline's
 update command (`pipeline/README.md`) writes to `app/static/data/votes/` from the Federal
@@ -32,18 +32,18 @@ vote is chosen, it SHALL show the two lists of votes and no limit and no result.
 #### Scenario: The head of the comparison
 
 - **WHEN** a visitor opens `/de/compare/`
-- **THEN** its head names "Popular Vote Explorer", linked to `/de/`, "Lesehilfe", linked to
-  `/de/guide/`, and "Deutsch", "Français" and "Italiano", the last two linked to `/fr/compare/`
-  and `/it/compare/`
+- **THEN** its head names "Popular Vote Explorer", linked to `/de/`, "Vergleichen", which is not
+  a link, "Lesehilfe", linked to `/de/guide/`, and "Deutsch", "Français" and "Italiano", the last
+  two linked to `/fr/compare/` and `/it/compare/`
 - **AND** the page shows the lists "Erste Abstimmung" and "Zweite Abstimmung", no limit and no
-  table
+  result
 
 ### Requirement: Choosing the votes
 
 The list "Erste Abstimmung" SHALL offer every vote the calculation judges, newest first, each as
 its date and title; "Zweite Abstimmung" the same votes but the first, those of the first vote's day
 first, then the others newest first. The tie-break question SHALL NOT be offered. For each vote
-chosen the page SHALL show its table; choosing another first vote keeps the selection, read anew on
+chosen the page SHALL show its results; choosing another first vote keeps the selection, read anew on
 that vote's tracks.
 
 #### Scenario: The lists of a vote of 2016-02-28
@@ -74,10 +74,10 @@ Abstimmung ausgewählt; in beiden Abstimmungen zählen dieselben Gemeinden."
 
 - **WHEN** a visitor opens `/de/compare/#votes=5960,5970&foreigners=-19.98`
 - **THEN** the limit reads "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%"
-- **AND** the table of 5960 shows "Mit Ihrer Auswahl" with 733'402 yes votes, 664'373 no votes and
+- **AND** the results of 5960 show "Mit Ihrer Auswahl" with 733'402 yes votes, 664'373 no votes and
   52.47%, the Volksmehr "Ja", the Ständemehr "Ja" with 18 : 4½, "Angenommen", and "In der
   Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis."
-- **AND** the table of 5970 shows "Mit Ihrer Auswahl" with 654'548 yes votes, 769'763 no votes and
+- **AND** the results of 5970 show "Mit Ihrer Auswahl" with 654'548 yes votes, 769'763 no votes and
   45.96%, the Volksmehr "Nein", the Ständemehr "Nein" with 8½ : 14, "Abgelehnt", and "In der
   Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis." (`investigations/vote-comparison.md`,
   2)
@@ -87,23 +87,23 @@ Abstimmung ausgewählt; in beiden Abstimmungen zählen dieselben Gemeinden."
 - **WHEN** a visitor opens `/de/compare/#votes=5960,6310&foreigners=-19.98`
 - **THEN** the limit reads "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%", the figures of the
   first vote
-- **AND** the table of 6310 shows "Mit Ihrer Auswahl" with 603'173 yes votes, 796'237 no votes and
+- **AND** the results of 6310 show "Mit Ihrer Auswahl" with 603'173 yes votes, 796'237 no votes and
   43.10%, the Ständemehr "Nein" with 4½ : 18, "Abgelehnt", and "In der Auswahl: 1'456 von 2'104
   Gemeinden mit eigenem Ergebnis.", the 1,462 municipalities of the list the population of the
   end of 2015 keeps (`investigations/vote-comparison.md`, 2)
 
-### Requirement: The table of a vote
+### Requirement: The results of a vote
 
-Each chosen vote's table SHALL be headed by its title, date and kind, with the rows "Ja-Stimmen",
-"Nein-Stimmen", "Ja-Anteil", "Volksmehr" and "Ständemehr", each with its word and figure, and
-"Vorlage" with the outcome, each word in its side's colour; the columns "Echtes Ergebnis", as the
-vote's page shows it, and, while a selection applies, "Mit Ihrer Auswahl". Below it SHALL stand its
-count while a selection applies, and the notes its vote's page has.
+Each chosen vote SHALL be headed by its title, date and kind and SHALL show its result as its
+page shows it (the `verdicts` capability): the outcome, the Volksmehr and the Ständemehr with
+their figures and bars, under "Echtes Ergebnis" and, while a selection applies, below it under
+"Mit Ihrer Auswahl", with each word in its side's colour. Below SHALL stand its count while a
+selection applies, and the notes its vote's page has.
 
 #### Scenario: The real results
 
 - **WHEN** a visitor opens `/de/compare/#votes=5960,5970`
-- **THEN** each table has the one column "Echtes Ergebnis"
+- **THEN** each vote shows the one result "Echtes Ergebnis"
 - **AND** that of 5960 shows 1'609'152, 1'664'224, 49.16%, the Volksmehr "Nein", the Ständemehr
   "Ja" with 16½ : 6½, and "Abgelehnt"
 - **AND** that of 5970 shows 1'375'098, 1'966'965, 41.15%, the Volksmehr "Nein", the Ständemehr
@@ -112,9 +112,9 @@ count while a selection applies, and the notes its vote's page has.
 #### Scenario: A known difference
 
 - **WHEN** a visitor opens `/de/compare/#votes=6650,6660`
-- **THEN** below the table of 6650 stands "Das erwahrte Ergebnis zählt 1'350'325 Nein-Stimmen (BBl
-  2024 996); die Zahlen der Gemeinden, aus denen hier gerechnet wird, ergeben 200 mehr.", as on its
-  vote's page
+- **THEN** below the results of 6650 stands "Das erwahrte Ergebnis zählt 1'350'325 Nein-Stimmen
+  (BBl 2024 996); die Zahlen der Gemeinden, aus denen hier gerechnet wird, ergeben 200 mehr.", as
+  on its vote's page
 
 #### Scenario: The colours of the tables
 
@@ -122,6 +122,14 @@ count while a selection applies, and the notes its vote's page has.
   dark colour scheme
 - **THEN** "Ja" and "Angenommen" are in the colour of yes, "Nein" and "Abgelehnt" in that of no, and
   every text has at least 4.5:1 against the colour behind it (the `site-style` capability)
+
+#### Scenario: Four bars one above the other
+
+- **WHEN** a visitor opens `/de/compare/#votes=5960,5970&foreigners=-19.98` in a window 1,280
+  pixels wide
+- **THEN** the Volksmehr's bars of "Echtes Ergebnis" and "Mit Ihrer Auswahl" of 5960 and of 5970
+  have the same left edge and the same width, give or take 1 pixel, and their yes parts are
+  49.16%, 52.47%, 41.15% and 45.96% of it (`investigations/vote-comparison.md`, 2)
 
 ### Requirement: The comparison in the address
 
@@ -152,16 +160,16 @@ the votes before such an id SHALL apply.
 ### Requirement: Loading the votes
 
 The page SHALL load each chosen vote's file of entries once per visit, and the characteristics. While
-a vote's file loads, its table SHALL say "Die Ergebnisse werden geladen."; when it cannot be
-loaded, "Die Ergebnisse dieser Abstimmung lassen sich nicht laden.", and the other vote's table
-SHALL show as usual. When the characteristics cannot be loaded, the tables SHALL show their real
+a vote's file loads, its place SHALL say "Die Ergebnisse werden geladen."; when it cannot be
+loaded, "Die Ergebnisse dieser Abstimmung lassen sich nicht laden.", and the other vote's results
+SHALL show as usual. When the characteristics cannot be loaded, the votes SHALL show their real
 results.
 
 #### Scenario: A file that cannot be loaded
 
 - **GIVEN** a browser in which every request for `data/votes/5970.json` fails
 - **WHEN** a visitor opens `/de/compare/#votes=5960,5970`
-- **THEN** the table of 5960 shows its real result, and that of 5970 says "Die Ergebnisse dieser
+- **THEN** the results of 5960 show its real result, and that of 5970 says "Die Ergebnisse dieser
   Abstimmung lassen sich nicht laden."
 
 #### Scenario: Each file once
@@ -182,7 +190,7 @@ no second vote chosen. The page of the tie-break question SHALL NOT.
 - **WHEN** a visitor on `/de/votes/5960/` adds the limit "Ausländeranteil", moves its upper bound to
   step 327 and follows "Mit einer anderen Abstimmung vergleichen"
 - **THEN** the browser shows `/de/compare/#votes=5960&foreigners=-19.98`, with the limit
-  "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%", the table of 5960 with "Mit Ihrer
+  "Ausländeranteil (Ende 2015): von 0.00% bis 19.98%", the results of 5960 with "Mit Ihrer
   Auswahl", and no second vote chosen
 
 #### Scenario: No comparison of the tie-break question
@@ -192,16 +200,17 @@ no second vote chosen. The page of the tie-break question SHALL NOT.
 
 ### Requirement: The comparison on a phone
 
-Below 640 pixels the second table SHALL stand below the first, and the page SHALL be no wider than a
-window 360 pixels wide; from 640 pixels the tables SHALL stand side by side. On a touch screen the
-two lists SHALL be at least 44 × 44 pixels. Below 640 pixels, while a selection applies and a table
-is not wholly in the window, a bar at the bottom SHALL name each vote's outcome with the selection.
+The second vote SHALL stand below the first at every width, and the page SHALL be no wider than a
+window 360 pixels wide. In a window at least 1,024 pixels wide the limits SHALL stand to the right
+of the two votes, in a narrower one below them. On a touch screen the two lists SHALL be at least
+44 × 44 pixels. Below 640 pixels, while a selection applies and a vote's result is not wholly in
+the window, a bar at the bottom SHALL name each vote's outcome with the selection.
 
 #### Scenario: Two tables in a narrow window
 
 - **WHEN** a visitor opens `/de/compare/#votes=5960,5970&foreigners=-19.98`, `/fr/compare/` and
   `/it/compare/` with the same address, in a window 360 pixels wide
-- **THEN** no page is wider than the window, and the table of 5970 stands below that of 5960
+- **THEN** no page is wider than the window, and the results of 5970 stand below those of 5960
 
 #### Scenario: The bar
 
@@ -210,24 +219,31 @@ is not wholly in the window, a bar at the bottom SHALL name each vote's outcome 
 - **THEN** a bar at the bottom of the window reads "Erste Abstimmung: Angenommen" and "Zweite
   Abstimmung: Abgelehnt", each outcome in the colour of its side
 
+#### Scenario: In a wide window
+
+- **WHEN** a visitor opens `/de/compare/#votes=5960,5970&foreigners=-19.98` in a window 1,280
+  pixels wide
+- **THEN** the results of 5970 stand below those of 5960, with the same left edge, and the limits
+  stand to the right of both
+
 ### Requirement: The budget of the comparison
 
-With two votes chosen, each frame while a bound is dragged SHALL take at most 16 ms of work on the
-page's main thread, and each frame after a jump at most 50 ms, as the `limits` capability's budget
-says for a vote's page. The browser tests measure them as they do there, and once more when a frame
-exceeds its budget.
+With two votes chosen, at least nine in ten of the frames while a bound is dragged SHALL take at
+most 16 ms of work on the page's main thread and none more than 50 ms, and each frame after a jump
+at most 50 ms, as the `limits` capability's budget says for a vote's page. The browser tests
+measure them as they do there, and once more when a measurement exceeds its budget.
 
 #### Scenario: Dragging a bound with two votes
 
 - **WHEN** the browser tests open `/de/compare/#votes=5960,5970&foreigners=-`, wait until both
-  tables show, and drag the upper bound of "Ausländeranteil"
-- **THEN** no frame of the drag took more than 16 ms of work on the main thread, in the first
-  measurement or, when a frame exceeded it, in the second
+  results show, and drag the upper bound of "Ausländeranteil"
+- **THEN** at least nine in ten of the frames of the drag took at most 16 ms of work on the main
+  thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
 
 #### Scenario: Jumps with two votes
 
 - **WHEN** the browser tests, on the same page, add a limit, switch the Swiss abroad off and on,
-  choose 5980 as the second vote, wait until its table shows, choose 5970 again, whose file has
+  choose 5980 as the second vote, wait until its results show, choose 5970 again, whose file has
   loaded, and return to the real result
 - **THEN** no frame after these took more than 50 ms of work on the main thread, in the first
   measurement or, when a frame exceeded it, in the second

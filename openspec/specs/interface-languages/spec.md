@@ -25,8 +25,12 @@ other than these three has no page.
 #### Scenario: The start page and the guide in each language
 
 - **WHEN** a visitor opens `/fr/`, `/it/` and `/fr/guide/`
-- **THEN** the two start pages have the heading "Popular Vote Explorer", and the language of each
-  page is that of its address
+- **THEN** the two start pages have the headings "Comment la Suisse aurait-elle voté si seule une
+  partie des communes s'était rendue aux urnes?" and "Come avrebbe votato la Svizzera se solo una
+  parte dei Comuni si fosse recata alle urne?", all three name "Popular Vote Explorer" in their
+  head, and the language of each page is that of its address
+- **AND** the French heading holds a word joiner after the hyphen of "aurait-", so that no line
+  parts "aurait-elle"
 
 #### Scenario: A language that has no page
 
@@ -124,17 +128,17 @@ the one taken.
 #### Scenario: The verdicts in French
 
 - **WHEN** a visitor opens `/fr/votes/5960/`
-- **THEN** it shows the kind "Initiative populaire", the figures "Pourcentage de oui" and
+- **THEN** it shows the kind "Initiative populaire", the votes "Oui" and "Non" and the figure
   "Participation", the verdicts "Majorité du peuple" and "Majorité des cantons", the outcome
-  "Rejeté", and the column "Voix des cantons" of the table: the Constitution's "voix", not the
-  linked data's "votes" (`investigations/languages.md`, 1 and 2)
+  "Rejeté", and the columns "Pourcentage de oui" and "Voix des cantons" of the table: the
+  Constitution's "voix", not the linked data's "votes" (`investigations/languages.md`, 1 and 2)
 
 #### Scenario: The verdicts in Italian
 
 - **WHEN** a visitor opens `/it/votes/5960/`
-- **THEN** it shows the kind "Iniziativa popolare", the figures "Percentuale di sì" and
+- **THEN** it shows the kind "Iniziativa popolare", the votes "Sì" and "No" and the figure
   "Partecipazione", the verdicts "Maggioranza del popolo" and "Maggioranza dei Cantoni", the
-  outcome "Respinto", and the column "Voti dei Cantoni" of the table
+  outcome "Respinto", and the columns "Percentuale di sì" and "Voti dei Cantoni" of the table
 
 #### Scenario: The kinds of vote
 
@@ -148,8 +152,10 @@ the one taken.
 #### Scenario: The list's verdicts
 
 - **WHEN** a visitor opens `/fr/` and `/it/`
-- **THEN** the entry of the vote 5960 shows "rejeté, 49.16% de oui" and "respinto, 49.16% di sì"
-- **AND** the entry of the vote 6790 shows "accepté, 50.39% de oui" and "accettato, 50.39% di sì"
+- **THEN** the row of the vote 5960 shows "49.16% de oui" and "rejeté", and "49.16% di sì" and
+  "respinto"
+- **AND** the row of the vote 6790 shows "50.39% de oui" and "accepté", and "50.39% di sì" and
+  "accettato"
 
 #### Scenario: A result not validated yet
 
@@ -237,10 +243,11 @@ abbreviation. No name of a place SHALL be translated.
 ### Requirement: The switch between the languages
 
 At its top, every page SHALL name the three languages in their own words, in this order:
-"Deutsch", "Français", "Italiano". The two others SHALL link to the same page in them; the page's
-own SHALL NOT be a link. A link SHALL open that page anew, with the selection the page's address
-holds (the `share-link` capability): the municipality clicked and the map's view are not carried
-over.
+"Deutsch", "Français", "Italiano"; in a window narrower than 640 pixels as "DE", "FR" and "IT",
+each named with its word for assistive technology. The two others SHALL link to the same page in
+them; the page's own SHALL NOT be a link. A link SHALL open that page anew, with the
+selection the page's address holds (the `share-link` capability): the municipality clicked and the
+map's view are not carried over.
 
 #### Scenario: From German to French
 
@@ -264,3 +271,9 @@ over.
   stranieri (fine 2015): da 0.00% a 19.98%" and "Con la Sua selezione"
 - **AND** no municipality is outlined on the map, and the panel of characteristics shows no
   municipality
+
+#### Scenario: The switch in a narrow window
+
+- **WHEN** a visitor opens `/de/votes/5960/` in a window 360 pixels wide
+- **THEN** the switch writes "DE", "FR" and "IT"; "FR" is a link named "FR – Français" for
+  assistive technology, which leads to `/fr/votes/5960/`; and "DE" is not a link

@@ -17,15 +17,16 @@ these files. The figures in the scenarios are those of `investigations/map-data.
 
 ### Requirement: A map on the page of a vote
 
-For every vote the calculation judges, the vote's page SHALL show, below the outcome and above
-the table of the cantons, a map under the heading "Karte der Gemeinden" with every municipality
-of the list of municipalities. The page of a tie-break question SHALL show no map.
+For every vote the calculation judges, the vote's page SHALL show, below the result, a map with
+every municipality of the list of municipalities. Its heading "Karte der Gemeinden" SHALL name it
+for assistive technology and SHALL take no room on the page. The page of a tie-break question
+SHALL show no map.
 
 #### Scenario: The map of a vote
 
 - **WHEN** a visitor opens `/votes/5960/` and the map has loaded
-- **THEN** below "Abgelehnt" and above the table of the cantons the page shows "Karte der
-  Gemeinden" and a map with 2,110 municipalities
+- **THEN** below "Abgelehnt" and above the table of the cantons the page shows a map with 2,110
+  municipalities, whose heading "Karte der Gemeinden" is read by a screen reader and not seen
 
 #### Scenario: No map for a tie-break question
 
@@ -102,24 +103,27 @@ capability), and SHALL take no colour of a class.
 
 ### Requirement: The legend
 
-The map SHALL show a legend with the colour of each class and side, from "Nein: 80% und mehr",
-"Nein: 70–80%", "Nein: 60–70%" and "Nein: 50–60%" to "Ja: 50–60%", "Ja: 60–70%", "Ja: 70–80%"
-and "Ja: 80% und mehr", followed by "Gleich viele Ja wie Nein" and "Kein eigenes Ergebnis" with
-the hatching. While the selection sets aside at least one municipality, the legend SHALL end with
-"Nicht in der Auswahl" in `#2c2c2c`.
+The map SHALL show a legend: a scale of the eight classes' colours, from the clearest no on its
+left to the clearest yes on its right, headed "Nein", "Ja-Anteil in %" and "Ja", with the yes
+shares 20, 30, 40, 50, 60, 70 and 80 below the borders of its classes; then "Gleich viele Ja wie
+Nein" and "Kein eigenes Ergebnis" with the hatching. While the selection sets aside at least one
+municipality, the legend SHALL end with "Nicht in der Auswahl" in `#2c2c2c`.
 
 #### Scenario: The legend of a vote
 
 - **WHEN** a visitor opens `/votes/5960/` and the map has loaded
-- **THEN** the legend shows these ten entries in this order, each with its colour or the
-  hatching
+- **THEN** the scale shows `#934319`, `#c2673b`, `#e5946f`, `#fbbea3`, `#92dfd0`, `#4bc1ad`,
+  `#009c86` and `#007260` in this order, the seven yes shares below it, and after it the two
+  entries with their colour or the hatching
+- **AND** each class is named for assistive technology, from "Nein: 80% und mehr" to "Ja: 80% und
+  mehr"
 
 #### Scenario: The legend of a selection
 
 - **WHEN** a visitor opens `/votes/5960/` and moves the upper bound of "Ausländeranteil" to step
   327
-- **THEN** the legend shows the same ten entries and, as the eleventh, "Nicht in der Auswahl" in
-  `#2c2c2c`; after "Zurück zum echten Ergebnis" it shows the ten again
+- **THEN** the legend shows the same scale and entries and, as the last, "Nicht in der Auswahl" in
+  `#2c2c2c`; after "Zurück zum echten Ergebnis" it ends with "Kein eigenes Ergebnis" again
 
 ### Requirement: The cantons and the lakes
 
@@ -138,13 +142,15 @@ Switzerland, any area that no municipality covers SHALL show the colour of the l
 Pointing at a municipality, or clicking or tapping it, SHALL show its details, and only its
 own: its name, followed by its canton's abbreviation in brackets unless the name already ends
 with it; then "Ja-Anteil: ", "Ja-Stimmen: " and "Nein-Stimmen: " with its figures, written as
-the `vote-list` capability writes them. Pointing at no municipality SHALL show no details.
+the `vote-list` capability writes them, and a bar of its yes share, drawn as a result's.
+Pointing at no municipality SHALL show no details.
 
 #### Scenario: The details of a municipality
 
 - **WHEN** a visitor opens `/votes/5960/` and points at Zürich
 - **THEN** the map shows "Zürich (ZH)", "Ja-Anteil: 31.85%", "Ja-Stimmen: 46'565" and
-  "Nein-Stimmen: 99'614" (`investigations/map-data.md`)
+  "Nein-Stimmen: 99'614", and a bar whose yes part is 31.85% of its width
+  (`investigations/map-data.md`)
 
 #### Scenario: A name that holds its canton
 
@@ -176,10 +182,11 @@ figures.
 ### Requirement: Zoom
 
 The map SHALL first show the whole of Switzerland. The buttons "+" and "−" SHALL zoom in and
-out by a factor of 2 around the centre of the view, the mouse wheel over the map around the point
-under the pointer, and two fingers by the ratio of their distance to that when both touched,
-around the point midway between them; always between the whole of Switzerland and 16 times. The button "Ganze Schweiz" SHALL show the whole of Switzerland again.
-Borders SHALL keep their width on the screen.
+out by a factor of 2 around the centre of the view, the mouse wheel with Ctrl or ⌘ held around
+the point under the pointer, and two fingers by the ratio of their distance to that when both
+touched, around the point midway between them; always between the whole of Switzerland and 16
+times. "Ganze Schweiz" SHALL show the whole of Switzerland again. Borders SHALL keep their width
+on the screen.
 
 #### Scenario: Zooming in with the button
 
@@ -194,8 +201,9 @@ Borders SHALL keep their width on the screen.
 
 #### Scenario: Zooming with the wheel
 
-- **WHEN** a visitor turns the mouse wheel away from them over Zürich
-- **THEN** the map zooms in, and Zürich stays under the pointer within one pixel
+- **WHEN** a visitor holds the Ctrl key and turns the mouse wheel away from them over Zürich
+- **THEN** the map zooms in, Zürich stays under the pointer within one pixel, and the page has
+  not scrolled
 
 #### Scenario: Zooming with two fingers
 
@@ -322,29 +330,29 @@ municipality.
 
 ### Requirement: The map's performance budget
 
-Each frame the browser draws after a zoom step, a move of the map, pointing at a municipality
-(the first time after the page has loaded included) or clicking one, which fills the panel,
-SHALL take at most 16 ms of work on the page's main thread: the handling of the input and the
-drawing that follows. The browser tests measure it one test at a time, with 50 ms between a
-pointer's arrival and a click, as a person leaves, and once more when a frame exceeds it, as
-their machine may be busy.
+Of the frames the browser draws after a zoom step, a move of the map, pointing at a
+municipality (the first time after the page has loaded included) or clicking one, which fills
+the panel, at least nine in ten of a measurement SHALL take at most 16 ms of work on the page's
+main thread, handling the input and drawing, and none more than 50 ms. The browser tests measure
+it one test at a time, with 50 ms between a pointer's arrival and a click, and once more when a
+measurement exceeds it.
 
 #### Scenario: Zooming, moving and pointing
 
 - **WHEN** the browser tests open `/votes/5960/`, wait until the characteristics have loaded,
   move the pointer onto the map, zoom in four times, drag the map, and point at three
   municipalities
-- **THEN** no frame after these inputs, the first pointing at a municipality included, took
-  more than 16 ms of work on the main thread, in the first measurement or, when a frame
-  exceeded it, in the second
+- **THEN** at least nine in ten of the frames after these inputs, the first pointing at a
+  municipality included, took at most 16 ms of work on the main thread and none more than 50 ms,
+  in the first measurement or, when it exceeded this, in the second (`investigations/redesign.md`, "Found after the merge")
 
 #### Scenario: Clicking municipalities
 
 - **WHEN** the browser tests click three municipalities on `/votes/5960/` once the
   characteristics have loaded, each after showing the whole of Switzerland, pointing at it and
   waiting 50 ms
-- **THEN** no frame after these inputs took more than 16 ms of work on the main thread, in the
-  first measurement or, when a frame exceeded it, in the second
+- **THEN** at least nine in ten of the frames after these inputs took at most 16 ms of work on
+  the main thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
 
 #### Scenario: No other test beside a budget test
 
@@ -352,13 +360,14 @@ their machine may be busy.
 - **THEN** they run one test at a time, so no other test runs while a budget test measures, the
   budget tests of the limits included
 
-### Requirement: The characteristics of a municipality beside the map
+### Requirement: The characteristics of a municipality
 
-Beside the map SHALL stand a panel headed "Merkmale der Gemeinde" with the characteristics of
-the municipality last clicked or tapped (the `characteristics` capability), for the
-figures that apply to the vote. It shows the municipality's name as its details write it, then
-the 35 characteristics in eight groups, each group headed with the date of its figures. A line
-whose figures are of another year than its group's heading SHALL name its year.
+Below the map and the limits SHALL stand a panel headed "Merkmale der Gemeinde" with the
+characteristics of the municipality last clicked or tapped (the `characteristics` capability), for
+the figures that apply to the vote. It shows the municipality's name as its details write it, then
+the 35 characteristics in eight groups, each headed with the date of its figures, each share with
+a bar beside its figure. A line whose figures are of another year than its group's heading SHALL
+name its year.
 
 #### Scenario: Zürich in 2016
 
@@ -408,6 +417,15 @@ whose figures are of another year than its group's heading SHALL name its year.
   Sekundärsektor: keine Angabe", "Arbeitsplätze im Tertiärsektor: 89.39%" and "Bio-Anteil der
   landwirtschaftlichen Nutzfläche (2015): keine Angabe"
 
+#### Scenario: The bars of the shares
+
+- **WHEN** a visitor opens `/de/votes/5960/` and clicks Zürich, and then Oberrieden
+- **THEN** for Zürich the 29 lines with a share each show a bar, that of "Ausländeranteil: 32.03%"
+  filled to 32.03% of its width, give or take 1 pixel, and the 6 lines without a share
+  ("Einwohner", "Einwohner je km²", "Arbeitsplätze je 100 Einwohner", "Fläche", "Rinder je
+  Einwohner", "Landwirtschaftsbetriebe je 1'000 Einwohner") show none
+- **AND** for Oberrieden the lines that read "keine Angabe" show no bar
+
 ### Requirement: How the characteristics are written
 
 The panel SHALL write inhabitants and shares as the `vote-list` capability writes counts and
@@ -453,19 +471,22 @@ eine Gemeinde, um ihre Merkmale zu sehen."
 
 ### Requirement: Where the panel stands
 
-In a window at least 960 pixels wide, the panel SHALL stand to the right of the map, its top at
-the map's top. In a narrower window it SHALL stand below the map. The map SHALL keep its shape
-in both.
+The panel SHALL stand below the map and below the limits. In a window at least 960 pixels wide
+the table of the cantons SHALL stand to its right, their tops level; in a narrower window below
+it. The map SHALL keep its shape in both.
 
 #### Scenario: A wide window
 
 - **WHEN** a visitor opens `/votes/5960/` in a window 1,280 pixels wide
-- **THEN** the panel's left edge lies to the right of the map's right edge
+- **THEN** the panel's top edge lies below the map's bottom edge and below the limits' bottom
+  edge, and the left edge of the table of the cantons lies to the right of the panel's right edge
 
 #### Scenario: A narrow window
 
 - **WHEN** a visitor opens `/votes/5960/` in a window 800 pixels wide
-- **THEN** the panel's top edge lies below the map's bottom edge
+- **THEN** the panel's top edge lies below the map's bottom edge, the map's top edge below the
+  limits' bottom edge, and the top edge of the table of the cantons below the panel's bottom
+  edge
 
 ### Requirement: A characteristic without a figure
 
@@ -590,18 +611,19 @@ move the outline. Before the first click or tap, no municipality is outlined.
 
 ### Requirement: The budget of fingers
 
-Each frame the browser draws after a step of one finger or two moving on the map, or after a tap
-on a municipality, which fills the panel, SHALL take at most 16 ms of work on the page's main
-thread, as for the map's other inputs. The browser tests measure it on a touch screen's
-emulation, and once more when a frame exceeds it.
+Of the frames the browser draws after a step of one finger or two moving on the map, or after a
+tap on a municipality, which fills the panel, at least nine in ten of a measurement SHALL take at
+most 16 ms of work on the page's main thread and none more than 50 ms, as for the map's other
+inputs. The browser tests measure it on a touch screen's emulation, and once more when a
+measurement exceeds it.
 
 #### Scenario: Pinching, moving and tapping
 
 - **WHEN** the browser tests, on a touch screen 412 pixels wide, open `/de/votes/5960/`, wait
   until the characteristics have loaded, zoom in twice with two fingers, move the map with one
   finger, and tap three municipalities, each after showing the whole of Switzerland
-- **THEN** no frame after these inputs took more than 16 ms of work on the main thread, in the
-  first measurement or, when a frame exceeded it, in the second
+- **THEN** at least nine in ten of the frames after these inputs took at most 16 ms of work on
+  the main thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
 
 ### Requirement: The map in the dark scheme
 
@@ -625,3 +647,47 @@ take white in the light scheme. The set-aside grey `#2c2c2c` lies 11.1 apart fro
 - **WHEN** a visitor whose browser prefers a dark colour scheme opens `/votes/5960/`
 - **THEN** 261 Zürich is filled with `#e5946f`, 351 Bern with `#c2673b` and 946 Wachseldorn with
   `#009c86`, as in the light scheme (`investigations/map-data.md`)
+
+### Requirement: The mouse wheel over the map
+
+Over the map, the mouse wheel SHALL zoom it only while the Ctrl or the ⌘ key is held, which is
+also how a browser reports a pinch on a trackpad. Without such a key the wheel SHALL scroll the
+page, as it does elsewhere.
+
+#### Scenario: The wheel alone scrolls the page
+
+- **WHEN** a visitor on `/de/votes/5960/`, in a window 1,280 by 800 pixels, turns the mouse wheel
+  towards them over Zürich, holding no key
+- **THEN** the page scrolls, and the map still shows the whole of Switzerland
+
+#### Scenario: With the ⌘ key
+
+- **WHEN** that visitor holds the ⌘ key and turns the mouse wheel away from them over Zürich
+- **THEN** the map zooms in around Zürich, and the page does not scroll
+
+### Requirement: The result and the map stay in the window
+
+In a window at least 1,024 pixels wide and 700 pixels high, the result and the map with its legend
+SHALL stay in the window while the page scrolls along the limits beside them, and the map SHALL be
+no taller than the window's height less 17rem, 272 pixels at the browser's default text size. In
+any other window they SHALL scroll with the page. In a window narrower than 640 pixels the map
+SHALL reach from one side of the window to the other.
+
+#### Scenario: Scrolling along five limits
+
+- **WHEN** a visitor opens `/de/votes/5960/` in a window 1,280 by 800 pixels, adds five limits and
+  scrolls until "Zurück zum echten Ergebnis" lies in the window
+- **THEN** the result's top edge and the map's top edge still lie in the window, and the map is
+  784 pixels wide and 496 high, give or take 1 (`investigations/redesign.md`, 6)
+
+#### Scenario: A wide and a low window
+
+- **WHEN** a visitor opens that page in a window 1,600 by 900 pixels, and in one 1,280 by 600
+- **THEN** in the first the map is 628 pixels high, the window's height less 272, keeps its shape
+  and stands in the middle of its column; in the second the result and the map scroll away with
+  the page
+
+#### Scenario: A phone
+
+- **WHEN** a visitor opens that page in a window 360 pixels wide
+- **THEN** the map is 360 pixels wide and 228 high, give or take 1, and scrolls with the page

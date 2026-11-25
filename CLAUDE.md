@@ -39,15 +39,18 @@ each canton, and is tested against seven official votes; the pipeline writes the
 counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #13, 7a, 9a and 10a of `docs/roadmap.md`,
+after every push to `main` whose checks pass. Changes #1 to #14, 7a, 9a and 10a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
 `publish-site`, `add-result-map`, `add-characteristics`, `tighten-map-budget` (the look at
 performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`,
 `add-interface-languages`, `steady-budget-tests` (the browser tests one at a time, so that no
-test runs beside a budget test), `add-small-screens`, `add-site-style`, `add-share-link`, `add-vote-comparison` and
+test runs beside a budget test), `add-small-screens`, `add-site-style`, `add-share-link`, `add-vote-comparison`,
 `add-more-characteristics` (#13: 14 characteristics beyond the predecessor's, from six more
 STAT-TAB tables: those born abroad; religion, education and housing of the census of 2000; the
-jobs by sector; the farms and the organic farmland), are archived, and
+jobs by sector; the farms and the organic farmland) and `redesign-site` (#14: a new layout and
+look for every page, and, added after its merge, the limits above the map in a narrow window and
+frame budgets that hold on a slower machine: at least nine frames in ten of a step within 16 ms
+and none over 50 ms), are archived, and
 `openspec/specs/` holds their specs.
 Twelve investigations are done: `investigations/data-sources.md`, `investigations/map-data.md`,
 `investigations/characteristics.md`, `investigations/performance.md`,
@@ -55,11 +58,9 @@ Twelve investigations are done: `investigations/data-sources.md`, `investigation
 `investigations/site-style.md`, `investigations/share-link.md`,
 `investigations/vote-comparison.md`, `investigations/more-characteristics.md` and
 `investigations/redesign.md`.
-v1, changes #1 to #10a, is complete, and #11, `add-share-link`, #12, `add-vote-comparison`, and
-#13, `add-more-characteristics`, the changes after v1, are archived. #14, `redesign-site`, a new
-layout and look for every page, is applied and not archived: the description above is the site
-with it, its artifacts are in `openspec/changes/redesign-site/`, and `openspec/specs/` holds the
-specs of before until its archive merges their deltas. `docs/roadmap.md`
+v1, changes #1 to #10a, is complete, and #11, `add-share-link`, #12, `add-vote-comparison`,
+#13, `add-more-characteristics`, and #14, `redesign-site`, the changes after v1, are archived. No
+change is in flight. `docs/roadmap.md`
 names income per municipality and a limit on categories as open.
 `README.md` is the human-facing overview.
 
