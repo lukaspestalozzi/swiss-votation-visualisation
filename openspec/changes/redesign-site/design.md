@@ -114,7 +114,7 @@ mockups Q saw unless it says otherwise.
    put the map above the limits there, as the document has them; Q asked for the limits above
    the map once the site was published. On a phone 360 by 740 pixels with one limit, the first
    slider began 1,211 pixels below the top of the selection's result with the map between them
-   and begins 600 below it with the limits first, so both lie in one window
+   and begins 621 below it with the limits first, so both lie in one window
    (`investigations/redesign.md`, "Found after the merge"). The order is the stylesheet's (Q):
    the document keeps result, map, limits, which a screen reader and the Tab key follow, and the
    wide layout is not touched. Rejected: the limits before the map in the document, for which

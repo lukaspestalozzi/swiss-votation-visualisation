@@ -49,6 +49,8 @@ node investigations/redesign/first_step.cjs [<width> <height>]
 node investigations/redesign/start_page.cjs
 # Found by the verification:
 node investigations/redesign/bars_cost.mjs "$PWD"
+# Found after the merge:
+node investigations/redesign/narrow_order.cjs [--injected] [--port 4174]
 ```
 
 | File | What |
@@ -63,6 +65,7 @@ node investigations/redesign/bars_cost.mjs "$PWD"
 | `mockups/shots.cjs` | Where the parts of a vote's mockup stand in eight windows, each mockup's size in windows 1,280 and 360 pixels wide, and, with `--shots`, a screenshot of each in both schemes. |
 | `stays.cjs` | Found while applying: by how much the part of a vote's page that stays in the window, the result, the map and its legend, is taller than the window, with a selection, in 12 widths by 6 heights and three languages. |
 | `first_step.cjs` | Found while applying: where the results, the map, the legend and the last limit's slider stand in the window before and after the step with which a selection first applies, with five limits and the page scrolled to the last. |
+| `narrow_order.cjs` | Found after the merge: where windows 360, 412 and 800 pixels wide show the result, the limits and the map of a vote's page with one limit, how far the first slider begins below the top of the selection's result, and what the step with which a selection first applies moves; with `--injected`, on a site built before, with the limits shown between the result and the map by a stylesheet added to the page. |
 | `bars_cost.mjs` | Found by the verification: how long the tracks of 21 limits take to make and their bars to work out, in Node on the app's own modules. |
 | `start_page.cjs` | Found while applying: the start page in ten windows and three languages: its size, the narrowest title of a row, the widest share and result, and the height of the part that stays at the top against the room a year keeps for it. |
 
@@ -399,6 +402,40 @@ none of whom had written them:
   draw the bars in the frames after (design of `redesign-site`, "Risks"). It was not taken:
   CI's runner measured 36.0 ms for this frame before the bars, about half of this machine's.
 
+## Found after the merge
+
+Q, once the site was published: on a phone the map should stand below the limits, so that the
+selection's result is on the screen while a limit is set. `narrow_order.cjs`, with one limit,
+"Einwohner", on the site built from `285b650`, before that order, and on the site built with it
+("Output", "Found after the merge").
+
+- **Where the first slider begins below the top of the selection's result.** With the map
+  between the result and the limits: 1,211 pixels in a window 360 by 740, 1,220 in one 412 by
+  915, 1,078 in one 800 by 1,000; no window showed both. With the limits between the result
+  and the map: 621, 621 and 406 pixels. A slider is 44 pixels tall there, so that a window 740
+  pixels high holds the selection's result from its top and both sliders of the first limit.
+  With a second limit it no longer does; the bar at the bottom of the window then shows the
+  outcome, as before.
+- **The step with which a selection first applies.** With `--injected`, the limits directly
+  below the result and the place of the selection's result a sentence's height, 98 pixels where
+  the result is 208: the slider moved from 474 to 584 pixels in a window 360 by 740, 110 down
+  under the finger, and 8 down in one 800 by 1,000; the page's scroll stayed. With the map
+  between them the browser had kept the page where it was by scrolling (the scroll went from
+  1,187 to 1,322). As built, the place is as tall as a result at every width, 229 pixels in a
+  window 360 wide, and the slider stays: 474 to 474, 562 to 562 and 772 to 772.
+- **The cost of the place.** Before a selection, the limits begin 131 pixels lower in a window
+  360 wide than they would with the sentence's height (853 against 722), and 10 lower in one
+  800 wide.
+- **The document's order stays** result, map, limits: the stylesheet alone shows the limits
+  first (design of `redesign-site`, decision 9). A screen reader and the Tab key follow the
+  document. Not checked with a screen reader.
+- **The drag's budget on this machine, that day.** The two tests of a drag's budget, three runs
+  each per round, four rounds on the site of before and four on the new one, in turn
+  (`pnpm --filter app exec playwright test e2e/limits.spec.ts -g "the budget of dragging" --repeat-each=3`):
+  a frame over 16 ms at the first measurement in 9 of 24 runs before and in 6 of 24 with the
+  change, and at both measurements in 3 and in 1. The change did not move them; the same test
+  alone had passed 16 of 16 a quarter of an hour earlier.
+
 ## Not verified
 
 Of the five points below, applying the change settled four: the browser tests open the built
@@ -663,4 +700,68 @@ run 2: 21 tracks 28.2 ms, their histograms 7.9 ms, their bars as paths 8.7 ms
 run 3: 21 tracks 24.2 ms, their histograms 8.1 ms, their bars as paths 8.4 ms
 run 4: 21 tracks 25.2 ms, their histograms 7.9 ms, their bars as paths 8.2 ms
 run 5: 21 tracks 23.4 ms, their histograms 7.8 ms, their bars as paths 8.3 ms
+```
+
+### Found after the merge
+
+`node investigations/redesign/narrow_order.cjs --port 4175`, against the site built from
+`285b650`:
+
+```
+360 x 740:
+  before a selection: result 356+214 | place 584+98 | selection none | limits 1308+616 | slider 1661+44 | map 702+375
+  with a selection:   result 356+214 | place none | selection 584+208 | limits 1443+616 | slider 1795+44 | map 811+400
+  from the top of the selection's result to the first slider: 1211 px
+  the step with which the selection first applies (step 2): the slider in the window 474 -> 473, the page's scroll 1187 -> 1322
+412 x 915:
+  before a selection: result 356+214 | place 584+98 | selection none | limits 1317+616 | slider 1670+44 | map 702+408
+  with a selection:   result 356+214 | place none | selection 584+208 | limits 1452+616 | slider 1804+44 | map 811+433
+  from the top of the selection's result to the first slider: 1220 px
+  the step with which the selection first applies (step 2): the slider in the window 562 -> 586, the page's scroll 1108 -> 1218
+800 x 1000:
+  before a selection: result 284+68 | place 365+74 | selection none | limits 1151+523 | slider 1434+44 | map 459+531
+  with a selection:   result 284+68 | place none | selection 365+83 | limits 1159+523 | slider 1443+44 | map 468+531
+  from the top of the selection's result to the first slider: 1078 px
+  the step with which the selection first applies (step 2): the slider in the window 604 -> 604, the page's scroll 830 -> 839
+```
+
+`node investigations/redesign/narrow_order.cjs --injected --port 4175`, against the same site:
+
+```
+360 x 740, order injected:
+  before a selection: result 356+214 | place 584+98 | selection none | limits 722+616 | slider 1074+44 | map 1433+375
+  with a selection:   result 356+214 | place none | selection 584+208 | limits 831+616 | slider 1184+44 | map 1543+400
+  from the top of the selection's result to the first slider: 600 px
+  the step with which the selection first applies (step 2): the slider in the window 474 -> 584, the page's scroll 600 -> 600
+412 x 915, order injected:
+  before a selection: result 356+214 | place 584+98 | selection none | limits 722+616 | slider 1074+44 | map 1433+408
+  with a selection:   result 356+214 | place none | selection 584+208 | limits 831+616 | slider 1184+44 | map 1543+433
+  from the top of the selection's result to the first slider: 600 px
+  the step with which the selection first applies (step 2): the slider in the window 561 -> 671, the page's scroll 513 -> 513
+800 x 1000, order injected:
+  before a selection: result 284+68 | place 365+74 | selection none | limits 479+523 | slider 763+44 | map 1098+531
+  with a selection:   result 284+68 | place none | selection 365+83 | limits 488+523 | slider 771+44 | map 1106+531
+  from the top of the selection's result to the first slider: 406 px
+  the step with which the selection first applies (step 2): the slider in the window 763 -> 771, the page's scroll 0 -> 0
+```
+
+`node investigations/redesign/narrow_order.cjs`, against the site built with the limits above the
+map:
+
+```
+360 x 740:
+  before a selection: result 356+229 | place 585+229 | selection none | limits 853+616 | slider 1206+44 | map 1565+375
+  with a selection:   result 356+229 | place none | selection 585+229 | limits 853+616 | slider 1206+44 | map 1565+400
+  from the top of the selection's result to the first slider: 621 px
+  the step with which the selection first applies (step 2): the slider in the window 474 -> 474, the page's scroll 732 -> 732
+412 x 915:
+  before a selection: result 356+229 | place 585+229 | selection none | limits 853+616 | slider 1206+44 | map 1565+408
+  with a selection:   result 356+229 | place none | selection 585+229 | limits 853+616 | slider 1206+44 | map 1565+433
+  from the top of the selection's result to the first slider: 621 px
+  the step with which the selection first applies (step 2): the slider in the window 562 -> 562, the page's scroll 644 -> 644
+800 x 1000:
+  before a selection: result 284+83 | place 366+83 | selection none | limits 489+523 | slider 772+44 | map 1107+531
+  with a selection:   result 284+83 | place none | selection 366+83 | limits 489+523 | slider 772+44 | map 1107+531
+  from the top of the selection's result to the first slider: 406 px
+  the step with which the selection first applies (step 2): the slider in the window 772 -> 772, the page's scroll 0 -> 0
 ```
