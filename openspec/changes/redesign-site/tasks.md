@@ -167,6 +167,23 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   the map.
 - [x] 8.5 Verify: `./scripts/verify-local.sh` passes all 11 steps.
 
+## 9. The limits above the map in a narrow window (Q, after the merge)
+
+- [ ] 9.1 Below 1,024 pixels, show the limits between the result and the map, by the stylesheet
+  of a vote's page; the document's order and the wide layout stay. Verify: browser tests of
+  limits "The section in a narrow window" (1,023 and 360 pixels) and of result-map "Where the
+  panel stands", "A narrow window", pass; `app/e2e/result-map.spec.ts` and
+  `app/e2e/small-screens.spec.ts` pass.
+- [ ] 9.2 Make the place of the selection's result as tall as a result at every width. Verify:
+  browser tests of verdicts "Nothing moves under the finger on a phone" and "Nothing moves when
+  a selection first applies" pass.
+- [ ] 9.3 Verify the phone: the browser test of small-screens "The result and the first limit in
+  one window" passes, and the tests of the bar at the bottom pass.
+- [ ] 9.4 Add "Found after the merge" to `investigations/redesign.md`, with the script that
+  measures a narrow window as built; update `CLAUDE.md` and `README.md` where they give the
+  order of a narrow window. Verify: each figure in it comes from a command the file names.
+- [ ] 9.5 Verify: `./scripts/verify-local.sh` passes all 11 steps.
+
 ## Workflow follow-up
 
 - After the merge, Q checks the new look on a phone, and a pinch on a Mac's trackpad in Safari.

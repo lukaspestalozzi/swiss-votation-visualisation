@@ -111,3 +111,18 @@ SHALL be no bar. The bar SHALL hide no part of the page.
 - **WHEN** that visitor presses "Zurück zum echten Ergebnis", or a visitor does the same as in
   "While dragging on a phone" in a window 1,280 pixels wide
 - **THEN** there is no bar
+
+## ADDED Requirements
+
+### Requirement: The selection's result while a limit is set on a phone
+
+On a phone, the result "Mit Ihrer Auswahl" and the sliders of the first limit SHALL lie within
+one window, the limits standing between the result and the map (the `limits` capability).
+
+#### Scenario: The result and the first limit in one window
+
+- **WHEN** a visitor opens `/de/votes/5960/` on a phone 360 by 740 pixels, adds the limit
+  "Einwohner", moves its lower bound until "Mit Ihrer Auswahl" stands, and scrolls until that
+  result's top edge lies at the top of the window
+- **THEN** both sliders of that limit lie wholly within the window
+  (`investigations/redesign.md`, "Found after the merge")

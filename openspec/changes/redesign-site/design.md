@@ -109,8 +109,19 @@ mockups Q saw unless it says otherwise.
    there: 21.5rem where the column is narrower than 768 pixels, 26.5rem below 640. With that the
    result, the map and the legend end within the window in each of 216 windows measured, 1,024
    to 1,920 pixels wide and 700 to 1,080 high, in three languages.
-9. **In a narrower window** the order is result, map, limits, panel, cantons: the map moves above
-   the limits. Nothing stays in the window but #10's bar at the bottom.
+9. **In a narrower window (Q, after the merge)** the order is result, limits, map, panel,
+   cantons, so that a phone shows the selection's result while a limit is set. The change first
+   put the map above the limits there, as the document has them; Q asked for the limits above
+   the map once the site was published. On a phone 360 by 740 pixels with one limit, the first
+   slider began 1,211 pixels below the top of the selection's result with the map between them
+   and begins 600 below it with the limits first, so both lie in one window
+   (`investigations/redesign.md`, "Found after the merge"). The order is the stylesheet's (Q):
+   the document keeps result, map, limits, which a screen reader and the Tab key follow, and the
+   wide layout is not touched. Rejected: the limits before the map in the document, for which
+   the part that stays in a wide window would be two parts placed by a script. The place of the
+   selection's result is as tall as a result there too (Q): with the limits directly below it,
+   they moved 110 pixels down under the finger in the step with which a selection first applies.
+   Nothing stays in the window but #10's bar at the bottom.
 10. **A result is a row (Q saw it in both rounds):** the outcome, then the majority of voters, then
     the cantons. The selection's result stands below the real one, so that their bars lie one
     above the other. This replaces the two boxes side by side of #4 and #8. A row follows the room

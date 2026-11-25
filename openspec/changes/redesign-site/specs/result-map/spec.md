@@ -200,8 +200,9 @@ it. The map SHALL keep its shape in both.
 #### Scenario: A narrow window
 
 - **WHEN** a visitor opens `/votes/5960/` in a window 800 pixels wide
-- **THEN** the panel's top edge lies below the limits' bottom edge, and the top edge of the table
-  of the cantons below the panel's bottom edge
+- **THEN** the panel's top edge lies below the map's bottom edge, the map's top edge below the
+  limits' bottom edge, and the top edge of the table of the cantons below the panel's bottom
+  edge
 
 ## ADDED Requirements
 
