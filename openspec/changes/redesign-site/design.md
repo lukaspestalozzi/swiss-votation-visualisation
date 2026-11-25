@@ -102,7 +102,10 @@ mockups Q saw unless it says otherwise.
    keeps its shape where its height is capped: its frame, with the zoom buttons and the
    details, is then narrower than its column and stands in its middle, as the map's moves count
    in pixels of a box of the view's shape. The panel shows its first sentence also when the map
-   cannot be loaded.
+   cannot be loaded. A result takes more room in a narrower column, so the map leaves it more
+   there: 21.5rem where the column is narrower than 768 pixels, 26.5rem below 640. With that the
+   result, the map and the legend end within the window in each of 216 windows measured, 1,024
+   to 1,920 pixels wide and 700 to 1,080 high, in three languages.
 9. **In a narrower window** the order is result, map, limits, panel, cantons: the map moves above
    the limits. Nothing stays in the window but #10's bar at the bottom.
 10. **A result is a row (Q saw it in both rounds):** the outcome, then the majority of voters, then

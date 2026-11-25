@@ -98,6 +98,62 @@ test('the legend: ten entries from the clearest no to the clearest yes', async (
   await expect(swatch(9)).toHaveCSS('background-image', /repeating-linear-gradient/);
 });
 
+test("the legend's scale: the eight classes in one row, the yes shares below their borders", async ({
+  page,
+}) => {
+  // Spec result-map, "The legend of a vote"; design of redesign-site, decision 16.
+  await page.goto('de/votes/5960/');
+  await mapDrawn(page);
+  const scale = page.locator('.map .scale');
+  await expect(scale.locator('.scale-name span')).toHaveText(['Nein', 'Ja-Anteil in %', 'Ja']);
+  const cells = await scale.locator('.swatch').evaluateAll((swatches) =>
+    swatches.map((swatch) => {
+      const box = swatch.getBoundingClientRect();
+      return {
+        left: box.left,
+        right: box.right,
+        top: box.top,
+        bottom: box.bottom,
+        colour: getComputedStyle(swatch).backgroundColor,
+      };
+    }),
+  );
+  // From the clearest no to the clearest yes: #934319, #c2673b, #e5946f, #fbbea3, #92dfd0,
+  // #4bc1ad, #009c86 and #007260.
+  expect(cells.map((cell) => cell.colour)).toEqual([
+    'rgb(147, 67, 25)',
+    'rgb(194, 103, 59)',
+    'rgb(229, 148, 111)',
+    'rgb(251, 190, 163)',
+    'rgb(146, 223, 208)',
+    'rgb(75, 193, 173)',
+    'rgb(0, 156, 134)',
+    'rgb(0, 114, 96)',
+  ]);
+  // One row: each class begins where the one before it ends.
+  cells.slice(1).forEach((cell, i) => {
+    expect(Math.abs(cell.left - (cells[i]?.right ?? 0))).toBeLessThanOrEqual(1);
+    expect(cell.top).toBe(cells[0]?.top);
+  });
+  // The seven yes shares, each below the border between two classes.
+  const shares = await scale.locator('.scale-ticks span').evaluateAll((spans) =>
+    spans.map((span) => {
+      const box = span.getBoundingClientRect();
+      return { text: span.textContent.trim(), middle: box.left + box.width / 2, top: box.top };
+    }),
+  );
+  expect(shares.map((share) => share.text)).toEqual(['20', '30', '40', '50', '60', '70', '80']);
+  shares.forEach((share, i) => {
+    expect(Math.abs(share.middle - (cells[i]?.right ?? 0))).toBeLessThanOrEqual(1);
+    expect(share.top).toBeGreaterThanOrEqual((cells[i]?.bottom ?? 0) - 1);
+  });
+  // The other entries stand after the scale, each with its words.
+  await expect(page.locator('.map .keys li')).toHaveText([
+    'Gleich viele Ja wie Nein',
+    'Kein eigenes Ergebnis',
+  ]);
+});
+
 test('the cantons and the lakes, on the outline of Switzerland in the lakes colour', async ({
   page,
 }) => {
@@ -1108,6 +1164,33 @@ test('a high window: the map no taller than the window less 272 pixels, whole in
   expect(outline.x + outline.width).toBeLessThanOrEqual(map.x + map.width);
   expect(outline.y).toBeGreaterThanOrEqual(map.y);
   expect(outline.y + outline.height).toBeLessThanOrEqual(map.y + map.height);
+});
+
+test('the result, the map and its legend end within the window, whatever room the result takes', async ({
+  page,
+}) => {
+  // Spec result-map, "The result and the map stay in the window": a result takes more room in a
+  // narrower column and in French or Italian, and the map leaves it that room
+  // (investigations/redesign.md, "Found while applying").
+  for (const [width, height, language] of [
+    [1024, 700, 'de'],
+    [1024, 768, 'it'],
+    [1100, 700, 'fr'],
+    [1150, 720, 'it'],
+    [1280, 800, 'de'],
+    [1600, 900, 'fr'],
+  ] as const) {
+    await page.setViewportSize({ width, height });
+    await page.goto(`${language}/votes/5960/#foreigners=-19.98`);
+    await mapDrawn(page);
+    await expect(page.locator('.result.selection')).toBeVisible();
+    const [stays, legend] = await Promise.all(
+      ['.stay', '.map .legend-box'].map((part) => boxOf(page, part)),
+    );
+    const at = `${String(width)} × ${String(height)}, ${language}`;
+    expect(stays.height, at).toBeLessThanOrEqual(height);
+    expect(legend.y + legend.height, at).toBeLessThanOrEqual(height + stays.y);
+  }
 });
 
 test('in a low window the result and the map scroll away with the page', async ({ page }) => {

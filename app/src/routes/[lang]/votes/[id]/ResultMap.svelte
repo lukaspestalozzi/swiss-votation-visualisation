@@ -113,8 +113,10 @@
     // A municipality the selection sets aside says so after its own figures (spec result-map).
     return aside.has(selected) ? { ...shown, lines: [...shown.lines, t.SET_ASIDE] } : shown;
   });
-  // The legend, which names the set-aside municipalities while there are any.
-  const legend = $derived(aside.size > 0 ? [...legendOf(t), legendSetAsideOf(t)] : legendOf(t));
+  // The legend: its scale, and its entries, which name the set-aside municipalities while there
+  // are any.
+  const legend = $derived(legendOf(t));
+  const keys = $derived(aside.size > 0 ? [...legend.entries, legendSetAsideOf(t)] : legend.entries);
   // The shape of the municipality last clicked or tapped, which the map outlines (design of
   // add-small-screens, decision 3).
   const outlined = $derived.by(() => {
@@ -394,22 +396,48 @@
         <button type="button" onclick={showWholeSwitzerland}>{t.WHOLE_SWITZERLAND}</button>
       </div>
     </div>
-    <ul class="legend">
-      {#each legend as entry (entry.label)}
-        <li>
-          {#if entry.fill === 'hatch'}
-            <span
-              class="swatch"
-              style:background-image="repeating-linear-gradient(45deg, {HATCH_LINE} 0 2px, var(--ground)
-              2px 6px)"
-            ></span>
-          {:else}
-            <span class="swatch" style:background-color={entry.fill}></span>
-          {/if}
-          {entry.label}
-        </li>
-      {/each}
-    </ul>
+    <!-- The legend (spec result-map, "The legend"; design of redesign-site, decision 16): the
+         eight classes as one scale, the yes shares below the borders between them, then the
+         other entries. The classes are a list, each named for assistive technology; what the
+         eye reads above and below the scale is not read twice. -->
+    <div class="legend-box">
+      <div class="scale">
+        <div class="scale-name" aria-hidden="true">
+          <span class="side-no">{t.NO}</span>
+          <span class="secondary">{t.LEGEND_SCALE}</span>
+          <span class="side-yes">{t.YES}</span>
+        </div>
+        <ul class="legend steps">
+          {#each legend.classes as entry (entry.label)}
+            <li>
+              <span class="swatch" style:background-color={entry.fill}></span>
+              <span class="visually-hidden">{entry.label}</span>
+            </li>
+          {/each}
+        </ul>
+        <div class="scale-ticks" aria-hidden="true">
+          {#each legend.shares as share (share)}
+            <span>{share}</span>
+          {/each}
+        </div>
+      </div>
+      <ul class="legend keys">
+        {#each keys as entry (entry.label)}
+          <li>
+            {#if entry.fill === 'hatch'}
+              <span
+                class="swatch"
+                style:background-image="repeating-linear-gradient(45deg, {HATCH_LINE} 0 2px, var(--ground)
+                2px 6px)"
+              ></span>
+            {:else}
+              <span class="swatch" style:background-color={entry.fill}></span>
+            {/if}
+            {entry.label}
+          </li>
+        {/each}
+      </ul>
+    </div>
   {/if}
 </section>
 
@@ -510,21 +538,70 @@
     vector-effect: non-scaling-stroke;
     pointer-events: none;
   }
-  /* The legend stays in the window with the map: it takes no more room than it needs. */
-  .legend {
+  /* The legend stays in the window with the map: the scale and, beside it or below, the other
+     entries, in no more room than they need. */
+  .legend-box {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 1rem;
-    margin: 0.75rem 0 0;
+    align-items: flex-end;
+    gap: 0.75rem 2rem;
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+  }
+  .legend {
+    margin: 0;
     padding: 0;
     list-style: none;
   }
-  .swatch {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    margin-right: 0.25rem;
-    vertical-align: middle;
+  .scale {
+    flex: 0 1 22rem;
+    min-width: 15rem;
+  }
+  .scale-name {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.125rem;
+  }
+  .scale-name .side-no,
+  .scale-name .side-yes {
+    font-weight: 600;
+  }
+  /* The eight classes side by side, each an eighth of the scale. */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+  }
+  .steps .swatch {
+    display: block;
+    height: 0.625rem;
+  }
+  /* A yes share stands below the border at the end of its class: in the class's column, moved
+     half a column on. The eighth column holds none. */
+  .scale-ticks {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  .scale-ticks span {
+    text-align: center;
+    transform: translateX(50%);
+  }
+  .keys {
+    display: flex;
+    flex: 1 1 12rem;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+  }
+  .keys li {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .keys .swatch {
+    flex: none;
+    width: 0.875rem;
+    height: 0.875rem;
     border: 1px solid var(--border);
   }
   /* Fingers on the map are the map's: the browser neither scrolls nor zooms the page for them, and
@@ -545,6 +622,21 @@
     .frame {
       max-width: calc((100vh - 17rem) * var(--shape));
       margin: 0 auto;
+    }
+    /* A result takes more room in a narrower column, and the map leaves it that room, so that
+       with its legend it still ends within the window (investigations/redesign.md, "Found while
+       applying"). Below 768 pixels a majority's head takes two lines in French and Italian and
+       the legend's entries stand below its scale; below 640 a result's outcome stands above
+       its two majorities. */
+    @container watch (max-width: 767.98px) {
+      .frame {
+        max-width: calc((100vh - 21.5rem) * var(--shape));
+      }
+    }
+    @container watch (max-width: 639.98px) {
+      .frame {
+        max-width: calc((100vh - 26.5rem) * var(--shape));
+      }
     }
   }
 </style>

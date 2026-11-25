@@ -51,19 +51,25 @@ test('the colours of the classes, from class 1 to class 4, and of a tie', () => 
   expect(colourOf(colouringOf(95, 25))).toBe('#009c86');
 });
 
-test('the legend: the ten entries in order, each with its colour or the hatching', () => {
-  expect(legendOf(de)).toEqual([
-    { label: 'Nein: 80% und mehr', fill: '#934319' },
-    { label: 'Nein: 70–80%', fill: '#c2673b' },
-    { label: 'Nein: 60–70%', fill: '#e5946f' },
-    { label: 'Nein: 50–60%', fill: '#fbbea3' },
-    { label: 'Ja: 50–60%', fill: '#92dfd0' },
-    { label: 'Ja: 60–70%', fill: '#4bc1ad' },
-    { label: 'Ja: 70–80%', fill: '#009c86' },
-    { label: 'Ja: 80% und mehr', fill: '#007260' },
-    { label: 'Gleich viele Ja wie Nein', fill: '#f0efec' },
-    { label: 'Kein eigenes Ergebnis', fill: 'hatch' },
-  ]);
+test('the legend: a scale of the eight classes, the yes shares at their borders, two entries', () => {
+  // Spec result-map, "The legend": from the clearest no to the clearest yes.
+  expect(legendOf(de)).toEqual({
+    classes: [
+      { label: 'Nein: 80% und mehr', fill: '#934319' },
+      { label: 'Nein: 70–80%', fill: '#c2673b' },
+      { label: 'Nein: 60–70%', fill: '#e5946f' },
+      { label: 'Nein: 50–60%', fill: '#fbbea3' },
+      { label: 'Ja: 50–60%', fill: '#92dfd0' },
+      { label: 'Ja: 60–70%', fill: '#4bc1ad' },
+      { label: 'Ja: 70–80%', fill: '#009c86' },
+      { label: 'Ja: 80% und mehr', fill: '#007260' },
+    ],
+    shares: [20, 30, 40, 50, 60, 70, 80],
+    entries: [
+      { label: 'Gleich viele Ja wie Nein', fill: '#f0efec' },
+      { label: 'Kein eigenes Ergebnis', fill: 'hatch' },
+    ],
+  });
 });
 
 test('the details of a municipality: its name with its canton, its share and its votes', () => {
