@@ -113,6 +113,47 @@ export function histogramOf(track: Track): number[] {
   return bars;
 }
 
+/** The least height of a bar that holds a municipality, in hundredths of the fullest bar's. */
+const LEAST_BAR = 2;
+
+/**
+ * The heights of a histogram's bars, in hundredths of the fullest bar's, to two decimals: each
+ * as tall as its count against the fullest's, and one with a municipality at least 2 tall, so
+ * that it is seen (spec limits, "Where the municipalities lie on a track").
+ */
+export function barHeightsOf(counts: readonly number[]): number[] {
+  const fullest = Math.max(...counts);
+  return counts.map((count) =>
+    count === 0 ? 0 : Math.max(LEAST_BAR, Math.round((count / fullest) * 10000) / 100),
+  );
+}
+
+/**
+ * The bars above a track as the path of their drawing, in a box 50 wide and 100 tall: the bars
+ * side by side from the box's foot, each four fifths of its fiftieth wide.
+ */
+export function barsPathOf(track: Track): string {
+  return barHeightsOf(histogramOf(track))
+    .map((height, bar) => `M${String(bar + 0.1)},100v-${String(height)}h0.8v${String(height)}z`)
+    .join('');
+}
+
+/**
+ * The mark of the municipality at the place `at` of the file's list under a track (spec limits,
+ * "The municipality last clicked on a track"): where it stands along the track, in hundredths,
+ * and its value as the panel writes it. None for no municipality, and for one without a figure
+ * of the track's characteristic.
+ */
+export function markOn(
+  track: Track,
+  at: number,
+  t: Texts,
+): { readonly place: number; readonly value: string } | null {
+  const value = track.values[at] ?? null;
+  if (value === null) return null;
+  return { place: stepOf(track, value) / 10, value: writeUnits(track.definition, value, t) };
+}
+
 /**
  * The label of a limit with its bounds at the steps `lower` and `upper`: "Ausländeranteil (Ende
  * 2015): von 0.00% bis 19.98%" (spec limits, "The label of a limit").

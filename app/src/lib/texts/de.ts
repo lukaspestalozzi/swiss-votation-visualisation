@@ -201,7 +201,6 @@ export const de: Texts = {
   FIRST_VOTE: 'Erste Abstimmung',
   SECOND_VOTE: 'Zweite Abstimmung',
   REAL_RESULT: 'Echtes Ergebnis',
-  PROPOSAL: 'Vorlage',
   VOTE_LOADING: 'Die Ergebnisse werden geladen.',
   VOTE_FAILED: 'Die Ergebnisse dieser Abstimmung lassen sich nicht laden.',
   SAME_MUNICIPALITIES:

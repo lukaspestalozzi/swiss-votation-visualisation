@@ -54,9 +54,10 @@ test('the figures of a vote', () => {
   expect(page(5960).judged).toMatchObject({
     yesVotes: "1'609'152",
     noVotes: "1'664'224",
-    yesShare: '49.16%',
     turnout: '63.25%',
   });
+  // The yes share is written once, with the majority of voters.
+  expect(page(5960).judged?.verdicts[0].figure).toBe('49.16%');
 });
 
 test('the cantons in favour, the voters against', () => {

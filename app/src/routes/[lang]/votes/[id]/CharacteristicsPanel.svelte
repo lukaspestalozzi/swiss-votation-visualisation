@@ -37,7 +37,7 @@
      share, and its value. A line's text is "name: value": the colon is read, and not seen. -->
 <section class="panel" aria-labelledby="characteristics-heading">
   <div class="head">
-    <h3 id="characteristics-heading">{t.PANEL_HEADING}</h3>
+    <h2 id="characteristics-heading">{t.PANEL_HEADING}</h2>
     {#if !failed && file !== null && groups !== null && name !== null}
       <p class="name">{name}</p>
     {/if}
@@ -52,7 +52,7 @@
     <div class="groups">
       {#each groups as group (group.heading)}
         <div class="group">
-          <h4>{group.heading}</h4>
+          <h3>{group.heading}</h3>
           <ul>
             {#each group.lines as line (line.name)}
               <li>
@@ -82,7 +82,7 @@
     padding-bottom: 0.75rem;
     border-bottom: 1px solid var(--hairline);
   }
-  h3 {
+  h2 {
     margin: 0;
     font-size: 1.375rem;
     line-height: 1.2;
@@ -97,7 +97,7 @@
     grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
     gap: 1.75rem 2.5rem;
   }
-  h4 {
+  h3 {
     margin: 0 0 0.375rem;
     font-size: 1rem;
     line-height: 1.3;

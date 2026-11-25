@@ -792,9 +792,9 @@ async function clickAt(page: Page, number: number): Promise<void> {
 test('the panel shows the characteristics of the municipality clicked', async ({ page }) => {
   await page.goto('de/votes/5960/');
   await clickAt(page, 261);
-  await expect(panel(page).getByRole('heading', { level: 3 })).toHaveText('Merkmale der Gemeinde');
+  await expect(panel(page).getByRole('heading', { level: 2 })).toHaveText('Merkmale der Gemeinde');
   await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
-  await expect(panel(page).locator('h4')).toHaveText([
+  await expect(panel(page).locator('h3')).toHaveText([
     'Bevölkerung Ende 2015',
     'Nationalratswahl 2015',
     'Hauptsprache, Volkszählung 2000',
@@ -847,7 +847,7 @@ test('the panel takes the figures that apply to the vote', async ({ page }) => {
   await page.goto('de/votes/6850/');
   await clickAt(page, 261);
   // The data file of 2026-11-23, whose newest jobs are those of 2024.
-  await expect(panel(page).locator('h4')).toHaveText([
+  await expect(panel(page).locator('h3')).toHaveText([
     'Bevölkerung Ende 2025',
     'Nationalratswahl 2023',
     'Hauptsprache, Volkszählung 2000',
@@ -877,7 +877,7 @@ test('A line of another year than its group', async ({ page }) => {
   });
   await page.goto('de/votes/6850/');
   await clickAt(page, 261);
-  await expect(panel(page).locator('h4').first()).toHaveText('Bevölkerung Ende 2025');
+  await expect(panel(page).locator('h3').first()).toHaveText('Bevölkerung Ende 2025');
   await expect(panel(page).locator('li').nth(2)).toHaveText(
     'Im Ausland geboren (Ende 2024): 44.58%',
   );

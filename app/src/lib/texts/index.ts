@@ -202,7 +202,6 @@ export interface Texts {
   readonly FIRST_VOTE: string;
   readonly SECOND_VOTE: string;
   readonly REAL_RESULT: string;
-  readonly PROPOSAL: string;
   readonly VOTE_LOADING: string;
   readonly VOTE_FAILED: string;
   readonly SAME_MUNICIPALITIES: string;

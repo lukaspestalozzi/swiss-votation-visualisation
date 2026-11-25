@@ -49,7 +49,6 @@ export interface Segment {
 export interface ResultShown {
   readonly yesVotes: string;
   readonly noVotes: string;
-  readonly yesShare: string;
   // What the bars draw: the yes share in percent, none without a valid vote, and the cantons with
   // a cantonal vote, those in favour before those against, each in the constitution's order.
   readonly yesPercent: number | null;
@@ -229,7 +228,6 @@ export function judgedOf(
   return {
     yesVotes: formatCount(result.yes),
     noVotes: formatCount(result.no),
-    yesShare,
     yesPercent: valid === 0 ? null : (result.yes / valid) * 100,
     segments: [...segmentsOf(true), ...segmentsOf(false)],
     verdicts: [

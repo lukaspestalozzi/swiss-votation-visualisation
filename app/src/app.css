@@ -200,10 +200,6 @@ button:disabled {
   opacity: 0.5;
 }
 
-input[type='checkbox'] {
-  accent-color: var(--text);
-}
-
 /* Whatever has the focus from the keyboard, links included, shows a ring of 2 pixels in the
    text's colour (decision 10; design of redesign-site, decision 1); the thumbs of a limit draw
    theirs in Limits.svelte. */

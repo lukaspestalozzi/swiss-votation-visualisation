@@ -348,19 +348,13 @@ export function writeUnits(definition: Definition, units: number | null, t: Text
   }
 }
 
-/** A value as the panel writes it: "keine Angabe" where there is no figure. */
-export function written(definition: Definition, value: Quotient | null, t: Texts): string {
-  return writeUnits(definition, unitsOf(definition, value), t);
-}
-
 // A line of the panel: its characteristic's name, with the date of its figures where that is not
-// its group's; its value as the panel writes it; the two as one text, "Einwohner: 396'955"; and,
-// where the value is a share with a figure, that share in percent, which a bar draws (spec
-// result-map, "The characteristics of a municipality").
+// its group's; its value as the panel writes it; and, where the value is a share with a figure,
+// that share in percent, which a bar draws (spec result-map, "The characteristics of a
+// municipality").
 export interface PanelLine {
   readonly name: string;
   readonly value: string;
-  readonly text: string;
   readonly share: number | null;
 }
 
@@ -435,7 +429,6 @@ export function panelOf(counts: Counts, applying: Applying, t: Texts): readonly 
         return {
           name,
           value,
-          text: t.characteristic(name, value),
           share:
             definition.unit === 'percent' && units !== null
               ? units / 10 ** DECIMALS[definition.unit]

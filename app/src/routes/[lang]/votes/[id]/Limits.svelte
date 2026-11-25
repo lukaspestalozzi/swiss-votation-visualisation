@@ -10,9 +10,9 @@
   import {
     BINS,
     STEPS,
-    histogramOf,
+    barsPathOf,
     labelPartsOf,
-    stepOf,
+    markOn,
     trackOf,
     valueAt,
     type LimitSetting,
@@ -66,22 +66,14 @@
     })).filter(({ definitions }) => definitions.length > 0),
   );
 
-  // The bars above a track, as the path of their drawing: 50 side by side, each as tall as its
-  // count against the fullest bar's, in hundredths, and one with a municipality at least 2 tall,
-  // so that it is seen. Worked out once for a track, when its limit is first drawn (design of
-  // redesign-site, decision 21); a step of a slider only moves the clip of the second drawing.
+  // The bars above a track, as the path of their drawing (`barsPathOf`). Worked out once for a
+  // track, when its limit is first drawn (design of redesign-site, decision 21); a step of a
+  // slider only moves the clip of the second drawing.
   const drawn = new WeakMap<Track, string>();
   function barsOf(track: Track): string {
     let bars = drawn.get(track);
     if (bars === undefined) {
-      const counts = histogramOf(track);
-      const fullest = Math.max(...counts);
-      bars = counts
-        .map((count, bar) => {
-          const height = count === 0 ? 0 : Math.max(2, Math.round((count / fullest) * 10000) / 100);
-          return `M${String(bar + 0.1)},100v-${String(height)}h0.8v${String(height)}z`;
-        })
-        .join('');
+      bars = barsPathOf(track);
       drawn.set(track, bars);
     }
     return bars;
@@ -99,12 +91,9 @@
    * a municipality without a figure of the track's characteristic.
    */
   function markOf(track: Track): { readonly place: number; readonly text: string } | null {
-    const value = clickedAt < 0 ? null : (track.values[clickedAt] ?? null);
-    if (clicked === null || value === null) return null;
-    return {
-      place: stepOf(track, value) / 10,
-      text: t.characteristic(clicked.name, writeUnits(track.definition, value, t)),
-    };
+    const mark = clicked === null ? null : markOn(track, clickedAt, t);
+    if (clicked === null || mark === null) return null;
+    return { place: mark.place, text: t.characteristic(clicked.name, mark.value) };
   }
 
   /** Add the limit of the characteristic chosen in the list, after those already added. */
