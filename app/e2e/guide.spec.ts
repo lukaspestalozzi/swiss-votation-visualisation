@@ -213,14 +213,16 @@ test('from the start page: "Lesehilfe" in its head, and no other link below its 
   await page.goto('de/');
   await expect(page.getByRole('link', { name: 'Lesehilfe und Quellen' })).toHaveCount(0);
   await pageHead(page).getByRole('link', { name: 'Lesehilfe' }).click();
-  await expect(page).toHaveURL(/\/de\/guide\/$/);
+  // A link has no final slash, and a click before the page's scripts run opens its address as
+  // it is written: the page is the same without the slash (Q, 2026-11-17).
+  await expect(page).toHaveURL(/\/de\/guide\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });
 
 test('from a vote\'s page: "Lesehilfe" in its head', async ({ page }) => {
   await page.goto('de/votes/5960/');
   await pageHead(page).getByRole('link', { name: 'Lesehilfe' }).click();
-  await expect(page).toHaveURL(/\/de\/guide\/$/);
+  await expect(page).toHaveURL(/\/de\/guide\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });
 
@@ -233,6 +235,6 @@ test('the sentence at the limits, with its link to the guide', async ({ page }) 
       'keine Prognose. Lesehilfe und Quellen',
   );
   await limits.getByRole('link', { name: 'Lesehilfe und Quellen' }).click();
-  await expect(page).toHaveURL(/\/de\/guide\/$/);
+  await expect(page).toHaveURL(/\/de\/guide\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });

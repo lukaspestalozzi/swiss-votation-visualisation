@@ -199,10 +199,13 @@ test('from the list to a vote and back', async ({ page }) => {
   const title = 'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»';
   await page.goto('de/');
   await page.getByRole('link', { name: title, exact: true }).click();
-  await expect(page).toHaveURL('de/votes/5960/');
+  // A link has no final slash, and a click before the page's scripts run opens its address as
+  // it is written: the page is the same without the slash (spec verdicts, "A vote's address
+  // without the final slash"; Q, 2026-11-17).
+  await expect(page).toHaveURL(/\/de\/votes\/5960\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(title);
   await page.getByRole('link', { name: 'Alle Abstimmungen' }).click();
-  await expect(page).toHaveURL('de/');
+  await expect(page).toHaveURL(/\/de\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(QUESTION);
 });
 
@@ -215,7 +218,7 @@ test('the whole row leads to its vote', async ({ page }) => {
   await row.click({
     position: { x: share.x + share.width / 2 - box.x, y: share.y + share.height / 2 - box.y },
   });
-  await expect(page).toHaveURL('de/votes/5960/');
+  await expect(page).toHaveURL(/\/de\/votes\/5960\/?$/);
 });
 
 // The ids of the listed votes a test keeps, in the list's order: from the newest vote day, the
