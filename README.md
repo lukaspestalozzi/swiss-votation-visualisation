@@ -52,8 +52,8 @@ and Italian:
   its statistics (STATPOP, STATENT, the National Council elections, the census of 2000, the
   farm structure survey) and from swisstopo, written by the pipeline to
   `app/static/data/characteristics.json`;
-- beside the result and the map, which stay in the window on a wide screen, limits on these
-  characteristics select municipalities: one button opens a list of them under the panel's
+- beside the result and the map, which stay in the window on a wide screen, and on a phone
+  between the result and the map, limits on these characteristics select municipalities: one button opens a list of them under the panel's
   headings; a limit draws where the municipalities lie on its track and marks the municipality
   last clicked, and you set its lower and upper bound with two sliders. A municipality remains
   only when it lies within all limits. While you drag, the map greys out the others in dark

@@ -890,6 +890,25 @@ test("in a narrow window, the selection's result takes its place: the limit stay
   }
 });
 
+test("the selection's place in French and Italian", async ({ page }) => {
+  // The sentences of change reword-site-texts; spec verdicts quotes the German one.
+  for (const [language, sentence] of [
+    [
+      'fr',
+      'Dès que vous fixez une limite pour une caractéristique, le résultat des communes ' +
+        "restantes s'affiche ici.",
+    ],
+    [
+      'it',
+      'Appena fissa un limite per una caratteristica, qui appare il risultato dei Comuni rimasti.',
+    ],
+  ] as const) {
+    await page.goto(`${language}/votes/5960/`);
+    await expect(addButton(page, language)).toBeVisible();
+    await expect(selectionPlace(page)).toHaveText(sentence);
+  }
+});
+
 test("the selection's place says nothing when the characteristics cannot be loaded", async ({
   page,
 }) => {

@@ -167,6 +167,43 @@ test('the characteristics explained: the dates of their figures, the six logarit
   );
 });
 
+test('the reworded sentences in French and Italian', async ({ page }) => {
+  // The sentences of change reword-site-texts; spec reading-guide quotes the German ones.
+  const sentences = {
+    fr: [
+      [
+        'Les caractéristiques',
+        'Si les chiffres de la dernière année ne sont pas encore publiés, ce sont les plus ' +
+          'récents qui comptent.',
+      ],
+      [
+        'Communes sans résultat propre ou sans données',
+        'Elles sont hachurées sur la carte. Que la sélection les garde ou les écarte ne change ' +
+          'rien au résultat.',
+      ],
+      ["Suissesses et Suisses de l'étranger", 'soit 1.0% à 1.6% des voix valables.'],
+    ],
+    it: [
+      [
+        'Le caratteristiche',
+        "Se le cifre dell'ultimo anno non sono ancora pubblicate, valgono le più recenti.",
+      ],
+      [
+        'Comuni senza risultato proprio o senza dati',
+        'Sono tratteggiati sulla carta. Che la selezione li tenga o li escluda non cambia il ' +
+          'risultato.',
+      ],
+      ["Svizzere e Svizzeri all'estero", "cioè dall'1.0% all'1.6% dei voti validi."],
+    ],
+  } as const;
+  for (const [language, expected] of Object.entries(sentences)) {
+    await page.goto(`${language}/guide/`);
+    for (const [heading, sentence] of expected) {
+      await expect(section(page, heading)).toContainText(sentence);
+    }
+  }
+});
+
 test('the sources, with the dates of the data files of 2026-11-16', async ({ page }) => {
   await page.goto('de/guide/');
   const sources = section(page, 'Quellen');

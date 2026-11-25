@@ -51,6 +51,7 @@ node investigations/redesign/start_page.cjs
 node investigations/redesign/bars_cost.mjs "$PWD"
 # Found after the merge:
 node investigations/redesign/narrow_order.cjs [--injected] [--port 4174]
+node investigations/redesign/phone_heights.cjs
 python3 investigations/redesign/budget_frames.py /path/outside/the/repository/run-*.log
 ```
 
@@ -67,6 +68,7 @@ python3 investigations/redesign/budget_frames.py /path/outside/the/repository/ru
 | `stays.cjs` | Found while applying: by how much the part of a vote's page that stays in the window, the result, the map and its legend, is taller than the window, with a selection, in 12 widths by 6 heights and three languages. |
 | `first_step.cjs` | Found while applying: where the results, the map, the legend and the last limit's slider stand in the window before and after the step with which a selection first applies, with five limits and the page scrolled to the last. |
 | `narrow_order.cjs` | Found after the merge: where windows 360, 412 and 800 pixels wide show the result, the limits and the map of a vote's page with one limit, how far the first slider begins below the top of the selection's result, and what the step with which a selection first applies moves; with `--injected`, on a site built before, with the limits shown between the result and the map by a stylesheet added to the page. |
+| `phone_heights.cjs` | Found after the merge, by the verification: the height a window needs so that the selection's result, scrolled to its top, and the first limit's sliders lie in one window, in three languages, on a phone held upright and held wide. |
 | `budget_frames.py` | Found after the merge: from the saved output of full runs of the browser tests, each budget test's longest frame per measurement, and how many measurements keep a budget, as it was and as candidates for a new one. Python, standard library only. |
 | `bars_cost.mjs` | Found by the verification: how long the tracks of 21 limits take to make and their bars to work out, in Node on the app's own modules. |
 | `start_page.cjs` | Found while applying: the start page in ten windows and three languages: its size, the narrowest title of a row, the widest share and result, and the height of the part that stays at the top against the room a year keeps for it. |
@@ -428,6 +430,13 @@ selection's result is on the screen while a limit is set. `narrow_order.cjs`, wi
 - **The cost of the place.** Before a selection, the limits begin 131 pixels lower in a window
   360 wide than they would with the sentence's height (853 against 722), and 10 lower in one
   800 wide.
+- **The windows the promise holds for.** The verification of 2026-11-25 found that the
+  requirement said "on a phone" while its test checked a window 740 pixels high.
+  `phone_heights.cjs`: from the top of the selection's result to the lower edge of the first
+  slider are 666 pixels at most, in German, French and Italian, 360, 375 and 412 pixels wide; a
+  phone held wide, 740 or 915 pixels wide and 360 or 412 high, needs 450 to 473. The requirement
+  now holds for a phone held upright in a window at least 700 pixels high, and not for a lower
+  one or a phone held wide (change `clarify-phone-window`).
 - **The document's order stays** result, map, limits: the stylesheet alone shows the limits
   first (design of `redesign-site`, decision 9). A screen reader and the Tab key follow the
   document. Not checked with a screen reader.
@@ -831,5 +840,25 @@ measurements that keep a budget:
   limits: the budget of dragging: no frame while a (82 frames; at most 3 over 16 ms): every frame within 16 ms: 8 of 11, every frame within 33 ms: 11 of 11, every frame within 50 ms: 11 of 11, nine in ten within 16 ms, none over 50 ms: 11 of 11
   result-map: the budget of clicking: no frame aft (47 frames; at most 0 over 16 ms): every frame within 16 ms: 9 of 9, every frame within 33 ms: 9 of 9, every frame within 50 ms: 9 of 9, nine in ten within 16 ms, none over 50 ms: 9 of 9
   result-map: the budget: no frame after zooming,  (61 frames; at most 2 over 16 ms): every frame within 16 ms: 8 of 10, every frame within 33 ms: 10 of 10, every frame within 50 ms: 10 of 10, nine in ten within 16 ms, none over 50 ms: 10 of 10
+```
+
+`node investigations/redesign/phone_heights.cjs`, against the site built from `c8896ea`:
+
+```
+de, 360 pixels wide: 666 pixels needed
+de, 375 pixels wide: 666 pixels needed
+de, 412 pixels wide: 666 pixels needed
+de, 740 pixels wide: 450 pixels needed
+de, 915 pixels wide: 450 pixels needed
+fr, 360 pixels wide: 666 pixels needed
+fr, 375 pixels wide: 643 pixels needed
+fr, 412 pixels wide: 643 pixels needed
+fr, 740 pixels wide: 473 pixels needed
+fr, 915 pixels wide: 450 pixels needed
+it, 360 pixels wide: 666 pixels needed
+it, 375 pixels wide: 643 pixels needed
+it, 412 pixels wide: 643 pixels needed
+it, 740 pixels wide: 473 pixels needed
+it, 915 pixels wide: 450 pixels needed
 ```
 
