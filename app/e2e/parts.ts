@@ -333,3 +333,24 @@ export const verdictOf = (row: Locator): Locator => row.locator('.vote-verdict')
 
 /** A row's marks: "Hinweis", "vorläufig". */
 export const marksOf = (row: Locator): Locator => row.locator('.mark');
+
+/** The words of the start page's search field, in each language. */
+const SEARCH: Record<Language, string> = {
+  de: 'Titel suchen',
+  fr: 'Rechercher un titre',
+  it: 'Cercare un titolo',
+};
+
+/** The start page's search field. */
+export const searchField = (page: Page, language: Language = 'de'): Locator =>
+  page.getByRole('searchbox', { name: SEARCH[language], exact: true });
+
+/** One of the start page's three buttons, by its German name. */
+export const keptButton = (page: Page, name: 'Alle' | 'Angenommen' | 'Abgelehnt'): Locator =>
+  page.getByRole('button', { name, exact: true });
+
+/** The start page's links to the years of its list. */
+export const yearLinks = (page: Page): Locator => page.locator('nav.years a');
+
+/** The part of the start page that stays at the top: the field, the buttons and the years. */
+export const finder = (page: Page): Locator => page.locator('.finder');

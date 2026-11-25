@@ -185,12 +185,20 @@ mockups Q saw unless it says otherwise.
     example (Q). The votes stand by year and vote day; a row is the linked title with the kind
     below it, a bar of the official yes share, "49.16% Ja" and the verdict, "abgelehnt". The whole
     row leads to the vote.
+    Found while applying: the title is the link and reaches over its row, so that the link is
+    named by the title alone; it is underlined while the row is pointed at. With the mockup's
+    breakpoint of 640 pixels the title's column was at most 16 pixels wide in a window of 700: a
+    row takes two lines below 1,024 pixels, and the year and the day stand above their rows below
+    768.
 25. **Finding a vote (Q).** A search field keeps the rows whose title, in the page's language,
     holds every word typed, whatever the case. "Alle", "Angenommen" and "Abgelehnt" keep the votes
     with that official result; the tie-break question shows under "Alle" only. A vote day or a
     year without a row left goes, and a sentence says when nothing is left. A link per year jumps
     to it. Nothing typed is stored, sent, or written to the address. The rows are on the page as
     built: without scripts the list is whole.
+    Found while applying: the links are those of the years the list shows. The page measures the
+    height of the part that stays, for the room a year's heading keeps below it: the buttons take
+    a line of their own in a narrow window, and on a touch screen the part is taller.
 26. **The comparison (Q)** shows the two votes one below the other at every width, each headed as
     today and with its results as a vote's page draws them, the limits beside them from 1,024
     pixels. Its two lists stay the browser's lists.

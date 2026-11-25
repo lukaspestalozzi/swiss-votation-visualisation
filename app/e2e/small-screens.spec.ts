@@ -8,11 +8,13 @@ import {
   addLimit,
   barDrawn,
   cantonsBarOf,
+  keptButton,
   limitList,
   listEntries,
   majoritiesOf,
   outcomeOf,
   ownResult,
+  searchField,
   selectionResult,
   votersBarOf,
   type Language,
@@ -147,6 +149,27 @@ test.describe('on a phone', () => {
       }),
     );
     expect(sizes).toEqual(Object.keys(controls).map((name) => [name, [true, true]]));
+  });
+
+  test("the start page's controls are at least 44 × 44 pixels", async ({ page }) => {
+    // Spec small-screens, "The start page's controls on a phone".
+    await page.goto('de/');
+    const controls = {
+      'Titel suchen': searchField(page),
+      Alle: keptButton(page, 'Alle'),
+      Angenommen: keptButton(page, 'Angenommen'),
+      Abgelehnt: keptButton(page, 'Abgelehnt'),
+    };
+    const sizes = await Promise.all(
+      Object.entries(controls).map(async ([name, control]) => {
+        const box = await control.boundingBox();
+        return [name, box === null ? null : [box.width >= 44, box.height >= 44]] as const;
+      }),
+    );
+    expect(sizes).toEqual(Object.keys(controls).map((name) => [name, [true, true]]));
+    // A tap on a button presses it.
+    await keptButton(page, 'Angenommen').tap();
+    await expect(keptButton(page, 'Angenommen')).toHaveAttribute('aria-pressed', 'true');
   });
 
   test('the list of characteristics: each entry and "Schliessen" at least 44 × 44 pixels', async ({

@@ -50,6 +50,14 @@ export const it: Texts = {
     'Scelga una votazione e delimiti i Comuni: per numero di abitanti, età, forza dei partiti e ' +
     `altre ${String(furtherCharacteristics)} caratteristiche. La carta e il risultato vengono ` +
     'ricalcolati subito. Un esperimento mentale, non una previsione.',
+  SEARCH_TITLES: 'Cercare un titolo',
+  NO_MATCH: 'Nessuna votazione corrisponde a questa ricerca.',
+  KEPT: 'Risultato',
+  // The objects put to the vote, as the rows say "accettato" and "respinto".
+  KEEP_ALL: 'Tutti',
+  KEEP_ACCEPTED: 'Accettati',
+  KEEP_REJECTED: 'Respinti',
+  YEARS: 'Anni',
   LIST_PASSED: 'accettato',
   LIST_FAILED: 'respinto',
   listShare: (yesShare) => `${yesShare} di sì`,

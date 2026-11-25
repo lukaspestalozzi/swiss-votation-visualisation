@@ -129,12 +129,12 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   the whole row a link. Verify: browser tests of vote-list "The list of votes" (five scenarios)
   and "What an entry of the list shows" (five), and of site-style "The colours of rows" pass;
   `app/e2e/vote-list.spec.ts` and the start page's tests of `app/e2e/languages.spec.ts` pass.
-- [ ] 6.3 The search field, the three buttons and the years, in three languages, staying at the
+- [x] 6.3 The search field, the three buttons and the years, in three languages, staying at the
   top of the window. Verify: browser tests of vote-list "Finding a vote by its title" (six, one
   of them without scripts), "The votes by their result" (two) and "The years of the list" pass;
   the test "nothing stored" passes, reworded to the scheme's switch, the cookie and the local
   storage.
-- [ ] 6.4 Verify the start page's budget and its controls: the new test "Typing and filtering"
+- [x] 6.4 Verify the start page's budget and its controls: the new test "Typing and filtering"
   passes within 50 ms; small-screens "The start page's controls on a phone" and site-style "The
   start page's controls" pass; the start page is no wider than 360 pixels in three languages.
 

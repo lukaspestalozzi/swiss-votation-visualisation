@@ -1,18 +1,24 @@
 // The start page's list of votes (spec vote-list), against the built site. The expected list is
 // the site's own list of votes, so that an update of the data leaves these tests as they are;
 // the unit tests of src/lib/vote-list.test.ts pin the figures of the data of 2026-11-14.
-import { expect, test, type APIRequestContext } from '@playwright/test';
+import { expect, test, type APIRequestContext, type Locator } from '@playwright/test';
+import { fontsLoaded, MEASURE_FRAMES, measuredFrames } from './frames.ts';
 import {
   barDrawn,
+  finder,
+  keptButton,
   kindOf,
   marksOf,
   placeOf,
+  searchField,
   shareOf,
   verdictOf,
   voteDays,
   voteRow,
   voteRows,
   votesShown,
+  yearHeadings,
+  yearLinks,
 } from './parts.ts';
 
 // The start page's heading: the question the site answers.
@@ -22,8 +28,10 @@ const QUESTION =
 interface ListedVote {
   readonly id: number;
   readonly date: string;
+  readonly kind: string;
   readonly validated: boolean;
   readonly title: { readonly de: string };
+  readonly result: { readonly passed: boolean | null };
 }
 
 async function listedVotes(request: APIRequestContext): Promise<ListedVote[]> {
@@ -208,6 +216,216 @@ test('the whole row leads to its vote', async ({ page }) => {
     position: { x: share.x + share.width / 2 - box.x, y: share.y + share.height / 2 - box.y },
   });
   await expect(page).toHaveURL('de/votes/5960/');
+});
+
+// The ids of the listed votes a test keeps, in the list's order: from the newest vote day, the
+// votes of a day by their ids.
+const idsOf = (votes: ListedVote[], keeps: (vote: ListedVote) => boolean): number[] =>
+  votes
+    .filter(keeps)
+    .sort((a, b) => b.date.localeCompare(a.date) || a.id - b.id)
+    .map((vote) => vote.id);
+
+// Whether a vote's German title holds a word, whatever the case.
+const holds = (vote: ListedVote, word: string): boolean =>
+  vote.title.de.toLowerCase().includes(word.toLowerCase());
+
+test('a word typed keeps the votes whose title holds it, and their years only', async ({
+  page,
+  request,
+}) => {
+  const votes = await listedVotes(request);
+  await page.goto('de/');
+  await searchField(page).fill('ahv');
+  const expected = idsOf(votes, (vote) => holds(vote, 'ahv'));
+  await expect(voteRows(page)).toHaveCount(expected.length);
+  expect(await votesShown(page)).toEqual(expected);
+  // The 7 votes of the data of 2026-11-14, under six years; a later vote comes before them.
+  expect(expected.slice(-7)).toEqual([6650, 6590, 6600, 6270, 6140, 6060, 5940]);
+  expect((await yearHeadings(page).allTextContents()).slice(-6)).toEqual([
+    '2024',
+    '2022',
+    '2019',
+    '2017',
+    '2016',
+    '2015',
+  ]);
+  // A vote day without a vote left is not shown: of 2022, the day of its two votes only.
+  expect(await voteDays(page, '2022')).toEqual([['25. September', 2]]);
+});
+
+test('two words keep the votes whose title holds both', async ({ page }) => {
+  await page.goto('de/');
+  await searchField(page).fill('AHV Rente');
+  await expect(voteRows(page)).toHaveCount(1);
+  expect(await votesShown(page)).toEqual([6650]);
+  expect(await placeOf(voteRow(page, 6650))).toEqual(['2024', '3. März']);
+});
+
+test('in French, a word is looked for in the French titles', async ({ page }) => {
+  await page.goto('fr/');
+  await searchField(page, 'fr').fill('mariage');
+  // The two votes of the data of 2026-11-14; a later vote comes before them.
+  await expect(voteRow(page, 5960)).toBeVisible();
+  await expect(voteRow(page, 6140)).toHaveCount(0);
+  expect((await votesShown(page)).slice(-2)).toEqual([6470, 5960]);
+});
+
+test('a word no title holds: no year, no vote, and a sentence; the field emptied: the whole list', async ({
+  page,
+  request,
+}) => {
+  const votes = await listedVotes(request);
+  await page.goto('de/');
+  const address = page.url();
+  const sentence = page.getByText('Keine Abstimmung passt zu dieser Suche.');
+  await expect(sentence).toHaveCount(0);
+  await searchField(page).fill('xyz');
+  await expect(sentence).toBeVisible();
+  await expect(voteRows(page)).toHaveCount(0);
+  await expect(yearHeadings(page)).toHaveCount(0);
+  await searchField(page).fill('');
+  await expect(sentence).toHaveCount(0);
+  await expect(voteRows(page)).toHaveCount(votes.length);
+  await expect(yearHeadings(page)).toHaveCount(
+    new Set(votes.map((vote) => vote.date.slice(0, 4))).size,
+  );
+  // Nothing typed is written to the address.
+  expect(page.url()).toBe(address);
+});
+
+test.describe('without scripts', () => {
+  test.use({ javaScriptEnabled: false });
+
+  test('the list is whole, each row a link to its vote', async ({ page, request }) => {
+    const votes = await listedVotes(request);
+    await page.goto('de/');
+    await expect(voteRows(page)).toHaveCount(votes.length);
+    expect(await votesShown(page)).toEqual(idsOf(votes, () => true));
+    await expect(yearHeadings(page)).toHaveCount(
+      new Set(votes.map((vote) => vote.date.slice(0, 4))).size,
+    );
+    await expect(voteRow(page, 5960).getByRole('link')).toHaveAttribute(
+      'href',
+      /\/de\/votes\/5960$/,
+    );
+  });
+});
+
+test('"Angenommen", "Abgelehnt" and "Alle" keep the votes with that result', async ({
+  page,
+  request,
+}) => {
+  const votes = await listedVotes(request);
+  const judged = (passed: boolean) => (vote: ListedVote) =>
+    vote.kind !== 'tie-break-question' && vote.result.passed === passed;
+  await page.goto('de/');
+  const [all, accepted, rejected] = (['Alle', 'Angenommen', 'Abgelehnt'] as const).map((name) =>
+    keptButton(page, name),
+  );
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(accepted).toHaveAttribute('aria-pressed', 'false');
+
+  await accepted.click();
+  await expect(accepted).toHaveAttribute('aria-pressed', 'true');
+  await expect(all).toHaveAttribute('aria-pressed', 'false');
+  expect(await votesShown(page)).toEqual(idsOf(votes, judged(true)));
+  await expect(voteRow(page, 6823)).toHaveCount(0);
+
+  await rejected.click();
+  await expect(accepted).toHaveAttribute('aria-pressed', 'false');
+  expect(await votesShown(page)).toEqual(idsOf(votes, judged(false)));
+  await expect(voteRow(page, 6823)).toHaveCount(0);
+
+  await all.click();
+  await expect(voteRows(page)).toHaveCount(votes.length);
+  // The tie-break question shows under "Alle" only.
+  await expect(voteRow(page, 6823)).toBeVisible();
+  // In the data of 2026-11-14: 52 accepted and 72 rejected votes of 125.
+  const until = (vote: ListedVote) => vote.date <= '2026-09-27';
+  expect(idsOf(votes, (vote) => until(vote) && judged(true)(vote))).toHaveLength(52);
+  expect(idsOf(votes, (vote) => until(vote) && judged(false)(vote))).toHaveLength(72);
+});
+
+test('a word and a button apply together', async ({ page, request }) => {
+  const votes = await listedVotes(request);
+  await page.goto('de/');
+  await searchField(page).fill('energie');
+  await keptButton(page, 'Angenommen').click();
+  const expected = idsOf(votes, (vote) => holds(vote, 'energie') && vote.result.passed === true);
+  await expect(voteRows(page)).toHaveCount(expected.length);
+  expect(await votesShown(page)).toEqual(expected);
+  // The 3 accepted of the 6 votes of the data of 2026-11-14 with that word.
+  expect(expected.slice(-3)).toEqual([6700, 6630, 6120]);
+});
+
+test('a link per year leads to its heading; the field, the buttons and the years stay', async ({
+  page,
+  request,
+}) => {
+  const votes = await listedVotes(request);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('de/');
+  const years = [...new Set(votes.map((vote) => vote.date.slice(0, 4)))].sort().reverse();
+  await expect(yearLinks(page)).toHaveText(years);
+  await yearLinks(page).getByText('2016', { exact: true }).click();
+  const heading = page.getByRole('heading', { level: 2, name: '2016', exact: true });
+  await expect(heading).toBeInViewport({ ratio: 1 });
+  // The field, the buttons and the years are at the top of the window, the heading below them.
+  const staying = await finder(page).boundingBox();
+  const field = await searchField(page).boundingBox();
+  const headed = await heading.boundingBox();
+  if (staying === null || field === null || headed === null) throw new Error('a part is not shown');
+  expect(staying.y).toBe(0);
+  expect(headed.y).toBeGreaterThanOrEqual(staying.y + staying.height);
+  expect(headed.y).toBeGreaterThanOrEqual(field.y + field.height);
+  for (const control of [searchField(page), keptButton(page, 'Alle'), yearLinks(page).first()]) {
+    await expect(control).toBeInViewport({ ratio: 1 });
+  }
+  // The votes of 2016 follow: the first of them is in the window too.
+  await expect(voteRow(page, 6080)).toBeInViewport();
+});
+
+// The budget of the list (spec vote-list, "The budget of the list"), measured as the limits'
+// jumps are, and once more when a frame exceeds it, as a busy machine can stretch a frame.
+test.describe(() => {
+  test.describe.configure({ retries: 1 });
+
+  test('the budget of the list: no frame after a key or a press takes more than 50 ms', async ({
+    page,
+    request,
+  }) => {
+    const votes = await listedVotes(request);
+    await page.addInitScript(MEASURE_FRAMES);
+    await page.goto('de/');
+    await fontsLoaded(page);
+    await expect(voteRows(page)).toHaveCount(votes.length);
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    // Each control at a person's pace: the pointer rests on it 50 ms before the click.
+    const press = async (control: Locator) => {
+      await control.hover();
+      await page.waitForTimeout(50);
+      await control.click();
+    };
+    await press(searchField(page));
+    // "energie", key by key.
+    await searchField(page).pressSequentially('energie', { delay: 50 });
+    await press(keptButton(page, 'Angenommen'));
+    await expect(voteRow(page, 6120)).toBeVisible();
+    await expect(voteRow(page, 6080)).toHaveCount(0);
+    await press(keptButton(page, 'Alle'));
+    await expect(voteRow(page, 6080)).toBeVisible();
+    await page.waitForTimeout(50);
+    await searchField(page).fill('');
+    await expect(voteRows(page)).toHaveCount(votes.length);
+    const frames = await measuredFrames(page);
+    // Seven keys and the emptying; the field and the two buttons pressed.
+    expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(8);
+    expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(3);
+    expect(frames.filter((f) => f.work > 50)).toEqual([]);
+  });
 });
 
 test('all requests go to the site itself', async ({ page }) => {
