@@ -1148,17 +1148,18 @@ test('in a wide window the panel stands below the map and the limits, the canton
   expect(Math.abs(cantons.y - below.y)).toBeLessThanOrEqual(1);
 });
 
-test('in a narrow window the panel stands below the limits, the cantons below the panel', async ({
+test('in a narrow window the map stands below the limits, the panel below the map, the cantons below the panel', async ({
   page,
 }) => {
   // Spec result-map, "Where the panel stands", "A narrow window".
   await page.setViewportSize({ width: 800, height: 900 });
   await page.goto('de/votes/5960/');
   await mapDrawn(page);
-  const [limits, below, cantons] = await Promise.all(
-    ['.limits', '.panel', '.canton-results'].map((part) => boxOf(page, part)),
+  const [limits, map, below, cantons] = await Promise.all(
+    ['.limits', '.map svg', '.panel', '.canton-results'].map((part) => boxOf(page, part)),
   );
-  expect(below.y).toBeGreaterThanOrEqual(limits.y + limits.height);
+  expect(map.y).toBeGreaterThanOrEqual(limits.y + limits.height);
+  expect(below.y).toBeGreaterThanOrEqual(map.y + map.height);
   expect(cantons.y).toBeGreaterThanOrEqual(below.y + below.height);
 });
 

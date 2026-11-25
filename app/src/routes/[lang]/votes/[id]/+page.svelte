@@ -192,7 +192,8 @@
   {@const judged = data.judged}
   <!-- The workbench (design of redesign-site, decisions 8 and 9): what a visitor watches, the
        result and the map, beside what they set, the limits, in a window at least 1,024 pixels
-       wide; in a narrower one the result, the map, the limits. -->
+       wide. In a narrower one the stylesheet shows the result, the limits, the map, so that a
+       phone shows the selection's result while a limit is set; the document's order stays. -->
   <div class="workbench">
     <div class="watch">
       <div class="stay">
@@ -218,7 +219,7 @@
         {/if}
       </div>
       {#if data.entries !== null}
-        <MapNotes {t} entries={data.entries} />
+        <div class="notes"><MapNotes {t} entries={data.entries} /></div>
       {/if}
     </div>
     {#if data.entries !== null}
@@ -363,6 +364,30 @@
     display: grid;
     gap: 1.25rem;
   }
+  /* In a narrower window the limits stand between the result and the map (spec limits, "The
+     limits on a vote's page"): the result's column gives its parts to the workbench, which
+     shows them in this order. A screen reader and the Tab key follow the document: the result,
+     the map, the limits (design of redesign-site, decision 9). */
+  @media (max-width: 1023.98px) {
+    .workbench {
+      gap: 0;
+    }
+    .watch,
+    .stay {
+      display: contents;
+    }
+    .setting {
+      order: 1;
+      margin-top: 2.5rem;
+    }
+    .stay > :global(.map) {
+      order: 2;
+      margin-top: 2.5rem;
+    }
+    .notes {
+      order: 3;
+    }
+  }
   @media (min-width: 1024px) {
     .workbench {
       grid-template-columns: minmax(0, 1fr) clamp(19rem, 30vw, 24rem);
@@ -422,7 +447,6 @@
   .place {
     display: flex;
     align-items: center;
-    margin: 0.875rem 0 0;
     padding: 0.75rem 1rem;
     border: 1px dashed var(--border);
     border-radius: 10px;
@@ -431,23 +455,20 @@
   .place p {
     margin: 0;
   }
-  /* Beside the limits, the place is as tall as the result that takes it, so that neither the
-     map nor the limits move under the pointer when a selection first applies (spec verdicts,
-     "The place of the selection's result"): the two are rows of one height. The room between
-     them and the selection's line are then the vote's row's, below it, as tall as the
-     selection's own room and line above it (`ResultRow.svelte`). */
-  @media (min-width: 1024px) {
-    .results {
-      display: grid;
-      grid-auto-rows: 1fr;
-    }
-    .results > :global(.result:first-child) {
-      padding-bottom: calc(0.875rem + 1px);
-    }
-    .results > :global(.result.selection),
-    .place {
-      margin-top: 0;
-    }
+  /* The place is as tall as the result that takes it, so that neither the map nor the limits
+     move under the pointer or the finger when a selection first applies (spec verdicts, "The
+     place of the selection's result"): the two are rows of one height. The room between them
+     and the selection's line are then the vote's row's, below it, as tall as the selection's
+     own room and line above it (`ResultRow.svelte`). */
+  .results {
+    display: grid;
+    grid-auto-rows: 1fr;
+  }
+  .results > :global(.result:first-child) {
+    padding-bottom: calc(0.875rem + 1px);
+  }
+  .results > :global(.result.selection) {
+    margin-top: 0;
   }
   /* The cantons: a heading as the panel's, above a line; a table as wide as its column, a line
      between its rows. */
