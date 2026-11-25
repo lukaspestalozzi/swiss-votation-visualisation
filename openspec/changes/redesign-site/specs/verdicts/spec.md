@@ -173,7 +173,8 @@ cantonal vote, a bar SHALL be empty. The bars' colours are the `site-style` capa
 Until a selection applies, the page of a vote the calculation judges SHALL say, where the
 selection's result will stand: "Setzen Sie eine Grenze auf ein Merkmal: Hier steht dann das
 Ergebnis der Gemeinden, die übrig bleiben." When the characteristics cannot be loaded, it SHALL
-show nothing there.
+show nothing there. Where the limits stand beside the map, that place SHALL be as tall as the
+result that takes it.
 
 #### Scenario: Before a limit
 
@@ -184,6 +185,12 @@ show nothing there.
 
 - **WHEN** that visitor adds the limit "Ausländeranteil" and moves its upper bound to step 327
 - **THEN** the sentence is gone, and "Mit Ihrer Auswahl" stands in its place
+
+#### Scenario: Nothing moves when a selection first applies
+
+- **WHEN** a visitor on `/de/votes/5960/`, in a window 1,280 by 800 pixels and in one 1,024 by
+  768, adds five limits and moves the lower bound of the last, "SVP", to step 50
+- **THEN** the map and that limit's slider stand where they stood in the window
 
 #### Scenario: The characteristics' file is missing
 
