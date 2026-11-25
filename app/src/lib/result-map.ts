@@ -92,10 +92,12 @@ export function legendSetAsideOf(t: Texts): LegendEntry {
   return { label: t.LEGEND_SET_ASIDE, fill: SET_ASIDE_COLOUR };
 }
 
-// What pointing at a municipality shows: its name, then one line per figure.
+// What pointing at a municipality shows: its name, then one line per figure, the first its yes
+// share, which a bar draws too: in percent, none without a result or without a valid vote.
 export interface Details {
   readonly name: string;
   readonly lines: readonly string[];
+  readonly yesPercent: number | null;
 }
 
 /**
@@ -109,10 +111,11 @@ export function detailsOf(
   t: Texts,
 ): Details {
   const title = name.endsWith(`(${canton})`) ? name : `${name} (${canton})`;
-  if (figures === null) return { name: title, lines: [t.WITHOUT_RESULT] };
+  if (figures === null) return { name: title, lines: [t.WITHOUT_RESULT], yesPercent: null };
   const [yes, no] = figures;
   return {
     name: title,
+    yesPercent: yes + no === 0 ? null : (yes / (yes + no)) * 100,
     lines: [
       t.characteristic(t.YES_SHARE, formatShare(yes, yes + no)),
       t.characteristic(t.YES_VOTES, formatCount(yes)),

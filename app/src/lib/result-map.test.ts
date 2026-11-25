@@ -73,10 +73,18 @@ test('the legend: a scale of the eight classes, the yes shares at their borders,
 });
 
 test('the details of a municipality: its name with its canton, its share and its votes', () => {
-  expect(detailsOf('Zürich', 'ZH', [46565, 99614], de)).toEqual({
+  const details = detailsOf('Zürich', 'ZH', [46565, 99614], de);
+  expect(details).toMatchObject({
     name: 'Zürich (ZH)',
     lines: ['Ja-Anteil: 31.85%', "Ja-Stimmen: 46'565", "Nein-Stimmen: 99'614"],
   });
+  // What its bar draws: 46,565 yes of 146,179 valid votes.
+  expect(details.yesPercent).toBeCloseTo(31.8548, 4);
+});
+
+test('the details draw no bar without a result, or without a valid vote', () => {
+  expect(detailsOf('Meienried', 'BE', null, de).yesPercent).toBeNull();
+  expect(detailsOf('Niemandsdorf', 'ZH', [0, 0], de).yesPercent).toBeNull();
 });
 
 test('a name that already ends with its canton keeps it once', () => {
@@ -87,6 +95,7 @@ test('a municipality without a result says why it has no figures', () => {
   expect(detailsOf('Meienried', 'BE', null, de)).toEqual({
     name: 'Meienried (BE)',
     lines: ['Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.'],
+    yesPercent: null,
   });
 });
 
@@ -141,7 +150,7 @@ test('an entry that is no municipality of the map is an error that names the vot
 test("Zürich's details in Italian: the same figures under Italian names", () => {
   // Spec interface-languages, "The details of a municipality in Italian";
   // investigations/map-data.md.
-  expect(detailsOf('Zürich', 'ZH', [46565, 99614], textsOf('it'))).toEqual({
+  expect(detailsOf('Zürich', 'ZH', [46565, 99614], textsOf('it'))).toMatchObject({
     name: 'Zürich (ZH)',
     lines: ['Percentuale di sì: 31.85%', "Sì: 46'565", "No: 99'614"],
   });
