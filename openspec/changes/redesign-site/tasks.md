@@ -114,7 +114,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   languages, and its place to the right of the panel from 960 pixels. Verify: browser tests of
   verdicts "The table of the cantons" (two) and "The bar of a canton" (three) pass; the tests that
   read a row's four cells pass unchanged.
-- [ ] 5.5 Verify the budget of clicking, which now fills the panel's bars and the limits' marks:
+- [x] 5.5 Verify the budget of clicking, which now fills the panel's bars and the limits' marks:
   the test "the budget of clicking" passes.
 
 ## 6. The start page
