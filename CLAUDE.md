@@ -59,8 +59,10 @@ Twelve investigations are done: `investigations/data-sources.md`, `investigation
 `investigations/vote-comparison.md`, `investigations/more-characteristics.md` and
 `investigations/redesign.md`.
 v1, changes #1 to #10a, is complete, and #11, `add-share-link`, #12, `add-vote-comparison`,
-#13, `add-more-characteristics`, and #14, `redesign-site`, the changes after v1, are archived. No
-change is in flight. `docs/roadmap.md`
+#13, `add-more-characteristics`, and #14, `redesign-site`, the changes after v1, are archived.
+#15, `reword-site-texts`, the wording of eight texts in three languages, is applied and not
+archived: its artifacts are in `openspec/changes/reword-site-texts/`, and `openspec/specs/` quotes
+the texts of before until its archive merges its deltas. `docs/roadmap.md`
 names income per municipality and a limit on categories as open.
 `README.md` is the human-facing overview.
 

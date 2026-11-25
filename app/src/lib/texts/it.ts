@@ -233,7 +233,7 @@ export const it: Texts = {
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
   SELECTION_PLACE:
-    'Fissi un limite per una caratteristica: qui apparirà il risultato dei Comuni rimasti.',
+    'Appena fissa un limite per una caratteristica, qui appare il risultato dei Comuni rimasti.',
   LEGEND_SET_ASIDE: 'Non nella selezione',
   SET_ASIDE: 'Non nella selezione.',
   remainingCount: (remaining, all) =>
@@ -283,7 +283,7 @@ export const it: Texts = {
       heading: "Svizzere e Svizzeri all'estero",
       paragraphs: [
         '11 o 12 Cantoni contano separatamente i voti delle loro Svizzere e dei loro Svizzeri ' +
-          "all'estero, dall'1.0% all'1.6% dei voti validi. Non abitano in alcun Comune, non " +
+          "all'estero, cioè dall'1.0% all'1.6% dei voti validi. Non abitano in alcun Comune, non " +
           'figurano sulla carta e non hanno caratteristiche.',
         "L'interruttore «Contare le Svizzere e gli Svizzeri all'estero» determina se i loro " +
           'voti entrano nella selezione. Contano solo in un Cantone in cui rimane ancora un ' +
@@ -294,8 +294,8 @@ export const it: Texts = {
       heading: 'Comuni senza risultato proprio o senza dati',
       paragraphs: [
         'Pochissimi Comuni non hanno un risultato proprio: i loro voti sono contati con quelli ' +
-          'di un altro Comune. Sono tratteggiati sulla carta, e un limite non cambia alcuna ' +
-          'cifra a causa loro.',
+          'di un altro Comune. Sono tratteggiati sulla carta. Che la selezione li tenga o li ' +
+          'escluda non cambia il risultato.',
         'Per alcuni piccoli Comuni del Cantone di Berna mancano le forze dei partiti. Per gli ' +
           "impieghi di un settore i dati mancano dove l'UST non pubblica la cifra, e per la " +
           "quota bio dove non c'è superficie agricola utile. Un Comune senza dati viene escluso " +
@@ -305,11 +305,11 @@ export const it: Texts = {
     {
       heading: 'Le caratteristiche',
       paragraphs: [
-        'Una votazione prende la popolazione, gli impieghi, i bovini e le aziende agricole ' +
-          "dell'ultimo anno prima del suo giorno, le forze dei partiti dell'ultima elezione del " +
-          'Consiglio nazionale prima del suo giorno, la lingua principale, la religione, la ' +
-          "formazione e l'abitazione del censimento del 2000 e la superficie del 2026. Dove le " +
-          "cifre dell'ultimo anno non sono ancora pubblicate, prende le più recenti precedenti.",
+        'Per una votazione valgono la popolazione, gli impieghi, i bovini e le aziende agricole ' +
+          "dell'ultimo anno prima del giorno della votazione e le forze dei partiti dell'ultima " +
+          'elezione del Consiglio nazionale precedente. Lingua principale, religione, formazione ' +
+          'e abitazione provengono dal censimento del 2000, la superficie è quella del 2026. Se ' +
+          "le cifre dell'ultimo anno non sono ancora pubblicate, valgono le più recenti.",
         'Gli impieghi sono quelli degli stabilimenti situati nel Comune, ovunque vivano le ' +
           'persone che li occupano. Per la lingua principale, la religione, la formazione e ' +
           "l'abitazione non esistono cifre più recenti per ogni Comune.",

@@ -235,8 +235,8 @@ export const fr: Texts = {
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
   SELECTION_PLACE:
-    "Fixez une limite pour une caractéristique: le résultat des communes restantes s'affichera " +
-    'ici.',
+    'Dès que vous fixez une limite pour une caractéristique, le résultat des communes ' +
+    "restantes s'affiche ici.",
   LEGEND_SET_ASIDE: 'Pas dans la sélection',
   SET_ASIDE: 'Pas dans la sélection.',
   remainingCount: (remaining, all) =>
@@ -286,7 +286,7 @@ export const fr: Texts = {
       heading: "Suissesses et Suisses de l'étranger",
       paragraphs: [
         '11 ou 12 cantons comptent séparément les voix de leurs Suissesses et Suisses de ' +
-          "l'étranger, 1.0% à 1.6% des voix valables. Ils n'habitent dans aucune commune, ne " +
+          "l'étranger, soit 1.0% à 1.6% des voix valables. Ils n'habitent dans aucune commune, ne " +
           "figurent pas sur la carte et n'ont pas de caractéristiques.",
         "Le commutateur «Compter les Suissesses et Suisses de l'étranger» détermine si leurs " +
           'voix entrent dans la sélection. Elles ne comptent que dans un canton où il reste ' +
@@ -297,8 +297,8 @@ export const fr: Texts = {
       heading: 'Communes sans résultat propre ou sans données',
       paragraphs: [
         "Quelques rares communes n'ont pas de résultat propre: leurs voix sont comptées avec " +
-          "celles d'une autre commune. Elles sont hachurées sur la carte, et une limite ne " +
-          "change aucun chiffre à cause d'elles.",
+          "celles d'une autre commune. Elles sont hachurées sur la carte. Que la sélection les " +
+          'garde ou les écarte ne change rien au résultat.',
         'Pour quelques petites communes du canton de Berne, la force des partis manque. Pour ' +
           "les emplois d'un secteur, les données manquent là où l'OFS ne publie pas le chiffre, " +
           "et pour la part bio, là où il n'y a pas de surface agricole utile. Une commune sans " +
@@ -308,12 +308,12 @@ export const fr: Texts = {
     {
       heading: 'Les caractéristiques',
       paragraphs: [
-        'Une votation prend la population, les emplois, les bovins et les exploitations ' +
-          'agricoles de la dernière année avant son jour, la force des partis de la dernière ' +
-          'élection du Conseil national avant son jour, la langue principale, la religion, la ' +
-          'formation et le logement du recensement de 2000 et la surface de 2026. Là où les ' +
-          'chiffres de la dernière année ne sont pas encore publiés, elle prend les plus ' +
-          "récents d'avant.",
+        'Pour une votation, la population, les emplois, les bovins et les exploitations ' +
+          'agricoles sont ceux de la dernière année avant le jour du vote, et la force des ' +
+          'partis celle de la dernière élection du Conseil national qui le précède. La langue ' +
+          'principale, la religion, la formation et le logement proviennent du recensement de ' +
+          '2000, la surface est celle de 2026. Si les chiffres de la dernière année ne sont pas ' +
+          'encore publiés, ce sont les plus récents qui comptent.',
         'Les emplois sont ceux des établissements situés dans la commune, où que vivent les ' +
           'personnes qui les occupent. Pour la langue principale, la religion, la formation et ' +
           "le logement, il n'existe pas de chiffres plus récents pour chaque commune.",

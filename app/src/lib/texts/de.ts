@@ -46,7 +46,7 @@ export const de: Texts = {
   startLead: (furtherCharacteristics) =>
     'Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden ein: nach Einwohnerzahl, Alter, ' +
     `Parteistärke und ${String(furtherCharacteristics)} weiteren Merkmalen. Karte und Ergebnis ` +
-    'rechnen sofort neu. Ein Gedankenexperiment, keine Prognose.',
+    'werden sofort neu berechnet. Ein Gedankenexperiment, keine Prognose.',
   SEARCH_TITLES: 'Titel suchen',
   NO_MATCH: 'Keine Abstimmung passt zu dieser Suche.',
   KEPT: 'Ergebnis',
@@ -115,7 +115,7 @@ export const de: Texts = {
   LEGEND_TIE: 'Gleich viele Ja wie Nein',
   LEGEND_WITHOUT_RESULT: 'Kein eigenes Ergebnis',
   WITHOUT_RESULT:
-    'Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
+    'Kein eigenes Ergebnis: Seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
   MAP_HEADING: 'Karte der Gemeinden',
   mapSource: (date, lakesSet) =>
     `Kartengrundlage: © BFS, Gemeinden und Kantone am ${date}, Seen: ThemaKart ${String(lakesSet)}`,
@@ -231,8 +231,8 @@ export const de: Texts = {
   removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
   WITH_SELECTION,
   SELECTION_PLACE:
-    'Setzen Sie eine Grenze auf ein Merkmal: Hier steht dann das Ergebnis der Gemeinden, die ' +
-    'übrig bleiben.',
+    'Sobald Sie bei einem Merkmal eine Grenze setzen, steht hier das Ergebnis der Gemeinden, ' +
+    'die übrig bleiben.',
   LEGEND_SET_ASIDE: 'Nicht in der Auswahl',
   SET_ASIDE: 'Nicht in der Auswahl.',
   remainingCount: (remaining, all) =>
@@ -282,7 +282,7 @@ export const de: Texts = {
       heading: 'Auslandschweizerinnen und Auslandschweizer',
       paragraphs: [
         '11 oder 12 Kantone zählen die Stimmen ihrer Auslandschweizerinnen und ' +
-          'Auslandschweizer getrennt, 1.0% bis 1.6% der gültigen Stimmen. Sie wohnen in keiner ' +
+          'Auslandschweizer getrennt; das sind 1.0% bis 1.6% der gültigen Stimmen. Sie wohnen in keiner ' +
           'Gemeinde, stehen nicht auf der Karte und haben keine Merkmale.',
         'Der Schalter «Auslandschweizerinnen und Auslandschweizer mitzählen» bestimmt, ob ihre ' +
           'Stimmen in die Auswahl eingehen. Sie zählen nur in einem Kanton, in dem noch eine ' +
@@ -292,9 +292,9 @@ export const de: Texts = {
     {
       heading: 'Gemeinden ohne eigenes Ergebnis oder ohne Angabe',
       paragraphs: [
-        'Einige wenige Gemeinden haben kein eigenes Ergebnis: Ihre Stimmen sind mit denen ' +
-          'einer anderen Gemeinde gezählt. Sie sind auf der Karte schraffiert, und eine Grenze ' +
-          'ändert durch sie keine Zahl.',
+        'Wenige Gemeinden haben kein eigenes Ergebnis: Ihre Stimmen sind mit denen einer ' +
+          'anderen Gemeinde gezählt. Sie sind auf der Karte schraffiert. Ob eine Auswahl sie ' +
+          'behält oder streicht, ändert am Ergebnis nichts.',
         'Bei einigen kleinen Gemeinden des Kantons Bern fehlen die Parteistärken. Bei den ' +
           'Arbeitsplätzen eines Sektors fehlt die Angabe, wo das BFS die Zahl nicht ' +
           'veröffentlicht, und beim Bio-Anteil, wo es keine landwirtschaftliche Nutzfläche ' +
@@ -305,15 +305,16 @@ export const de: Texts = {
     {
       heading: 'Die Merkmale',
       paragraphs: [
-        'Eine Abstimmung nimmt die Bevölkerung, die Arbeitsplätze, die Rinder und die ' +
-          'Landwirtschaftsbetriebe des letzten Jahres vor ihrem Tag, die Parteistärken der ' +
-          'letzten Nationalratswahl vor ihrem Tag, Hauptsprache, Religion, Ausbildung und ' +
-          'Wohnen der Volkszählung 2000 und die Fläche von 2026. Wo die Zahlen des letzten ' +
-          'Jahres noch nicht veröffentlicht sind, nimmt sie die neuesten davor.',
+        'Für eine Abstimmung gelten Bevölkerung, Arbeitsplätze, Rinder und ' +
+          'Landwirtschaftsbetriebe aus dem letzten Jahr vor dem Abstimmungstag und die ' +
+          'Parteistärken aus der letzten Nationalratswahl davor. Hauptsprache, Religion, ' +
+          'Ausbildung und Wohnen stammen aus der Volkszählung 2000, die Fläche ist die von ' +
+          '2026. Sind die Zahlen des letzten Jahres noch nicht veröffentlicht, gelten die ' +
+          'neuesten davor.',
         'Arbeitsplätze sind die Beschäftigten der Betriebe in der Gemeinde, wo immer diese ' +
           'wohnen. Zu Hauptsprache, Religion, Ausbildung und Wohnen gibt es keine neueren ' +
           'Zahlen für jede Gemeinde.',
-        'Eine Grenze vergleicht die Werte so, wie sie bei der Gemeinde stehen. Die Grenzen von ' +
+        'Eine Grenze vergleicht die Werte so, wie sie bei der Gemeinde angezeigt sind. Die Grenzen von ' +
           '«Einwohner», «Einwohner je km²», «Arbeitsplätze je 100 Einwohner», «Fläche», ' +
           "«Rinder je Einwohner» und «Landwirtschaftsbetriebe je 1'000 Einwohner» wachsen von " +
           'Schritt zu Schritt um den gleichen Faktor, weil ihre Werte über mehrere ' +
