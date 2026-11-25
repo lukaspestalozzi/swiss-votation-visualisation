@@ -11,6 +11,7 @@ import {
   outcomeOf,
   ownResult,
   keptButton,
+  languageSwitch,
   searchField,
   selectionResult,
   verdictOf,
@@ -138,6 +139,9 @@ test.describe('the light scheme', () => {
     await expect(standesmehr).toHaveText('nicht nötig');
     await expect(standesmehr).toHaveCSS('color', 'rgb(28, 28, 28)');
     await expect(greyedOf(ownResult(page))).toHaveCSS('color', 'rgb(118, 118, 118)');
+    // #767676 on #ffffff: 4.54:1, and every text of that page has its contrast.
+    expect(ratioOf([118, 118, 118], [255, 255, 255])).toBeCloseTo(4.54, 2);
+    expect(await lowContrast(page)).toEqual([]);
   });
 });
 
@@ -473,9 +477,35 @@ test.describe('the head of every page', () => {
       await expect(compare).toHaveCSS('text-decoration-line', 'none');
       await compare.hover();
       await expect(compare).toHaveCSS('text-decoration-line', 'underline');
-      const guide = head.getByText('Lesehilfe', { exact: true });
-      await expect(guide).toHaveCSS('color', shown);
-      await expect(guide).toHaveCSS('font-weight', '600');
+      await expect(compare).toHaveCSS('color', shown);
+      // The page shown and its language: the text's colour, heavier, above a line of it.
+      for (const entry of [
+        head.getByText('Lesehilfe', { exact: true }),
+        languageSwitch(page).locator('[data-code="DE"]'),
+      ]) {
+        await expect(entry).toHaveCSS('color', shown);
+        await expect(entry).toHaveCSS('font-weight', '600');
+        await expect(entry).toHaveCSS('box-shadow', `${shown} 0px 2px 0px 0px`);
+      }
+      // The title: the text's colour, never underlined, also where it is the page shown.
+      const title = head.getByRole('link', { name: 'Popular Vote Explorer' });
+      await expect(title).toHaveCSS('color', shown);
+      await expect(title).toHaveCSS('text-decoration-line', 'none');
+      await title.hover();
+      await expect(title).toHaveCSS('text-decoration-line', 'none');
+      await page.goto('de/');
+      const own = head.getByText('Popular Vote Explorer');
+      await expect(own).toHaveAttribute('aria-current', 'page');
+      await expect(own).toHaveCSS('color', shown);
+      await expect(own).toHaveCSS('box-shadow', 'none');
+      // The start page's links to its years are written as the head's entries that link (spec
+      // vote-list, "The years of the list").
+      const year = page.locator('nav.years a').first();
+      await expect(year).toHaveCSS('color', link);
+      await expect(year).toHaveCSS('text-decoration-line', 'none');
+      await year.hover();
+      await expect(year).toHaveCSS('text-decoration-line', 'underline');
+      await expect(year).toHaveCSS('color', shown);
     });
   }
 });
@@ -591,8 +621,9 @@ test.describe('the controls', () => {
       const drawn: [string, number[]][] = [];
       const track = await page.getByRole('slider').last().boundingBox();
       if (track === null) throw new Error('the slider has no box');
-      // The thumb's centre runs from half a thumb inside one end of the input to the other.
-      const at = (step: number) => track.x + 10 + ((track.width - 20) * step) / 1000;
+      // The thumb's centre runs from half a thumb inside one end of the input to the other; a
+      // thumb is 1.1rem wide, 17.6 pixels.
+      const at = (step: number) => track.x + 8.8 + ((track.width - 17.6) * step) / 1000;
       for (const [name, step] of [
         ['lower thumb', 0],
         ['upper thumb', 327],

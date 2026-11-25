@@ -136,6 +136,14 @@ async function rowsOf(page: Page, id: number) {
 
 test('The real results', async ({ page }) => {
   await page.goto('de/compare/#votes=5960,5970');
+  // Each vote is headed by its title, date and kind.
+  const vote = page.locator('[data-vote="5960"]');
+  await expect(vote.getByRole('heading', { level: 2 })).toHaveText(
+    'Volksinitiative «Für Ehe und Familie - gegen die Heiratsstrafe»',
+  );
+  await expect(vote.locator('p.secondary').first()).toHaveText(
+    '28. Februar 2016 · Volksinitiative',
+  );
   expect(await rowsOf(page, 5960)).toEqual({
     columns: ['Echtes Ergebnis'],
     rows: [
@@ -158,6 +166,19 @@ test('The real results', async ({ page }) => {
       ['Vorlage', 'Abgelehnt'],
     ],
   });
+});
+
+test("While a vote's file loads, its place says so", async ({ page }) => {
+  // Spec vote-comparison, "Loading the votes": the second vote's file arrives a second late.
+  await page.route('**/data/votes/5970.json', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await route.continue();
+  });
+  await page.goto('de/compare/#votes=5960,5970');
+  await expect(page.locator('[data-vote="5970"]')).toContainText('Die Ergebnisse werden geladen.');
+  await expect(resultsOf(page, 5960)).toBeVisible();
+  await expect(resultsOf(page, 5970)).toBeVisible();
+  await expect(page.getByText('Die Ergebnisse werden geladen.')).toHaveCount(0);
 });
 
 test('A known difference', async ({ page }) => {
@@ -226,12 +247,18 @@ test('Two votes of one day', async ({ page }) => {
   await expect(page.locator('.limit .label')).toHaveText(
     'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
   );
-  await expect(
-    page.getByText(
-      'Die Gemeinden werden nach den Zahlen der ersten Abstimmung ausgewählt; in beiden ' +
-        'Abstimmungen zählen dieselben Gemeinden.',
-    ),
-  ).toBeVisible();
+  const sentence = page.getByText(
+    'Die Gemeinden werden nach den Zahlen der ersten Abstimmung ausgewählt; in beiden ' +
+      'Abstimmungen zählen dieselben Gemeinden.',
+  );
+  await expect(sentence).toBeVisible();
+  // The sentence stands above the limits.
+  const [said, limits] = [
+    await sentence.boundingBox(),
+    await page.locator('.limits').boundingBox(),
+  ];
+  if (said === null || limits === null) throw new Error('not on the screen');
+  expect(said.y + said.height).toBeLessThanOrEqual(limits.y);
   expect(await selectedOf(page, 5960)).toEqual({
     selected: ["733'402", "664'373", '52.47%', 'Ja 52.47%', 'Ja 18 : 4½', 'Angenommen'],
     count: "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
@@ -374,7 +401,12 @@ test('From a vote with a selection', async ({ page }) => {
   await page
     .getByRole('slider', { name: 'Obere Grenze: Ausländeranteil', exact: true })
     .fill('327');
-  await page.getByRole('link', { name: 'Mit einer anderen Abstimmung vergleichen' }).click();
+  // The link stands below the limits.
+  const link = page.getByRole('link', { name: 'Mit einer anderen Abstimmung vergleichen' });
+  const [linked, limits] = [await link.boundingBox(), await page.locator('.limits').boundingBox()];
+  if (linked === null || limits === null) throw new Error('not on the screen');
+  expect(linked.y).toBeGreaterThanOrEqual(limits.y + limits.height);
+  await link.click();
   await expect(page).toHaveURL(
     /\/swiss-votation-visualisation\/de\/compare\/#votes=5960&foreigners=-19\.98$/,
   );
@@ -415,6 +447,9 @@ test.describe('in a window 360 pixels wide', () => {
       const { first, second } = await boxesOf(page);
       expect(second.y, language).toBeGreaterThanOrEqual(first.y + first.height);
       expect(await pageWidth(page), language).toBeLessThanOrEqual(360);
+      // In a window narrower than 1,024 pixels the limits stand below the two votes.
+      const limits = await page.locator('.limits').boundingBox();
+      expect(limits?.y, language).toBeGreaterThanOrEqual(second.y + second.height);
     }
   });
 });
@@ -490,8 +525,8 @@ test.describe('on a phone', () => {
   });
 });
 
-test.describe('the bar on a phone', () => {
-  test.use(phone);
+test.describe('the bar on a phone 360 pixels wide', () => {
+  test.use({ ...phone, viewport: { width: 360, height: 780 } });
 
   test('The bar', async ({ page }) => {
     await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
@@ -506,6 +541,9 @@ test.describe('the bar on a phone', () => {
     ]);
     await expect(bar.locator('.side-yes')).toHaveText('Angenommen');
     await expect(bar.locator('.side-no')).toHaveText('Abgelehnt');
+    // Each outcome in the colour of its side.
+    await expect(bar.locator('.side-yes')).toHaveCSS('color', 'rgb(0, 114, 96)');
+    await expect(bar.locator('.side-no')).toHaveCSS('color', 'rgb(147, 67, 25)');
     // At the bottom of the window.
     const box = await bar.boundingBox();
     const height = await page.evaluate(() => innerHeight);

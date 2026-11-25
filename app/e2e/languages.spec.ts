@@ -182,6 +182,7 @@ test('the start page and the guide in each language: the same working title', as
   }
   await page.goto('fr/guide/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Guide de lecture');
+  await expect(pageHead(page).getByText('Popular Vote Explorer')).toBeVisible();
   expect(await languageOf(page)).toBe('fr');
 });
 
