@@ -14,6 +14,7 @@
     result,
     turnout = null,
     selection = false,
+    level = 2,
     element = $bindable(null),
   }: {
     t: Texts;
@@ -24,6 +25,9 @@
     turnout?: string | null;
     // Whether this is the result of a selection, which stands below the vote's.
     selection?: boolean;
+    // The level of the row's heading: 2 on a vote's page, 3 below a vote's title on the
+    // comparison. The headings of the two majorities are one level below it.
+    level?: 2 | 3;
     // The row's element, which the bar of a narrow window watches (spec small-screens).
     element?: HTMLElement | null;
   } = $props();
@@ -34,7 +38,7 @@
 
 <section class="result" class:selection bind:this={element}>
   <div>
-    <h2>{heading}</h2>
+    <svelte:element this={`h${String(level)}`} class="heading">{heading}</svelte:element>
     <p
       class="outcome"
       class:side-yes={result.outcomeSide === 'yes'}
@@ -46,7 +50,7 @@
 
   <section class="verdict">
     <div class="head">
-      <h3>{voters.heading}</h3>
+      <svelte:element this={`h${String(level + 1)}`} class="name">{voters.heading}</svelte:element>
       <p class="word" class:side-yes={voters.side === 'yes'} class:side-no={voters.side === 'no'}>
         {voters.verdict}
       </p>
@@ -67,7 +71,7 @@
 
   <section class="verdict">
     <div class="head">
-      <h3>{cantons.heading}</h3>
+      <svelte:element this={`h${String(level + 1)}`} class="name">{cantons.heading}</svelte:element>
       <p
         class="word"
         class:side-yes={cantons.side === 'yes'}
@@ -130,7 +134,7 @@
     padding-top: 0.875rem;
     border-top: 1px solid var(--hairline);
   }
-  h2 {
+  .heading {
     margin: 0;
     font-size: 0.9375rem;
     font-weight: 600;
@@ -155,7 +159,7 @@
     overflow-wrap: anywhere;
     hyphens: auto;
   }
-  .head h3,
+  .head .name,
   .head p {
     margin: 0;
     font-size: inherit;

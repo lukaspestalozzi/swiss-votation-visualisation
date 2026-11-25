@@ -1,22 +1,24 @@
 <script lang="ts">
-  import type { Comparable, VoteTable } from '../../../lib/comparison.ts';
+  import type { Comparable, VoteResults } from '../../../lib/comparison.ts';
   import type { Texts } from '../../../lib/texts/index.ts';
+  import ResultRow from '../votes/[id]/ResultRow.svelte';
 
-  // A chosen vote of the comparison (spec vote-comparison, "The table of a vote"; design of
-  // add-vote-comparison, decision 6): its title, date and kind, its table, its count and its
-  // notes; while its file loads, or when it cannot be loaded, a sentence in the table's place.
+  // A chosen vote of the comparison (spec vote-comparison, "The results of a vote"; design of
+  // redesign-site, decision 26): its title, date and kind, its results as its page draws them,
+  // the selection's below the real one, its count and its notes; while its file loads, or when
+  // it cannot be loaded, a sentence in the results' place.
   let {
     t,
     vote,
-    table,
+    results,
     element = $bindable(),
   }: {
     t: Texts;
     vote: Comparable;
-    table: VoteTable | 'loading' | 'failed';
-    // The table, while it is on the page, which the bar at the bottom of a narrow window observes.
-    // No fallback: Svelte binds no undefined to a prop that has one, and the page has no table of
-    // a vote before it shows.
+    results: VoteResults | 'loading' | 'failed';
+    // The results, while they are on the page, which the bar at the bottom of a narrow window
+    // observes. No fallback: Svelte binds no undefined to a prop that has one, and the page has
+    // no results of a vote before they show.
     element?: HTMLElement | null;
   } = $props();
 </script>
@@ -24,40 +26,25 @@
 <section class="vote" data-vote={vote.id}>
   <h2>{vote.title}</h2>
   <p class="secondary">{vote.dateAndKind}</p>
-  {#if table === 'loading'}
+  {#if results === 'loading'}
     <p>{t.VOTE_LOADING}</p>
-  {:else if table === 'failed'}
+  {:else if results === 'failed'}
     <p>{t.VOTE_FAILED}</p>
   {:else}
-    <table bind:this={element}>
-      <thead>
-        <tr>
-          <td></td>
-          {#each table.columns as column (column)}
-            <th scope="col">{column}</th>
-          {/each}
-        </tr>
-      </thead>
-      <tbody>
-        {#each table.rows as row (row.heading)}
-          <tr>
-            <th scope="row">{row.heading}</th>
-            {#each row.cells as cell, index (index)}
-              <td>
-                <span class:side-yes={cell.side === 'yes'} class:side-no={cell.side === 'no'}
-                  >{cell.word}</span
-                >
-                {#if cell.figure !== null}
-                  <span class:greyed={cell.greyed}>{cell.figure}</span>
-                {/if}
-              </td>
-            {/each}
-          </tr>
-        {/each}
-      </tbody>
-    </table>
-    {#if table.count !== null}
-      <p class="count">{table.count}</p>
+    <div class="results" bind:this={element}>
+      {#each results.rows as row (row.selection)}
+        <ResultRow
+          {t}
+          heading={row.heading}
+          result={row.result}
+          turnout={row.turnout}
+          selection={row.selection}
+          level={3}
+        />
+      {/each}
+    </div>
+    {#if results.count !== null}
+      <p class="count">{results.count}</p>
     {/if}
   {/if}
   {#each vote.notes as note (note)}
@@ -68,14 +55,22 @@
 <style>
   /* A word too long for its line breaks within it, as a vote page's heading does. */
   h2 {
+    margin: 0;
+    font-size: 1.375rem;
     overflow-wrap: anywhere;
   }
-  th[scope='row'] {
-    text-align: left;
-    padding-right: 1rem;
+  h2 + p {
+    margin: 0.25rem 0 1rem;
   }
-  .greyed {
-    /* As on the vote's page: the lightest grey with 4.5:1 on the page's ground. */
-    color: var(--greyed);
+  /* The results are as wide as the room they have, by which a result arranges its parts
+     (`ResultRow.svelte`). */
+  .results {
+    container-type: inline-size;
+  }
+  .count {
+    margin: 0.875rem 0 0;
+  }
+  .secondary {
+    max-width: none;
   }
 </style>

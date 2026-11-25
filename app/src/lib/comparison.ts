@@ -10,7 +10,7 @@ import type { VoteEntries } from './result-map.ts';
 import { linkOf, selectionOf, type Selection } from './share-link.ts';
 import type { Texts } from './texts/index.ts';
 import type { VoteFile, Votes } from './vote-data.ts';
-import { judgedOf, votePage, type ResultShown, type Side } from './vote-page.ts';
+import { judgedOf, votePage, type Judged, type ResultShown } from './vote-page.ts';
 
 /** A vote the comparison offers: one the calculation judges, in the language of its texts. */
 export interface Comparable {
@@ -176,56 +176,34 @@ export function withSelection(
   };
 }
 
-/** A cell of a vote's table: a word or a figure, and a verdict's figure beside its word. */
-export interface Cell {
-  readonly word: string;
-  // The side the word stands for, for its colour; none for a figure.
-  readonly side: Side;
-  readonly figure: string | null;
-  // A majority that is not needed: its figure greyed, as on the vote's page.
-  readonly greyed: boolean;
-}
-
-/** A vote's table: its columns, its rows, and its count while a selection applies. */
-export interface VoteTable {
-  readonly columns: readonly string[];
-  readonly rows: readonly { readonly heading: string; readonly cells: readonly Cell[] }[];
+/**
+ * A chosen vote's results as its page draws them, each in a row of its own (spec vote-comparison,
+ * "The results of a vote"): the heading of each, what `ResultRow.svelte` takes, and the vote's
+ * count while a selection applies.
+ */
+export interface VoteResults {
+  readonly rows: readonly {
+    readonly heading: string;
+    readonly result: ResultShown;
+    // The vote's turnout; the result of a selection has none.
+    readonly turnout: string | null;
+    readonly selection: boolean;
+  }[];
   readonly count: string | null;
 }
 
 /**
- * The table of a vote: its real result and, while a selection applies, its result with the
- * selection, `selected` (design, decision 6).
+ * The results of a vote: its real one and, while a selection applies, below it the result with
+ * the selection, `selected` (design of redesign-site, decision 26).
  */
-export function tableOf(real: ResultShown, selected: Selected | null, t: Texts): VoteTable {
-  const results = selected === null ? [real] : [real, selected.result];
-  const figure = (of: (result: ResultShown) => string) =>
-    results.map((result) => ({ word: of(result), side: null, figure: null, greyed: false }));
-  const verdict = (index: 0 | 1) =>
-    results.map(({ verdicts }) => ({
-      word: verdicts[index].verdict,
-      side: verdicts[index].side,
-      figure: verdicts[index].figure,
-      greyed: verdicts[index].greyed,
-    }));
+export function resultsOf(real: Judged, selected: Selected | null, t: Texts): VoteResults {
+  const own = { heading: t.REAL_RESULT, result: real, turnout: real.turnout, selection: false };
+  if (selected === null) return { rows: [own], count: null };
   return {
-    columns: selected === null ? [t.REAL_RESULT] : [t.REAL_RESULT, t.WITH_SELECTION],
     rows: [
-      { heading: t.YES_VOTES, cells: figure((result) => result.yesVotes) },
-      { heading: t.NO_VOTES, cells: figure((result) => result.noVotes) },
-      { heading: t.YES_SHARE, cells: figure((result) => result.yesShare) },
-      { heading: t.MAJORITY_OF_VOTERS, cells: verdict(0) },
-      { heading: t.MAJORITY_OF_CANTONS, cells: verdict(1) },
-      {
-        heading: t.PROPOSAL,
-        cells: results.map((result) => ({
-          word: result.outcome,
-          side: result.outcomeSide,
-          figure: null,
-          greyed: false,
-        })),
-      },
+      own,
+      { heading: t.WITH_SELECTION, result: selected.result, turnout: null, selection: true },
     ],
-    count: selected === null ? null : selected.count,
+    count: selected.count,
   };
 }
