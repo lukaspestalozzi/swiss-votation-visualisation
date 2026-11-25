@@ -633,7 +633,11 @@ test.describe(() => {
     // The first pointing at a municipality after the page has loaded (Sachseln, at the map's
     // centre) is measured too (design of tighten-map-budget, decision 4).
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-    // The wheel zooms while Ctrl is held (spec result-map, "The mouse wheel over the map").
+    // The wheel zooms while Ctrl is held (spec result-map, "The mouse wheel over the map"). The
+    // key is pressed at a person's pace, 50 ms after the pointing: pressed in the same frame, it
+    // adds about 10 ms to what this measure counts for the pointing, though a key press costs
+    // the page no work (investigations/redesign.md, "Found while applying").
+    await page.waitForTimeout(50);
     await page.keyboard.down('Control');
     for (let i = 0; i < 4; i += 1) {
       await page.mouse.wheel(0, -300);
