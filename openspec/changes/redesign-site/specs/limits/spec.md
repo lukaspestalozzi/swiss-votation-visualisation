@@ -194,9 +194,10 @@ a figure for the limit's characteristic, a limit SHALL show no mark.
 
 - **WHEN** a visitor on `/de/votes/5960/` adds the limits "Ausländeranteil" and "Einwohner" and
   clicks Köniz
-- **THEN** below the first track stands "Köniz (BE): 18.02%" with its mark at 29.5% of the
-  track's width, and below the second "Köniz (BE): 40'214" with its mark at 75.8%, each give or
-  take 1 pixel (`investigations/redesign.md`, "Output" of `hist.mjs`: steps 295 and 758)
+- **THEN** below the first track stands "Köniz (BE): 18.02%" with its mark 29.5% along the bars
+  above the track, where a thumb at its step would stand, and below the second "Köniz (BE):
+  40'214" with its mark 75.8% along them, each give or take 1 pixel
+  (`investigations/redesign.md`, "Output" of `hist.mjs`: steps 295 and 758)
 
 #### Scenario: Before a click
 

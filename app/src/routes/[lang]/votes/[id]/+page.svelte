@@ -225,6 +225,7 @@
           voteDate={data.voteDate}
           {count}
           {unusable}
+          {clicked}
           bind:limits
           bind:abroadCounted
         />

@@ -89,9 +89,9 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   limits "Where the municipalities lie on a track" (the first three scenarios) and "The number of
   municipalities that remain" (three) pass; site-style "The controls in both schemes" and
   small-screens "The controls on a phone" and "A thumb beside the finger" pass.
-- [ ] 4.4 Mark the municipality last clicked under each track. Verify: browser tests of limits
+- [x] 4.4 Mark the municipality last clicked under each track. Verify: browser tests of limits
   "The municipality last clicked on a track" (four scenarios) pass.
-- [ ] 4.5 Verify the budgets of the limits: "Dragging a bound", "Jumps" with the list, and the new
+- [x] 4.5 Verify the budgets of the limits: "Dragging a bound", "Jumps" with the list, and the new
   "Dragging with five limits and a municipality clicked" pass; so do the two tests of the frame
   after a link, 100 ms with 21 limits and 170 ms with all 35 (`app/e2e/share-link.spec.ts`). If
   the frame with 35 limits exceeds 170 ms, draw the histograms in the frames after it, keeping

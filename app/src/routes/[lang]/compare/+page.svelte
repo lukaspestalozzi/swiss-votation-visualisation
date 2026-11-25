@@ -295,6 +295,7 @@
     voteDate={firstVote.date}
     count={null}
     unusable={[]}
+    clicked={null}
     bind:limits
     bind:abroadCounted
   />

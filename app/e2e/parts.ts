@@ -122,6 +122,21 @@ export const barsBetween = (limit: Locator): Promise<{ from: number; to: number 
     return { from: parseFloat(left), to: 100 - parseFloat(right) };
   });
 
+/** The mark of the municipality last clicked, below a limit's track: its name and its value. */
+export const markOf = (limit: Locator): Locator => limit.locator('.here');
+
+/**
+ * Where a limit's mark of the municipality last clicked stands: its middle from the left end of
+ * the bars above the track, which are as wide as the way of a thumb's middle, and that width.
+ */
+export const markPlace = (limit: Locator): Promise<{ at: number; width: number }> =>
+  limit.evaluate((element) => {
+    const bars = element.querySelector('.hist')?.getBoundingClientRect();
+    const mark = element.querySelector('.here .mark')?.getBoundingClientRect();
+    if (bars === undefined || mark === undefined) throw new Error('no bars or no mark');
+    return { at: mark.left + mark.width / 2 - bars.left, width: bars.width };
+  });
+
 /** The bar of the municipalities that remain, below their number: how much of it is filled. */
 export const countBarFilled = (page: Page): Promise<{ width: number; filled: number }> =>
   page.locator('.limits .count-bar').evaluate((bar) => ({
