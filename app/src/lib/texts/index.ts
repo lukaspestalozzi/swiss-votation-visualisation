@@ -114,6 +114,10 @@ export interface Texts {
   readonly cantonalVotes: (inFavour: string, against: string) => string;
 
   // A vote's page: the table of the cantons.
+  /** The table of the cantons: its heading, and what its bars show, without and with a selection. */
+  readonly CANTONS_HEADING: string;
+  readonly CANTON_BARS: string;
+  readonly CANTON_BARS_SELECTION: string;
   readonly CANTON: string;
   readonly CANTONAL_VOTES: string;
   readonly SIDE: string;

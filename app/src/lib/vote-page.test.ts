@@ -108,13 +108,16 @@ test('a majority that is not needed has no side', () => {
 test('the table of the cantons', () => {
   const rows = page(5960).judged?.cantons ?? [];
   expect(rows).toHaveLength(26);
-  expect(rows[0]).toEqual({
+  expect(rows[0]).toMatchObject({
     canton: 'ZH',
     yesShare: '43.46%',
     cantonalVotes: '1',
     side: 'Nein',
     forSide: 'no',
   });
+  // What a row's bar draws: its yes share in percent, as the row writes it to two decimals.
+  expect(rows[0]?.yesPercent).toBeCloseTo(43.46, 2);
+  expect(rows.at(-1)?.yesPercent).toBeCloseTo(60.07, 2);
   expect(rows.at(-1)?.canton).toBe('JU');
   expect(rows.filter((row) => row.cantonalVotes === '½').map((row) => row.canton)).toEqual([
     'OW',
@@ -138,8 +141,23 @@ test('a canton without valid votes shows no yes share', () => {
     withoutResult: [],
   };
   expect(votePage(voteOf(5960), file, de).judged?.cantons).toEqual([
-    { canton: 'ZH', yesShare: '66.67%', cantonalVotes: '1', side: 'Ja', forSide: 'yes' },
-    { canton: 'UR', yesShare: '–', cantonalVotes: '1', side: 'Nein', forSide: 'no' },
+    {
+      canton: 'ZH',
+      yesShare: '66.67%',
+      yesPercent: (40 / 60) * 100,
+      cantonalVotes: '1',
+      side: 'Ja',
+      forSide: 'yes',
+    },
+    // Without a valid vote a row has no share to draw.
+    {
+      canton: 'UR',
+      yesShare: '–',
+      yesPercent: null,
+      cantonalVotes: '1',
+      side: 'Nein',
+      forSide: 'no',
+    },
   ]);
 });
 
@@ -210,10 +228,18 @@ test('a canton of the vote with nothing left keeps its row, which says so', () =
   // Spec verdicts, "The cantons under a selection": only ZH remains of a vote of ZH, BE and OW.
   const result = calculateResult([{ canton: 'ZH', yes: 60, no: 40 }], 'voters-and-cantons');
   expect(judgedOf(result, 'voters-and-cantons', ['ZH', 'BE', 'OW'], de).cantons).toEqual([
-    { canton: 'ZH', yesShare: '60.00%', cantonalVotes: '1', side: 'Ja', forSide: 'yes' },
+    {
+      canton: 'ZH',
+      yesShare: '60.00%',
+      yesPercent: 60,
+      cantonalVotes: '1',
+      side: 'Ja',
+      forSide: 'yes',
+    },
     {
       canton: 'BE',
       yesShare: '–',
+      yesPercent: null,
       cantonalVotes: 'keine Gemeinde übrig',
       side: '–',
       forSide: null,
@@ -221,6 +247,7 @@ test('a canton of the vote with nothing left keeps its row, which says so', () =
     {
       canton: 'OW',
       yesShare: '–',
+      yesPercent: null,
       cantonalVotes: 'keine Gemeinde übrig',
       side: '–',
       forSide: null,

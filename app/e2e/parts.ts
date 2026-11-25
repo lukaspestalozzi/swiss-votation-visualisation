@@ -242,6 +242,36 @@ export async function boxOf(
 export const mapDrawn = (page: Page): Promise<void> =>
   page.locator('.municipalities path').nth(2000).waitFor();
 
+/** A canton's row in the table of the cantons, by its abbreviation. */
+export const cantonRow = (page: Page, canton: string): Locator =>
+  page.locator('.canton-results').getByRole('row', { name: new RegExp(`^${canton} `) });
+
+/**
+ * The bar of a canton's row as the screen draws it: its track's width; where its fill begins and
+ * ends, from the track's left edge; the fill's colour; and the middle of the mark of the
+ * canton's real share, which only a selection shows.
+ */
+export const cantonBar = (
+  page: Page,
+  canton: string,
+): Promise<{ width: number; from: number; to: number; colour: string; real: number | null }> =>
+  cantonRow(page, canton)
+    .locator('.canton-bar')
+    .evaluate((track) => {
+      const box = track.getBoundingClientRect();
+      const fill = track.querySelector('.fill');
+      if (fill === null) throw new Error('the bar has no fill');
+      const filled = fill.getBoundingClientRect();
+      const real = track.querySelector('.real')?.getBoundingClientRect();
+      return {
+        width: box.width,
+        from: filled.left - box.left,
+        to: filled.right - box.left,
+        colour: getComputedStyle(fill).backgroundColor,
+        real: real === undefined ? null : real.left + real.width / 2 - box.left,
+      };
+    });
+
 /** The head of a page. */
 export const pageHead = (page: Page): Locator => page.locator('header');
 

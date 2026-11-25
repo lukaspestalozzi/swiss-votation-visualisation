@@ -13,6 +13,8 @@ import {
   barHeights,
   barsBetween,
   boxOf,
+  cantonBar,
+  cantonRow,
   cantonsBarOf,
   closeButton,
   countBarFilled,
@@ -705,6 +707,31 @@ test('back to the real result: no limit, the switch on, no selection, the legend
   await expect(page.locator('.municipalities [fill="#2c2c2c"]')).toHaveCount(0);
   await expect(page.locator('.legend li')).toHaveCount(10);
   await expect(back).toHaveCount(0);
+});
+
+test("the cantons' bars under a selection: a mark at each canton's real share, none for BS", async ({
+  page,
+}) => {
+  // Spec verdicts, "The cantons' bars under a selection": ZH's real share is 43.46%.
+  await openVote(page, 'de/votes/5960/');
+  await foreignersUpTo1998(page);
+  await expect(page.locator('.canton-results caption')).toHaveText('Mit Ihrer Auswahl');
+  const zurich = await cantonBar(page, 'ZH');
+  expect(zurich.real).not.toBeNull();
+  expect(Math.abs((zurich.real ?? 0) - zurich.width * 0.4346)).toBeLessThanOrEqual(1);
+  // 25 rows with a yes share, each with its bar and its mark; BS, with nothing left, has neither.
+  await expect(page.locator('.canton-results .canton-bar')).toHaveCount(25);
+  await expect(page.locator('.canton-results .canton-bar .real')).toHaveCount(25);
+  await expect(cantonRow(page, 'BS').locator('.canton-bar')).toHaveCount(0);
+  await expect(
+    page
+      .locator('.canton-results')
+      .getByText(
+        'Jeder Balken reicht von 50% bis zum Ja-Anteil des Kantons; der Strich zeigt sein echtes ' +
+          'Ergebnis.',
+        { exact: true },
+      ),
+  ).toBeVisible();
 });
 
 test('back to the real cantons: the table of the vote again', async ({ page }) => {

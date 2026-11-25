@@ -109,7 +109,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   gives a line its share or none. Verify: a unit test of the lines' shares passes; the browser
   test "The bars of the shares" passes (29 bars for Zürich, none for a line without a figure);
   the panel's tests still read each line as "name: value".
-- [ ] 5.4 The table of the cantons: its heading "Kantone" in three languages, a bar in each yes
+- [x] 5.4 The table of the cantons: its heading "Kantone" in three languages, a bar in each yes
   share's cell, a mark for the real share under a selection, the sentence below it in three
   languages, and its place to the right of the panel from 960 pixels. Verify: browser tests of
   verdicts "The table of the cantons" (two) and "The bar of a canton" (three) pass; the tests that
