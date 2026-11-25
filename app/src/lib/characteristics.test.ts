@@ -262,24 +262,60 @@ test('a line of another year than its group names its year', () => {
   };
   const [population] = panel(later);
   expect(population.heading).toBe('Bevölkerung Ende 2025');
-  expect(population.lines.slice(0, 4)).toEqual([
+  const texts = (lines: readonly { text: string }[]) => lines.map((line) => line.text);
+  expect(texts(population.lines).slice(0, 4)).toEqual([
     'Einwohner: 11',
     'Ausländeranteil: 9.09%',
     'Im Ausland geboren (Ende 2024): 30.00%', // 3 of the 10 inhabitants at the end of 2024
     '0–17 Jahre: 27.27%',
   ]);
   // With every figure of the heading's year, no line of the group names one.
-  expect(panel(MADE_UP)[0].lines[2]).toBe('Im Ausland geboren: 36.36%');
+  expect(panel(MADE_UP)[0].lines[2].text).toBe('Im Ausland geboren: 36.36%');
   // The land's heading names no year: each of its lines does.
-  expect(panel(MADE_UP).at(-1)).toEqual({
-    heading: 'Fläche und Landwirtschaft',
-    lines: [
-      'Fläche (2026): 1.00 km²',
-      'Rinder je Einwohner (2025): 0.545',
-      "Landwirtschaftsbetriebe je 1'000 Einwohner (2025): 181.8",
-      'Bio-Anteil der landwirtschaftlichen Nutzfläche (2025): 26.83%',
-    ],
+  const land = panel(MADE_UP).at(-1);
+  expect(land?.heading).toBe('Fläche und Landwirtschaft');
+  expect(texts(land?.lines ?? [])).toEqual([
+    'Fläche (2026): 1.00 km²',
+    'Rinder je Einwohner (2025): 0.545',
+    "Landwirtschaftsbetriebe je 1'000 Einwohner (2025): 181.8",
+    'Bio-Anteil der landwirtschaftlichen Nutzfläche (2025): 26.83%',
+  ]);
+});
+
+test('a line of the panel: its name, its value, and its share where it is one, for its bar', () => {
+  // Spec result-map, "The bars of the shares": Zürich (261) on 2016-02-28 has 29 shares; the six
+  // other lines are no shares. Oberrieden (137) has lines without a figure.
+  const applying = applyingTo(REAL, '2016-02-28');
+  const linesOf = (number: number, t = de) =>
+    panelOf(countsOf(REAL, applying, number), applying, t).flatMap((group) => group.lines);
+  const zurich = linesOf(261);
+  expect(zurich).toHaveLength(35);
+  expect(zurich[1]).toEqual({
+    name: 'Ausländeranteil',
+    value: '32.03%',
+    text: 'Ausländeranteil: 32.03%',
+    share: 32.03,
   });
+  expect(zurich.filter((line) => line.share !== null)).toHaveLength(29);
+  expect(zurich.filter((line) => line.share === null).map((line) => line.name)).toEqual([
+    'Einwohner',
+    'Einwohner je km²',
+    'Arbeitsplätze je 100 Einwohner',
+    'Fläche (2026)',
+    'Rinder je Einwohner (2015)',
+    "Landwirtschaftsbetriebe je 1'000 Einwohner (2015)",
+  ]);
+  // A share without a figure has no bar.
+  const without = linesOf(137).filter((line) => line.value === 'keine Angabe');
+  expect(without.map((line) => line.name)).toContain('Arbeitsplätze im Primärsektor');
+  expect(without.every((line) => line.share === null)).toBe(true);
+  // A line's text is its name, a colon and its value, in each language: the panel writes the
+  // colon itself, between the two.
+  for (const language of ['de', 'fr', 'it'] as const) {
+    for (const line of linesOf(261, textsOf(language))) {
+      expect(line.text).toBe(`${line.name}: ${line.value}`);
+    }
+  }
 });
 
 test("each heading of the panel begins with the list's heading of its group, in three languages", () => {

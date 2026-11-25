@@ -105,7 +105,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   browser tests of result-map "The legend of a vote" and "The legend of a selection" pass.
 - [x] 5.2 A bar in a municipality's details. Verify: the browser test of result-map "The details
   of a municipality" passes with the bar at 31.85%, and the budget test of pointing passes.
-- [ ] 5.3 The panel in columns of groups, each share with its bar: `app/src/lib/characteristics.ts`
+- [x] 5.3 The panel in columns of groups, each share with its bar: `app/src/lib/characteristics.ts`
   gives a line its share or none. Verify: a unit test of the lines' shares passes; the browser
   test "The bars of the shares" passes (29 bars for Zürich, none for a line without a figure);
   the panel's tests still read each line as "name: value".
