@@ -47,6 +47,8 @@ node investigations/redesign/mockups/shots.cjs /new/path/outside/the/repository 
 node investigations/redesign/stays.cjs
 node investigations/redesign/first_step.cjs [<width> <height>]
 node investigations/redesign/start_page.cjs
+# Found by the verification:
+node investigations/redesign/bars_cost.mjs "$PWD"
 ```
 
 | File | What |
@@ -61,6 +63,7 @@ node investigations/redesign/start_page.cjs
 | `mockups/shots.cjs` | Where the parts of a vote's mockup stand in eight windows, each mockup's size in windows 1,280 and 360 pixels wide, and, with `--shots`, a screenshot of each in both schemes. |
 | `stays.cjs` | Found while applying: by how much the part of a vote's page that stays in the window, the result, the map and its legend, is taller than the window, with a selection, in 12 widths by 6 heights and three languages. |
 | `first_step.cjs` | Found while applying: where the results, the map, the legend and the last limit's slider stand in the window before and after the step with which a selection first applies, with five limits and the page scrolled to the last. |
+| `bars_cost.mjs` | Found by the verification: how long the tracks of 21 limits take to make and their bars to work out, in Node on the app's own modules. |
 | `start_page.cjs` | Found while applying: the start page in ten windows and three languages: its size, the narrowest title of a row, the widest share and result, and the height of the part that stays at the top against the room a year keeps for it. |
 
 "Output" at the end of this file is what the scripts printed on 2026-11-24, and, under "Found
@@ -382,6 +385,19 @@ none of whom had written them:
   thumb's 44 pixels are tested by a press 20 pixels beside its centre.
 - **A step by key** took at most 13.1 ms of the 16 allowed, in the new budget test of thirty
   steps (`pnpm --filter app exec playwright test e2e/limits.spec.ts -g "step by key"`).
+- **The frame after a link with 21 limits reaches its budget on this machine.** A full run of
+  the checks failed "All 21 limits in the same tab": 106.5 ms, and 101.6 ms measured once more,
+  of the 100 allowed. The test alone
+  (`pnpm --filter app exec playwright test e2e/share-link.spec.ts -g "All 21 limits"`), 18 runs
+  on the site built from `8405aa7`, before the verification's fixes, and 18 on `fea62d4`, with
+  them, one after the other in turn: a median of 74.3 ms before, from 51.9 to 107.2, once over
+  100; 71.9 ms with them, from 54.9 to 103.5, twice over 100. The fixes did not move it; about
+  one measurement in twelve exceeds the budget here, and the test fails when two in a row do.
+  `bars_cost.mjs`: of that frame, the tracks of the 21 limits take 22 to 52 ms to make, the
+  first, cold run the longest, and their bars 8 to 16 ms. The tracks were there before the
+  redesign; the bars are what it added. The design's way out, should the budget not hold, is to
+  draw the bars in the frames after (design of `redesign-site`, "Risks"). It was not taken:
+  CI's runner measured 36.0 ms for this frame before the bars, about half of this machine's.
 
 ## Not verified
 
@@ -637,4 +653,14 @@ a phone it: {"page":"412 x 16536","narrowest title":380,"widest share":78.8,"wid
 a phone held wide de: {"page":"863 x 12832","narrowest title":559,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":101,"room":101,"year at":101,"heading at":133}
 a phone held wide fr: {"page":"863 x 12957","narrowest title":559,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":101,"room":101,"year at":101,"heading at":133}
 a phone held wide it: {"page":"863 x 12936","narrowest title":559,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":101,"room":101,"year at":101,"heading at":133}
+```
+
+`node investigations/redesign/bars_cost.mjs "$PWD"`, on `fea62d4`:
+
+```
+run 1: 21 tracks 59.6 ms, their histograms 20.9 ms, their bars as paths 11.5 ms
+run 2: 21 tracks 28.2 ms, their histograms 7.9 ms, their bars as paths 8.7 ms
+run 3: 21 tracks 24.2 ms, their histograms 8.1 ms, their bars as paths 8.4 ms
+run 4: 21 tracks 25.2 ms, their histograms 7.9 ms, their bars as paths 8.2 ms
+run 5: 21 tracks 23.4 ms, their histograms 7.8 ms, their bars as paths 8.3 ms
 ```
