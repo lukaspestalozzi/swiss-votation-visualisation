@@ -276,8 +276,11 @@ test('a word no title holds: no year, no vote, and a sentence; the field emptied
   request,
 }) => {
   const votes = await listedVotes(request);
-  await page.goto('de/');
+  await page.goto('de/', { waitUntil: 'networkidle' });
   const address = page.url();
+  // What the page asks for from here on: nothing typed is sent anywhere.
+  const sent: string[] = [];
+  page.on('request', (asked) => sent.push(asked.url()));
   const sentence = page.getByText('Keine Abstimmung passt zu dieser Suche.');
   await expect(sentence).toHaveCount(0);
   await searchField(page).fill('xyz');
@@ -290,8 +293,9 @@ test('a word no title holds: no year, no vote, and a sentence; the field emptied
   await expect(yearHeadings(page)).toHaveCount(
     new Set(votes.map((vote) => vote.date.slice(0, 4))).size,
   );
-  // Nothing typed is written to the address.
+  // Nothing typed is written to the address, and nothing was sent.
   expect(page.url()).toBe(address);
+  expect(sent).toEqual([]);
 });
 
 test.describe('without scripts', () => {

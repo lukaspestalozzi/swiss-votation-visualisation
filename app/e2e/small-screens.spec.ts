@@ -129,6 +129,9 @@ test.describe('on a phone', () => {
     for (const button of buttons) expect(button.y + button.height).toBeLessThanOrEqual(map.y);
   });
 
+  // A thumb is drawn by the browser, which tells no script its size (for the thumb it reports
+  // the slider's own). Its 44 pixels are tested by what they are for: the slider is 44 pixels
+  // tall, and a press 20 pixels beside a thumb's centre moves it ("a thumb takes a press").
   test('the controls are at least 44 × 44 pixels', async ({ page }) => {
     await page.goto('de/votes/5960/');
     await page.locator('.municipalities path').nth(2000).waitFor();

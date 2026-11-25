@@ -961,6 +961,12 @@ test('the bars of the shares: 29 for Zürich, none for a line without a share or
     'background-color',
     'rgb(28, 28, 28)',
   );
+  // Spec site-style, "A bar that judges nothing": each of Zürich's 29 bars in the text's colour.
+  const colours = await panel(page)
+    .locator('.share > span')
+    .evaluateAll((bars) => bars.map((bar) => getComputedStyle(bar).backgroundColor));
+  expect(colours).toHaveLength(29);
+  expect(new Set(colours)).toEqual(new Set(['rgb(28, 28, 28)']));
   // The six lines that are no shares.
   for (const line of [
     /^Einwohner: /,
@@ -1212,6 +1218,13 @@ test('a high window: the map no taller than the window less 272 pixels, whole in
     ['.map svg', '.map .outline', '.map'].map((part) => boxOf(page, part)),
   );
   expect(Math.abs(map.height - 628)).toBeLessThanOrEqual(1);
+  // It keeps its shape: its box has the view's width to its height.
+  const [, , viewWidth = NaN, viewHeight = NaN] = (
+    (await page.locator('.map svg').getAttribute('viewBox')) ?? ''
+  )
+    .split(' ')
+    .map(Number);
+  expect(Math.abs(map.width / map.height - viewWidth / viewHeight)).toBeLessThan(0.01);
   // The map keeps its shape, so its box is narrower than its column, 1,104 pixels, and stands
   // in the column's middle, with Switzerland whole within it.
   const left = map.x - column.x;
@@ -1258,6 +1271,8 @@ test('in a low window the result and the map scroll away with the page', async (
   await scrollToBack(page);
   const result = await boxOf(page, '.results');
   expect(result.y + result.height).toBeLessThan(0);
+  const map = await boxOf(page, '.map svg');
+  expect(map.y + map.height).toBeLessThan(0);
 });
 
 test('on a screen 360 pixels wide the map reaches from side to side and scrolls with the page', async ({

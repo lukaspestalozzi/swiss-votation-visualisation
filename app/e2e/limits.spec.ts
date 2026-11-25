@@ -55,6 +55,12 @@ test('the section of a vote: right of the map, level with the result, without a 
   expect(Math.abs(limits.y - result.y)).toBeLessThanOrEqual(1);
   await expect(page.getByRole('slider')).toHaveCount(0);
   await expect(abroadSwitch(page)).toBeChecked();
+  // Beside the map from a window 1,024 pixels wide.
+  await page.setViewportSize({ width: 1024, height: 768 });
+  const [narrower, itsMap] = await Promise.all(
+    ['.limits', '.map svg'].map((part) => boxOf(page, part)),
+  );
+  expect(narrower.x).toBeGreaterThanOrEqual(itsMap.x + itsMap.width);
 });
 
 test('the section in a narrow window: below the map, above the panel, as wide as the result', async ({
@@ -163,6 +169,10 @@ test('adding a limit: its label, and the list offers the others', async ({ page 
   const others = await offered(page);
   expect(others).toHaveLength(34);
   expect(others).not.toContain('Ausländeranteil');
+  // A limit stands after those already added: "Einwohner", the first of the definitions, after
+  // "Ausländeranteil".
+  await addLimit(page, 'Einwohner');
+  await expect(page.locator('.limit .label .name')).toHaveText(['Ausländeranteil', 'Einwohner']);
 });
 
 test('removing a limit: the list offers all 35 again', async ({ page }) => {
@@ -456,16 +466,28 @@ test('nothing remains: no votes, no yes share, no cantonal vote, the vote fails'
 });
 
 test('the legend of a selection ends with the dark grey of the set-aside', async ({ page }) => {
+  // Spec result-map, "The legend of a selection".
   await openVote(page, 'de/votes/5960/');
-  await expect(page.locator('.legend li')).toHaveCount(10);
-  await foreignersUpTo1998(page);
   const entries = page.locator('.legend li');
+  await expect(entries).toHaveCount(10);
+  const before = await entries.allInnerTexts();
+  const ticks = page.locator('.legend-box .scale-ticks span');
+  const scale = await ticks.allInnerTexts();
+  expect(before.at(-1)?.trim()).toBe('Kein eigenes Ergebnis');
+  await foreignersUpTo1998(page);
+  // The same scale and entries and, as the last, the set-aside.
   await expect(entries).toHaveCount(11);
+  expect((await entries.allInnerTexts()).slice(0, 10)).toEqual(before);
+  expect(await ticks.allInnerTexts()).toEqual(scale);
   await expect(entries.nth(10)).toHaveText('Nicht in der Auswahl');
   await expect(entries.nth(10).locator('.swatch')).toHaveCSS(
     'background-color',
     'rgb(44, 44, 44)', // #2c2c2c
   );
+  // After the return to the real result it ends with "Kein eigenes Ergebnis" again.
+  await page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }).click();
+  await expect(entries).toHaveCount(10);
+  expect(await entries.allInnerTexts()).toEqual(before);
 });
 
 test('set aside and kept: Zürich dark grey, Aeugst am Albis its colour, the hatching kept', async ({
@@ -600,6 +622,10 @@ test('the bars of a logarithmic track: the 21st is the tallest', async ({ page }
   const heights = await barHeights(limitOf(page, 'Einwohner'));
   expect(heights).toHaveLength(50);
   expect(heights.indexOf(100)).toBe(20);
+  // Spec limits, "A bar with one municipality": the last bar holds Zürich alone, 1 against 146,
+  // and is a fiftieth as tall as the fullest; a bar without a municipality has no height.
+  expect(heights.at(-1)).toBe(2);
+  expect(heights.at(-2)).toBe(0);
 });
 
 // The municipality last clicked on a track (spec limits; design of redesign-site, decision 22);
@@ -1048,6 +1074,34 @@ test.describe(() => {
     await fontsLoaded(page);
     await addLimit(page, 'Einwohner');
     const frames = await framesOfDragging(page);
+    expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
+    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+  });
+
+  test('the budget of a step by key: no frame after an arrow key takes more than 16 ms', async ({
+    page,
+  }) => {
+    // Spec limits, "The budget of the limits": a step of a slider by pointer or by key.
+    await page.addInitScript(MEASURE_FRAMES);
+    await openVote(page, 'de/votes/5960/');
+    await fontsLoaded(page);
+    await addLimit(page, 'Einwohner');
+    const lower = slider(page, 'Untere', 'Einwohner');
+    await lower.focus();
+    await page.waitForTimeout(50);
+    await page.evaluate(() => {
+      (window as unknown as { __frames: unknown[] }).__frames = [];
+    });
+    // Twenty steps up and ten back, at a person's pace.
+    for (const key of [
+      ...Array<string>(20).fill('ArrowRight'),
+      ...Array<string>(10).fill('ArrowLeft'),
+    ]) {
+      await page.keyboard.press(key);
+      await page.waitForTimeout(30);
+    }
+    await expect(lower).toHaveValue('10');
+    const frames = await measuredFrames(page);
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
     expect(frames.filter((f) => f.work > 16)).toEqual([]);
   });
