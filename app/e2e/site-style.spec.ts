@@ -11,7 +11,9 @@ import {
   outcomeOf,
   ownResult,
   selectionResult,
+  verdictOf,
   verdictWordsOf,
+  voteRow,
   votersBarOf,
 } from './parts.ts';
 
@@ -222,6 +224,33 @@ test("a bar that judges nothing takes no side's colour: the tie-break question's
   expect(await pixelAt(page, drawn.left + (drawn.width * 7) / 8, y)).toEqual([140, 140, 140]);
 });
 
+test.describe('the colours of rows', () => {
+  // The ground of a row pointed at in each scheme (investigations/redesign.md, 5).
+  const grounds = { light: [244, 244, 244], dark: [28, 28, 28] };
+
+  for (const [colorScheme, ground] of Object.entries(grounds)) {
+    test(`a row of the start page pointed at, ${colorScheme}: its ground, its title underlined`, async ({
+      page,
+    }) => {
+      await page.emulateMedia({ colorScheme: colorScheme as 'light' | 'dark' });
+      await page.goto('de/');
+      const row = voteRow(page, 5960);
+      const title = row.getByRole('link');
+      await expect(title).toHaveCSS('text-decoration-line', 'none');
+      await row.hover();
+      await expect(row).toHaveCSS('background-color', `rgb(${ground.join(', ')})`);
+      await expect(title).toHaveCSS('text-decoration-line', 'underline');
+      // Every text of the page keeps its contrast, the row's on its ground.
+      expect(await lowContrast(page)).toEqual([]);
+      if (colorScheme === 'light') {
+        // "abgelehnt" in #934319 on #f4f4f4.
+        await expect(verdictOf(row)).toHaveCSS('color', NO);
+        expect(ratioOf([147, 67, 25], ground)).toBeCloseTo(6.24, 2);
+      }
+    });
+  }
+});
+
 test.describe("the verdicts in the map's colours", () => {
   test('2016-02-28: "Nein" and "Abgelehnt" #934319, "Ja" #007260, also in the list', async ({
     page,
@@ -238,10 +267,8 @@ test.describe("the verdicts in the map's colours", () => {
     await expect(zurich).toHaveText('Nein');
     await expect(zurich).toHaveCSS('color', NO);
     await page.goto('de/');
-    const result = page
-      .locator('li', { has: page.locator('a[href$="/votes/5960"]') })
-      .locator('span', { hasText: /^abgelehnt/ });
-    await expect(result).toHaveCSS('color', NO);
+    await expect(verdictOf(voteRow(page, 5960))).toHaveText('abgelehnt');
+    await expect(verdictOf(voteRow(page, 5960))).toHaveCSS('color', NO);
   });
 
   test("a tie-break question's figures keep the text's colour", async ({ page }) => {

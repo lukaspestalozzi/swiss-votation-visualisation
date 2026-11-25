@@ -225,9 +225,9 @@ text's colour. Each part SHALL have at least 3:1 against the ground (WCAG 2.2, 1
 ### Requirement: The colours of rows
 
 A row that can be chosen SHALL show the ground `#f4f4f4` while pointed at, `#1c1c1c` in the dark
-scheme, on which every text keeps at least 4.5:1. The grey of a majority that is not needed and
-the grey of a set-aside municipality SHALL stand on the page's ground only
-(`investigations/redesign.md`, 5).
+scheme, on which every text keeps at least 4.5:1; its title, though a link, SHALL be underlined
+only then. The grey of a majority that is not needed and the grey of a set-aside municipality
+SHALL stand on the page's ground only (`investigations/redesign.md`, 5).
 
 #### Scenario: A row of the start page pointed at
 

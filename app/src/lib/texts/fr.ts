@@ -29,6 +29,7 @@ export const fr: Texts = {
   // The first day of a month as the Constitution's footnotes write it: "1er".
   // The day and the month joined by a non-breaking space, so that a line never parts them.
   date: (day, month, year) => `${day === 1 ? '1er' : String(day)}\u00a0${month} ${String(year)}`,
+  day: (day, month) => `${day === 1 ? '1er' : String(day)}\u00a0${month}`,
   KINDS: {
     'mandatory-referendum': 'Référendum obligatoire',
     'optional-referendum': 'Référendum facultatif',
@@ -43,9 +44,17 @@ export const fr: Texts = {
   },
 
   // The list.
+  // A word joiner after the hyphen, so that a line never parts "aurait-elle".
+  START_HEADING:
+    'Comment la Suisse aurait-\u2060elle voté si seule une partie des communes ' +
+    "s'était rendue aux urnes?",
+  startLead: (furtherCharacteristics) =>
+    "Choisissez une votation et délimitez les communes: selon le nombre d'habitants, l'âge, la " +
+    `force des partis et ${String(furtherCharacteristics)} autres caractéristiques. La carte et ` +
+    'le résultat sont recalculés aussitôt. Une expérience de pensée, pas une prévision.',
   LIST_PASSED: 'accepté',
   LIST_FAILED: 'rejeté',
-  listResult: (verdict, yesShare) => `${verdict}, ${yesShare} de oui`,
+  listShare: (yesShare) => `${yesShare} de oui`,
   listTieBreak: (initiativeShare) => `${initiativeShare} pour l'initiative`,
   MARK_NOTE: 'Note',
   MARK_PROVISIONAL: 'provisoire',

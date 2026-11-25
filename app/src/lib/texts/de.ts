@@ -26,6 +26,7 @@ export const de: Texts = {
   ],
   // The day and the month joined by a non-breaking space, so that a line never parts them.
   date: (day, month, year) => `${String(day)}.\u00a0${month} ${String(year)}`,
+  day: (day, month) => `${String(day)}.\u00a0${month}`,
   KINDS: {
     'mandatory-referendum': 'Obligatorisches Referendum',
     'optional-referendum': 'Fakultatives Referendum',
@@ -40,9 +41,15 @@ export const de: Texts = {
   },
 
   // The list.
+  START_HEADING:
+    'Wie hätte die Schweiz abgestimmt, wenn nur ein Teil der Gemeinden an die Urne gegangen wäre?',
+  startLead: (furtherCharacteristics) =>
+    'Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden ein: nach Einwohnerzahl, Alter, ' +
+    `Parteistärke und ${String(furtherCharacteristics)} weiteren Merkmalen. Karte und Ergebnis ` +
+    'rechnen sofort neu. Ein Gedankenexperiment, keine Prognose.',
   LIST_PASSED: 'angenommen',
   LIST_FAILED: 'abgelehnt',
-  listResult: (verdict, yesShare) => `${verdict}, ${yesShare} Ja`,
+  listShare: (yesShare) => `${yesShare} Ja`,
   listTieBreak: (initiativeShare) => `${initiativeShare} für die Initiative`,
   MARK_NOTE: 'Hinweis',
   MARK_PROVISIONAL: 'vorläufig',

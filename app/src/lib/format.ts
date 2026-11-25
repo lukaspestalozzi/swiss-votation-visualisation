@@ -94,10 +94,21 @@ export function formatCantonalVotes(cantonalVotes: number): string {
  * 28. Februar 2016.
  */
 export function formatDate(date: string, t: Texts): string {
+  const { day, month, year } = partsOf(date, t);
+  return t.date(day, month, year);
+}
+
+/** The same date without its year: 28. Februar. */
+export function formatDay(date: string, t: Texts): string {
+  const { day, month } = partsOf(date, t);
+  return t.day(day, month);
+}
+
+function partsOf(date: string, t: Texts): { day: number; month: string; year: number } {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
   const month = match ? t.MONTHS[Number(match[2]) - 1] : undefined;
   if (!match || month === undefined) {
     throw new RangeError(`${date} is not a date of the form 2016-02-28`);
   }
-  return t.date(Number(match[3]), month, Number(match[1]));
+  return { day: Number(match[3]), month, year: Number(match[1]) };
 }

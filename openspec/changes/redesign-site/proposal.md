@@ -103,7 +103,9 @@ None.
   other.
 - `small-screens`: the two majorities one below the other where a result is narrow; the controls
   of 44 pixels, with the new ones.
-- `interface-languages`: the switch's short names in a narrow window.
+- `interface-languages`: the switch's short names in a narrow window; the start page's heading
+  in French and Italian; a row's share and result.
+- `app-shell`, `publishing`: one scenario each, which names the start page's heading.
 - `reading-guide`: the sentence on where the selection's result stands.
 - `characteristics`: one scenario's wording, as the panel no longer stands beside the map.
 

@@ -82,13 +82,19 @@ export interface Texts {
   // (format.ts checks them and takes the month's name from MONTHS).
   readonly MONTHS: readonly string[];
   readonly date: (day: number, month: string, year: number) => string;
+  // The same day without its year, as the start page heads the votes of a day.
+  readonly day: (day: number, month: string) => string;
   readonly KINDS: Readonly<Record<Kind, string>>;
   readonly MAJORITIES_NEEDED: Readonly<Record<Majorities, string>>;
 
   // The list.
+  /** The start page's heading: the question the site answers. */
+  readonly START_HEADING: string;
+  /** The sentence below it, with the number of characteristics beyond the three it names. */
+  readonly startLead: (furtherCharacteristics: number) => string;
   readonly LIST_PASSED: string;
   readonly LIST_FAILED: string;
-  readonly listResult: (verdict: string, yesShare: string) => string;
+  readonly listShare: (yesShare: string) => string;
   readonly listTieBreak: (initiativeShare: string) => string;
   readonly MARK_NOTE: string;
   readonly MARK_PROVISIONAL: string;
