@@ -91,18 +91,19 @@ None.
   and of a histogram; the head with a mark and "Vergleichen"; a page at most 1,600 pixels wide.
 - `verdicts`: a result as a row with two bars; the selection's result below the real one; no bar
   for a majority that is not needed; a bar for the tie-break question; the table of the cantons
-  with a bar per row, headed "Kantone", beside the panel.
+  with a bar per row, headed "Kantone", beside the panel; the place of the selection's result.
 - `limits`: the limits beside the map; adding a limit with one button and its list; the histogram
-  of a track; the mark of the municipality last clicked; the count with its bar.
+  of a track; the mark of the municipality last clicked; the count with its bar; the budget of
+  a drag with five limits.
 - `result-map`: the map's heading for assistive technology; the legend as a scale; a bar in a
   municipality's details; the panel below the map, its shares drawn; the result and the map
-  staying in the window.
+  staying in the window; the wheel over the map scrolling the page, Ctrl or ⌘ with it zooming.
 - `vote-list`: the start page's heading and sentence; the votes by vote day; what a row shows;
-  the search, the filter by result and the links to the years.
+  the search, the filter by result and the links to the years, and their budget.
 - `vote-comparison`: the head; a vote's results drawn as on its page; the two votes one below the
-  other.
+  other, the limits beside them; "results" where its other requirements said "table".
 - `small-screens`: the two majorities one below the other where a result is narrow; the controls
-  of 44 pixels, with the new ones.
+  of 44 pixels, with the new ones; the bar's requirement in the words of a result, not of a box.
 - `interface-languages`: the switch's short names in a narrow window; the start page's heading
   in French and Italian; a row's share and result.
 - `app-shell`, `publishing`: one scenario each, which names the start page's heading.
@@ -112,8 +113,8 @@ None.
 ## Impact
 
 - **Code:** the app only. `app/src/app.css`; the layout and every page under
-  `app/src/routes/[lang]/` with their components; new components for a result's row, the list of
-  characteristics and the start page's list; `app/src/lib/` for what the drawings show (the bars
+  `app/src/routes/[lang]/` with their components; new components for a result's row, a bar of a
+  share, the list of characteristics and the map's notes; `app/src/lib/` for what the drawings show (the bars
   of a result and of a canton, a track's histogram, the legend's scale, the list's days and its
   search); the texts in three languages.
 - **Tests:** the browser tests' helpers and the tests that name today's structure

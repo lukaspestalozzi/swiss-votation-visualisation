@@ -158,7 +158,8 @@ the search SHALL apply together.
 
 ### Requirement: The years of the list
 
-Above the list, a link per year SHALL lead to that year's heading. The search field, the three
+Above the list, a link per year the list shows SHALL lead to that year's heading, written as an
+entry of the head that links is (the `site-style` capability). The search field, the three
 buttons and these links SHALL stay at the top of the window while the list scrolls, and SHALL
 hide no heading a link leads to.
 

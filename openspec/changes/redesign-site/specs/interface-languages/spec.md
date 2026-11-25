@@ -59,8 +59,10 @@ other than these three has no page.
 - **WHEN** a visitor opens `/fr/`, `/it/` and `/fr/guide/`
 - **THEN** the two start pages have the headings "Comment la Suisse aurait-elle voté si seule une
   partie des communes s'était rendue aux urnes?" and "Come avrebbe votato la Svizzera se solo una
-  parte dei Comuni si fosse recata alle urne?", each names "Popular Vote Explorer" in its head,
-  and the language of each page is that of its address
+  parte dei Comuni si fosse recata alle urne?", all three name "Popular Vote Explorer" in their
+  head, and the language of each page is that of its address
+- **AND** the French heading holds a word joiner after the hyphen of "aurait-", so that no line
+  parts "aurait-elle"
 
 #### Scenario: A language that has no page
 
@@ -78,17 +80,17 @@ the one taken.
 #### Scenario: The verdicts in French
 
 - **WHEN** a visitor opens `/fr/votes/5960/`
-- **THEN** it shows the kind "Initiative populaire", the figures "Pourcentage de oui" and
+- **THEN** it shows the kind "Initiative populaire", the votes "Oui" and "Non" and the figure
   "Participation", the verdicts "Majorité du peuple" and "Majorité des cantons", the outcome
-  "Rejeté", and the column "Voix des cantons" of the table: the Constitution's "voix", not the
-  linked data's "votes" (`investigations/languages.md`, 1 and 2)
+  "Rejeté", and the columns "Pourcentage de oui" and "Voix des cantons" of the table: the
+  Constitution's "voix", not the linked data's "votes" (`investigations/languages.md`, 1 and 2)
 
 #### Scenario: The verdicts in Italian
 
 - **WHEN** a visitor opens `/it/votes/5960/`
-- **THEN** it shows the kind "Iniziativa popolare", the figures "Percentuale di sì" and
+- **THEN** it shows the kind "Iniziativa popolare", the votes "Sì" and "No" and the figure
   "Partecipazione", the verdicts "Maggioranza del popolo" and "Maggioranza dei Cantoni", the
-  outcome "Respinto", and the column "Voti dei Cantoni" of the table
+  outcome "Respinto", and the columns "Percentuale di sì" and "Voti dei Cantoni" of the table
 
 #### Scenario: The kinds of vote
 

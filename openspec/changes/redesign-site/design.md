@@ -48,6 +48,9 @@ mockups Q saw unless it says otherwise.
    2 when pointed at. The only colours of a page are the verdicts', the bars' and the map's.
    Rejected: today's blue `#1a5fb4`, which is one more colour beside those of yes, no and the
    lakes.
+   Found while applying: three kinds of link carry no line until pointed at, as the mockups drew
+   them: the head's entries (decision 6), a row's title on the start page (decision 24) and the
+   start page's links to its years, which are written as the head's entries are.
 2. **The colours added**, each measured (`investigations/redesign.md`, 5):
 
    | Role | Light | Dark | Contrast on the ground |
@@ -179,6 +182,9 @@ mockups Q saw unless it says otherwise.
     own. A bin is as tall as its count against the fullest bin's. It is drawn twice, grey and in
     the text's colour, the second clipped to the part between the two thumbs: a step of a slider
     moves one edge of the clip and redraws no bin. It is worked out once, when the limit is added.
+    Found while applying: a bin that holds a municipality is drawn at least a fiftieth as tall as
+    the fullest, so that it is seen: one municipality against 146 would be a line of a third of a
+    pixel. The bins are worked out when their limit is first drawn (`barsPathOf` of `limits.ts`).
 22. **The mark of the municipality last clicked (Q)** stands under each track at its step, with
     its name and value. Without a click, or without a figure, there is no mark.
 23. **The count keeps its sentence** and gains a bar of the municipalities that remain.
@@ -194,7 +200,8 @@ mockups Q saw unless it says otherwise.
     named by the title alone; it is underlined while the row is pointed at. With the mockup's
     breakpoint of 640 pixels the title's column was at most 16 pixels wide in a window of 700: a
     row takes two lines below 1,024 pixels, and the year and the day stand above their rows below
-    768.
+    768. The ground of a row pointed at, and the line under the part that stays, reach half a rem
+    beyond the list on each side, as in the mockup; the rows' text keeps the page's margin.
 25. **Finding a vote (Q).** A search field keeps the rows whose title, in the page's language,
     holds every word typed, whatever the case. "Alle", "Angenommen" and "Abgelehnt" keep the votes
     with that official result; the tie-break question shows under "Alle" only. A vote day or a
@@ -220,6 +227,10 @@ mockups Q saw unless it says otherwise.
     reviewed by Q: the start page's question and sentence; "Titel suchen", "Alle", "Angenommen",
     "Abgelehnt" and the sentence for no match; "Vergleichen"; "Kantone"; "Schliessen"; "Ja-Anteil
     in %"; the sentence under the table of the cantons; and the sentence in the selection's place.
+    Found while applying, further texts: "Ja" and "Nein" below a result's bar (decision 10); the
+    sentence under the table of the cantons in a second form, for a selection; a vote day as day
+    and month; a row's share, "49.16% Ja"; and "Ergebnis" and "Jahre", which name the three
+    buttons and the years for assistive technology. The pull request lists them all.
 29. **The tests' helpers first.** The helpers that add a limit, read a result and read the head are
     rewritten before the tests that use them, and the class names that still name a part stay
     (`.result`, `.selection`, `.limit .label`, `.details`, `.panel`, `.legend`), so a test changes

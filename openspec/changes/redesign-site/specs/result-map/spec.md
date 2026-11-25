@@ -226,8 +226,9 @@ page, as it does elsewhere.
 
 In a window at least 1,024 pixels wide and 700 pixels high, the result and the map with its legend
 SHALL stay in the window while the page scrolls along the limits beside them, and the map SHALL be
-no taller than the window's height less 272 pixels. In any other window they SHALL scroll with the page. In
-a window narrower than 640 pixels the map SHALL reach from one side of the window to the other.
+no taller than the window's height less 17rem, 272 pixels at the browser's default text size. In
+any other window they SHALL scroll with the page. In a window narrower than 640 pixels the map
+SHALL reach from one side of the window to the other.
 
 #### Scenario: Scrolling along five limits
 
