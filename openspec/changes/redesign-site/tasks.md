@@ -151,7 +151,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 8. The whole site
 
-- [ ] 8.1 Run the checks that cross every page: no page wider than 360 pixels in three languages
+- [x] 8.1 Run the checks that cross every page: no page wider than 360 pixels in three languages
   (small-screens "The other pages", with the comparison), every text's contrast in both schemes,
   the font. Verify: `app/e2e/small-screens.spec.ts` and `app/e2e/site-style.spec.ts` pass.
 - [ ] 8.2 Take screenshots of every page, in windows 1,280 and 360 pixels wide and both schemes,

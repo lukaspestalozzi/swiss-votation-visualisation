@@ -40,17 +40,21 @@ test.describe('in a window 360 pixels wide', () => {
     expect(await pageWidth(page)).toBeLessThanOrEqual(360);
   });
 
-  test('the start page, the guide, the tie-break question and a French vote fit the window', async ({
+  test('the start page, the guide, the comparison, the tie-break question and a French vote fit the window', async ({
     page,
   }) => {
+    // Spec small-screens, "The other pages": the comparison with two votes and a selection.
+    const comparison = 'compare/#votes=5960,5970&foreigners=-19.98';
     const paths = ['de', 'fr', 'it'].flatMap((lang) => [
       `${lang}/`,
       `${lang}/guide/`,
+      `${lang}/${comparison}`,
       `${lang}/votes/6823/`,
     ]);
     for (const path of [...paths, 'fr/votes/5960/']) {
       await page.goto(path);
       if (path === 'fr/votes/5960/') await page.locator('.municipalities path').nth(2000).waitFor();
+      if (path.endsWith(comparison)) await expect(page.locator('.result.selection')).toHaveCount(2);
       expect(await pageWidth(page), path).toBeLessThanOrEqual(360);
     }
   });
