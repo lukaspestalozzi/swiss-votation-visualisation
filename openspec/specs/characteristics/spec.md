@@ -46,7 +46,7 @@ characteristic SHALL take its name, its group, its value and its date from that 
 
 #### Scenario: The panel follows the definitions
 
-- **WHEN** the panel beside the map shows a municipality
+- **WHEN** the panel shows a municipality
 - **THEN** it shows the 35 characteristics in the order of their definitions, each in the group
   and with the name, the value and the date its definition gives
 

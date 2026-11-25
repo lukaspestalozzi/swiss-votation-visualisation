@@ -20,7 +20,8 @@ under that path. No server-side code, no database and no login SHALL be needed t
 - **GIVEN** the build has produced its directory of files
 - **WHEN** a static file server serves that directory under the path
   `/swiss-votation-visualisation/` and a browser that prefers "de-CH" opens that path
-- **THEN** the browser shows the start page `/de/`, with the heading "Popular Vote Explorer"
+- **THEN** the browser shows the start page `/de/`, with the heading "Wie hätte die Schweiz
+  abgestimmt, wenn nur ein Teil der Gemeinden an die Urne gegangen wäre?"
 
 ### Requirement: The page requests nothing from other servers
 
