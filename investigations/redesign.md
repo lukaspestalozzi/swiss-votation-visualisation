@@ -11,7 +11,8 @@ layout:
 - the contrast of the colours it adds;
 - what the mockups show, and where their parts stand by window.
 
-It decides nothing: the design of `redesign-site` records the decisions.
+It decides nothing: the design of `redesign-site` records the decisions. "Found while applying"
+holds what the change's implementation found, on 2026-11-24 and 2026-11-25.
 
 Words used here: the **contrast** of two colours is WCAG 2.2's ratio of their relative luminances
 (1.4.3: 4.5:1 for text; 1.4.11: 3:1 for the parts of a control and of a graphic); the
@@ -27,7 +28,9 @@ The scripts are in `investigations/redesign/`. Those in JavaScript use the globa
 as the browser tests serve it. `mockups/hist.mjs` and `mockups/build.mjs` import the app's own
 modules or read its data files, which Node 24 runs with their types stripped. `colours.py` uses
 the standard library only. What the mockups' scripts write, about 1.4 MB, goes to a directory
-outside the repository.
+outside the repository. `stays.cjs`, `first_step.cjs` and `start_page.cjs` were added while
+applying and run against the built site too. The server holds the list of the build's files from
+its start: after a build it is started anew.
 
 ```sh
 pnpm run build
@@ -40,6 +43,10 @@ node investigations/redesign/mockups/extract.cjs /new/path/outside/the/repositor
 node investigations/redesign/mockups/hist.mjs "$PWD" /new/path/outside/the/repository
 node investigations/redesign/mockups/build.mjs "$PWD" /new/path/outside/the/repository
 node investigations/redesign/mockups/shots.cjs /new/path/outside/the/repository [--shots]
+# Found while applying:
+node investigations/redesign/stays.cjs
+node investigations/redesign/first_step.cjs [<width> <height>]
+node investigations/redesign/start_page.cjs
 ```
 
 | File | What |
@@ -52,8 +59,12 @@ node investigations/redesign/mockups/shots.cjs /new/path/outside/the/repository 
 | `mockups/build.mjs` | Writes the six mockups, each one file with the map's shapes and the font: `vote-b.html` and `vote-b-real.html` (a vote with and without a selection), `start.html`, `compare.html`, `guide.html` and `parts.html` (a vote that needs only the majority of voters, the tie-break question, the list of "Merkmal hinzufügen" open). |
 | `mockups/mock.css` | The mockups' stylesheet: the look the design describes. |
 | `mockups/shots.cjs` | Where the parts of a vote's mockup stand in eight windows, each mockup's size in windows 1,280 and 360 pixels wide, and, with `--shots`, a screenshot of each in both schemes. |
+| `stays.cjs` | Found while applying: by how much the part of a vote's page that stays in the window, the result, the map and its legend, is taller than the window, with a selection, in 12 widths by 6 heights and three languages. |
+| `first_step.cjs` | Found while applying: where the results, the map, the legend and the last limit's slider stand in the window before and after the step with which a selection first applies, with five limits and the page scrolled to the last. |
+| `start_page.cjs` | Found while applying: the start page in ten windows and three languages: its size, the narrowest title of a row, the widest share and result, and the height of the part that stays at the top against the room a year keeps for it. |
 
-"Output" at the end of this file is what the scripts printed on 2026-11-24.
+"Output" at the end of this file is what the scripts printed on 2026-11-24, and, under "Found
+while applying", on 2026-11-25 against the site built from the change's branch.
 
 ## Answers
 
@@ -201,7 +212,161 @@ and 2,410 pixels (the guide) long in a window 1,280 wide; 5,602, 17,232, 2,620 a
 360 wide. The start page grows from 6,205 to 10,104 pixels, and from 14,897 to 17,232 on a phone,
 as each vote has a row of its own.
 
+## Found while applying
+
+Found on 2026-11-24 and 2026-11-25 while applying `redesign-site`. A figure of the site as built
+comes from one of the scripts above ("Output", "Found while applying") or from the browser tests,
+which print a line `frames: <number>, longest <ms>; …` before the line of each budget test
+(`pnpm run test:e2e`). A figure of a state before a fix names the commit the script ran against,
+or says "at the time": it was then measured with a probe that was not kept, and cannot be
+measured again without building that state. The frames are those of the cloud sandbox the
+change was built in; CI's runner measured about 0.6 times them (a drag of one limit: longest
+4.9 ms in its log of `main`, 9 to 11.5 here).
+
+### The pages as built
+
+`look.cjs` on the built site, against section 1 and the mockups of section 6:
+
+| Page, in a window 1,280 by 800 | Before | Mockup | Built |
+|---|---|---|---|
+| The start page | 6,205 | 10,104 | 10,304 |
+| A vote | 2,908 | 2,343 | 2,542 |
+| A vote with two limits set | 3,216 | 2,432 | 2,587 |
+| The comparison with a selection | 1,030 | 1,027 | 902 |
+| The guide | 1,993 | 2,410 | 2,393 |
+
+In a window 360 wide the built pages are 17,221, 3,575, 4,311, 2,392 and 3,736 pixels long. With
+two limits set the map of a vote's page begins 429 pixels down in the wide window, where it began
+1,225 down, and the first slider 596 down, beside it; on the phone the map begins 859 down, where
+it began 2,101 down.
+
+### The part that stays in the window
+
+- **Its lines of text scroll away.** With the map's source line and the sentence on the Swiss
+  abroad, the column that stays was 856 to 938 pixels tall in a window 800 high, at the time.
+  They now stand below it and scroll with the page (`MapNotes.svelte`).
+- **The map leaves the result its room.** A result takes more room in a narrower column: in a
+  window 1,024 by 768 the part that stays was 799 pixels tall, at the time. The map's height is the window's
+  less 17rem, less 21.5rem where its column is narrower than 768 pixels and less 26.5rem where it
+  is narrower than 640. `stays.cjs`: with a selection, the part ends within the window in each of
+  216 windows, 1,024 to 1,920 pixels wide and 700 to 1,080 high, in three languages.
+- **The map keeps its shape** where its height is capped, and stands in the middle of its column:
+  dragging and pinching count in pixels of a box of the view's shape.
+
+### The frame in which a selection first applies
+
+One full run of the checks failed "the budget of dragging with five limits and a municipality
+clicked": 16.7 ms, and 16.3 ms measured once more. Alone
+(`pnpm --filter app exec playwright test e2e/limits.spec.ts -g "five limits"`) it took 9.4 to
+13.3 ms in five runs. The long frame was the drag's first or second step.
+
+That step is the one with which the selection first applies. `first_step.cjs` against the site
+built from `bde58e9`, before the fix: in a window 1,280 by 800 the results grew from 132 to 164
+pixels, as the place of the selection's result was 50 pixels tall and the result that took it
+83; the map moved from 168 to 200; and the browser, which keeps a page where it is by a part
+below what grew, scrolled it from 563 to 596, so that the slider being moved went from 641 to
+608 under the pointer. In a window 1,024 by 768 the legend grew by a line too, 54 to 71 pixels,
+as its entry for the set-aside municipalities joined the two beside the scale; the page scrolled
+from 855 to 947 and the slider went from 372 to 280. The frame held a layout of the column and a
+repaint of the whole map.
+
+Since `b208c71` and `83f2c3e`, where the limits stand beside the map:
+
+- the vote's result and the place are rows of one height, so the place is as tall as a result,
+  83 pixels at 1,280 and 149 at 1,024, where a result takes two rows;
+- the legend's entries beside the scale keep the room of three lines in a column narrower than
+  768 pixels;
+- the map's column has `overflow-anchor: none`, so the browser keeps the page by a part of the
+  limits, as the comparison's column of votes has.
+
+`first_step.cjs` then: nothing moves in a window 1,280 by 800, 1,024 by 768 or 1,100 by 720, and
+`stays.cjs` still finds every window fitting.
+
+### The frames in the new layout
+
+The longest frame of each budget test in three full runs of the browser tests: on `bde58e9`
+before that fix, on `b208c71` with it, and on `83f2c3e`.
+
+| Budget test | Budget | Before the fix | With it | With the legend's |
+|---|---|---|---|---|
+| A drag of one limit | 16 ms | 12.4 | 9.1 | 14.4 |
+| A drag with five limits and Köniz clicked | 16 ms | 16.7, then 16.3 | 13.3 | 15.7 |
+| Jumps of the selection | 50 ms | 17.2 | 22.8 | 17.4 |
+| Zooming, moving and pointing on the map | 16 ms | 8.5 | 8.2 | 13.9 |
+| Clicking a municipality | 16 ms | 6.3 | 5.7 | 7.9 |
+| Fingers: the moves and the taps | 16 ms | 8.5 | 8.6 | 9.7 |
+| A link with 21 limits in the same tab | 100 ms | 66.4 | 69.1 | 95.2 |
+| A link with all 35 limits | 170 ms | 95.4 | 70.3 | 104.9 |
+| The comparison: a drag with two votes | 16 ms | 6.1 | 8.2 | 8.3 |
+| The comparison: jumps with two votes | 50 ms | 22.5 | 14.1 | 15.4 |
+| The start page: keys and presses | 50 ms | 15.8 | 10.9 | 15.9 |
+
+In the two later runs a drag's steps took 4.4 to 6.3 ms at the median and 6.5 to 9.9 ms at the
+ninth decile. The longest are the first step, 9 to 13 ms, and steps near the low end of the
+logarithmic track of "Einwohner", where many municipalities change at once. On this machine the
+drag with five limits keeps little of its budget; the test measures once more when a frame
+exceeds it.
+
+- **A key in the frame of a pointing.** After the wheel over the map scrolled the page, the
+  map's budget test pressed Ctrl in the frame of its first pointing, and that frame took 13.7 to
+  17.6 ms where it took 4.5 to 6.5 without the key; a key pressed at rest cost 0.1 to 0.5 ms (at
+  the time, three runs each). The test now waits 50 ms before the key, as a person would: its
+  first pointing took 4.3 to 6.1 ms in five runs.
+- **A finger's touchdown** is still not measured: its frame took 36 to 38 ms in each run
+  (`investigations/small-screens.md`, 8).
+
+### The start page
+
+`start_page.cjs`:
+
+- **A row's columns.** The widest share is 67.9 pixels in German, 93.5 in French ("49.16% de
+  oui") and 78.8 in Italian; the widest result with its marks 156.8, 120.1 and 137.1. Their
+  columns are 6.5rem and 10.5rem.
+- **A row takes two lines below 1,024 pixels.** With the mockup's breakpoint of 640 the title's
+  column was at most 16 pixels wide in a window of 700 and the page 31,179 pixels long in German,
+  at the time; it is 636 pixels wide and the page 14,301 long now. The year and the vote day
+  stand above their rows below 768.
+- **The part that stays at the top** is 97 pixels tall from 640 pixels, 145 at 360, 153 on a
+  phone 412 wide and 101 on one held wide. With rooms written into the stylesheet, the German
+  buttons took a line of their own at 640 and the part covered 9 pixels of a year's heading, at
+  the time. The field now gives way first, and the page measures the part: the room a year keeps
+  equals its height in each of the 30 windows, and a year's heading stands 32 pixels below it.
+- **The budget of the list.** The longest frame is the one after the field is emptied, which
+  writes the 125 rows again: 10.9 to 15.9 ms. A key took 1.2 to 8.3 ms.
+- **The French heading** holds a word joiner after the hyphen of "aurait-elle", which the
+  balanced lines parted.
+
+### The specs
+
+- Three specs still named the start page's old heading or the list's result in one text:
+  `app-shell`, `publishing` and two scenarios of `interface-languages`. The change gained their
+  deltas.
+- The first deltas said every link below the head is underlined. The head's entries and a row's
+  title on the start page carry a line only while pointed at, as the mockups drew them.
+
+### The comparison and the tests
+
+- **A choice before the scripts run is lost.** The built comparison shows its two lists before
+  its scripts run. A vote chosen then is dropped when they do, and the list shows no choice
+  again. A browser test chose that early once in a full run, and failed with the scripts
+  delayed by 300 ms (a test run once and removed); it now waits until the page has asked for the
+  characteristics, and passed with the same delay. The
+  behaviour is that of `add-vote-comparison`, and the redesign did not change it.
+- **A tap beside a border.** In a window 360 pixels wide a tap 0 or 2 pixels inside Zürich
+  reached Schlieren or Urdorf, and one 3 to 5 pixels inside reached Zürich, at the time: Chrome
+  moves a tap to a neighbour (`investigations/small-screens.md`, 8). The test takes a point 4
+  pixels inside.
+- **A link over its row.** A row's title on the start page is a link that reaches over the row.
+  Playwright does not click a part another element lies over, so the test of the whole row
+  clicks the row at the share's place.
+
 ## Not verified
+
+Of the five points below, applying the change settled four: the browser tests open the built
+pages in French and Italian, measure the frames of the real drawings ("Found while applying"),
+move, zoom and tap the map below the result that stays, and use the list of "Merkmal hinzufügen"
+by keys and by fingers. A real phone remains, and a pinch on a trackpad in Safari, which reports
+it differently from Chrome.
 
 - The new look in French and Italian: only German was mocked up. The longest names ("Maggioranza
   dei Cantoni", the French and Italian names of the characteristics) may wrap where the German
@@ -327,4 +492,126 @@ start: 1280 x 10104 in a window 1,280 wide, 360 x 17232 in one 360 wide
 compare: 1280 x 1027 in a window 1,280 wide, 360 x 2620 in one 360 wide
 guide: 1280 x 2410 in a window 1,280 wide, 360 x 3769 in one 360 wide
 parts: 1280 x 2355 in a window 1,280 wide, 360 x 3824 in one 360 wide
+```
+
+### Found while applying
+
+`node investigations/redesign/look.cjs`, against the site built from `2427471`:
+
+```
+1280 x 800 start: 1280 x 10304
+1280 x 800 vote: 1280 x 2542 | tops: result 244, limits 244, first slider null, map 429, cantons 1234
+1280 x 800 vote-selection: 1280 x 2587 | tops: result 244, limits 244, first slider 596, map 429, cantons 1234
+1280 x 800 compare: 1280 x 902
+1280 x 800 guide: 1280 x 2393
+360 x 740 start: 360 x 17221
+360 x 740 vote: 360 x 3575 | tops: result 356, limits 1308, first slider null, map 750, cantons 2005
+360 x 740 vote-selection: 360 x 4311 | tops: result 356, limits 1443, first slider 1795, map 859, cantons 2565
+360 x 740 compare: 360 x 2392
+360 x 740 guide: 360 x 3736
+```
+
+`node investigations/redesign/first_step.cjs`, then with `1024 768`, against the site built from
+`bde58e9`, before the fix:
+
+```
+1280 x 800
+before {"scroll":563,"results":"16+132","place":"98+50","selection":null,"map":"168+496","legend":"675+54","stays":"0+729","last slider":"641+24"}
+after  {"scroll":596,"results":"16+164","place":null,"selection":"98+83","map":"200+496","legend":"708+54","stays":"0+762","last slider":"608+24"}
+1024 x 768
+before {"scroll":855,"results":"16+222","place":"164+74","selection":null,"map":"258+344","legend":"614+54","stays":"0+668","last slider":"372+24"}
+after  {"scroll":947,"results":"-131+297","place":null,"selection":"17+149","map":"186+344","legend":"542+71","stays":"-147+760","last slider":"280+24"}
+```
+
+The same, then with `1100 720`, against the site built from `83f2c3e`:
+
+```
+1280 x 800
+before {"scroll":563,"results":"16+165","place":"99+83","selection":null,"map":"201+496","legend":"709+54","stays":"0+763","last slider":"641+24"}
+after  {"scroll":563,"results":"16+165","place":null,"selection":"99+83","map":"201+496","legend":"709+54","stays":"0+763","last slider":"641+24"}
+1024 x 768
+before {"scroll":855,"results":"-40+298","place":"109+149","selection":null,"map":"278+344","legend":"634+71","stays":"-56+761","last slider":"372+24"}
+after  {"scroll":855,"results":"-40+298","place":null,"selection":"109+149","map":"278+344","legend":"634+71","stays":"-56+761","last slider":"372+24"}
+1100 x 720
+before {"scroll":879,"results":"13+165","place":"95+83","selection":null,"map":"198+376","legend":"586+71","stays":"-3+660","last slider":"348+24"}
+after  {"scroll":879,"results":"13+165","place":null,"selection":"95+83","map":"198+376","legend":"586+71","stays":"-3+660","last slider":"348+24"}
+```
+
+`node investigations/redesign/stays.cjs`, against the same site:
+
+```
+de: pixels over the window's height (0 when it fits); a row per width, a column per height 700, 720, 768, 800, 900, 1080
+  1024:   0   0   0   0   0   0
+  1050:   0   0   0   0   0   0
+  1074:   0   0   0   0   0   0
+  1076:   0   0   0   0   0   0
+  1100:   0   0   0   0   0   0
+  1150:   0   0   0   0   0   0
+  1200:   0   0   0   0   0   0
+  1280:   0   0   0   0   0   0
+  1366:   0   0   0   0   0   0
+  1440:   0   0   0   0   0   0
+  1600:   0   0   0   0   0   0
+  1920:   0   0   0   0   0   0
+fr: pixels over the window's height (0 when it fits); a row per width, a column per height 700, 720, 768, 800, 900, 1080
+  1024:   0   0   0   0   0   0
+  1050:   0   0   0   0   0   0
+  1074:   0   0   0   0   0   0
+  1076:   0   0   0   0   0   0
+  1100:   0   0   0   0   0   0
+  1150:   0   0   0   0   0   0
+  1200:   0   0   0   0   0   0
+  1280:   0   0   0   0   0   0
+  1366:   0   0   0   0   0   0
+  1440:   0   0   0   0   0   0
+  1600:   0   0   0   0   0   0
+  1920:   0   0   0   0   0   0
+it: pixels over the window's height (0 when it fits); a row per width, a column per height 700, 720, 768, 800, 900, 1080
+  1024:   0   0   0   0   0   0
+  1050:   0   0   0   0   0   0
+  1074:   0   0   0   0   0   0
+  1076:   0   0   0   0   0   0
+  1100:   0   0   0   0   0   0
+  1150:   0   0   0   0   0   0
+  1200:   0   0   0   0   0   0
+  1280:   0   0   0   0   0   0
+  1366:   0   0   0   0   0   0
+  1440:   0   0   0   0   0   0
+  1600:   0   0   0   0   0   0
+  1920:   0   0   0   0   0   0
+```
+
+`node investigations/redesign/start_page.cjs`, against the site built from `2427471`:
+
+```
+1920 x 1080 de: {"page":"1920 x 10304","narrowest title":492,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1920 x 1080 fr: {"page":"1920 x 10449","narrowest title":492,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1920 x 1080 it: {"page":"1920 x 10532","narrowest title":492,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1280 x 800 de: {"page":"1280 x 10304","narrowest title":492,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1280 x 800 fr: {"page":"1280 x 10449","narrowest title":492,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1280 x 800 it: {"page":"1280 x 10532","narrowest title":492,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1024 x 768 de: {"page":"1024 x 12839","narrowest title":300,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1024 x 768 fr: {"page":"1024 x 13026","narrowest title":300,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1024 x 768 it: {"page":"1024 x 12964","narrowest title":300,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1023 x 768 de: {"page":"1023 x 12012","narrowest title":719,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1023 x 768 fr: {"page":"1023 x 12158","narrowest title":719,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+1023 x 768 it: {"page":"1023 x 12220","narrowest title":719,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+768 x 800 de: {"page":"768 x 13400","narrowest title":464,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+768 x 800 fr: {"page":"768 x 13650","narrowest title":464,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+768 x 800 it: {"page":"768 x 13712","narrowest title":464,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+700 x 800 de: {"page":"700 x 14301","narrowest title":636,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+700 x 800 fr: {"page":"700 x 14525","narrowest title":636,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+700 x 800 it: {"page":"700 x 14483","narrowest title":636,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+640 x 800 de: {"page":"640 x 14622","narrowest title":576,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+640 x 800 fr: {"page":"640 x 14747","narrowest title":576,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+640 x 800 it: {"page":"640 x 14768","narrowest title":576,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":97,"room":97,"year at":97,"heading at":129}
+360 x 740 de: {"page":"360 x 17213","narrowest title":328,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":145,"room":145,"year at":145,"heading at":177}
+360 x 740 fr: {"page":"360 x 17588","narrowest title":328,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":145,"room":145,"year at":145,"heading at":177}
+360 x 740 it: {"page":"360 x 17346","narrowest title":328,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":145,"room":145,"year at":145,"heading at":177}
+a phone de: {"page":"412 x 16266","narrowest title":380,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":153,"room":153,"year at":153,"heading at":185}
+a phone fr: {"page":"412 x 16620","narrowest title":380,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":153,"room":153,"year at":153,"heading at":185}
+a phone it: {"page":"412 x 16536","narrowest title":380,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":153,"room":153,"year at":153,"heading at":185}
+a phone held wide de: {"page":"863 x 12832","narrowest title":559,"widest share":67.9,"widest result":156.8,"past their box":0,"stays":101,"room":101,"year at":101,"heading at":133}
+a phone held wide fr: {"page":"863 x 12957","narrowest title":559,"widest share":93.5,"widest result":120.1,"past their box":0,"stays":101,"room":101,"year at":101,"heading at":133}
+a phone held wide it: {"page":"863 x 12936","narrowest title":559,"widest share":78.8,"widest result":137.1,"past their box":0,"stays":101,"room":101,"year at":101,"heading at":133}
 ```
