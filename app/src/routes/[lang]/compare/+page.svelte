@@ -8,10 +8,9 @@
     comparisonLinkOf,
     comparisonOf,
     readAnew,
+    resultsOf,
     secondChoices,
-    tableOf,
     withSelection,
-    type VoteTable,
   } from '../../../lib/comparison.ts';
   import {
     isNarrowed,
@@ -24,7 +23,7 @@
   import { linkOf, selectionOf } from '../../../lib/share-link.ts';
   import { textsOf } from '../../../lib/texts/index.ts';
   import type { CharacteristicsFile, VoteFile } from '../../../lib/vote-data.ts';
-  import { judgedOfFile, type ResultShown } from '../../../lib/vote-page.ts';
+  import { judgedOfFile, type Judged } from '../../../lib/vote-page.ts';
   import Limits from '../votes/[id]/Limits.svelte';
   import { loadCharacteristics } from '../votes/[id]/loaders.ts';
   import type { PageProps } from './$types';
@@ -160,7 +159,7 @@
       const vote = data.votes.find((candidate) => candidate.id === id);
       if (vote === undefined) return [];
       const file = files.get(vote.id);
-      const made: { real: ResultShown; entries: VoteEntries | null } | 'loading' | 'failed' =
+      const made: { real: Judged; entries: VoteEntries | null } | 'loading' | 'failed' =
         file === undefined || file === 'failed'
           ? (file ?? 'loading')
           : {
@@ -182,23 +181,22 @@
   // A selection applies while a limit is narrowed or the Swiss abroad are not counted.
   const applies = $derived(!abroadCounted || limits.some(isNarrowed));
 
-  // Each chosen vote with its table, or what stands in its place while its file loads or when it
-  // cannot be loaded.
+  // Each chosen vote with its results, or what stands in their place while its file loads or
+  // when it cannot be loaded.
   const shown = $derived(
     chosen.map(({ vote, made }) => {
-      if (made === 'loading' || made === 'failed') return { vote, table: made, selected: null };
+      if (made === 'loading' || made === 'failed') return { vote, results: made, selected: null };
       const selected =
         applies && remaining !== null && made.entries !== null
           ? withSelection(made.entries, vote.majorities, remaining, abroadCounted, t)
           : null;
-      const table: VoteTable = tableOf(made.real, selected, t);
-      return { vote, table, selected };
+      return { vote, results: resultsOf(made.real, selected, t), selected };
     }),
   );
 
   // The bar at the bottom of a narrow window (design, decision 7): each vote's outcome with the
-  // selection, and the tables it observes, which change with the votes chosen and their files, not
-  // at each step of a slider.
+  // selection, and the votes' results it observes, which change with the votes chosen and their
+  // files, not at each step of a slider.
   const outcomes = $derived(
     shown.flatMap(({ selected }, index) =>
       selected === null
@@ -212,10 +210,10 @@
           ],
     ),
   );
-  const tableElements = $state<Record<number, HTMLElement | null>>({});
+  const resultElements = $state<Record<number, HTMLElement | null>>({});
   const observed = $derived(
     [first, second].flatMap((id) => {
-      const element = id === null ? null : (tableElements[id] ?? null);
+      const element = id === null ? null : (resultElements[id] ?? null);
       return element === null ? [] : [element];
     }),
   );
@@ -281,27 +279,34 @@
 {#if unusable.length > 0}
   <p>{t.unusableParts(unusable)}</p>
 {/if}
-<div class="tables">
-  {#each shown as { vote, table } (vote.id)}
-    <ComparedVote {t} {vote} {table} bind:element={tableElements[vote.id]} />
-  {/each}
+<!-- The two votes one below the other, and from 1,024 pixels the limits beside them, as on a
+     vote's page (spec vote-comparison, "The comparison on a phone"; design of redesign-site,
+     decision 26). -->
+<div class="workbench">
+  <div class="votes">
+    {#each shown as { vote, results } (vote.id)}
+      <ComparedVote {t} {vote} {results} bind:element={resultElements[vote.id]} />
+    {/each}
+  </div>
+  {#if firstVote !== undefined}
+    <div class="setting">
+      <p class="same">{t.SAME_MUNICIPALITIES}</p>
+      <Limits
+        {t}
+        file={characteristics}
+        failed={characteristicsFailed}
+        voteDate={firstVote.date}
+        count={null}
+        unusable={[]}
+        clicked={null}
+        bind:limits
+        bind:abroadCounted
+      />
+    </div>
+  {/if}
 </div>
-{#if firstVote !== undefined}
-  <p>{t.SAME_MUNICIPALITIES}</p>
-  <Limits
-    {t}
-    file={characteristics}
-    failed={characteristicsFailed}
-    voteDate={firstVote.date}
-    count={null}
-    unusable={[]}
-    clicked={null}
-    bind:limits
-    bind:abroadCounted
-  />
-{/if}
 
-<ComparisonBar {outcomes} tables={observed} />
+<ComparisonBar {outcomes} results={observed} />
 
 <style>
   .choices label {
@@ -319,15 +324,39 @@
       min-height: 44px;
     }
   }
-  /* The second table below the first, and from 640 pixels beside it, as a vote's page sets its
-     result beside the selection's (design of add-vote-comparison, decision 7). */
-  .tables {
-    display: grid;
-    gap: 1rem;
+  .choices {
+    margin-bottom: 2rem;
   }
-  @media (min-width: 640px) {
-    .tables {
-      grid-template-columns: 1fr 1fr;
+  .workbench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+  /* The second vote below the first, at every width. */
+  .votes {
+    display: grid;
+    gap: 2.5rem;
+    min-width: 0;
+    align-content: start;
+  }
+  .same {
+    margin-top: 0;
+  }
+  /* The limits beside the two votes, as beside a vote's map. What grows in the votes' column,
+     as each vote's results do when a selection first applies, moves nothing in the limits':
+     the browser keeps the page where it is by a part of the limits, not by one of that column. */
+  @media (min-width: 1024px) {
+    .workbench {
+      grid-template-columns: minmax(0, 1fr) clamp(19rem, 30vw, 24rem);
+      gap: 3rem;
+    }
+    .votes {
+      overflow-anchor: none;
+    }
+    .setting {
+      align-self: start;
+      padding-left: 2rem;
+      border-left: 1px solid var(--hairline);
     }
   }
 </style>

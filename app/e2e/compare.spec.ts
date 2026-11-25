@@ -4,7 +4,19 @@ import { expect, test, type Page } from '@playwright/test';
 import { lowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
 import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
-import { addButton, addLimit, pageHead, languageSwitch, limitList } from './parts.ts';
+import {
+  addButton,
+  addLimit,
+  barDrawn,
+  figuresOf,
+  languageSwitch,
+  limitList,
+  outcomeOf,
+  pageHead,
+  verdictFiguresOf,
+  verdictWordsOf,
+  votersBarOf,
+} from './parts.ts';
 
 /** The language a page declares in its markup. */
 const languageOf = (page: Page) => page.locator('html').getAttribute('lang');
@@ -51,7 +63,7 @@ test('The head of the comparison', async ({ page }) => {
   await expect(page.getByLabel('Erste Abstimmung')).toBeVisible();
   await expect(page.getByLabel('Zweite Abstimmung')).toBeVisible();
   await expect(page.locator('.limit')).toHaveCount(0);
-  await expect(page.locator('table')).toHaveCount(0);
+  await expect(page.locator('.result')).toHaveCount(0);
 });
 
 /** The ids a list offers, without its empty choice. */
@@ -77,22 +89,48 @@ test('The lists of a vote of 2016-02-28', async ({ page }) => {
   expect([...firsts, ...seconds]).not.toContain('6823');
 });
 
-/** The table of a chosen vote. */
-const tableOf = (page: Page, id: number) => page.locator(`[data-vote="${String(id)}"] table`);
+/** The results of a chosen vote: its real one and, while a selection applies, the selection's. */
+const resultsOf = (page: Page, id: number) => page.locator(`[data-vote="${String(id)}"] .results`);
 
-/** The columns of a vote's table, and its rows, each as its heading and its cells' texts. */
+/** The headings of a vote's results: "Echtes Ergebnis" and, with a selection, "Mit Ihrer Auswahl". */
+const headingsOf = (page: Page, id: number) => resultsOf(page, id).locator('.result .heading');
+
+/**
+ * A vote's results as a table of text: a column for each result, under its heading, and a row
+ * for each of its figures and words, as the comparison wrote them in a table before the results
+ * were drawn as on a vote's page.
+ */
 async function rowsOf(page: Page, id: number) {
-  const table = tableOf(page, id);
-  await expect(table).toBeVisible();
+  const results = resultsOf(page, id);
+  await expect(results).toBeVisible();
+  const shown: string[][] = [];
+  for (const result of await results.locator('.result').all()) {
+    // The yes and the no votes; the yes share and the cantonal votes; the two words.
+    const votes = await figuresOf(result).allInnerTexts();
+    const figures = await verdictFiguresOf(result).allInnerTexts();
+    const words = await verdictWordsOf(result).allInnerTexts();
+    shown.push(
+      [
+        votes[0],
+        votes[1],
+        figures[0],
+        `${words[0].trim()} ${figures[0].trim()}`,
+        `${words[1].trim()} ${figures[1].trim()}`,
+        await outcomeOf(result).innerText(),
+      ].map((text) => text.trim()),
+    );
+  }
+  const headings = [
+    'Ja-Stimmen',
+    'Nein-Stimmen',
+    'Ja-Anteil',
+    'Volksmehr',
+    'Ständemehr',
+    'Vorlage',
+  ];
   return {
-    columns: await table.locator('thead th').allInnerTexts(),
-    rows: await table
-      .locator('tbody tr')
-      .evaluateAll((rows) =>
-        rows.map((row) =>
-          [...row.querySelectorAll('th, td')].map((cell) => (cell as HTMLElement).innerText.trim()),
-        ),
-      ),
+    columns: await headingsOf(page, id).allInnerTexts(),
+    rows: headings.map((heading, index) => [heading, ...shown.map((result) => result[index])]),
   };
 }
 
@@ -124,7 +162,7 @@ test('The real results', async ({ page }) => {
 
 test('A known difference', async ({ page }) => {
   await page.goto('de/compare/#votes=6650,6660');
-  await expect(tableOf(page, 6650)).toBeVisible();
+  await expect(resultsOf(page, 6650)).toBeVisible();
   await expect(page.locator('[data-vote="6650"] p.secondary').last()).toHaveText(
     "Das erwahrte Ergebnis zählt 1'350'325 Nein-Stimmen (BBl 2024 996); die Zahlen der " +
       'Gemeinden, aus denen hier gerechnet wird, ergeben 200 mehr.',
@@ -134,11 +172,11 @@ test('A known difference', async ({ page }) => {
 test('A file that cannot be loaded', async ({ page }) => {
   await page.route('**/data/votes/5970.json', (route) => route.abort());
   await page.goto('de/compare/#votes=5960,5970');
-  await expect(tableOf(page, 5960)).toBeVisible();
+  await expect(resultsOf(page, 5960)).toBeVisible();
   await expect(page.locator('[data-vote="5970"]')).toContainText(
     'Die Ergebnisse dieser Abstimmung lassen sich nicht laden.',
   );
-  await expect(tableOf(page, 5970)).toHaveCount(0);
+  await expect(resultsOf(page, 5970)).toHaveCount(0);
 });
 
 test('The characteristics cannot be loaded', async ({ page }) => {
@@ -149,7 +187,7 @@ test('The characteristics cannot be loaded', async ({ page }) => {
     page.getByText('Ohne die Merkmale lassen sich keine Gemeinden auswählen.'),
   ).toBeVisible();
   for (const id of [5960, 5970]) {
-    await expect(tableOf(page, id).locator('thead th')).toHaveText(['Echtes Ergebnis']);
+    await expect(headingsOf(page, id)).toHaveText(['Echtes Ergebnis']);
   }
   expect((await rowsOf(page, 5960)).rows[0]).toEqual(['Ja-Stimmen', "1'609'152"]);
   // Without the characteristics the page writes nothing (design, decision 8).
@@ -161,10 +199,10 @@ test('Each file once', async ({ page }) => {
   const requested: string[] = [];
   page.on('request', (request) => requested.push(request.url()));
   await page.goto('de/compare/#votes=5960');
-  await expect(tableOf(page, 5960)).toBeVisible();
+  await expect(resultsOf(page, 5960)).toBeVisible();
   for (const second of ['5970', '5980', '5970']) {
     await page.getByLabel('Zweite Abstimmung').selectOption(second);
-    await expect(tableOf(page, Number(second))).toBeVisible();
+    await expect(resultsOf(page, Number(second))).toBeVisible();
   }
   const files = requested
     .filter((url) => url.includes('/data/votes/'))
@@ -173,12 +211,9 @@ test('Each file once', async ({ page }) => {
   expect(requested.filter((url) => !url.startsWith('http://localhost:4173/'))).toEqual([]);
 });
 
-/** The columns of a vote's table once its selection applies, then its rows and its count. */
+/** The figures and words of a vote's result with the selection, once it applies, and its count. */
 async function selectedOf(page: Page, id: number) {
-  await expect(tableOf(page, id).locator('thead th')).toHaveText([
-    'Echtes Ergebnis',
-    'Mit Ihrer Auswahl',
-  ]);
+  await expect(headingsOf(page, id)).toHaveText(['Echtes Ergebnis', 'Mit Ihrer Auswahl']);
   const { rows } = await rowsOf(page, id);
   return {
     selected: rows.map((row) => row[2]),
@@ -205,7 +240,7 @@ test('Two votes of one day', async ({ page }) => {
     selected: ["654'548", "769'763", '45.96%', 'Nein 45.96%', 'Nein 8½ : 14', 'Abgelehnt'],
     count: "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
   });
-  // The limits' own count stands below each table instead (design, decision 6).
+  // The limits' own count stands below each vote's results instead (design, decision 6).
   await expect(page.locator('.limits p.count')).toHaveCount(0);
 });
 
@@ -288,10 +323,7 @@ test('The language switch carries the comparison', async ({ page }) => {
   await expect(page.locator('.limit .label')).toHaveText(
     'Part des étrangers (fin 2015): de 0.00% à 19.98%',
   );
-  await expect(tableOf(page, 5970).locator('thead th')).toHaveText([
-    'Vrai résultat',
-    'Avec votre sélection',
-  ]);
+  await expect(headingsOf(page, 5970)).toHaveText(['Vrai résultat', 'Avec votre sélection']);
 });
 
 test('A link without votes in the same tab', async ({ page }) => {
@@ -344,10 +376,7 @@ test('From a vote with a selection', async ({ page }) => {
   await expect(page.locator('.limit .label')).toHaveText(
     'Ausländeranteil (Ende 2015): von 0.00% bis 19.98%',
   );
-  await expect(tableOf(page, 5960).locator('thead th')).toHaveText([
-    'Echtes Ergebnis',
-    'Mit Ihrer Auswahl',
-  ]);
+  await expect(headingsOf(page, 5960)).toHaveText(['Echtes Ergebnis', 'Mit Ihrer Auswahl']);
   await expect(page.getByLabel('Zweite Abstimmung')).toHaveValue('');
 });
 
@@ -362,9 +391,9 @@ test('No comparison of the tie-break question', async ({ page }) => {
 /** The width of the page, which is the window's when nothing reaches past it. */
 const pageWidth = (page: Page) => page.evaluate(() => document.documentElement.scrollWidth);
 
-/** The boxes of the chosen votes 5960 and 5970, once both tables show the selection. */
+/** The boxes of the chosen votes 5960 and 5970, once both show the selection's result. */
 async function boxesOf(page: Page) {
-  for (const id of [5960, 5970]) await expect(tableOf(page, id).locator('thead th')).toHaveCount(2);
+  for (const id of [5960, 5970]) await expect(headingsOf(page, id)).toHaveCount(2);
   const [first, second] = await Promise.all(
     [5960, 5970].map((id) => page.locator(`[data-vote="${String(id)}"]`).boundingBox()),
   );
@@ -388,11 +417,54 @@ test.describe('in a window 360 pixels wide', () => {
 test.describe('in a window 1,280 pixels wide', () => {
   test.use({ viewport: { width: 1280, height: 900 } });
 
-  test('the tables stand side by side', async ({ page }) => {
+  test('In a wide window', async ({ page }) => {
+    // The second vote below the first, with its left edge, and the limits to the right of both.
     await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
     const { first, second } = await boxesOf(page);
-    expect(second.x).toBeGreaterThanOrEqual(first.x + first.width);
-    expect(second.y).toBe(first.y);
+    expect(second.y).toBeGreaterThanOrEqual(first.y + first.height);
+    expect(second.x).toBe(first.x);
+    const limits = await page.locator('.limits').boundingBox();
+    if (limits === null) throw new Error('the limits are not shown');
+    expect(limits.x).toBeGreaterThanOrEqual(
+      Math.max(first.x + first.width, second.x + second.width),
+    );
+    expect(limits.y).toBeLessThan(first.y + first.height);
+  });
+
+  test('Four bars one above the other', async ({ page }) => {
+    // The Volksmehr's bars of both results of both votes: one left edge, one width, and the yes
+    // parts of investigations/vote-comparison.md, 2.
+    await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
+    for (const id of [5960, 5970]) await expect(headingsOf(page, id)).toHaveCount(2);
+    const bars = [];
+    for (const id of [5960, 5970]) {
+      for (const result of await resultsOf(page, id).locator('.result').all()) {
+        bars.push(await barDrawn(votersBarOf(result)));
+      }
+    }
+    expect(bars).toHaveLength(4);
+    const shares = [
+      1609152 / (1609152 + 1664224),
+      733402 / (733402 + 664373),
+      1375098 / (1375098 + 1966965),
+      654548 / (654548 + 769763),
+    ];
+    for (const [index, bar] of bars.entries()) {
+      expect(
+        Math.abs(bar.left - bars[0].left),
+        `left edge of bar ${String(index)}`,
+      ).toBeLessThanOrEqual(1);
+      expect(
+        Math.abs(bar.width - bars[0].width),
+        `width of bar ${String(index)}`,
+      ).toBeLessThanOrEqual(1);
+      expect(Math.abs((bar.parts[0]?.width ?? 0) - shares[index] * bar.width)).toBeLessThanOrEqual(
+        1,
+      );
+    }
+    expect(bars.map((bar) => bar.top)).toEqual(
+      [...bars.map((bar) => bar.top)].sort((a, b) => a - b),
+    );
   });
 });
 
@@ -401,7 +473,7 @@ test.describe('on a phone', () => {
 
   test('the lists are at least 44 × 44 pixels', async ({ page }) => {
     await page.goto('de/compare/#votes=5960,5970');
-    await expect(tableOf(page, 5970)).toBeVisible();
+    await expect(resultsOf(page, 5970)).toBeVisible();
     const lists = ['Erste Abstimmung', 'Zweite Abstimmung'];
     const sizes = await Promise.all(
       lists.map(async (name) => {
@@ -418,8 +490,7 @@ test.describe('the bar on a phone', () => {
 
   test('The bar', async ({ page }) => {
     await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
-    for (const id of [5960, 5970])
-      await expect(tableOf(page, id).locator('thead th')).toHaveCount(2);
+    for (const id of [5960, 5970]) await expect(headingsOf(page, id)).toHaveCount(2);
     await page.locator('.limits').evaluate((limits) => {
       limits.scrollIntoView({ block: 'center' });
     });
@@ -454,14 +525,25 @@ for (const colorScheme of ['light', 'dark'] as const) {
     test('The colours of the tables', async ({ page }) => {
       await page.goto('de/compare/#votes=5960,5970&foreigners=-19.98');
       for (const id of [5960, 5970]) {
-        await expect(tableOf(page, id).locator('thead th')).toHaveCount(2);
+        await expect(headingsOf(page, id)).toHaveCount(2);
       }
-      // Each word of a side, row by row: the real result, then the selection's.
-      const words = await page
-        .locator('table td span')
-        .evaluateAll((spans) =>
-          spans.map((span) => [span.textContent.trim(), getComputedStyle(span).color]),
-        );
+      // Each word of a side, vote by vote: the Volksmehr's, the Ständemehr's and the outcome,
+      // each of the real result, then of the selection's.
+      const words: string[][] = [];
+      for (const id of [5960, 5970]) {
+        const coloured = (selector: string) =>
+          resultsOf(page, id)
+            .locator(selector)
+            .evaluateAll((parts) =>
+              parts.map((part) => [part.textContent.trim(), getComputedStyle(part).color]),
+            );
+        const [majorities, outcomes] = [
+          await coloured('.verdict .word'),
+          await coloured('.outcome'),
+        ];
+        // The words stand result by result: the voters' and the cantons' of each.
+        words.push(majorities[0], majorities[2], majorities[1], majorities[3], ...outcomes);
+      }
       const { yes, no } = SIDES[colorScheme];
       expect(
         words.filter(([word]) => ['Ja', 'Nein', 'Angenommen', 'Abgelehnt'].includes(word)),
@@ -488,7 +570,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
 async function openMeasured(page: Page): Promise<void> {
   await page.addInitScript(MEASURE_FRAMES);
   await page.goto('de/compare/#votes=5960,5970&foreigners=-');
-  for (const id of [5960, 5970]) await expect(tableOf(page, id)).toBeVisible();
+  for (const id of [5960, 5970]) await expect(resultsOf(page, id)).toBeVisible();
   await expect(page.locator('.limit')).toHaveCount(1);
   await fontsLoaded(page);
 }
@@ -543,10 +625,10 @@ test.describe(() => {
     await press(abroad);
     const second = page.getByLabel('Zweite Abstimmung');
     await second.selectOption('5980');
-    await expect(tableOf(page, 5980)).toBeVisible();
+    await expect(resultsOf(page, 5980)).toBeVisible();
     await page.waitForTimeout(50);
     await second.selectOption('5970');
-    await expect(tableOf(page, 5970)).toBeVisible();
+    await expect(resultsOf(page, 5970)).toBeVisible();
     await page.waitForTimeout(50);
     await press(page.getByRole('button', { name: 'Zurück zum echten Ergebnis' }));
     await expect(page.locator('.limit')).toHaveCount(0);

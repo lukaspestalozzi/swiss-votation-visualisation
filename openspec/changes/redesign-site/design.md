@@ -207,6 +207,10 @@ mockups Q saw unless it says otherwise.
 26. **The comparison (Q)** shows the two votes one below the other at every width, each headed as
     today and with its results as a vote's page draws them, the limits beside them from 1,024
     pixels. Its two lists stay the browser's lists.
+    Found while applying: a result's heading is one level below a vote's title there, and the
+    majorities' one below that, so `ResultRow.svelte` takes the level; and, as on a vote's page,
+    the browser does not anchor the page's scroll in the votes' column, whose results grow when a
+    selection first applies.
 27. **The guide** is a column of at most 42rem. Its sentence on the selection's result says
     "darunter" where it said "daneben".
 

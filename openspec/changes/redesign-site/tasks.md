@@ -140,7 +140,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 7. The comparison and the guide
 
-- [ ] 7.1 The comparison: each vote's results by `ResultRow.svelte`, the second vote below the
+- [x] 7.1 The comparison: each vote's results by `ResultRow.svelte`, the second vote below the
   first, the limits beside them from 1,024 pixels; `app/src/lib/comparison.ts` gives a vote's
   results as the vote's page takes them. Verify: `comparison.test.ts` passes; browser tests of
   vote-comparison "The results of a vote" (four scenarios) and "The comparison on a phone"

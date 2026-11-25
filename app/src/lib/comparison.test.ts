@@ -9,10 +9,9 @@ import {
   comparisonLinkOf,
   comparisonOf,
   readAnew,
+  resultsOf,
   secondChoices,
-  tableOf,
   withSelection,
-  type VoteTable,
 } from './comparison.ts';
 import { applyingTo, type Definition } from './characteristics.ts';
 import { labelOf, remainingUnder, trackOf } from './limits.ts';
@@ -132,29 +131,59 @@ const kept = remainingUnder(
 );
 const swissAbroad = Object.values((municipalitiesFile as unknown as Municipalities).swissAbroad);
 
-/** The table of a vote, with the selection or without, as rows of text. */
-function tableFor(
-  id: number,
-  selection: boolean,
-): { table: string[][]; columns: readonly string[]; count: string | null } {
+/** The results of a vote as its page's rows take them, with the selection or without. */
+function resultsFor(id: number, selection: boolean) {
   const vote = votes.find((candidate) => candidate.id === id);
   const file = fileOf.get(id);
   if (vote === undefined || file === undefined) throw new Error(`no vote ${String(id)}`);
   const real = judgedOfFile(`vote ${String(id)}`, file, vote.majorities, de);
   const entries = voteEntriesOf(file, characteristics.municipalities, swissAbroad);
   const selected = selection ? withSelection(entries, vote.majorities, kept, true, de) : null;
-  const table: VoteTable = tableOf(real, selected, de);
+  return resultsOf(real, selected, de);
+}
+
+/**
+ * The same results as a table of text: a column for each result, under its heading, and a row
+ * for each of its figures and words.
+ */
+function tableFor(
+  id: number,
+  selection: boolean,
+): { table: string[][]; columns: readonly string[]; count: string | null } {
+  const { rows, count } = resultsFor(id, selection);
+  const row = (heading: string, of: (result: (typeof rows)[number]['result']) => string) => [
+    heading,
+    ...rows.map(({ result }) => of(result)),
+  ];
+  const verdict = (index: 0 | 1) => (result: (typeof rows)[number]['result']) =>
+    `${result.verdicts[index].verdict} ${result.verdicts[index].figure}`;
   return {
-    columns: table.columns,
-    table: table.rows.map((row) => [
-      row.heading,
-      ...row.cells.map((cell) =>
-        cell.figure === null ? cell.word : `${cell.word} ${cell.figure}`,
-      ),
-    ]),
-    count: table.count,
+    columns: rows.map(({ heading }) => heading),
+    table: [
+      row('Ja-Stimmen', (result) => result.yesVotes),
+      row('Nein-Stimmen', (result) => result.noVotes),
+      row('Ja-Anteil', (result) => result.yesShare),
+      row('Volksmehr', verdict(0)),
+      row('Ständemehr', verdict(1)),
+      row('Vorlage', (result) => result.outcome),
+    ],
+    count,
   };
 }
+
+test("a vote's results as its page takes them: the real one with the turnout, then the selection's", () => {
+  // Spec vote-comparison, "The results of a vote"; the turnout is that of the vote's page.
+  const { rows } = resultsFor(5960, true);
+  expect(rows.map(({ heading, turnout, selection }) => [heading, turnout, selection])).toEqual([
+    ['Echtes Ergebnis', '63.25%', false],
+    ['Mit Ihrer Auswahl', null, true],
+  ]);
+  // What a row's bars draw: the yes share, and a segment for each canton with a vote left. With
+  // the selection a half canton has none: 18 : 4½ cantonal votes, of 23.
+  expect(rows[0]?.result.yesPercent).toBeCloseTo((1609152 / (1609152 + 1664224)) * 100, 10);
+  expect(rows[1]?.result.yesPercent).toBeCloseTo((733402 / (733402 + 664373)) * 100, 10);
+  expect(rows.map(({ result }) => result.segments.length)).toEqual([26, 25]);
+});
 
 test('the table of the first vote, real and with the selection', () => {
   expect(tableFor(5960, true)).toEqual({
