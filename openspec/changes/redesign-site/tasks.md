@@ -182,7 +182,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 - [x] 9.4 Add "Found after the merge" to `investigations/redesign.md`, with the script that
   measures a narrow window as built; update `CLAUDE.md` and `README.md` where they give the
   order of a narrow window. Verify: each figure in it comes from a command the file names.
-- [ ] 9.5 Verify: `./scripts/verify-local.sh` passes all 11 steps.
+- [x] 9.5 Verify: `./scripts/verify-local.sh` passes all 11 steps.
 
 ## 10. The budgets on a slower machine (Q, after the merge)
 
@@ -196,7 +196,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 - [x] 10.3 Add the measurement to `investigations/redesign.md`, "Found after the merge", with
   `budget_frames.py`; say the same in hard constraint 3 of `openspec/config.yaml` and in
   `CLAUDE.md`. Verify: each figure comes from a command the file names.
-- [ ] 10.4 Verify: `./scripts/verify-local.sh` passes all 11 steps, and with it task 9.5.
+- [x] 10.4 Verify: `./scripts/verify-local.sh` passes all 11 steps, and with it task 9.5.
 
 ## Workflow follow-up
 
