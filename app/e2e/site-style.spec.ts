@@ -500,6 +500,23 @@ test.describe('the width of a page', () => {
       expect(header.x + header.width).toBe(1728);
       expect((await box(page, 'h1')).x).toBe(192);
       expect((await box(page, '.limits p')).width).toBeLessThanOrEqual(640);
+      // No paragraph of the page is wider than 40rem, before a selection and with one, nor of
+      // the comparison with its notes.
+      const widest = () =>
+        page
+          .locator('p')
+          .evaluateAll((paragraphs) =>
+            Math.max(...paragraphs.map((paragraph) => paragraph.getBoundingClientRect().width)),
+          );
+      expect(await widest()).toBeLessThanOrEqual(640);
+      await page.goto('de/votes/5960/#foreigners=-19.98');
+      await expect(outcomeOf(selectionResult(page))).toBeVisible();
+      expect(await widest()).toBeLessThanOrEqual(640);
+      await page.goto('de/compare/#votes=6650,5960&foreigners=-19.98');
+      await expect(page.locator('.result.selection')).toHaveCount(2);
+      expect(await widest()).toBeLessThanOrEqual(640);
+      await page.goto('de/votes/5960/');
+      await page.locator('.municipalities path').nth(2000).waitFor();
       // The map, and to its right the limits' column, which ends where the page does
       // (investigations/redesign.md, 6).
       expect(Math.abs((await box(page, '.map svg')).width - 1104)).toBeLessThanOrEqual(1);

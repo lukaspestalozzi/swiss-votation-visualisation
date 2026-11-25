@@ -897,6 +897,19 @@ test('the bars of a selection with nothing left are empty, with their marks at h
   }
 });
 
+test('a selection that leaves one half canton: its segment is the whole bar', async ({ page }) => {
+  // Spec verdicts, "The bars of a result": the bar is as wide as the cantonal votes of the
+  // cantons with a vote left. Of the municipalities with 150,000 to 180,000 inhabitants at the
+  // end of 2015 there is one, Basel, so that only BS, half a cantonal vote, has a vote left.
+  await openVote(page, 'de/votes/5960/#inhabitants=150000-180000');
+  const selection = selectionResult(page);
+  await expect(selectionHeading(page)).toBeVisible();
+  await expect(verdictFiguresOf(selection).nth(1)).toHaveText(/^(½ : 0|0 : ½)$/);
+  const drawn = await barDrawn(cantonsBarOf(selection));
+  expect(drawn.parts.map((part) => part.canton)).toEqual(['BS']);
+  expect(Math.abs((drawn.parts[0]?.width ?? 0) - drawn.width)).toBeLessThanOrEqual(1);
+});
+
 test('the limits follow the definitions: their names in order, six logarithmic tracks', async ({
   page,
 }) => {

@@ -70,7 +70,4 @@
   .count {
     margin: 0.875rem 0 0;
   }
-  .secondary {
-    max-width: none;
-  }
 </style>
