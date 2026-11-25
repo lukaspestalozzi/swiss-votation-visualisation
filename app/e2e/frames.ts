@@ -73,6 +73,18 @@ export async function fontsLoaded(page: Page): Promise<void> {
   });
 }
 
+/**
+ * The budget of a step of a slider or of an input of the map (spec result-map, "The map's
+ * performance budget"; design of redesign-site, decision 31): of a measurement's frames, at least
+ * nine in ten take at most 16 ms, and none more than 50 ms. It gives the frames that break it,
+ * for a test's message: those over 16 ms when they are more than a tenth, otherwise those over
+ * 50 ms; none when the measurement keeps the budget.
+ */
+export function beyondBudget<Frame extends { work: number }>(frames: readonly Frame[]): Frame[] {
+  const slow = frames.filter((frame) => frame.work > 16);
+  return slow.length * 10 > frames.length ? slow : slow.filter((frame) => frame.work > 50);
+}
+
 /** The frames measured since the page began or was last cleared, printed for the log. */
 export async function measuredFrames(page: Page): Promise<{ type: string; work: number }[]> {
   await page.waitForTimeout(100);

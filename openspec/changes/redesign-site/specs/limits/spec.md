@@ -118,17 +118,19 @@ it SHALL say "Keine Gemeinde mit eigenem Ergebnis ist übrig." instead, the bar 
 
 ### Requirement: The budget of the limits
 
-Each frame the browser draws after a step of a slider, by pointer or by key, SHALL take at most
-16 ms of work on the page's main thread. Each frame after opening the list, adding or removing a
-limit, the switch or "Zurück zum echten Ergebnis" SHALL take at most 50 ms. The browser tests
-measure them as they measure the map's budget, and once more when a frame exceeds it.
+Of the frames the browser draws after a step of a slider, by pointer or by key, at least nine in
+ten of a measurement SHALL take at most 16 ms of work on the page's main thread, and none more
+than 50 ms. Each frame after opening the list, adding or removing a limit, the switch or "Zurück
+zum echten Ergebnis" SHALL take at most 50 ms. The browser tests measure them as they measure the
+map's budget, and once more when a measurement exceeds it.
 
 #### Scenario: Dragging a bound
 
 - **WHEN** the browser tests open `/votes/5960/`, wait until the characteristics have loaded, add
   the limit "Einwohner" and drag its lower bound by pointer across the whole track and back
-- **THEN** no frame after these steps took more than 16 ms of work on the main thread, in the
-  first measurement or, when a frame exceeded it, in the second
+- **THEN** at least nine in ten of the frames after these steps took at most 16 ms of work on
+  the main thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
+  (`investigations/redesign.md`, "Found after the merge")
 
 #### Scenario: Jumps
 
@@ -143,8 +145,8 @@ measure them as they measure the map's budget, and once more when a frame exceed
 
 - **WHEN** the browser tests, on `/de/votes/5960/`, click Köniz, add five limits and drag the
   lower bound of "Einwohner" across the whole track and back
-- **THEN** no frame after these steps took more than 16 ms of work on the main thread, in the
-  first measurement or, when a frame exceeded it, in the second
+- **THEN** at least nine in ten of the frames after these steps took at most 16 ms of work on
+  the main thread and none more than 50 ms, in the first measurement or, when it exceeded this, in the second
   (`investigations/redesign.md`, 4: 8.5 ms with the drawings added to today's page)
 
 ## ADDED Requirements

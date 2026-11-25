@@ -3,7 +3,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { lowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
-import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
+import { MEASURE_FRAMES, beyondBudget, fontsLoaded, measuredFrames } from './frames.ts';
 import {
   addButton,
   addLimit,
@@ -647,7 +647,7 @@ test.describe(() => {
     await page.mouse.up();
     const frames = await measuredFrames(page);
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
-    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget(frames)).toEqual([]);
   });
 
   test('the budget: Jumps with two votes', async ({ page }) => {

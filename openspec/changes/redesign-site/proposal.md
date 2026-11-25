@@ -69,8 +69,10 @@ layout and in what is drawn.
 ## Non-goals
 
 - No change to the data, the pipeline or the calculation, and no new dependency.
-- The map's colours and classes, the font, the dark scheme's ground and the budgets stay as they
-  are.
+- The map's colours and classes, the font and the dark scheme's ground stay as they are. The
+  frame budgets stayed with the redesign; after the merge Q let them hold on a slower machine:
+  nine frames in ten of a step within 16 ms and none over 50 ms, and 150 and 250 ms for the
+  frame after a link (design, decision 31).
 - Addresses and links stay: a vote's address, the selection after `#`, the comparison's address.
 - No example on the start page (Q), no sorting of its list, and no search in its address:
   nothing a visitor types is stored or sent.

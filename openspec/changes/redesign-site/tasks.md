@@ -184,6 +184,20 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   order of a narrow window. Verify: each figure in it comes from a command the file names.
 - [ ] 9.5 Verify: `./scripts/verify-local.sh` passes all 11 steps.
 
+## 10. The budgets on a slower machine (Q, after the merge)
+
+- [x] 10.1 Give the browser tests one function for the budget of a step, `beyondBudget` in
+  `app/e2e/frames.ts`: at least nine frames in ten of a measurement within 16 ms, none over 50
+  ms. Verify: its own tests pass, written first, in `app/e2e/frames.spec.ts`.
+- [x] 10.2 Let the seven budget tests of a step use it (result-map: zooming, moving and
+  pointing, clicking, fingers; limits: dragging, a step by key, dragging with five limits;
+  vote-comparison: dragging), and give the link its budgets of 150 and 250 ms. Verify: those
+  tests and the two of share-link "The budget of a link" pass.
+- [x] 10.3 Add the measurement to `investigations/redesign.md`, "Found after the merge", with
+  `budget_frames.py`; say the same in hard constraint 3 of `openspec/config.yaml` and in
+  `CLAUDE.md`. Verify: each figure comes from a command the file names.
+- [ ] 10.4 Verify: `./scripts/verify-local.sh` passes all 11 steps, and with it task 9.5.
+
 ## Workflow follow-up
 
 - After the merge, Q checks the new look on a phone, and a pinch on a Mac's trackpad in Safari.

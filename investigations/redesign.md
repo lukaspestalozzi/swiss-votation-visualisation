@@ -51,6 +51,7 @@ node investigations/redesign/start_page.cjs
 node investigations/redesign/bars_cost.mjs "$PWD"
 # Found after the merge:
 node investigations/redesign/narrow_order.cjs [--injected] [--port 4174]
+python3 investigations/redesign/budget_frames.py /path/outside/the/repository/run-*.log
 ```
 
 | File | What |
@@ -66,6 +67,7 @@ node investigations/redesign/narrow_order.cjs [--injected] [--port 4174]
 | `stays.cjs` | Found while applying: by how much the part of a vote's page that stays in the window, the result, the map and its legend, is taller than the window, with a selection, in 12 widths by 6 heights and three languages. |
 | `first_step.cjs` | Found while applying: where the results, the map, the legend and the last limit's slider stand in the window before and after the step with which a selection first applies, with five limits and the page scrolled to the last. |
 | `narrow_order.cjs` | Found after the merge: where windows 360, 412 and 800 pixels wide show the result, the limits and the map of a vote's page with one limit, how far the first slider begins below the top of the selection's result, and what the step with which a selection first applies moves; with `--injected`, on a site built before, with the limits shown between the result and the map by a stylesheet added to the page. |
+| `budget_frames.py` | Found after the merge: from the saved output of full runs of the browser tests, each budget test's longest frame per measurement, and how many measurements keep a budget, as it was and as candidates for a new one. Python, standard library only. |
 | `bars_cost.mjs` | Found by the verification: how long the tracks of 21 limits take to make and their bars to work out, in Node on the app's own modules. |
 | `start_page.cjs` | Found while applying: the start page in ten windows and three languages: its size, the narrowest title of a row, the widest share and result, and the height of the part that stays at the top against the room a year keeps for it. |
 
@@ -436,6 +438,39 @@ selection's result is on the screen while a limit is set. `narrow_order.cjs`, wi
   change, and at both measurements in 3 and in 1. The change did not move them; the same test
   alone had passed 16 of 16 a quarter of an hour earlier.
 
+### The budgets on a slower machine
+
+The machine the change was built on failed a budget test in most full runs of the checks on
+2026-11-25, with the limits above the map and without them, while CI's runner passed each time.
+Q: the budgets shall hold on that machine too. `budget_frames.py` over the nine full runs of the
+browser tests kept from that day, five on the site of before and four with the limits above the
+map ("Output", "The budgets on a slower machine"):
+
+- **Seven of the nine runs failed a budget**, each time one test on both of its measurements:
+  the drag with five limits four times, the drag with one limit once, the map's zooming, moving
+  and pointing once, and the link with 21 limits once. The other budget tests held in every
+  run.
+- **The typical frame is well within 16 ms**; a few frames are not. The longest frame of a
+  measurement was at its median 17.8 ms in the drag with five limits, 13.7 ms with one limit
+  and 10.1 ms in the map's test. Of the 4,443 frames of the six tests with 16 ms per frame, 31
+  took longer than 16 ms, 3 longer than 33 ms and none longer than 50 ms; a measurement of 82
+  frames held at most 4 over 16 ms.
+- **What a budget would have kept.** Every frame within 16 ms: 5 of the 15 measurements of the
+  drag with five limits, 8 of 11 of the drag with one, 8 of 10 of the map's. Every frame within
+  33 ms: 13 of 15, and all of the others. Every frame within 50 ms, and at least nine frames in
+  ten within 16 ms with none over 50 ms: every measurement.
+- **The link.** The frame after a link with 21 limits took 81.0 ms at its median and 106.5 ms
+  at most, of the 100 allowed; with all 35 limits 108.1 and 152.2 ms, of 170.
+- **Not explained:** why that machine has such frames in full runs, and more on some hours than
+  on others. Nothing of the session's own ran beside the tests (`ps`), six idle minutes before
+  a run did not help, and the same tests alone passed 16 of 16 a quarter of an hour before a
+  failing run. Twice in some ninety single runs of the drag with one limit a frame took about
+  70 ms; no full run of the nine had one.
+
+Q decided (design of `redesign-site`, decision 31): at least nine frames in ten of a measurement
+within 16 ms and none over 50 ms, for every step of a slider and every input of the map; 150 and
+250 ms for the frame after a link.
+
 ## Not verified
 
 Of the five points below, applying the change settled four: the browser tests open the built
@@ -765,3 +800,36 @@ map:
   from the top of the selection's result to the first slider: 406 px
   the step with which the selection first applies (step 2): the slider in the window 772 -> 772, the page's scroll 0 -> 0
 ```
+
+### The budgets on a slower machine
+
+`python3 investigations/redesign/budget_frames.py` over the output of nine full runs of the
+browser tests of 2026-11-25, kept outside the repository: five on sites built before the limits
+stood above the map (from `fea62d4`, `1423057` and three from `285b650`), and four on the site
+built from `1396b11`.
+
+```
+9 runs
+the longest frame of a measurement, in ms: median, worst (measurements)
+  compare: the budget: Dragging a bound with two votes: 8.7, 11.6 (9)
+  compare: the budget: Jumps with two votes: 19.7, 26.4 (9)
+  limits: the budget of a step by key: no frame after an arrow key takes: 11.7, 14.1 (9)
+  limits: the budget of dragging with five limits and a municipality cli: 17.8, 42.8 (15)
+  limits: the budget of dragging: no frame while a bound is dragged take: 13.7, 27.0 (11)
+  limits: the budget of jumps: no frame after a jump of the selection ta: 21.4, 29.1 (9)
+  result-map: on a phone › the budget of fingers: no frame after pinchin: 22.5, 38.0 (18)
+  result-map: the budget of clicking: no frame after clicking a municipa: 8.4, 12.2 (9)
+  result-map: the budget: no frame after zooming, moving or pointing tak: 10.1, 18.4 (10)
+  share-link: All 21 limits in the same tab: 81.0, 106.5 (10)
+  share-link: All 35 limits in the same tab: 108.1, 152.2 (9)
+  vote-list: the budget of the list: no frame after a key or a press tak: 12.9, 26.8 (9)
+the frames of the tests with 16 ms per frame: 4443; over 16 ms: 31, over 33 ms: 3, over 50 ms: 0
+measurements that keep a budget:
+  compare: the budget: Dragging a bound with two v (82 frames; at most 0 over 16 ms): every frame within 16 ms: 9 of 9, every frame within 33 ms: 9 of 9, every frame within 50 ms: 9 of 9, nine in ten within 16 ms, none over 50 ms: 9 of 9
+  limits: the budget of a step by key: no frame af (60 frames; at most 0 over 16 ms): every frame within 16 ms: 9 of 9, every frame within 33 ms: 9 of 9, every frame within 50 ms: 9 of 9, nine in ten within 16 ms, none over 50 ms: 9 of 9
+  limits: the budget of dragging with five limits  (82 frames; at most 4 over 16 ms): every frame within 16 ms: 5 of 15, every frame within 33 ms: 13 of 15, every frame within 50 ms: 15 of 15, nine in ten within 16 ms, none over 50 ms: 15 of 15
+  limits: the budget of dragging: no frame while a (82 frames; at most 3 over 16 ms): every frame within 16 ms: 8 of 11, every frame within 33 ms: 11 of 11, every frame within 50 ms: 11 of 11, nine in ten within 16 ms, none over 50 ms: 11 of 11
+  result-map: the budget of clicking: no frame aft (47 frames; at most 0 over 16 ms): every frame within 16 ms: 9 of 9, every frame within 33 ms: 9 of 9, every frame within 50 ms: 9 of 9, nine in ten within 16 ms, none over 50 ms: 9 of 9
+  result-map: the budget: no frame after zooming,  (61 frames; at most 2 over 16 ms): every frame within 16 ms: 8 of 10, every frame within 33 ms: 10 of 10, every frame within 50 ms: 10 of 10, nine in ten within 16 ms, none over 50 ms: 10 of 10
+```
+

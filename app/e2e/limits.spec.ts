@@ -3,7 +3,7 @@
 // investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
 import { pixelAt } from './contrast.ts';
-import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
+import { MEASURE_FRAMES, beyondBudget, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 import {
   abroadSwitch,
@@ -1070,7 +1070,8 @@ test('closing the list without choosing: the Escape key and "Schliessen" add not
 });
 
 // The budget of the limits (spec limits; design of add-limits, decision 8), measured as the map's
-// budget, and once more when a frame exceeds it, as a busy machine can stretch a frame.
+// budget, and once more when a measurement exceeds it, as a busy machine can stretch a frame. A
+// step's budget is that of `beyondBudget` (design of redesign-site, decision 31).
 test.describe(() => {
   test.describe.configure({ retries: 1 });
 
@@ -1095,7 +1096,7 @@ test.describe(() => {
     return measuredFrames(page);
   }
 
-  test('the budget of dragging: no frame while a bound is dragged takes more than 16 ms', async ({
+  test('the budget of dragging: nine frames in ten within 16 ms, none over 50 ms', async ({
     page,
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
@@ -1104,10 +1105,10 @@ test.describe(() => {
     await addLimit(page, 'Einwohner');
     const frames = await framesOfDragging(page);
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
-    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget(frames)).toEqual([]);
   });
 
-  test('the budget of a step by key: no frame after an arrow key takes more than 16 ms', async ({
+  test('the budget of a step by key: nine frames in ten within 16 ms, none over 50 ms', async ({
     page,
   }) => {
     // Spec limits, "The budget of the limits": a step of a slider by pointer or by key.
@@ -1132,10 +1133,10 @@ test.describe(() => {
     await expect(lower).toHaveValue('10');
     const frames = await measuredFrames(page);
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
-    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget(frames)).toEqual([]);
   });
 
-  test('the budget of dragging with five limits and a municipality clicked: no frame over 16 ms', async ({
+  test('the budget of dragging with five limits and a municipality clicked: nine frames in ten within 16 ms, none over 50 ms', async ({
     page,
   }) => {
     // Spec limits, "Dragging with five limits and a municipality clicked": five tracks with
@@ -1152,7 +1153,7 @@ test.describe(() => {
     await expect(page.locator('.limit .here')).toHaveCount(5);
     const frames = await framesOfDragging(page);
     expect(frames.filter((f) => f.type === 'input').length).toBeGreaterThanOrEqual(30);
-    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget(frames)).toEqual([]);
   });
 
   test('the budget of jumps: no frame after a jump of the selection takes more than 50 ms', async ({

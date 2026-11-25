@@ -3,7 +3,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import config from '../playwright.config.ts';
 import { fingersOn, phone } from './fingers.ts';
-import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
+import { MEASURE_FRAMES, beyondBudget, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 import {
   addLimit,
@@ -688,7 +688,7 @@ test('the browser tests run one at a time: the configuration asks for one worker
 test.describe(() => {
   test.describe.configure({ retries: 1 });
 
-  test('the budget: no frame after zooming, moving or pointing takes more than 16 ms', async ({
+  test('the budget of zooming, moving or pointing: nine frames in ten within 16 ms, none over 50 ms', async ({
     page,
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
@@ -726,7 +726,7 @@ test.describe(() => {
     expect(frames[0]?.type).toBe('pointerover');
     expect(frames.filter((f) => f.type === 'wheel')).toHaveLength(4);
     expect(frames.length).toBeGreaterThan(10);
-    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget(frames)).toEqual([]);
   });
 });
 
@@ -1320,7 +1320,7 @@ test.describe(() => {
   // Clicking a municipality fills the panel. The test clicks 50 ms after the pointer arrives, at a
   // person's pace: a click within the same frame would be counted in the arrival's measurement
   // (design of tighten-map-budget, decision 3).
-  test('the budget of clicking: no frame after clicking a municipality takes more than 16 ms', async ({
+  test('the budget of clicking a municipality: nine frames in ten within 16 ms, none over 50 ms', async ({
     page,
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
@@ -1341,7 +1341,7 @@ test.describe(() => {
     await expect(panel(page).locator('.name')).toHaveText('Genève (GE)');
     const frames = await measuredFrames(page);
     expect(frames.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
-    expect(frames.filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget(frames)).toEqual([]);
   });
 });
 test.describe('on a phone', () => {
@@ -1351,7 +1351,7 @@ test.describe('on a phone', () => {
   // Fingers keep the map's budget (spec result-map, "The budget of fingers"; design of
   // add-small-screens, decision 12): two fingers, one finger, and taps, each tap after showing the
   // whole of Switzerland and 50 ms after the finger's arrival there.
-  test('the budget of fingers: no frame after pinching, moving or tapping takes more than 16 ms', async ({
+  test('the budget of fingers, pinching, moving or tapping: nine frames in ten within 16 ms, none over 50 ms', async ({
     page,
   }) => {
     await page.addInitScript(MEASURE_FRAMES);
@@ -1404,6 +1404,6 @@ test.describe('on a phone', () => {
     const taps = await measuredFrames(page);
     expect(moves.length).toBeGreaterThan(20);
     expect(taps.filter((f) => f.type === 'click').length).toBeGreaterThanOrEqual(6);
-    expect([...moves, ...taps].filter((f) => f.work > 16)).toEqual([]);
+    expect(beyondBudget([...moves, ...taps])).toEqual([]);
   });
 });
