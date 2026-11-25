@@ -326,7 +326,7 @@ cantonal vote, a bar SHALL be empty. The bars' colours are the `site-style` capa
 ### Requirement: The place of the selection's result
 
 Until a selection applies, the page of a vote the calculation judges SHALL say, where the
-selection's result will stand: "Setzen Sie eine Grenze auf ein Merkmal: Hier steht dann das
+selection's result will stand: "Sobald Sie bei einem Merkmal eine Grenze setzen, steht hier das
 Ergebnis der Gemeinden, die übrig bleiben." When the characteristics cannot be loaded, it SHALL
 show nothing there. That place SHALL be as tall as the result that takes it.
 

@@ -143,8 +143,8 @@ six characteristics with very large spans grow by equal factors.
 
 - **WHEN** a visitor opens `/de/guide/`
 - **THEN** the section "Die Merkmale" says "Arbeitsplätze sind die Beschäftigten der Betriebe in
-  der Gemeinde, wo immer diese wohnen." and "Wo die Zahlen des letzten Jahres noch nicht
-  veröffentlicht sind, nimmt sie die neuesten davor."
+  der Gemeinde, wo immer diese wohnen." and "Sind die Zahlen des letzten Jahres noch nicht
+  veröffentlicht, gelten die neuesten davor."
 
 ### Requirement: The sources
 
