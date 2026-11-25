@@ -646,6 +646,14 @@
       .frame {
         max-width: calc((100vh - 21.5rem) * var(--shape));
       }
+      /* Beside the scale the legend's other entries take up to three lines there, the third
+         with the entry of the set-aside municipalities. They keep the room of three, at the
+         scale's foot, so that the legend is as tall before a selection as with one and the map
+         above it stays where it is when a selection first applies. */
+      .keys {
+        min-height: calc(4.5em + 0.5rem);
+        align-content: flex-end;
+      }
     }
     @container watch (max-width: 639.98px) {
       .frame {
