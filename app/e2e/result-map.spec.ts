@@ -307,7 +307,7 @@ test('pointing at a municipality without a result says why it has no figures', a
   await page.mouse.move(meienried.x, meienried.y);
   await expect(details(page).locator('.name')).toHaveText('Meienried (BE)');
   await expect(details(page).locator('li')).toHaveText([
-    'Kein eigenes Ergebnis: seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
+    'Kein eigenes Ergebnis: Seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
   ]);
 });
 

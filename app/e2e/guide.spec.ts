@@ -117,7 +117,7 @@ test('the Swiss abroad explained: they count only where a municipality remains',
   await page.goto('de/guide/');
   const abroad = section(page, 'Auslandschweizerinnen und Auslandschweizer');
   await expect(abroad).toContainText('11 oder 12 Kantone');
-  await expect(abroad).toContainText('1.0% bis 1.6% der gültigen Stimmen');
+  await expect(abroad).toContainText('getrennt; das sind 1.0% bis 1.6% der gültigen Stimmen.');
   await expect(abroad).toContainText(
     'Sie zählen nur in einem Kanton, in dem noch eine Gemeinde übrig ist.',
   );
@@ -130,7 +130,11 @@ test('municipalities without a figure explained', async ({ page }) => {
   await expect(without).toContainText(
     'Eine Gemeinde ohne Angabe fällt weg, sobald die Grenze dieses Merkmals enger gestellt ist.',
   );
-  await expect(without).toContainText('schraffiert');
+  await expect(without).toContainText('Wenige Gemeinden haben kein eigenes Ergebnis');
+  await expect(without).toContainText(
+    'Sie sind auf der Karte schraffiert. Ob eine Auswahl sie behält oder streicht, ändert am ' +
+      'Ergebnis nichts.',
+  );
 });
 
 test('Jobs and farmland without a figure', async ({ page }) => {
@@ -148,7 +152,14 @@ test('the characteristics explained: the dates of their figures, the six logarit
   await page.goto('de/guide/');
   const characteristics = section(page, 'Die Merkmale');
   await expect(characteristics).toContainText('Volkszählung 2000');
-  await expect(characteristics).toContainText('letzten Nationalratswahl vor ihrem Tag');
+  await expect(characteristics).toContainText(
+    'Für eine Abstimmung gelten Bevölkerung, Arbeitsplätze, Rinder und Landwirtschaftsbetriebe ' +
+      'aus dem letzten Jahr vor dem Abstimmungstag und die Parteistärken aus der letzten ' +
+      'Nationalratswahl davor.',
+  );
+  await expect(characteristics).toContainText(
+    'Eine Grenze vergleicht die Werte so, wie sie bei der Gemeinde angezeigt sind.',
+  );
   await expect(characteristics).toContainText(
     'Die Grenzen von «Einwohner», «Einwohner je km²», «Arbeitsplätze je 100 Einwohner», ' +
       "«Fläche», «Rinder je Einwohner» und «Landwirtschaftsbetriebe je 1'000 Einwohner» wachsen " +
@@ -186,7 +197,7 @@ test('What the jobs count', async ({ page }) => {
     'Arbeitsplätze sind die Beschäftigten der Betriebe in der Gemeinde, wo immer diese wohnen.',
   );
   await expect(characteristics).toContainText(
-    'Wo die Zahlen des letzten Jahres noch nicht veröffentlicht sind, nimmt sie die neuesten davor.',
+    'Sind die Zahlen des letzten Jahres noch nicht veröffentlicht, gelten die neuesten davor.',
   );
 });
 

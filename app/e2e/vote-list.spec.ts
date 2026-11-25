@@ -47,8 +47,8 @@ test('the heading is the question, with one sentence; the title is the working t
   // 35 characteristics, three of them named (spec characteristics).
   await expect(page.locator('.lead')).toHaveText(
     'Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden ein: nach Einwohnerzahl, Alter, ' +
-      'Parteistärke und 32 weiteren Merkmalen. Karte und Ergebnis rechnen sofort neu. Ein ' +
-      'Gedankenexperiment, keine Prognose.',
+      'Parteistärke und 32 weiteren Merkmalen. Karte und Ergebnis werden sofort neu berechnet. ' +
+      'Ein Gedankenexperiment, keine Prognose.',
   );
   await expect(page).toHaveTitle('Popular Vote Explorer');
 });

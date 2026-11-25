@@ -817,8 +817,8 @@ test("the selection's place: a sentence until a selection applies, then its resu
   await openVote(page, 'de/votes/5960/');
   const place = selectionPlace(page);
   await expect(place).toHaveText(
-    'Setzen Sie eine Grenze auf ein Merkmal: Hier steht dann das Ergebnis der Gemeinden, die ' +
-      'übrig bleiben.',
+    'Sobald Sie bei einem Merkmal eine Grenze setzen, steht hier das Ergebnis der Gemeinden, ' +
+      'die übrig bleiben.',
   );
   await expect(page.getByText('Mit Ihrer Auswahl')).toHaveCount(0);
   const bottomOfOwn = async () => {
