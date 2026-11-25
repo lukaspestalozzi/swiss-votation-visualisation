@@ -52,20 +52,36 @@ export interface LegendEntry {
 const STEPS = [1, 2, 3, 4] as const;
 const from = (step: Step): number => 40 + 10 * step;
 
+// The legend (spec result-map, "The legend"): a scale of the eight classes, each with its name,
+// which assistive technology reads; the yes shares at the borders between them, in percent; and
+// the entries after the scale.
+export interface Legend {
+  readonly classes: readonly LegendEntry[];
+  readonly shares: readonly number[];
+  readonly entries: readonly LegendEntry[];
+}
+
 /** The legend: from the clearest no to the clearest yes, then a tie and the hatching. */
-export function legendOf(t: Texts): readonly LegendEntry[] {
-  return [
-    ...[...STEPS].reverse().map((step) => ({
-      label: t.legendClass(false, from(step)),
-      fill: colourOf({ side: 'no', step }),
-    })),
-    ...STEPS.map((step) => ({
-      label: t.legendClass(true, from(step)),
-      fill: colourOf({ side: 'yes', step }),
-    })),
-    { label: t.LEGEND_TIE, fill: TIE_COLOUR },
-    { label: t.LEGEND_WITHOUT_RESULT, fill: 'hatch' },
-  ];
+export function legendOf(t: Texts): Legend {
+  const against = [...STEPS].reverse();
+  return {
+    classes: [
+      ...against.map((step) => ({
+        label: t.legendClass(false, from(step)),
+        fill: colourOf({ side: 'no', step }),
+      })),
+      ...STEPS.map((step) => ({
+        label: t.legendClass(true, from(step)),
+        fill: colourOf({ side: 'yes', step }),
+      })),
+    ],
+    // A class against begins at a no share, the rest of which is the yes share at its border.
+    shares: [...against.map((step) => 100 - from(step)), ...STEPS.slice(1).map(from)],
+    entries: [
+      { label: t.LEGEND_TIE, fill: TIE_COLOUR },
+      { label: t.LEGEND_WITHOUT_RESULT, fill: 'hatch' },
+    ],
+  };
 }
 
 /**

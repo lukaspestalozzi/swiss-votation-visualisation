@@ -92,6 +92,7 @@ export const de: Texts = {
   // A vote's page: the map (spec result-map).
   legendClass: (yes, from) =>
     `${yes ? 'Ja' : 'Nein'}: ${from === 80 ? '80% und mehr' : `${String(from)}–${String(from + 10)}%`}`,
+  LEGEND_SCALE: 'Ja-Anteil in %',
   LEGEND_TIE: 'Gleich viele Ja wie Nein',
   LEGEND_WITHOUT_RESULT: 'Kein eigenes Ergebnis',
   WITHOUT_RESULT:

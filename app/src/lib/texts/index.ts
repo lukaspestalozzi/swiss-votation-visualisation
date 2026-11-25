@@ -138,6 +138,8 @@ export interface Texts {
 
   // A vote's page: the map (spec result-map).
   readonly legendClass: (yes: boolean, from: number) => string;
+  /** What the legend's scale shows, between its two sides. */
+  readonly LEGEND_SCALE: string;
   readonly LEGEND_TIE: string;
   readonly LEGEND_WITHOUT_RESULT: string;
   readonly WITHOUT_RESULT: string;

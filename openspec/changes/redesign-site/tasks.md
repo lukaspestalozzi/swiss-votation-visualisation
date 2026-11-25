@@ -99,7 +99,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 ## 5. The map's parts, the panel and the cantons
 
-- [ ] 5.1 The legend as a scale: in `app/src/lib/result-map.ts` the eight classes with their names
+- [x] 5.1 The legend as a scale: in `app/src/lib/result-map.ts` the eight classes with their names
   for assistive technology and the seven yes shares, then the entries; in `ResultMap.svelte` the
   scale and "Ja-Anteil in %" in three languages. Verify: the unit test of the legend and the
   browser tests of result-map "The legend of a vote" and "The legend of a selection" pass.

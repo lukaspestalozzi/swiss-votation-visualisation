@@ -325,8 +325,11 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 2.5rem;
   }
+  /* The column of the result and the map names its width, by which the map leaves the result
+     its room (`ResultMap.svelte`). */
   .watch {
     min-width: 0;
+    container: watch / inline-size;
   }
   .stay {
     display: grid;
