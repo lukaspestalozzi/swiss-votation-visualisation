@@ -18,20 +18,24 @@ and Italian:
   from before the languages (`/votes/<id>/`, `/guide/`) still lead to their page the same way.
   The texts use the Confederation's own terms, and a vote's title, reference and note are those
   of the data in each language; places keep their one official name;
-- the start page lists the national votes since 2013 by year, each with its date, title, kind
-  and official result, marked where the Federal Chancellery adds a note or the result is not
-  validated yet;
-- each vote has its page (`/de/votes/<id>/`): the yes and no votes, the yes share and the turnout,
-  the majority of voters and the majority of cantons side by side, the outcome, and a table of
-  the 26 cantons;
+- the start page asks the question the site answers and lists the national votes since 2013 by
+  year and vote day, each a row with its title, kind, a bar of its official yes share and its
+  result, marked where the Federal Chancellery adds a note or the result is not validated yet.
+  A search by title, three buttons for the result and links to the years stay at the top of the
+  window;
+- each vote has its page (`/de/votes/<id>/`): its result as a row, the outcome, the majority of
+  voters with a bar of the yes share and the yes and no votes, and the majority of cantons with
+  a bar of one segment per canton and the turnout; below, a table of the 26 cantons with a bar
+  per canton;
 - the page also shows a map of the 2,110 municipalities. Each is coloured by the side with more
   votes and how clearly it won, blue-green for yes and orange-red for no; the cantons and the
-  lakes are drawn on top. You can zoom and move it; pointing at a municipality shows its name,
-  its yes share and its votes. Its shapes come from the Federal Statistical Office
+  lakes are drawn on top, and its legend is one scale. You can zoom it, with its buttons or with
+  Ctrl or ⌘ and the mouse wheel, and move it; pointing at a municipality shows its name, its yes
+  share and its votes. Its shapes come from the Federal Statistical Office
   ("Kartengrundlage: © BFS": the register of municipalities and the ThemaKart set 2026), written
   by the pipeline to `app/static/data/map.json`;
-- beside the map, a panel lists the 35 characteristics of the municipality last clicked, in
-  eight groups:
+- below the map, a panel lists the 35 characteristics of the municipality last clicked, in
+  eight groups, its shares drawn as bars:
   - its inhabitants, the shares of foreigners and of those born abroad, five age groups and its
     density, at the end of the year before the vote;
   - the party strengths of the last National Council election before it;
@@ -48,18 +52,19 @@ and Italian:
   its statistics (STATPOP, STATENT, the National Council elections, the census of 2000, the
   farm structure survey) and from swisstopo, written by the pipeline to
   `app/static/data/characteristics.json`;
-- above the map, limits on these characteristics select municipalities: you add a limit for any
-  of them from a list under the panel's headings, set its lower and upper bound with two
-  sliders, and a municipality remains only when
-  it lies within all limits. While you drag, the map greys out the others in dark grey, and the
-  result of the selection, "Mit Ihrer Auswahl", stands beside the real one, with both majorities
-  and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
+- beside the result and the map, which stay in the window on a wide screen, limits on these
+  characteristics select municipalities: one button opens a list of them under the panel's
+  headings; a limit draws where the municipalities lie on its track and marks the municipality
+  last clicked, and you set its lower and upper bound with two sliders. A municipality remains
+  only when it lies within all limits. While you drag, the map greys out the others in dark
+  grey, and the result of the selection, "Mit Ihrer Auswahl", stands below the real one, bar
+  above bar, with both majorities and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
   count, and one button returns to the real result. The page's address holds the selection, so
   that a link, a reload or the language switch keeps it;
 - a page compares two votes (`/de/compare/`): you choose a first and a second vote, and one
   selection, made by the figures of the first, keeps the same municipalities in both. Each vote
-  has a table of its real result and of its result with the selection, and the address holds both
-  votes and the selection. Below its limits, each vote's page links to it with that vote first
+  is drawn as on its page, its real result and below it its result with the selection, the
+  second vote below the first, and the address holds both votes and the selection. Below its limits, each vote's page links to it with that vote first
   and the page's selection;
 - a page "Lesehilfe" (`/de/guide/`) explains that this is a thought experiment about whole
   municipalities, not about people and not a forecast, and names every source;
