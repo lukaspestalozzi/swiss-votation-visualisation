@@ -940,6 +940,48 @@ test('a characteristic without a figure: "keine Angabe"', async ({ page }) => {
   ]);
 });
 
+test('the bars of the shares: 29 for Zürich, none for a line without a share or a figure', async ({
+  page,
+}) => {
+  // Spec result-map, "The bars of the shares".
+  await page.goto('de/votes/5960/');
+  await clickAt(page, 261);
+  await expect(panel(page).locator('.name')).toHaveText('Zürich (ZH)');
+  await expect(panel(page).locator('li')).toHaveCount(35);
+  await expect(panel(page).locator('li .share')).toHaveCount(29);
+  // The bar of 32.03% is filled to that share of its width, in the text's colour.
+  const foreigners = panel(page).locator('li', { hasText: /^Ausländeranteil: 32\.03%$/ });
+  const drawn = await foreigners.locator('.share').evaluate((bar) => ({
+    width: bar.getBoundingClientRect().width,
+    filled: bar.firstElementChild?.getBoundingClientRect().width ?? 0,
+  }));
+  expect(drawn.width).toBeGreaterThanOrEqual(40);
+  expect(Math.abs(drawn.filled - drawn.width * 0.3203)).toBeLessThanOrEqual(1);
+  await expect(foreigners.locator('.share > span')).toHaveCSS(
+    'background-color',
+    'rgb(28, 28, 28)',
+  );
+  // The six lines that are no shares.
+  for (const line of [
+    /^Einwohner: /,
+    /^Einwohner je km²: /,
+    /^Arbeitsplätze je 100 Einwohner: /,
+    /^Fläche \(2026\): /,
+    /^Rinder je Einwohner \(2015\): /,
+    /^Landwirtschaftsbetriebe je 1'000 Einwohner \(2015\): /,
+  ]) {
+    const found = panel(page).locator('li', { hasText: line });
+    await expect(found, String(line)).toHaveCount(1);
+    await expect(found.locator('.share'), String(line)).toHaveCount(0);
+  }
+  // A share without a figure: Oberrieden's jobs in two sectors and its organic farmland.
+  await clickAt(page, 137);
+  await expect(panel(page).locator('.name')).toHaveText('Oberrieden (ZH)');
+  const without = panel(page).locator('li', { hasText: 'keine Angabe' });
+  await expect(without).toHaveCount(3);
+  await expect(without.locator('.share')).toHaveCount(0);
+});
+
 test('the panel names the sources of the characteristics', async ({ page }) => {
   await page.goto('de/votes/5960/');
   await clickAt(page, 261);

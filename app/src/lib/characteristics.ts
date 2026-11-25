@@ -353,10 +353,21 @@ export function written(definition: Definition, value: Quotient | null, t: Texts
   return writeUnits(definition, unitsOf(definition, value), t);
 }
 
+// A line of the panel: its characteristic's name, with the date of its figures where that is not
+// its group's; its value as the panel writes it; the two as one text, "Einwohner: 396'955"; and,
+// where the value is a share with a figure, that share in percent, which a bar draws (spec
+// result-map, "The characteristics of a municipality").
+export interface PanelLine {
+  readonly name: string;
+  readonly value: string;
+  readonly text: string;
+  readonly share: number | null;
+}
+
 // A group of the panel: its heading, and one line per characteristic.
 export interface PanelGroup {
   readonly heading: string;
-  readonly lines: readonly string[];
+  readonly lines: readonly PanelLine[];
 }
 
 // The groups in the order of the panel and of the list of the limits.
@@ -412,11 +423,24 @@ export function panelOf(counts: Counts, applying: Applying, t: Texts): readonly 
   return GROUPS.map((group) => {
     const { heading, year } = headingOf(group, applying, t);
     const lines = DEFINITIONS.filter((definition) => definition.group === group).map(
-      (definition) => {
-        const name = nameOf(definition, t);
+      (definition): PanelLine => {
         const own = definition.year(applying);
-        const named = own === year ? name : t.ofDate(name, dateOf(definition, own, t));
-        return t.characteristic(named, written(definition, definition.value(counts), t));
+        const name =
+          own === year
+            ? nameOf(definition, t)
+            : t.ofDate(nameOf(definition, t), dateOf(definition, own, t));
+        // The share is the value as the line writes it, so that the bar draws what the line says.
+        const units = unitsOf(definition, definition.value(counts));
+        const value = writeUnits(definition, units, t);
+        return {
+          name,
+          value,
+          text: t.characteristic(name, value),
+          share:
+            definition.unit === 'percent' && units !== null
+              ? units / 10 ** DECIMALS[definition.unit]
+              : null,
+        };
       },
     );
     return { heading, lines };
