@@ -2,6 +2,7 @@
 // map (spec result-map), against the built site. The figures are those of
 // investigations/limits.md.
 import { expect, test, type Page } from '@playwright/test';
+import { pixelAt } from './contrast.ts';
 import { MEASURE_FRAMES, fontsLoaded, measuredFrames } from './frames.ts';
 import { pointIn } from './pointing.ts';
 import {
@@ -9,13 +10,17 @@ import {
   addButton,
   addLimit,
   barDrawn,
+  barHeights,
+  barsBetween,
   boxOf,
   cantonsBarOf,
   closeButton,
+  countBarFilled,
   figuresOf,
   greyedOf,
   limitLabel,
   limitList,
+  limitOf,
   listHeadings,
   mapDrawn,
   offered,
@@ -504,6 +509,10 @@ test('the number of municipalities that remain: all of them without a limit', as
   await expect(count(page)).toHaveText(
     "In der Auswahl: 2'103 von 2'103 Gemeinden mit eigenem Ergebnis.",
   );
+  // Its bar is full.
+  const bar = await countBarFilled(page);
+  expect(bar.width).toBeGreaterThan(100);
+  expect(Math.abs(bar.filled - bar.width)).toBeLessThanOrEqual(1);
 });
 
 test('the number of municipalities that remain under a limit', async ({ page }) => {
@@ -513,6 +522,9 @@ test('the number of municipalities that remain under a limit', async ({ page }) 
   await expect(count(page)).toHaveText(
     "In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.",
   );
+  // Its bar is filled to 1,455 of 2,103, 69.2% of its width.
+  const bar = await countBarFilled(page);
+  expect(Math.abs(bar.filled - bar.width * 0.692)).toBeLessThanOrEqual(1);
 });
 
 test('the number of municipalities that remain: none', async ({ page }) => {
@@ -522,6 +534,86 @@ test('the number of municipalities that remain: none', async ({ page }) => {
   await slider(page, 'Untere', 'Deutsch').fill('1000');
   await slider(page, 'Untere', 'Französisch').fill('1000');
   await expect(count(page)).toHaveText('Keine Gemeinde mit eigenem Ergebnis ist übrig.');
+  // Its bar is empty.
+  const bar = await countBarFilled(page);
+  expect(bar.width).toBeGreaterThan(100);
+  expect(bar.filled).toBe(0);
+});
+
+// Where the municipalities lie on a track (spec limits; design of redesign-site, decision 21);
+// the counts are those of investigations/redesign.md, "Output" of hist.mjs.
+test('the bars above a track: 50, the ninth the tallest, all in the colour of the text', async ({
+  page,
+}) => {
+  // Spec limits, "The foreigners of 2015": 140 municipalities in the ninth bar, 10 in the first.
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'Ausländeranteil');
+  const limit = limitOf(page, 'Ausländeranteil');
+  const heights = await barHeights(limit);
+  expect(heights).toHaveLength(50);
+  expect(heights[8]).toBe(100);
+  expect(heights.filter((height) => height === 100)).toHaveLength(1);
+  expect(heights[0]).toBeCloseTo((10 / 140) * 100, 1);
+  // Above the track, as wide as the way of a thumb's middle.
+  const [bars, track] = await Promise.all(
+    ['.hist', '.track'].map((part) => limit.locator(part).boundingBox()),
+  );
+  if (bars === null || track === null) throw new Error('the bars or the track are not shown');
+  expect(bars.y + bars.height).toBeLessThanOrEqual(track.y + 1);
+  expect(bars.height).toBeGreaterThanOrEqual(30);
+  // With both bounds at the ends, every bar is in the text's colour.
+  expect(await barsBetween(limit)).toEqual({ from: 0, to: 100 });
+  await expect(limit.locator('.hist .in path')).toHaveCSS('fill', 'rgb(28, 28, 28)');
+  await expect(limit.locator('.hist .out path')).toHaveCSS('fill', 'rgb(140, 140, 140)');
+});
+
+test('the bars between the bounds are in the colour of the text, the others grey', async ({
+  page,
+}) => {
+  // Spec limits, "Between the bounds": step 327 of 1,000.
+  await openVote(page, 'de/votes/5960/');
+  await foreignersUpTo1998(page);
+  const limit = limitOf(page, 'Ausländeranteil');
+  const between = await barsBetween(limit);
+  expect(between.from).toBe(0);
+  expect(between.to).toBeCloseTo(32.7, 5);
+  // What the screen draws at the foot of the 16th bar, of steps 300 to 319, and of the 18th.
+  const bars = await limit.locator('.hist').boundingBox();
+  if (bars === null) throw new Error('the bars are not shown');
+  const foot = bars.y + bars.height - 2;
+  const middleOf = (bar: number) => bars.x + (bars.width * (bar - 0.5)) / 50;
+  expect(await pixelAt(page, middleOf(16), foot)).toEqual([28, 28, 28]);
+  expect(await pixelAt(page, middleOf(18), foot)).toEqual([140, 140, 140]);
+  // The lower bound moves the other edge: step 100.
+  await slider(page, 'Untere', 'Ausländeranteil').fill('100');
+  expect((await barsBetween(limit)).from).toBeCloseTo(10, 5);
+});
+
+test('the bars of a logarithmic track: the 21st is the tallest', async ({ page }) => {
+  // Spec limits, "A logarithmic track": 146 municipalities at steps 400 to 419.
+  await openVote(page, 'de/votes/5960/');
+  await addLimit(page, 'Einwohner');
+  const heights = await barHeights(limitOf(page, 'Einwohner'));
+  expect(heights).toHaveLength(50);
+  expect(heights.indexOf(100)).toBe(20);
+});
+
+test("a limit's label in three parts: the name, the date, and the bounds on a line of their own", async ({
+  page,
+}) => {
+  // Design of redesign-site, decision 20: the same text as before, written in three parts.
+  await openVote(page, 'de/votes/5960/');
+  await foreignersUpTo1998(page);
+  const label = limitLabel(page, 'Ausländeranteil');
+  await expect(label).toHaveText('Ausländeranteil (Ende 2015): von 0.00% bis 19.98%');
+  await expect(label.locator('.name')).toHaveText('Ausländeranteil');
+  await expect(label.locator('.date')).toHaveText('(Ende 2015)');
+  await expect(label.locator('.bounds')).toHaveText('von 0.00% bis 19.98%');
+  await expect(label.locator('.name')).toHaveCSS('font-weight', '700');
+  const [name, bounds] = await Promise.all(
+    ['.name', '.bounds'].map((part) => label.locator(part).boundingBox()),
+  );
+  expect(bounds?.y).toBeGreaterThanOrEqual((name?.y ?? 0) + (name?.height ?? 0) - 2);
 });
 
 test('back to the real result: no limit, the switch on, no selection, the legend of ten', async ({

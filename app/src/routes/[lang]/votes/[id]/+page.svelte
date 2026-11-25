@@ -137,14 +137,19 @@
       ? []
       : data.entries.cantons.flatMap((canton) => canton.municipalities.map(([number]) => number)),
   );
-  // How many of the municipalities with an entry remain (spec limits, "The number of
-  // municipalities that remain").
+  // How many of the municipalities with an entry remain, as a sentence and as their share for
+  // its bar (spec limits, "The number of municipalities that remain"); none until the
+  // characteristics have loaded.
   const count = $derived.by(() => {
-    if (remaining === null || data.entries === null) return '';
+    if (remaining === null || data.entries === null) return null;
     const left = remainingOf(withEntry, remaining);
-    return left === 0
-      ? t.NOTHING_REMAINS
-      : t.remainingCount(formatCount(left), formatCount(withEntry.length));
+    return {
+      text:
+        left === 0
+          ? t.NOTHING_REMAINS
+          : t.remainingCount(formatCount(left), formatCount(withEntry.length)),
+      share: withEntry.length === 0 ? 0 : left / withEntry.length,
+    };
   });
   // The row "Mit Ihrer Auswahl", which the bar at the bottom of a narrow window repeats while it is
   // not wholly on the screen (spec small-screens).
