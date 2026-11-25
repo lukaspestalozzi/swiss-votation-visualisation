@@ -29,8 +29,8 @@ and Italian:
   per canton;
 - the page also shows a map of the 2,110 municipalities. Each is coloured by the side with more
   votes and how clearly it won, blue-green for yes and orange-red for no; the cantons and the
-  lakes are drawn on top, and its legend is one scale. You can zoom it, with its buttons or with
-  Ctrl or ⌘ and the mouse wheel, and move it; pointing at a municipality shows its name, its yes
+  lakes are drawn on top, and its legend is one scale. You can zoom it, with its buttons, with
+  Ctrl or ⌘ and the mouse wheel or with two fingers, and move it; pointing at a municipality shows its name, its yes
   share and its votes. Its shapes come from the Federal Statistical Office
   ("Kartengrundlage: © BFS": the register of municipalities and the ThemaKart set 2026), written
   by the pipeline to `app/static/data/map.json`;
