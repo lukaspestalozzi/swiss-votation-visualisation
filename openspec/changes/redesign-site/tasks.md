@@ -179,7 +179,7 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
   selection first applies" pass.
 - [x] 9.3 Verify the phone: the browser test of small-screens "The result and the first limit in
   one window" passes, and the tests of the bar at the bottom pass.
-- [ ] 9.4 Add "Found after the merge" to `investigations/redesign.md`, with the script that
+- [x] 9.4 Add "Found after the merge" to `investigations/redesign.md`, with the script that
   measures a narrow window as built; update `CLAUDE.md` and `README.md` where they give the
   order of a narrow window. Verify: each figure in it comes from a command the file names.
 - [ ] 9.5 Verify: `./scripts/verify-local.sh` passes all 11 steps.
