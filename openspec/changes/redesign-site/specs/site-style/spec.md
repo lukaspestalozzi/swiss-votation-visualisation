@@ -5,11 +5,11 @@
 ### Requirement: The colours of the light scheme
 
 Unless the browser prefers a dark colour scheme, every page SHALL show its text in `#1c1c1c` on
-`#ffffff`; a vote's date and kind, and sources and notes, in `#595959`; links below the head,
+`#ffffff`; a vote's date and kind, sources and notes in `#595959`; links below the head,
 underlined, and the ring of a focused control in the text's colour; the cantonal votes of a
-majority that is not needed in `#767676`. Every text SHALL have at least 4.5:1 against the colour behind it, text of at
-least 24 pixels, or of 18.66 bold, at least 3:1 (WCAG 2.2, 1.4.3; `investigations/site-style.md`,
-3).
+majority that is not needed in `#767676`. Every text SHALL have at least 4.5:1 against the colour
+behind it, text of at least 24 pixels, or of 18.66 bold, at least 3:1 (WCAG 2.2, 1.4.3;
+`investigations/site-style.md`, 3).
 
 #### Scenario: The contrast of every text
 
@@ -179,10 +179,10 @@ and a button of underlined text needs no border.
 ### Requirement: The look of the head's entries
 
 In the head, the comparison, the guide and a language that link SHALL be written in `#595959`, in
-the dark scheme in `#b0b0b0`, without a line until the pointer is on them, when they are underlined
-in the text's colour. The entry of the page shown and the page's language SHALL be written in the
-text's colour, in a heavier weight, above a line of that colour. The title SHALL be in the text's
-colour and not underlined.
+the dark scheme in `#b0b0b0`, without a line until the pointer is on them, when they take the
+text's colour and a line of it. The entry of the page shown and the page's language SHALL be
+written in the text's colour, in a heavier weight, above a line of that colour. The title SHALL
+be in the text's colour and never underlined, also where it is the page shown.
 
 #### Scenario: The entries on the guide
 

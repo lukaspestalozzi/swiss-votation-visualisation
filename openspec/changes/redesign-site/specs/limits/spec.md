@@ -183,6 +183,13 @@ colour, the rest in `#8c8c8c`, `#6e6e6e` in the dark scheme, following each step
 - **THEN** its bars count 2,104 municipalities: the six without a party figure in the election of
   2019 are in none (`investigations/limits.md`, 5)
 
+#### Scenario: A bar with one municipality
+
+- **WHEN** a visitor on `/de/votes/5960/` adds the limit "Einwohner"
+- **THEN** its last bar, with Zürich alone where the fullest bar holds 146, is a fiftieth as tall
+  as the fullest: a bar that holds a municipality is at least that tall, so that it is seen
+  (`investigations/redesign.md`, "Output" of `hist.mjs`)
+
 ### Requirement: The municipality last clicked on a track
 
 While a municipality is the one last clicked or tapped (the `result-map` capability), each limit

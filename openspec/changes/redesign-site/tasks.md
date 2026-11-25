@@ -171,4 +171,6 @@ built site: `pnpm run build` before `pnpm run test:e2e`.
 
 - After the merge, Q checks the new look on a phone, and a pinch on a Mac's trackpad in Safari.
 - `/openspec-verify-change`, then `/openspec-archive-change`, which sets #14 to done in
-  `docs/roadmap.md`.
+  `docs/roadmap.md`. The archive merges requirements, not a spec's purpose: after it, the purposes
+  of `verdicts` ("side by side") and of `vote-comparison` ("stands beside its result with the
+  selection") are reworded by hand, as the selection's result now stands below the real one.

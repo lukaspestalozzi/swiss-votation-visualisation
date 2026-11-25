@@ -64,3 +64,50 @@ and the start page's search field and its three buttons.
 - **WHEN** a visitor on a touch screen 412 pixels wide opens `/de/`
 - **THEN** the search field, "Alle", "Angenommen" and "Abgelehnt" are each at least 44 pixels wide
   and 44 pixels tall
+
+### Requirement: The selection's result at the bottom of a narrow window
+
+In a window narrower than 640 pixels, while a selection applies (the `limits` capability) and
+its result "Mit Ihrer Auswahl" does not lie wholly within the window, a bar at the bottom of the
+window SHALL show "Mit Ihrer Auswahl: <outcome>" and "Volksmehr: <word> · Ständemehr: <word>",
+with that result's outcome and verdict words, following every step as it does. Otherwise there
+SHALL be no bar. The bar SHALL hide no part of the page.
+
+#### Scenario: While dragging on a phone
+
+- **WHEN** a visitor opens `/de/votes/5960/` in a window 412 pixels wide, adds the limit
+  "Ausländeranteil", moves its upper bound to step 327 and keeps the slider in the middle of the
+  window
+- **THEN** a bar at the bottom of the window shows "Mit Ihrer Auswahl: Angenommen" and
+  "Volksmehr: Ja · Ständemehr: Ja" (`investigations/limits.md`, 5)
+
+#### Scenario: A majority that is not needed
+
+- **WHEN** a visitor opens `/de/votes/5950/` in a window 412 pixels wide, switches the Swiss
+  abroad off and scrolls until the switch is in the middle of the window
+- **THEN** the bar shows "Mit Ihrer Auswahl: Abgelehnt" and "Volksmehr: Nein · Ständemehr: nicht
+  nötig" (`investigations/limits.md`, 5)
+
+#### Scenario: In French
+
+- **WHEN** a visitor opens `/fr/votes/5960/` in a window 412 pixels wide, adds the limit "Part des
+  étrangers", moves its upper bound to step 327 and keeps the slider in the middle of the window
+- **THEN** the bar shows "Avec votre sélection: Accepté" and "Majorité du peuple: Oui · Majorité
+  des cantons: Oui"
+
+#### Scenario: The box in view
+
+- **WHEN** that visitor on `/de/votes/5960/` scrolls back until the result "Mit Ihrer Auswahl"
+  lies wholly within the window
+- **THEN** there is no bar
+
+#### Scenario: The end of the page
+
+- **WHEN** that visitor scrolls to the end of the page
+- **THEN** the bar is shown, and the page's last line lies above it
+
+#### Scenario: No selection, or a wide window
+
+- **WHEN** that visitor presses "Zurück zum echten Ergebnis", or a visitor does the same as in
+  "While dragging on a phone" in a window 1,280 pixels wide
+- **THEN** there is no bar
