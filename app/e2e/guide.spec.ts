@@ -31,6 +31,54 @@ test('the real result: the official result first', async ({ page }) => {
   await expect(section(page, 'Das echte Ergebnis')).toContainText('Mit Ihrer Auswahl');
 });
 
+test("Where the selection's result stands: below the real one, in three languages", async ({
+  page,
+}) => {
+  // The first section of each guide, and its sentence on the second result.
+  const sentences = {
+    de: [
+      'Das echte Ergebnis',
+      'Erst wenn Sie Gemeinden auswählen, steht darunter ein zweites, neu berechnetes ' +
+        'Ergebnis: «Mit Ihrer Auswahl».',
+    ],
+    fr: [
+      'Le vrai résultat',
+      "Ce n'est que lorsque vous choisissez des communes qu'un second résultat, recalculé, " +
+        'apparaît au-dessous: «Avec votre sélection».',
+    ],
+    it: [
+      'Il risultato reale',
+      'Solo quando sceglie dei Comuni compare sotto un secondo risultato, ricalcolato: «Con la ' +
+        'Sua selezione».',
+    ],
+  };
+  for (const [language, [heading, sentence]] of Object.entries(sentences)) {
+    await page.goto(`${language}/guide/`);
+    await expect(section(page, heading)).toContainText(sentence);
+    await expect(page.locator('body')).not.toContainText(/daneben|à côté|accanto/);
+  }
+});
+
+test('the guide is one column of text, at most 42rem wide', async ({ page }) => {
+  // Design of redesign-site, decision 27; a paragraph at most 40rem (spec site-style, "The
+  // width of a page").
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('de/guide/');
+  const widths = (selector: string) =>
+    page
+      .locator(selector)
+      .evaluateAll((parts) => parts.map((part) => part.getBoundingClientRect().width));
+  const sections = await widths('section');
+  expect(sections).toHaveLength(7);
+  expect(Math.max(...sections)).toBe(672);
+  expect(Math.max(...(await widths('section p')))).toBeLessThanOrEqual(640);
+  // One column: each section begins at the page's left edge.
+  const lefts = await page
+    .locator('h1, section')
+    .evaluateAll((parts) => parts.map((part) => part.getBoundingClientRect().left));
+  expect(new Set(lefts).size).toBe(1);
+});
+
 test('how a selection works: the rule in plain words', async ({ page }) => {
   await page.goto('de/guide/');
   const rule = section(page, 'Gemeinden auswählen');
