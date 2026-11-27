@@ -1,0 +1,1335 @@
+{
+  "days": {
+    "2013-03-03": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/567.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/567.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/567.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2013-06-09": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/570.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/570.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/570.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2013-09-22": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/572.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/572.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/572.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2013-11-24": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/575.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/575.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/575.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2014-02-09": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/578.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/578.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/578.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2014-05-18": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/581.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/581.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/581.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2014-09-28": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/585.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/585.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/585.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2014-11-30": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/587.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/587.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/587.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2015-03-08": {
+      "explanations": {
+        "de": {
+          "address": "https://swissvotes.ch/vote/590.00/brochure-de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://swissvotes.ch/vote/590.00/brochure-fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://swissvotes.ch/vote/590.00/brochure-fr.pdf",
+          "language": "fr"
+        }
+      }
+    },
+    "2015-06-14": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/8WJj4B09VbUG/Erl%C3%A4uterungen%20des%20Bundesrates%20vom%2014.%20Juni%202015%20(2).pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/8WJj4B09VbUG/Erlaeuterungen_14juni2015_FR_low.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/8WJj4B09VbUG/Erlaeuterungen_14juni2015_IT_low.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2016-02-28": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/kOH6nJzClyOD/Erlaeuterungen_DE_bf.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/kOH6nJzClyOD/Erlaeuterungen_DE_bf.pdf",
+          "language": "de"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/kOH6nJzClyOD/Erlaeuterungen_IT_bf%20(1).pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2016-06-05": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/SJtNjFluh3Ly/Volksabstimmung_05062016_B%C3%BCchlein.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/SJtNjFluh3Ly/Votation_05062016_b%C3%BCchlein.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/SJtNjFluh3Ly/Votazione05062016_B%C3%BCchlein.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2016-09-25": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/JTnf6GPliYoK/B%C3%BCchlein_DE.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/lScyZzwxMCg1/B%C3%BCchlein_FR.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/zJBVlmVf34xb/B%C3%BCchlein_IT.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2016-11-27": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/dLF4D3O-FnIJ/27.11.2016%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/bZSnp4oNDtvO/27.11.2016%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/3UFgQ016SS6h/27.11.2016%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2017-02-12": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/SfdlbEFuyqrg/P10118640_BBL_Abstimmungsbroschuere_DE_screen.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/SfdlbEFuyqrg/P10118640_BBL_Abstimmungsbroschuere_FR_screen.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/SfdlbEFuyqrg/P10118640_BBL_Abstimmungsbroschuere_IT_screen.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2017-05-21": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/kfpKEPcuYM7r/Erl%C3%A4uterungen%20des%20Bundesrates%20-%20Volksabstimmung%20vom%2021.%20Mai%202017%20(1).pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/kfpKEPcuYM7r/Explications%20du%20Conseil%20f%C3%A9d%C3%A9ral%20-%20Votation%20populaire%20du%2021%20mai%202017.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/kfpKEPcuYM7r/Spiegazioni%20del%20Consiglio%20federale%20-%20Votazione%20popolare%20del%2021%20maggio%202017.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2017-09-24": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/pG2lxOFb2hHe/24.09.2017%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/jZZ8sYmiwOVF/24.09.2017%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/-8ac1cEQMDJ1/24.09.2017%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2018-03-04": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/k9nlMhNpYmix/Volksabstimmung_04_03_2018_DE_web.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/TvTBh7QHUeCc/Volksabstimmung_04_03_2018_fr_web.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/zhW-ssVqMqwd/Volksabstimmung_04_03_2018_it_web.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2018-06-10": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/C3f8afo419Gu/Volksabstimmung_Erlaeuterung_10_06_2018%20BRF.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/C3f8afo419Gu/Votation%20populaire%20du%2010%20juin%202018-BRF-FR.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/C3f8afo419Gu/Votazione%20popolare%20del%2010%20giugno%202018-Brf-IT.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2018-09-23": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/cXpS1LogW7XJ/23.09.2018%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/ve3JgkMIplKM/23.09.2018%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/SD2w8hwb9UJ3/23.09.2018%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2018-11-25": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/ouG5kP4mbGsu/25.11.2018%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/e5HYbl5Xgwmh/25.11.2018%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/1MLxCtOWHTpn/25.11.2018%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2019-02-10": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/MZIMenCLkVYq/10.02.2019%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/KSeHIyZLJ0iS/10.02.2019%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/RIZBF8Q68Uhy/10.02.2019%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2019-05-19": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/fP0Ej9e3Hso5/19.05.2019%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/QJc3LO1AYz5N/19.05.2019%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/wnkb-Zq-cmE7/19.05.2019%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2020-02-09": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/Oe0ZfF1QN2Jf/Volksabstimmung%20vom%2009022020_Abstimmungserlaeuterungen.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/Oe0ZfF1QN2Jf/Abstimmungsbroschuere_09-02-2020_fr_web.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/Oe0ZfF1QN2Jf/Abstimmungsbroschuere_09-02-2020_it_web.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2020-09-27": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/00Ra5bzS7-9t/Abstimmungsbroschuere_27-09-2020_de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/vL-4bT3hnZPy/27.09.2020%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/EskhzNgDo-zd/27.09.2020%20%E2%80%93%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2020-11-29": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/6hl7A1GwmBb7/571508493%20Abstimmungsbroschuere_29-11-2020_de_UA.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/6hl7A1GwmBb7/150244816%20Abstimmungsbroschuere_29-11-2020_fr_UA.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/6hl7A1GwmBb7/643433800%20Abstimmungsbroschuere_29-11-2020_it_UA.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2021-03-07": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/35AyAQESoeMw/DE_volksabstimmung%20(1).pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/35AyAQESoeMw/FR_votationpopulaire.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/35AyAQESoeMw/votazione_marzo2021.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2021-06-13": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/W2J9z86hYu7j/13.06.2021%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/a4Jm6l7qToHo/13.06.2021%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/6IJECFNfMrZC/13.06.2021%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2021-09-26": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/TAGku8hKy3sj/DE_Bu%CC%88chlein_sept21.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/yhEYV7qArqUh/26.09.2021%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/Vzv2HOpWT4PG/26.09.2021%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2021-11-28": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/2bvJLHvXFI-2/28.11.2021%20%E2%80%93%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/iknaU-Ij9X3l/28.11.2021%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/g3nX8lU9hpKR/28.11.2021%20%E2%80%93%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2022-02-13": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/KVeerPJNlouU/DE%20Bu%CC%88chlein.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/p0XhTX3u9lHV/13.02.2022%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/-yo7EQF0GPfd/13.02.2022-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2022-05-15": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/gJkWRiGaFGzj/15.05.2022%20%E2%80%93%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/fPSuNq0RJHhu/15.05.2022%20%E2%80%93%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/-zEP6by3aHlW/15.05.2022%20%E2%80%93%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2022-09-25": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/occVCFG2g3VC/_DE_Erlaeuterungen_September_2022.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/occVCFG2g3VC/FR_Erlaeuterungen_September_2022.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/occVCFG2g3VC/votazione_IT.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2023-06-18": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/ewEr7SDomGo4/DE_Erlaeuterungen_Juni_2023_web.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/ewEr7SDomGo4/FR_Erlaeuterungen_Juni_2023_web.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/ewEr7SDomGo4/IT_Erlaeuterungen_Juni_2023_web.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2024-03-03": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/lGDB1DVdo16y/marzo_DE.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/lGDB1DVdo16y/marzo_FR.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/lGDB1DVdo16y/marzo_IT.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2024-06-09": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/jPucw5xtIcv6/Erlaeuterungen_Juni_DE_web%20(2).pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/hbn1NL69AUDO/Erlaeuterungen_Juni_FR_web.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/iPzoXaVSe8dK/Erlaeuterungen_Juni_IT_web.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2024-09-22": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/4H00S2Z2Kznp/BAR_Sept_24_de.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/4H00S2Z2Kznp/50460_Erlaeuterungen_September-2024_fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/4H00S2Z2Kznp/50460_Erlaeuterungen_September-2024_it.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2024-11-24": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/JdtCadhZCmtI/24.11.2024%20-%20Erla%CC%88uterungen%20Volksabstimmung%20DE.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/0OXCQSviQBWR/24.11.2024%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/16nf9j5mJP7Z/24.11.2024%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2025-02-09": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/nfXZfZ2T7GYv/09.02.2025%20-%20Erla%CC%88uterungen%20Volksabstimmung.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/nfXZfZ2T7GYv/09.02.2025%20-%20Explications%20du%20Conseil%20fe%CC%81de%CC%81ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/nfXZfZ2T7GYv/09.02.2025%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2025-09-28": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/B4PBk5dFVPpq/Bar_Erlaeuterungen_September_2025_de_v2%20(5).pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/B4PBk5dFVPpq/Bar_Erlaeuterungen_September_2025_fr%20(2).pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/B4PBk5dFVPpq/Bar_Erlaeuterungen_September_2025_it%20(3).pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2025-11-30": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/PmayZow6Mso2/Erlaeuterungen_November-2025_de%20(1).pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/PmayZow6Mso2/Erlaeuterungen_November-2025_fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/PmayZow6Mso2/Erlaeuterungen_November-2025_it.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2026-03-08": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/HVLCEOToQKoA/new%20BAR_ErlMaerz26_de_.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/HVLCEOToQKoA/new%20BAR_ErlMaerz26_fr.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/HVLCEOToQKoA/new%20BAR_ErlMaerz26_it.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2026-06-14": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/73r37pgl01Is/BAR_Erlaeuterungen_Juni_2026_de_v2.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/73r37pgl01Is/BAR_Erlaeuterungen_Juni_2026_fr_v3.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/73r37pgl01Is/BAR_Erlaeuterungen_Juni_2026_it_v3.pdf",
+          "language": "it"
+        }
+      }
+    },
+    "2026-09-27": {
+      "explanations": {
+        "de": {
+          "address": "https://www.admin.ch/dam/de/sd-web/3E6DtQlSES3i/DE-%20Volksabstimmung%20vom%2027.%20September%202026%20-%20Erl%C3%A4uterungen%20des%20Bundesrates.pdf",
+          "language": "de"
+        },
+        "fr": {
+          "address": "https://www.admin.ch/dam/fr/sd-web/3E6DtQlSES3i/Votation%20populaire%20du%2027%20septembre%202026%20-%20Explications%20du%20Conseil%20f%C3%A9d%C3%A9ral.pdf",
+          "language": "fr"
+        },
+        "it": {
+          "address": "https://www.admin.ch/dam/it/sd-web/3E6DtQlSES3i/Votazione%20popolare%20del%2027%20settembre%202026%20-%20Spiegazioni%20del%20Consiglio%20federale.pdf",
+          "language": "it"
+        }
+      }
+    }
+  },
+  "votes": {
+    "5670": {
+      "de": "Der neue Verfassungsartikel verpflichtet Bund und Kantone, die Vereinbarkeit von Familie und Erwerbstätigkeit oder Ausbildung zu fördern. Zuständig sind in erster Linie die Kantone, die für genügend familien- und schulergänzende Betreuungsplätze sorgen sollen; der Bund legt nur dann gesamtschweizerische Vorgaben fest, wenn es nötig wird.",
+      "fr": "Le nouvel article constitutionnel charge la Confédération et les cantons de promouvoir les mesures qui permettent de concilier la vie de famille avec une activité lucrative ou une formation. Cette tâche revient d'abord aux cantons, qui pourvoient à une offre appropriée de structures de jour extrafamiliales et parascolaires; la Confédération ne fixe des règles générales qu'en cas de nécessité.",
+      "it": "Il nuovo articolo costituzionale incarica la Confederazione e i Cantoni di promuovere misure che permettano di conciliare la vita familiare con un'attività lucrativa o una formazione. Il compito spetta anzitutto ai Cantoni, che provvedono a un'offerta adeguata di strutture diurne complementari alla famiglia e alla scuola; la Confederazione emana principi generali solo se necessario."
+    },
+    "5680": {
+      "de": "Die Initiative will, dass bei börsenkotierten Unternehmen die Generalversammlung der Aktionärinnen und Aktionäre die Vergütungen von Verwaltungsrat und Geschäftsleitung zwingend genehmigt. Verwaltungsratsmitglieder werden nur noch für ein Jahr gewählt, Abgangsentschädigungen und Prämien für Firmenkäufe sind verboten, und wer gegen diese Regeln verstösst, kann bestraft werden.",
+      "fr": "L'initiative veut que, dans les sociétés cotées en bourse, l'assemblée générale des actionnaires approuve obligatoirement les rémunérations du conseil d'administration et de la direction. Le mandat des administrateurs est limité à un an, les indemnités de départ et les primes pour l'achat d'entreprises sont interdites, et quiconque enfreint ces règles peut être sanctionné.",
+      "it": "L'iniziativa chiede che nelle società quotate in borsa le retribuzioni del consiglio d'amministrazione e della direzione siano obbligatoriamente approvate dall'assemblea generale degli azionisti. Il mandato dei membri del consiglio d'amministrazione è limitato a un anno, le indennità di partenza e i premi per l'acquisto di imprese sono vietati e chi viola queste regole può essere punito."
+    },
+    "5690": {
+      "de": "Die Änderung des Raumplanungsgesetzes richtet die Grösse der Bauzonen am voraussichtlichen Bedarf für 15 Jahre aus; zu grosse Bauzonen werden verkleinert. Wird Land neu eingezont, erhalten Kantone und Gemeinden mindestens 20 Prozent des Mehrwerts, fällig beim Verkauf oder bei der Überbauung. Die Änderung ist der indirekte Gegenvorschlag zur Landschaftsinitiative.",
+      "fr": "La révision de la loi sur l'aménagement du territoire fonde la taille des zones à bâtir sur les besoins prévisibles des quinze années à venir et réduit les zones surdimensionnées. Les cantons et les communes reçoivent au moins 20 % de la plus-value d'un terrain classé en zone à bâtir, due à sa vente ou à sa construction. Elle est le contre-projet indirect à l'initiative pour le paysage.",
+      "it": "La revisione della legge sulla pianificazione del territorio commisura le zone edificabili al fabbisogno prevedibile dei prossimi quindici anni e riduce quelle sovradimensionate. Cantoni e Comuni ricevono almeno il 20 per cento del plusvalore di un fondo assegnato alla zona edificabile, dovuto alla vendita o all'edificazione. È il controprogetto indiretto all'iniziativa per il paesaggio."
+    },
+    "5700": {
+      "de": "Die Initiative will, dass das Volk den Bundesrat wählt und nicht mehr das Parlament. Die Bundespräsidentin oder den Bundespräsidenten bestimmt neu der Bundesrat selbst. Zudem garantiert die Verfassung den französisch- und den italienischsprachigen Gebieten zusammen mindestens zwei Sitze im Bundesrat.",
+      "fr": "L'initiative veut que les membres du Conseil fédéral soient élus par le peuple et non plus par le Parlement. Le président de la Confédération est désormais désigné par le Conseil fédéral lui-même. La Constitution garantit en outre au moins deux sièges du gouvernement à des personnes domiciliées dans les régions francophones ou italophones.",
+      "it": "L'iniziativa chiede che i membri del Consiglio federale siano eletti dal Popolo e non più dall'Assemblea federale. Il presidente della Confederazione è designato dal Consiglio federale stesso. La Costituzione garantisce inoltre almeno due seggi in Governo a persone domiciliate nelle regioni di lingua francese o italiana."
+    },
+    "5710": {
+      "de": "Die dringlichen Änderungen des Asylgesetzes erlauben dem Bund, eigene Bauten ohne Bewilligung bis zu drei Jahre lang für Asylsuchende zu nutzen. Asylgesuche auf Schweizer Botschaften sind nicht mehr möglich, und Wehrdienstverweigerung oder Desertion allein ist kein Asylgrund mehr. Der Bund kann neue Asylverfahren während höchstens zwei Jahren erproben.",
+      "fr": "Les modifications urgentes de la loi sur l'asile permettent à la Confédération d'héberger des requérants dans ses constructions, sans autorisation, pendant trois ans au plus. Les demandes d'asile dans une ambassade sont supprimées, et le refus de servir ou la désertion ne sont plus, à eux seuls, des motifs d'asile. La Confédération peut tester de nouvelles procédures durant deux ans au plus.",
+      "it": "Le modifiche urgenti della legge sull'asilo permettono alla Confederazione di alloggiare richiedenti l'asilo in suoi edifici, senza autorizzazione, per al massimo tre anni. Le domande d'asilo nelle ambasciate sono soppresse, e il rifiuto di servire o la diserzione non sono più, da soli, motivi d'asilo. La Confederazione può sperimentare nuove procedure per al massimo due anni."
+    },
+    "5720": {
+      "de": "Die Initiative will die Militärdienstpflicht für Männer aufheben: Die Armee besteht aus Männern und Frauen, die freiwillig Dienst leisten. Auch der Zivildienst wird freiwillig und steht neu Frauen offen. Die Wehrpflichtersatzabgabe fällt weg.",
+      "fr": "L'initiative veut abroger le service militaire obligatoire pour les hommes: l'armée se compose d'hommes et de femmes qui servent sur une base volontaire. Le service civil devient lui aussi volontaire et s'ouvre aux femmes. La taxe d'exemption est supprimée.",
+      "it": "L'iniziativa chiede di abolire l'obbligo di prestare servizio militare per gli uomini: l'esercito è composto di uomini e donne che prestano servizio su base volontaria. Anche il servizio civile diventa volontario e si apre alle donne. La tassa d'esenzione dall'obbligo militare è soppressa."
+    },
+    "5730": {
+      "de": "Das neue Epidemiengesetz ersetzt jenes von 1970 und regelt die Aufgaben von Bund und Kantonen gegen übertragbare Krankheiten klarer, etwa mit Programmen gegen Spitalinfektionen und Antibiotikaresistenzen. Kantone dürfen Impfungen nur noch bei erheblicher Gefahr und für bestimmte Personengruppen für obligatorisch erklären, landesweit neu auch der Bundesrat; gegen seinen Willen geimpft wird niemand.",
+      "fr": "La nouvelle loi sur les épidémies, qui remplace celle de 1970, clarifie les tâches de la Confédération et des cantons et prévoit des programmes contre les infections nosocomiales et les résistances aux antibiotiques. Les cantons ne peuvent imposer une vaccination qu'en cas de danger sérieux et à des catégories précises de personnes, le Conseil fédéral aussi au plan national; nul n'est vacciné contre son gré.",
+      "it": "La nuova legge sulle epidemie, che sostituisce quella del 1970, precisa i compiti di Confederazione e Cantoni e prevede programmi contro le infezioni ospedaliere e le resistenze agli antibiotici. I Cantoni possono dichiarare obbligatorie vaccinazioni solo in caso di pericolo serio e per gruppi definiti di persone, a livello nazionale anche il Consiglio federale; nessuno è vaccinato contro la sua volontà."
+    },
+    "5740": {
+      "de": "Die Änderung des Arbeitsgesetzes erlaubt Tankstellenshops auf Autobahnraststätten und an Hauptverkehrswegen mit starkem Reiseverkehr, auch zwischen 1 und 5 Uhr Personal zu beschäftigen, wenn ihr Angebot in erster Linie auf Reisende ausgerichtet ist. Für alle übrigen Tankstellenshops bleibt die Nacht- und Sonntagsarbeit verboten.",
+      "fr": "La modification de la loi sur le travail permet aux magasins des stations-service situées sur les aires d'autoroute ou le long d'axes fortement fréquentés par les voyageurs d'employer du personnel aussi entre 1 h et 5 h, si leur offre répond principalement aux besoins des voyageurs. Le travail de nuit et du dimanche reste interdit dans les autres stations-service.",
+      "it": "La modifica della legge sul lavoro permette ai negozi delle stazioni di servizio situate sulle aree autostradali o lungo grandi assi di traffico molto frequentati dai viaggiatori di occupare personale anche tra l'1 e le 5, se l'offerta risponde principalmente ai bisogni dei viaggiatori. Nelle altre stazioni di servizio il lavoro notturno e domenicale resta vietato."
+    },
+    "5750": {
+      "de": "Die Initiative will, dass der höchste Lohn, den ein Unternehmen zahlt, nicht mehr als das Zwölffache seines tiefsten Lohns beträgt. Als Lohn zählen alle Zuwendungen für eine Erwerbstätigkeit, in Geld wie in Sach- und Dienstleistungen. Ausnahmen, etwa für Personen in Ausbildung, Praktikantinnen und Praktikanten, regelt der Bund.",
+      "fr": "L'initiative veut que le salaire le plus élevé versé par une entreprise ne dépasse pas douze fois le salaire le plus bas qu'elle verse. Toutes les prestations liées à une activité lucrative, en espèces comme en nature, comptent comme salaire. La Confédération règle les exceptions, notamment pour les personnes en formation et les stagiaires.",
+      "it": "L'iniziativa chiede che il salario più alto versato da un'impresa non superi di oltre dodici volte il salario più basso versato dalla stessa impresa. Sono considerate salario tutte le prestazioni in denaro e in natura legate a un'attività lucrativa. La Confederazione disciplina le eccezioni, in particolare per le persone in formazione e i praticanti."
+    },
+    "5760": {
+      "de": "Die Initiative will, dass Eltern, die ihre Kinder selber betreuen, bei den Steuern einen gleich hohen oder höheren Abzug machen können als Eltern, die ihre Kinder gegen Bezahlung von Dritten betreuen lassen. Für die Drittbetreuung beträgt dieser Abzug beim Bund heute höchstens 10 100 Franken pro Jahr und Kind.",
+      "fr": "L'initiative veut que les parents qui gardent eux-mêmes leurs enfants puissent déduire de leurs impôts un montant aussi élevé, voire plus élevé, que les parents qui confient leurs enfants à des tiers contre paiement. Sur le plan fédéral, la déduction pour la garde par des tiers s'élève aujourd'hui au plus à 10 100 francs par année et par enfant.",
+      "it": "L'iniziativa chiede che i genitori che accudiscono personalmente i figli possano dedurre dalle imposte un importo pari o superiore a quello dei genitori che affidano i figli a terzi a pagamento. A livello federale la deduzione per la custodia da parte di terzi ammonta oggi al massimo a 10 100 franchi all'anno per figlio."
+    },
+    "5770": {
+      "de": "Die Gesetzesänderung erhöht den Preis der Autobahnvignette von 40 auf 100 Franken pro Jahr und führt eine Zweimonatsvignette für 40 Franken ein. Sie ist mit dem neuen Netzbeschluss verknüpft, mit dem rund 400 Kilometer kantonale Strassen ins Nationalstrassennetz aufgenommen werden.",
+      "fr": "La modification de la loi fait passer le prix de la vignette autoroutière annuelle de 40 à 100 francs et crée une vignette valable deux mois, au prix de 40 francs. Elle est liée au nouvel arrêté sur le réseau, qui transfère quelque 400 km de routes cantonales dans le réseau des routes nationales.",
+      "it": "La modifica della legge porta il prezzo del contrassegno autostradale annuale da 40 a 100 franchi e introduce un contrassegno valido due mesi, al prezzo di 40 franchi. È legata al nuovo decreto concernente la rete, che trasferisce circa 400 chilometri di strade cantonali nella rete delle strade nazionali."
+    },
+    "5780": {
+      "de": "Die Vorlage verankert in der Verfassung einen unbefristeten Fonds, aus dem Betrieb, Unterhalt und Ausbau der Bahninfrastruktur bezahlt werden: Gleise, Tunnels, Brücken, Perrons und Fahrleitungen. Das Bahnnetz wird in Etappen ausgebaut, ein erster Schritt bis 2025. Sie ist der direkte Gegenentwurf zur zurückgezogenen Volksinitiative «Für den öffentlichen Verkehr».",
+      "fr": "Le projet inscrit dans la Constitution un fonds de durée illimitée qui finance l'exploitation, l'entretien et l'aménagement de l'infrastructure ferroviaire: voies, tunnels, ponts, quais et caténaires. Le réseau est aménagé par étapes, une première d'ici 2025. C'est le contre-projet direct à l'initiative populaire «Pour les transports publics», qui a été retirée.",
+      "it": "Il progetto sancisce nella Costituzione un fondo di durata illimitata che finanzia l'esercizio, la manutenzione e l'ampliamento dell'infrastruttura ferroviaria: binari, gallerie, ponti, marciapiedi e linee di contatto. La rete è ampliata a tappe, la prima entro il 2025. È il controprogetto diretto all'iniziativa popolare «Per i trasporti pubblici», ritirata."
+    },
+    "5790": {
+      "de": "Die Initiative will, dass die obligatorische Krankenversicherung die Kosten von Schwangerschaftsabbruch und Mehrlingsreduktion nicht mehr übernimmt. Davon ausgenommen wären nur seltene Fälle seitens der Mutter.",
+      "fr": "L'initiative veut que l'assurance obligatoire des soins ne prenne plus en charge l'interruption de grossesse et la réduction embryonnaire. Seules de rares exceptions concernant la mère resteraient possibles.",
+      "it": "L'iniziativa chiede che l'assicurazione obbligatoria delle cure medico-sanitarie non assuma più i costi dell'interruzione di gravidanza e della riduzione embrionale. Resterebbero possibili soltanto rare eccezioni riguardanti la madre."
+    },
+    "5800": {
+      "de": "Die Initiative will, dass die Schweiz die Zuwanderung eigenständig steuert: Jährliche Höchstzahlen und Kontingente begrenzen alle Aufenthaltsbewilligungen, auch im Asylbereich und für Grenzgänger. Schweizerinnen und Schweizer haben auf dem Arbeitsmarkt Vorrang, und widersprechende Verträge wie das Freizügigkeitsabkommen sind innert drei Jahren neu zu verhandeln.",
+      "fr": "L'initiative veut que la Suisse gère elle-même l'immigration: des plafonds et des contingents annuels limitent toutes les autorisations de séjour, asile et frontaliers compris. Les employeurs accordent la préférence aux travailleurs suisses, et les traités contraires, comme l'Accord sur la libre circulation des personnes, doivent être renégociés dans les trois ans.",
+      "it": "L'iniziativa chiede che la Svizzera gestisca autonomamente l'immigrazione: tetti massimi e contingenti annuali limitano tutti i permessi di dimora, compresi l'asilo e i frontalieri. I datori di lavoro danno la preferenza agli Svizzeri, e i trattati contrari, come l'Accordo sulla libera circolazione delle persone, vanno rinegoziati entro tre anni."
+    },
+    "5810": {
+      "de": "Der neue Verfassungsartikel verpflichtet Bund und Kantone, für eine ausreichende medizinische Grundversorgung von hoher Qualität zu sorgen, die allen zugänglich ist; die Hausarztmedizin wird als ihr wesentlicher Teil gefördert. Der Bund regelt die Aus- und Weiterbildung der Grundversorgungsberufe und die angemessene Abgeltung der Hausarztmedizin.",
+      "fr": "Le nouvel article constitutionnel charge la Confédération et les cantons de veiller à ce que chacun ait accès à des soins médicaux de base suffisants et de qualité; la médecine de famille y est reconnue et encouragée comme une composante essentielle. La Confédération légifère sur la formation des professions des soins de base et sur la rémunération appropriée de la médecine de famille.",
+      "it": "Il nuovo articolo costituzionale incarica la Confederazione e i Cantoni di provvedere affinché tutti abbiano accesso a cure mediche di base sufficienti e di qualità; la medicina di famiglia vi è riconosciuta e promossa come componente essenziale. La Confederazione legifera sulla formazione delle professioni delle cure di base e sull'adeguata remunerazione della medicina di famiglia."
+    },
+    "5820": {
+      "de": "Die Initiative will, dass wer wegen Beeinträchtigung der sexuellen Unversehrtheit eines Kindes oder einer abhängigen Person verurteilt wird, für immer keine Tätigkeit mit Minderjährigen oder Abhängigen mehr ausüben darf. Das Verbot gilt für berufliche wie für ehrenamtliche Tätigkeiten.",
+      "fr": "L'initiative veut que toute personne condamnée pour avoir porté atteinte à l'intégrité sexuelle d'un enfant ou d'une personne dépendante perde pour toujours le droit d'exercer une activité en contact avec des mineurs ou des personnes dépendantes. L'interdiction vaut pour les activités professionnelles comme bénévoles.",
+      "it": "L'iniziativa chiede che chi è condannato per aver leso l'integrità sessuale di un fanciullo o di una persona dipendente perda per sempre il diritto di esercitare un'attività a contatto con minorenni o persone dipendenti. Il divieto vale per le attività professionali come per quelle di volontariato."
+    },
+    "5830": {
+      "de": "Die Initiative will einen nationalen gesetzlichen Mindestlohn von 22 Franken pro Stunde, rund 4000 Franken im Monat, der regelmässig an die Lohn- und Preisentwicklung angepasst wird. Bund und Kantone fördern zudem Mindestlöhne in Gesamtarbeitsverträgen, und die Kantone können Zuschläge zum gesetzlichen Mindestlohn festlegen.",
+      "fr": "L'initiative veut instaurer un salaire minimal légal national de 22 francs par heure, soit environ 4000 francs par mois, indexé régulièrement sur l'évolution des salaires et des prix. La Confédération et les cantons encouragent en outre les salaires minimaux dans les conventions collectives de travail, et les cantons peuvent fixer des suppléments au salaire minimal légal.",
+      "it": "L'iniziativa chiede un salario minimo legale nazionale di 22 franchi l'ora, circa 4000 franchi al mese, adeguato regolarmente all'evoluzione dei salari e dei prezzi. La Confederazione e i Cantoni promuovono inoltre i salari minimi nei contratti collettivi di lavoro, e i Cantoni possono stabilire supplementi al salario minimo legale."
+    },
+    "5840": {
+      "de": "Das Gesetz schafft einen Fonds, aus dem 22 Kampfflugzeuge des Typs Gripen beschafft werden; sie ersetzen die 54 veralteten F-5 Tiger der Luftwaffe. Der Fonds wird aus dem ordentlichen Rüstungsaufwand gespeist und verteilt die Ausgaben auf elf Jahre. Ohne dieses Gesetz werden die Gripen nicht beschafft.",
+      "fr": "La loi crée un fonds destiné à l'acquisition de 22 avions de combat Gripen, qui remplacent les 54 F-5 Tiger des Forces aériennes. Le fonds est alimenté par les dépenses ordinaires d'armement et répartit les paiements sur onze ans. Les Gripen ne sont achetés que si la loi sur le fonds est acceptée.",
+      "it": "La legge istituisce un fondo per l'acquisto di 22 aerei da combattimento Gripen, che sostituiscono i 54 F-5 Tiger delle Forze aeree. Il fondo è alimentato dalle spese ordinarie per l'armamento e ripartisce i pagamenti su undici anni. I Gripen sono acquistati solo se la legge sul fondo è accettata."
+    },
+    "5850": {
+      "de": "Die Initiative will, dass für die Leistungen des Gastgewerbes der gleiche Mehrwertsteuersatz gilt wie für Nahrungsmittel im Laden oder am Take-away-Stand; heute sind das 8 und 2,5 Prozent. Ausgenommen wären alkoholische Getränke und Tabakwaren.",
+      "fr": "L'initiative veut que les prestations de la restauration soient imposées au même taux de TVA que les denrées alimentaires vendues en magasin ou à l'emporter, aujourd'hui 8 % et 2,5 %. Les boissons alcooliques et le tabac servis au restaurant en seraient exclus.",
+      "it": "L'iniziativa chiede che le prestazioni della ristorazione siano assoggettate alla stessa aliquota IVA delle derrate alimentari vendute nei negozi o da asporto, oggi rispettivamente l'8 e il 2,5 per cento. Ne sarebbero escluse le bevande alcoliche e i tabacchi."
+    },
+    "5860": {
+      "de": "Die Initiative will, dass eine einzige nationale, öffentlich-rechtliche Krankenkasse die soziale Krankenversicherung durchführt statt der heute 61 privaten Krankenkassen. Kantonale oder interkantonale Agenturen legen die Prämien fest, eine einheitliche pro Kanton, ziehen sie ein und vergüten die Leistungen.",
+      "fr": "L'initiative veut que l'assurance-maladie sociale soit mise en œuvre par une seule institution nationale de droit public, au lieu des 61 caisses-maladie privées actuelles. Des agences cantonales ou intercantonales fixent les primes, par canton, les encaissent et paient les prestations.",
+      "it": "L'iniziativa chiede che l'assicurazione malattie sociale sia gestita da un unico istituto nazionale di diritto pubblico, invece delle attuali 61 casse malati private. Agenzie cantonali o intercantonali stabiliscono i premi, uno per Cantone, li riscuotono e rimborsano le prestazioni."
+    },
+    "5870": {
+      "de": "Die Initiative will die Besteuerung nach dem Aufwand, die sogenannte Pauschalbesteuerung, verbieten. In der Schweiz wohnhafte, nicht erwerbstätige Ausländerinnen und Ausländer würden dann wie alle übrigen Steuerpflichtigen nach ihrem Einkommen und Vermögen besteuert statt pauschal nach ihren Lebenshaltungskosten. Die Besteuerung von Unternehmen ist nicht betroffen.",
+      "fr": "L'initiative veut interdire l'imposition d'après la dépense, appelée aussi forfait fiscal. Les étrangers résidant en Suisse sans y exercer d'activité lucrative seraient alors imposés comme les autres contribuables, sur la base de leur revenu et de leur fortune, et non plus forfaitairement d'après leur train de vie. L'imposition des entreprises n'est pas touchée.",
+      "it": "L'iniziativa chiede di vietare l'imposizione secondo il dispendio, detta anche imposizione forfettaria. Gli stranieri domiciliati in Svizzera che non vi esercitano un'attività lucrativa sarebbero tassati come gli altri contribuenti, in base al loro reddito e alla loro sostanza, e non più forfettariamente in base al loro tenore di vita. L'imposizione delle imprese non è toccata."
+    },
+    "5880": {
+      "de": "Die Initiative will das Wachstum der ständigen Wohnbevölkerung der Schweiz, soweit es auf Zuwanderung zurückgeht, auf 0,2 Prozent pro Jahr beschränken. Zudem soll der Bund mindestens 10 Prozent seiner Mittel für die Entwicklungszusammenarbeit in die freiwillige Familienplanung investieren.",
+      "fr": "L'initiative veut limiter à 0,2 % par an l'accroissement de la population résidante permanente de la Suisse qui est dû au solde migratoire. La Confédération devrait en outre consacrer au moins 10 % des moyens qu'elle affecte à la coopération au développement à la planification familiale volontaire.",
+      "it": "L'iniziativa chiede di limitare allo 0,2 per cento all'anno la crescita della popolazione residente permanente in Svizzera dovuta al saldo migratorio. La Confederazione dovrebbe inoltre destinare alla pianificazione familiare volontaria almeno il 10 per cento dei mezzi che impiega per la cooperazione allo sviluppo."
+    },
+    "5890": {
+      "de": "Die Initiative will, dass die Schweizerische Nationalbank mindestens 20 Prozent ihrer Aktiven in Gold hält; diesen Anteil müsste sie innert fünf Jahren erreichen. Ihre Goldreserven sollen unverkäuflich sein und vollständig in der Schweiz gelagert werden.",
+      "fr": "L'initiative veut que la Banque nationale suisse détienne au moins 20 % de ses actifs sous forme d'or, une part qu'elle devrait atteindre dans un délai de cinq ans. Ses réserves d'or seraient inaliénables et devraient toutes être stockées en Suisse.",
+      "it": "L'iniziativa chiede che la Banca nazionale svizzera detenga in oro almeno il 20 per cento dei suoi attivi, una quota da raggiungere entro cinque anni. Le sue riserve auree sarebbero inalienabili e andrebbero custodite interamente in Svizzera."
+    },
+    "5900": {
+      "de": "Die Initiative will Kinder- und Ausbildungszulagen von den Einkommenssteuern befreien. Heute werden diese Zulagen, die in der ganzen Schweiz mindestens 200 Franken (Kinderzulage) beziehungsweise 250 Franken (Ausbildungszulage) pro Monat betragen, wie anderes Einkommen besteuert.",
+      "fr": "L'initiative veut exonérer des impôts sur le revenu les allocations pour enfant et les allocations de formation professionnelle. Ces allocations, qui se montent dans toute la Suisse à au moins 200 francs par mois pour un enfant et 250 francs pour une formation, sont aujourd'hui imposées comme les autres revenus.",
+      "it": "L'iniziativa chiede di esentare dalle imposte sul reddito gli assegni per i figli e gli assegni di formazione. Questi assegni, che in tutta la Svizzera ammontano ad almeno 200 franchi al mese per gli assegni per i figli e 250 franchi per quelli di formazione, sono oggi tassati come gli altri redditi."
+    },
+    "5910": {
+      "de": "Die Initiative will eine Steuer auf nicht erneuerbaren Energieträgern wie Erdöl, Gas, Kohle und Uran einführen und im Gegenzug die Mehrwertsteuer abschaffen. Die Energiesteuer soll so hoch sein, dass sie gleich viel einbringt wie heute die Mehrwertsteuer.",
+      "fr": "L'initiative veut instituer une taxe sur les énergies non renouvelables, comme le pétrole, le gaz, le charbon ou l'uranium, et supprimer en contrepartie la taxe sur la valeur ajoutée. La taxe sur l'énergie serait fixée de manière à rapporter autant que la taxe sur la valeur ajoutée aujourd'hui.",
+      "it": "L'iniziativa chiede di introdurre un'imposta sulle energie non rinnovabili, come il petrolio, il gas, il carbone o l'uranio, e di abolire in cambio l'imposta sul valore aggiunto. L'imposta sull'energia sarebbe fissata in modo da fruttare quanto frutta oggi l'IVA."
+    },
+    "5920": {
+      "de": "Die Verfassungsänderung erlaubt, bei einer künstlichen Befruchtung so viele Embryonen zu entwickeln, wie für die Behandlung nötig sind, statt nur so viele, wie der Frau sofort eingesetzt werden können. Nicht verwendete Embryonen dürfen für eine spätere Behandlung eingefroren werden. Damit kann die Präimplantationsdiagnostik, die genetische Untersuchung von Embryonen vor dem Einsetzen, bei bestimmten Paaren durchgeführt werden.",
+      "fr": "La modification de la Constitution permet de développer, lors d'une fécondation artificielle, le nombre d'embryons nécessaire au traitement, et non plus seulement ceux qui peuvent être implantés immédiatement dans le corps de la femme. Les embryons non utilisés peuvent être congelés en vue d'un traitement ultérieur. Certains couples peuvent ainsi recourir au diagnostic préimplantatoire, l'analyse génétique de l'embryon avant son implantation.",
+      "it": "La modifica costituzionale permette di sviluppare, in una fecondazione artificiale, il numero di embrioni necessario al trattamento, e non più soltanto quelli che possono essere impiantati subito nell'utero della madre. Gli embrioni non utilizzati possono essere congelati per un ulteriore trattamento. Per determinate coppie diventa così praticabile la diagnosi preimpianto, l'esame genetico degli embrioni prima dell'impianto."
+    },
+    "5930": {
+      "de": "Die Initiative will die Zuständigkeit für Stipendien an Studierende der Hochschulen und an Personen in der höheren Berufsbildung von den Kantonen auf den Bund übertragen. Der Bund soll festlegen, wer unter welchen Bedingungen wie viel erhält, und die Beiträge so bemessen, dass sie einen minimalen Lebensstandard sichern. Den Vollzug würden die Kantone übernehmen.",
+      "fr": "L'initiative veut transférer des cantons à la Confédération la compétence en matière de bourses d'études pour les étudiants des hautes écoles et les personnes en formation professionnelle supérieure. La Confédération fixerait qui reçoit une aide, à quelles conditions et pour quel montant, de manière à garantir un niveau de vie minimal. Les cantons resteraient chargés de l'exécution.",
+      "it": "L'iniziativa chiede di trasferire dai Cantoni alla Confederazione la competenza per le borse di studio destinate agli studenti delle scuole universitarie e a chi segue una formazione professionale superiore. La Confederazione stabilirebbe chi riceve un sussidio, a quali condizioni e per quale importo, in modo da garantire un tenore di vita minimo. L'esecuzione spetterebbe ai Cantoni."
+    },
+    "5940": {
+      "de": "Die Initiative will eine nationale Erbschafts- und Schenkungssteuer einführen: Nachlässe und Schenkungen werden über einem einmaligen Freibetrag von 2 Millionen Franken zu 20 Prozent besteuert. Zwei Drittel des Ertrags gehen an die AHV, ein Drittel an die Kantone. Die kantonalen Erbschafts- und Schenkungssteuern werden aufgehoben.",
+      "fr": "L'initiative veut instituer un impôt fédéral sur les successions et les donations: au-delà d'une franchise unique de deux millions de francs, elles sont imposées au taux de 20 %. Deux tiers du produit vont à l'AVS et un tiers aux cantons. Les impôts cantonaux sur les successions et les donations sont supprimés.",
+      "it": "L'iniziativa chiede di introdurre un'imposta nazionale sulle successioni e sulle donazioni: oltre una franchigia unica di 2 milioni di franchi, sono tassate con un'aliquota del 20 per cento. Due terzi del gettito vanno all'AVS e un terzo ai Cantoni. Le imposte cantonali sulle successioni e sulle donazioni sono abrogate."
+    },
+    "5950": {
+      "de": "Die Gesetzesänderung ersetzt die heutige Empfangsgebühr, die nur bezahlt, wer ein Radio- oder Fernsehgerät besitzt, durch eine allgemeine Abgabe für alle Haushalte und Unternehmen. Bei Unternehmen hängt die Abgabe vom Umsatz ab, solche mit geringem Umsatz zahlen keine. Der Ertrag geht weiterhin an die SRG sowie an lokale Radio- und Fernsehstationen, deren Anteil steigt.",
+      "fr": "La modification de la loi remplace la redevance de réception actuelle, liée à la possession d'un appareil de radio ou de télévision, par une redevance générale due par les ménages et les entreprises. Pour les entreprises, elle dépend du chiffre d'affaires, et celles dont le chiffre d'affaires est faible en sont dispensées. Le produit va toujours à la SSR et aux radios et télévisions locales, dont la part augmente.",
+      "it": "La modifica di legge sostituisce l'attuale canone di ricezione, legato al possesso di un apparecchio radio o televisivo, con un canone generale a carico delle economie domestiche e delle imprese. Per le imprese il canone dipende dal fatturato, e quelle con un fatturato modesto ne sono esonerate. Il gettito va sempre alla SSR e alle emittenti radiotelevisive locali, la cui quota aumenta."
+    },
+    "5960": {
+      "de": "Die Initiative will in der Verfassung festhalten, dass Ehepaare gegenüber anderen Lebensformen nicht benachteiligt werden dürfen, namentlich bei den Steuern und den Sozialversicherungen. Sie definiert die Ehe als die auf Dauer angelegte, gesetzlich geregelte Lebensgemeinschaft von Mann und Frau. Ein Ehepaar soll steuerlich eine Wirtschaftsgemeinschaft bilden.",
+      "fr": "L'initiative veut inscrire dans la Constitution que les couples mariés ne peuvent pas être pénalisés par rapport à d'autres modes de vie, notamment en matière d'impôts et d'assurances sociales. Elle définit le mariage comme l'union durable et réglementée par la loi d'un homme et d'une femme. Le couple marié forme une communauté économique sur le plan fiscal.",
+      "it": "L'iniziativa vuole sancire nella Costituzione che il matrimonio non sia svantaggiato rispetto ad altri modi di vita, segnatamente sotto il profilo fiscale e delle assicurazioni sociali. Definisce il matrimonio come la durevole convivenza, disciplinata dalla legge, di un uomo e di una donna. Dal punto di vista fiscale i coniugi costituiscono una comunione economica."
+    },
+    "5970": {
+      "de": "Die Initiative will detaillierte Bestimmungen zur Ausschaffung krimineller Ausländerinnen und Ausländer direkt in die Verfassung schreiben. Wer wegen bestimmter Straftaten verurteilt wird, soll automatisch ausgeschafft werden, unabhängig von der Schwere der Tat und der Höhe der Strafe; ein Strafbefehl der Staatsanwaltschaft genügt. Die Ausschaffung ist stets mit einem mehrjährigen Einreiseverbot verbunden.",
+      "fr": "L'initiative veut inscrire directement dans la Constitution des dispositions détaillées sur le renvoi des étrangers criminels. Les étrangers condamnés pour certaines infractions seraient renvoyés automatiquement, quelles que soient la gravité de l'acte et la peine; une ordonnance pénale du ministère public suffirait. Le renvoi serait toujours assorti d'une interdiction d'entrée de plusieurs années.",
+      "it": "L'iniziativa chiede di sancire direttamente nella Costituzione disposizioni dettagliate sull'espulsione degli stranieri che commettono reati. Chi è condannato per determinati reati sarebbe espulso automaticamente, a prescindere dalla gravità del fatto e dall'entità della pena; basterebbe un decreto d'accusa del pubblico ministero. L'espulsione sarebbe sempre unita a un divieto d'entrata pluriennale."
+    },
+    "5980": {
+      "de": "Die Initiative will in der Schweiz spekulative Finanzgeschäfte mit Agrarrohstoffen und Nahrungsmitteln, etwa mit Agrarderivaten, verbieten. Zulässig blieben Geschäfte, die Produzenten und Händler gegen Preis- und Terminrisiken absichern. Der Bund soll sich zudem international dafür einsetzen, dass solche Spekulation bekämpft wird.",
+      "fr": "L'initiative veut interdire en Suisse les opérations financières spéculatives portant sur les matières premières agricoles et les denrées alimentaires, notamment au moyen de dérivés agricoles. Seules resteraient autorisées les opérations qui servent à couvrir les risques de prix et d'échéance. La Confédération devrait en outre agir sur le plan international contre ce type de spéculation.",
+      "it": "L'iniziativa chiede di vietare in Svizzera le operazioni finanziarie speculative su materie prime agricole e derrate alimentari, per esempio con derivati agricoli. Rimarrebbero ammesse le operazioni che servono a coprire i rischi di prezzo e di scadenza. La Confederazione dovrebbe inoltre impegnarsi a livello internazionale per combattere questo tipo di speculazione."
+    },
+    "5990": {
+      "de": "Die Gesetzesänderung ermöglicht, für die Sanierung des Gotthard-Strassentunnels zuerst eine zweite Röhre zu bauen und danach den bestehenden Tunnel zu sanieren, sodass die Strasse durch den Gotthard offen bleibt. Im Gesetz wird festgehalten, dass in jeder Röhre nur eine Fahrspur befahren werden darf.",
+      "fr": "La modification de la loi permet, pour la réfection du tunnel routier du Gothard, de construire d'abord un second tube puis de rénover le tunnel existant, de sorte que la route du Gothard reste ouverte pendant les travaux. La loi précise qu'une seule voie de circulation peut être utilisée dans chaque tube.",
+      "it": "La modifica di legge consente, per il risanamento della galleria autostradale del San Gottardo, di costruire prima una seconda galleria e di risanare poi quella esistente, in modo che il collegamento stradale resti aperto durante i lavori. La legge stabilisce che in ciascuna galleria si circoli su un'unica corsia."
+    },
+    "6000": {
+      "de": "Die Initiative will, dass der Bund und bundesnahe Unternehmen wie Swisscom, Post und SBB in der Grundversorgung nicht nach Gewinn streben, keine anderen Bereiche quersubventionieren und keine fiskalischen Interessen verfolgen. Die Löhne ihrer Angestellten dürfen nicht über jenen der Bundesverwaltung liegen. Die Grundversorgung ist in der Rechnung von den übrigen Leistungen zu trennen.",
+      "fr": "L'initiative veut que la Confédération et les entreprises qui lui sont liées, comme Swisscom, la Poste et les CFF, ne visent aucun but lucratif dans les prestations de base, renoncent au subventionnement croisé d'autres secteurs et ne poursuivent pas d'objectif fiscal. Leurs employés ne pourraient gagner plus que ceux de l'administration fédérale. Les comptes sépareraient les prestations de base des autres.",
+      "it": "L'iniziativa chiede che, nelle prestazioni di base, la Confederazione e le imprese parastatali come Swisscom, la Posta e le FFS non mirino a conseguire profitti, non sovvenzionino trasversalmente altri settori e non perseguano interessi fiscali. I loro impiegati non potrebbero guadagnare più di quelli dell'Amministrazione federale. Nei conti le prestazioni di base andrebbero distinte dalle altre."
+    },
+    "6010": {
+      "de": "Die Initiative will den Bund in der Verfassung verpflichten, ein bedingungsloses Grundeinkommen einzuführen. Alle in der Schweiz lebenden Menschen sollen einen Betrag erhalten, der ihnen auch ohne Erwerbsarbeit ein menschenwürdiges Dasein und die Teilnahme am öffentlichen Leben ermöglicht, ohne dafür Bedingungen erfüllen zu müssen.",
+      "fr": "L'initiative veut charger la Confédération, dans la Constitution, d'instaurer un revenu de base inconditionnel. Toute personne vivant en Suisse recevrait sans condition un montant lui permettant de mener une existence digne et de participer à la vie publique, même sans activité lucrative.",
+      "it": "L'iniziativa chiede di sancire nella Costituzione il compito della Confederazione di istituire un reddito di base incondizionato. Chi vive in Svizzera riceverebbe senza condizioni un importo che gli permetta di condurre un'esistenza dignitosa e di partecipare alla vita pubblica anche senza un'attività lucrativa."
+    },
+    "6020": {
+      "de": "Die Initiative will, dass der gesamte Ertrag der Mineralölsteuer auf Treibstoffen für den Strassenverkehr verwendet wird. Heute steht je die Hälfte dieses Ertrags dem Strassenverkehr und den übrigen Aufgaben des Bundes zur Verfügung.",
+      "fr": "L'initiative veut que le produit de l'impôt sur les huiles minérales prélevé sur les carburants soit affecté tout entier à la circulation routière. Aujourd'hui, une moitié de ce produit va à la circulation routière et l'autre aux autres tâches de la Confédération.",
+      "it": "L'iniziativa chiede che l'intero gettito dell'imposta sugli oli minerali riscossa sui carburanti sia destinato alla circolazione stradale. Oggi questo gettito è suddiviso a metà tra la circolazione stradale e gli altri compiti della Confederazione."
+    },
+    "6030": {
+      "de": "Das geänderte Gesetz lässt die Präimplantationsdiagnostik zu, die genetische Untersuchung von Embryonen aus künstlicher Befruchtung, jedoch nur für Paare mit einer schweren Erbkrankheit oder solche, die auf natürlichem Weg keine Kinder bekommen können. Pro Behandlung dürfen höchstens zwölf Embryonen entwickelt und nicht eingesetzte eingefroren werden. Die Wahl nach Geschlecht oder Körpermerkmalen bleibt verboten.",
+      "fr": "La loi modifiée autorise le diagnostic préimplantatoire, l'analyse génétique d'embryons issus d'une fécondation artificielle, mais seulement pour les couples porteurs d'une maladie héréditaire grave ou qui ne peuvent avoir d'enfant par voie naturelle. Douze embryons au plus peuvent être développés par traitement, et ceux qui ne sont pas implantés peuvent être congelés. Le choix du sexe ou de caractéristiques physiques reste interdit.",
+      "it": "La legge modificata ammette la diagnosi preimpianto, l'esame genetico degli embrioni ottenuti con una fecondazione artificiale, ma solo per le coppie portatrici di gravi malattie ereditarie o che non possono avere figli in modo naturale. Per ciclo di trattamento si possono sviluppare al massimo 12 embrioni e congelare quelli non impiantati. La scelta del sesso o di caratteristiche fisiche resta vietata."
+    },
+    "6040": {
+      "de": "Die Änderung des Asylgesetzes beschleunigt die Asylverfahren: Der Grossteil soll in Zentren des Bundes innert höchstens 140 Tagen abgeschlossen werden. Asylsuchende erhalten dafür von Anfang an eine kostenlose Beratung und Rechtsvertretung. Bauten des Bundes für Asylverfahren werden in einem Plangenehmigungsverfahren des Bundes bewilligt.",
+      "fr": "La modification de la loi sur l'asile accélère les procédures: la plupart doivent être achevées en 140 jours au plus dans des centres de la Confédération. Les requérants d'asile bénéficient pour cela dès le début d'un conseil et d'une représentation juridique gratuits. Les constructions de la Confédération destinées aux procédures d'asile sont autorisées par une procédure d'approbation des plans fédérale.",
+      "it": "La modifica della legge sull'asilo velocizza le procedure: la maggior parte deve concludersi entro 140 giorni in centri della Confederazione. A tal fine i richiedenti l'asilo ricevono fin dall'inizio una consulenza e una rappresentanza legale gratuite. Le costruzioni della Confederazione destinate alle procedure d'asilo sono autorizzate con una procedura federale di approvazione dei piani."
+    },
+    "6050": {
+      "de": "Die Initiative verpflichtet Bund, Kantone und Gemeinden, dafür zu sorgen, dass die Wirtschaft natürliche Ressourcen effizient nutzt, wenig Abfall erzeugt und diesen wiederverwertet. Bis 2050 soll der ökologische Fussabdruck der Schweiz, auf die Weltbevölkerung hochgerechnet, eine Erde nicht mehr überschreiten. Der Bund setzt dafür Zwischenziele und kann Vorschriften erlassen oder Lenkungssteuern erheben.",
+      "fr": "L'initiative charge la Confédération, les cantons et les communes de veiller à ce que l'économie utilise efficacement les ressources naturelles, produise peu de déchets et les réintègre dans le circuit économique. D'ici à 2050, l'empreinte écologique de la Suisse, extrapolée à la population mondiale, ne devrait plus dépasser un équivalent planète. La Confédération fixerait des objectifs intermédiaires et pourrait édicter des prescriptions.",
+      "it": "L'iniziativa incarica la Confederazione, i Cantoni e i Comuni di provvedere affinché l'economia impieghi le risorse naturali in modo efficiente, riduca i rifiuti e li reintroduca nel ciclo economico. Entro il 2050 l'impronta ecologica della Svizzera, rapportata alla popolazione mondiale, non dovrebbe superare un pianeta Terra. La Confederazione fisserebbe obiettivi intermedi e potrebbe emanare prescrizioni o imposte."
+    },
+    "6060": {
+      "de": "Die Initiative will alle laufenden und künftigen Altersrenten der AHV um 10 Prozent erhöhen. Die volle Altersrente beträgt heute mindestens 1175 und höchstens 2350 Franken im Monat. Die Witwen-, Witwer- und Waisenrenten der AHV und die Invalidenrenten der IV würden nicht erhöht.",
+      "fr": "L'initiative veut relever de 10 % toutes les rentes de vieillesse AVS, actuelles et futures. La rente de vieillesse complète se monte aujourd'hui à 1175 francs par mois au minimum et à 2350 francs au maximum. Les rentes de veuf, de veuve et d'orphelin de l'AVS et les rentes d'invalidité de l'AI ne seraient pas relevées.",
+      "it": "L'iniziativa chiede di aumentare del 10 per cento tutte le rendite di vecchiaia dell'AVS, attuali e future. La rendita di vecchiaia completa ammonta oggi ad almeno 1175 e al massimo 2350 franchi al mese. Le rendite dell'AVS per vedove, vedovi e orfani e le rendite d'invalidità dell'AI non sarebbero aumentate."
+    },
+    "6070": {
+      "de": "Das neue Gesetz erlaubt dem Nachrichtendienst des Bundes, bei einer konkreten, schweren Bedrohung Post, Telefon und Internetaktivitäten einzelner Personen zu überwachen, in Computernetzwerke einzudringen und Räume zu durchsuchen; nach dem Ausland sucht er neu auch in grenzüberschreitenden Kabelnetzen. Solche Massnahmen muss das Bundesverwaltungsgericht genehmigen und die Vorsteherin oder der Vorsteher des Verteidigungsdepartements freigeben.",
+      "fr": "La nouvelle loi permet au Service de renseignement de la Confédération, face à une menace grave et concrète, de surveiller le courrier, le téléphone et les activités sur Internet de particuliers, de s'infiltrer dans des réseaux informatiques et de fouiller des locaux; pour l'étranger, il explorera aussi le réseau câblé transfrontière. Ces mesures doivent être autorisées par le Tribunal administratif fédéral et avalisées par le chef du DDPS.",
+      "it": "La nuova legge consente al Servizio delle attività informative della Confederazione, di fronte a una minaccia grave e concreta, di sorvegliare la posta, il telefono e l'attività in Internet di singole persone, di infiltrarsi in reti informatiche e di perquisire locali; per l'estero potrà esplorare anche i segnali via cavo. Tali misure devono essere autorizzate dal Tribunale amministrativo federale e approvate dal capo del DDPS."
+    },
+    "6080": {
+      "de": "Die Initiative will den Bau neuer Kernkraftwerke verbieten und die Laufzeit der bestehenden auf 45 Jahre begrenzen: Beznau 1 und 2 sowie Mühleberg würden 2017 abgeschaltet, Gösgen 2024 und Leibstadt 2029. Der Bund soll seine Energiepolitik auf weniger Verbrauch, mehr Energieeffizienz und erneuerbare Energien ausrichten.",
+      "fr": "L'initiative veut interdire la construction de nouvelles centrales nucléaires et limiter à 45 ans la durée d'exploitation des centrales existantes: Beznau 1 et 2 et Mühleberg seraient mises hors service en 2017, Gösgen en 2024 et Leibstadt en 2029. La Confédération devrait viser une consommation d'énergie moindre, une meilleure efficacité énergétique et les énergies renouvelables.",
+      "it": "L'iniziativa chiede di vietare la costruzione di nuove centrali nucleari e di limitare a 45 anni il periodo di attività di quelle esistenti: Beznau 1 e 2 e Mühleberg sarebbero spente nel 2017, Gösgen nel 2024 e Leibstadt nel 2029. La Confederazione dovrebbe puntare su un minor consumo di energia, una maggiore efficienza energetica e le energie rinnovabili."
+    },
+    "6090": {
+      "de": "Die Vorlage ergänzt die Verfassung, damit sich junge Ausländerinnen und Ausländer der dritten Generation erleichtert einbürgern lassen können. Nach dem dazugehörigen Gesetz muss, wer das Gesuch stellt, höchstens 25 Jahre alt, in der Schweiz geboren und niedergelassen sein, und ein Elternteil und ein Grosselternteil müssen bereits hier gelebt haben.",
+      "fr": "Le projet complète la Constitution pour que les jeunes étrangers de la troisième génération puissent bénéficier d'une naturalisation facilitée. Selon la loi qui l'accompagne, le candidat doit avoir au plus 25 ans, être né en Suisse et titulaire d'une autorisation d'établissement, et l'un de ses parents ainsi que l'un de ses grands-parents doivent avoir séjourné en Suisse.",
+      "it": "Il decreto modifica la Costituzione affinché i giovani stranieri della terza generazione possano naturalizzarsi con una procedura agevolata. Secondo la legge che lo accompagna, chi presenta la domanda non deve avere più di 25 anni, deve essere nato in Svizzera e titolare di un permesso di domicilio, e almeno uno dei genitori e uno dei nonni devono aver vissuto in Svizzera."
+    },
+    "6100": {
+      "de": "Die Vorlage schafft in der Verfassung den zeitlich unbefristeten Nationalstrassen- und Agglomerationsverkehrs-Fonds (NAF), der den Infrastrukturfonds ablöst. Aus ihm werden Betrieb, Unterhalt und Ausbau der Nationalstrassen bezahlt, bis 2030 rund 6,5 Milliarden Franken für die Beseitigung von Engpässen, und der Bund kann weiterhin Beiträge an Agglomerationsprojekte leisten.",
+      "fr": "Le projet inscrit dans la Constitution un fonds pour les routes nationales et le trafic d'agglomération (FORTA), de durée illimitée, qui remplace le fonds d'infrastructure. Il finance l'exploitation, l'entretien et l'aménagement des routes nationales, dont environ 6,5 milliards de francs d'ici à 2030 pour éliminer les goulets d'étranglement, et permet à la Confédération de continuer à soutenir les projets d'agglomération.",
+      "it": "Il decreto sancisce nella Costituzione il Fondo per le strade nazionali e il traffico d'agglomerato (FOSTRA), di durata indeterminata, che sostituisce il fondo infrastrutturale. Il fondo finanzia esercizio, manutenzione e potenziamento delle strade nazionali, con circa 6,5 miliardi di franchi entro il 2030 per eliminare i problemi di capacità, e consente alla Confederazione di continuare a contribuire ai progetti d'agglomerato."
+    },
+    "6110": {
+      "de": "Die Unternehmenssteuerreform III schafft die ermässigte Besteuerung von Holding-, Domizil- und gemischten Gesellschaften ab. Sie führt neue Entlastungen ein, namentlich eine Patentbox und höhere Abzüge für Forschung und Entwicklung, und erhöht den Anteil der Kantone an der direkten Bundessteuer von 17,0 auf 21,2 Prozent.",
+      "fr": "La troisième réforme de l'imposition des entreprises (RIE III) supprime l'imposition à taux réduit des sociétés holding, de domicile et mixtes. Elle introduit de nouveaux allègements, notamment une «patent box» et des déductions accrues pour la recherche et le développement, et fait passer de 17,0 % à 21,2 % la part des cantons au produit de l'impôt fédéral direct.",
+      "it": "La Riforma III dell'imposizione delle imprese abolisce l'imposizione ridotta delle società holding, di domicilio e miste. Introduce nuovi sgravi, in particolare il «patent box» e maggiori deduzioni per la ricerca e lo sviluppo, e aumenta dal 17,0 al 21,2 per cento la quota dei Cantoni al gettito dell'imposta federale diretta."
+    },
+    "6120": {
+      "de": "Das revidierte Energiegesetz ist ein erstes Paket der Energiestrategie 2050. Es enthält Massnahmen, um den Energieverbrauch zu senken, die Energieeffizienz zu erhöhen und erneuerbare Energien wie Wasser, Sonne, Wind, Geothermie und Biomasse zu fördern. Bestehende Grosswasserkraftwerke werden vorübergehend unterstützt, und der Bau neuer Kernkraftwerke wird verboten.",
+      "fr": "La loi sur l'énergie révisée est un premier paquet de mesures de la Stratégie énergétique 2050. Elle vise à réduire la consommation d'énergie, à améliorer l'efficacité énergétique et à promouvoir les énergies renouvelables comme l'hydraulique, le solaire, l'éolien, la géothermie et la biomasse. Les grandes centrales hydroélectriques reçoivent une aide transitoire et la construction de nouvelles centrales nucléaires est interdite.",
+      "it": "La legge sull'energia riveduta è un primo pacchetto di misure della Strategia energetica 2050. Prevede di ridurre il consumo di energia, aumentare l'efficienza energetica e promuovere le energie rinnovabili, come quella idrica, solare, eolica, geotermica e da biomassa. Le grandi centrali idroelettriche ricevono un sostegno temporaneo e la costruzione di nuove centrali nucleari è vietata."
+    },
+    "6130": {
+      "de": "Der neue Verfassungsartikel, ein direkter Gegenentwurf zur zurückgezogenen Initiative «Für Ernährungssicherheit», verpflichtet den Bund, Voraussetzungen für die Versorgung mit Lebensmitteln zu schaffen: Schutz des Kulturlandes, eine standortangepasste und ressourceneffiziente Produktion, eine auf den Markt ausgerichtete Land- und Ernährungswirtschaft, nachhaltige Handelsbeziehungen und einen ressourcenschonenden Umgang mit Lebensmitteln.",
+      "fr": "Le nouvel article constitutionnel, contre-projet direct à l'initiative «Pour la sécurité alimentaire», qui a été retirée, charge la Confédération de créer les conditions de l'approvisionnement en denrées alimentaires: préservation des terres agricoles, production adaptée aux conditions locales et efficiente, secteur agroalimentaire répondant au marché, relations commerciales durables et utilisation des denrées qui préserve les ressources.",
+      "it": "Il nuovo articolo costituzionale, controprogetto diretto all'iniziativa «Per la sicurezza alimentare», ritirata, incarica la Confederazione di creare i presupposti per l'approvvigionamento alimentare: tutela delle terre coltive, produzione adeguata alle condizioni locali ed efficiente, filiera orientata verso il mercato, relazioni commerciali sostenibili e impiego delle derrate alimentari rispettoso delle risorse."
+    },
+    "6140": {
+      "de": "Der Bundesbeschluss weist der AHV zusätzliche Mehrwertsteuer-Einnahmen zu: den ganzen Ertrag des bisherigen Mehrwertsteuer-Prozents für die AHV und weitere 0,6 Prozentpunkte. Ab 2018 gehen 0,3 Prozentpunkte der IV an die AHV, ab 2021 steigt der Normalsatz auf 8,3 Prozent. Die Vorlage ist mit der Reform der Altersvorsorge 2020 verknüpft und tritt nur mit ihr in Kraft.",
+      "fr": "L'arrêté attribue à l'AVS des recettes de TVA supplémentaires: la totalité du pour-cent de TVA déjà prélevé en sa faveur et 0,6 point de plus. Dès 2018, 0,3 point affecté jusque-là à l'AI passe à l'AVS; dès 2021, le taux normal est porté à 8,3 %. L'arrêté est lié à la réforme de la prévoyance vieillesse 2020 et n'entre en vigueur qu'avec elle.",
+      "it": "Il decreto destina all'AVS entrate supplementari dell'imposta sul valore aggiunto: l'intero punto percentuale già riscosso a suo favore e altri 0,6 punti. Dal 2018 l'AVS riceve 0,3 punti finora destinati all'AI; dal 2021 l'aliquota normale sale all'8,3 per cento. Il decreto è connesso alla riforma della previdenza per la vecchiaia 2020 ed entra in vigore solo con essa."
+    },
+    "6150": {
+      "de": "Die Reform hebt das Rentenalter der Frauen schrittweise von 64 auf 65 Jahre an und ermöglicht eine flexible Pensionierung zwischen 62 und 70 Jahren. Der Mindestumwandlungssatz der beruflichen Vorsorge sinkt von 6,8 auf 6,0 Prozent, neue AHV-Altersrenten steigen um 70 Franken im Monat. Die Reform tritt nur in Kraft, wenn auch die Zusatzfinanzierung über die Mehrwertsteuer angenommen wird.",
+      "fr": "La réforme relève progressivement l'âge de la retraite des femmes de 64 à 65 ans et introduit une retraite flexible entre 62 et 70 ans. Le taux de conversion minimal de la prévoyance professionnelle passe de 6,8 % à 6 %, et les nouvelles rentes AVS augmentent de 70 francs par mois. La réforme n'entre en vigueur que si le financement additionnel par la TVA est aussi accepté.",
+      "it": "La riforma innalza gradualmente da 64 a 65 anni l'età di pensionamento delle donne e introduce il pensionamento flessibile tra i 62 e i 70 anni. L'aliquota minima di conversione della previdenza professionale scende dal 6,8 al 6,0 per cento e le nuove rendite AVS aumentano di 70 franchi al mese. La riforma entra in vigore solo se è accettato anche il finanziamento supplementare tramite l'IVA."
+    },
+    "6160": {
+      "de": "Der Bund darf die direkte Bundessteuer und die Mehrwertsteuer laut Verfassung nur bis Ende 2020 erheben. Die neue Finanzordnung verlängert dieses Recht um 15 Jahre bis 2035, ohne die Steuern zu erhöhen.",
+      "fr": "Selon la Constitution, la Confédération ne peut percevoir l'impôt fédéral direct et la taxe sur la valeur ajoutée que jusqu'à fin 2020. Le nouveau régime financier prolonge ce droit de 15 ans, jusqu'en 2035, sans augmenter ces impôts.",
+      "it": "Secondo la Costituzione, la Confederazione può riscuotere l'imposta federale diretta e l'imposta sul valore aggiunto soltanto fino alla fine del 2020. Il nuovo ordinamento finanziario proroga questo diritto di 15 anni, fino al 2035, senza aumentare le imposte."
+    },
+    "6170": {
+      "de": "Die Initiative will die Empfangsgebühr für Radio und Fernsehen abschaffen. Der Bund soll zudem keine Radio- und Fernsehstationen subventionieren, in Friedenszeiten keine eigenen Sender betreiben und die Konzessionen regelmässig versteigern.",
+      "fr": "L'initiative veut supprimer la redevance de réception pour la radio et la télévision. La Confédération ne pourrait en outre subventionner aucune chaîne de radio ou de télévision, ni exploiter de chaînes propres en temps de paix, et devrait mettre les concessions régulièrement aux enchères.",
+      "it": "L'iniziativa chiede di abolire il canone radiotelevisivo. La Confederazione non potrebbe inoltre sovvenzionare alcuna emittente radiotelevisiva né gestire emittenti proprie in tempo di pace, e dovrebbe mettere periodicamente all'asta le concessioni."
+    },
+    "6180": {
+      "de": "Die Initiative will, dass alles Geld, Bargeld wie Buchgeld auf Bankkonten, nur noch von der Schweizerischen Nationalbank geschaffen wird. Die Geschäftsbanken dürften kein Geld mehr schaffen, indem sie Kredite vergeben. Neues Geld soll die Nationalbank schuldfrei in Umlauf bringen, indem sie es direkt an Bund, Kantone oder die Bevölkerung verteilt.",
+      "fr": "L'initiative veut que toute la monnaie, l'argent liquide comme la monnaie scripturale des comptes bancaires, soit créée uniquement par la Banque nationale suisse (BNS). Les banques commerciales ne pourraient plus créer d'argent en accordant des crédits. La BNS mettrait la monnaie nouvelle en circulation sans dette, en l'attribuant directement à la Confédération, aux cantons ou à la population.",
+      "it": "L'iniziativa chiede che tutta la moneta, sia il denaro contante sia la moneta scritturale dei conti bancari, sia emessa soltanto dalla Banca nazionale svizzera (BNS). Le banche commerciali non potrebbero più emettere moneta concedendo crediti. La BNS metterebbe in circolazione la nuova moneta senza debito, distribuendola direttamente a Confederazione, Cantoni o popolazione."
+    },
+    "6190": {
+      "de": "Das Geldspielgesetz ersetzt das Spielbankengesetz und das Lotteriegesetz. Konzessionierte Spielbanken dürfen Geldspiele auch im Internet anbieten, der Zugang zu Online-Angeboten ohne Schweizer Bewilligung wird gesperrt, und kleine Pokerturniere sind ausserhalb von Spielbanken erlaubt. Gewinne bleiben meist steuerfrei, Lotteriegewinne etwa bis zu einer Million Franken.",
+      "fr": "La loi sur les jeux d'argent remplace la loi sur les maisons de jeu et la loi sur les loteries. Les maisons de jeu concessionnaires peuvent proposer des jeux en ligne, l'accès aux offres en ligne sans autorisation suisse est bloqué et les petits tournois de poker sont permis hors des maisons de jeu. La plupart des gains ne sont pas imposés, ceux de loterie jusqu'à un million de francs.",
+      "it": "La legge sui giochi in denaro sostituisce la legge sulle case da gioco e la legge sulle lotterie. Le case da gioco titolari di concessione possono offrire giochi in Internet, l'accesso ai giochi in linea senza autorizzazione svizzera è bloccato e piccoli tornei di poker sono ammessi fuori dalle case da gioco. Le vincite sono per lo più esenti da imposta, quelle alle lotterie fino a un milione di franchi."
+    },
+    "6200": {
+      "de": "Der Bundesbeschluss, ein direkter Gegenentwurf zur zurückgezogenen Velo-Initiative, stellt Velowege in der Verfassung den Fuss- und Wanderwegen gleich. Der Bund legt Grundsätze für Velowegnetze fest und kann Massnahmen der Kantone und weiterer Akteure unterstützen und koordinieren, etwa mit landesweiten Standards oder Geodaten. Er handelt dabei nur ergänzend zu Kantonen und Gemeinden.",
+      "fr": "L'arrêté, contre-projet direct à l'initiative vélo, qui a été retirée, traite dans la Constitution les voies cyclables comme les chemins et sentiers pédestres. La Confédération fixe des principes pour les réseaux de voies cyclables et peut soutenir et coordonner les mesures des cantons et d'autres acteurs, par exemple par des standards nationaux ou des géodonnées. Elle agit à titre subsidiaire.",
+      "it": "Il decreto, controprogetto diretto all'iniziativa per la bici, ritirata, equipara nella Costituzione le vie ciclabili ai sentieri e percorsi pedonali. La Confederazione emana principi sulle reti di vie ciclabili e può sostenere e coordinare i provvedimenti dei Cantoni e di terzi, ad esempio con standard nazionali o geodati. Interviene solo a titolo sussidiario."
+    },
+    "6210": {
+      "de": "Die Initiative will, dass der Bund umweltschonend, tierfreundlich und fair hergestellte Lebensmittel fördert und dafür Vorgaben macht, die grundsätzlich auch für importierte Lebensmittel gelten. Zudem soll er die Umweltbelastung durch Transport und Lagerung senken, Deklarationsvorschriften erlassen, gegen Lebensmittelverschwendung vorgehen und regionale und saisonale Produkte fördern.",
+      "fr": "L'initiative veut que la Confédération promeuve les denrées alimentaires produites dans le respect de l'environnement et des animaux et dans des conditions équitables, en fixant des normes qui s'appliquent en règle générale aussi aux importations. Elle devrait aussi réduire l'impact du transport et de l'entreposage, légiférer sur la déclaration, lutter contre le gaspillage et promouvoir les produits régionaux et de saison.",
+      "it": "L'iniziativa chiede che la Confederazione promuova derrate alimentari prodotte nel rispetto dell'ambiente e degli animali e a condizioni eque, con norme valide in linea di massima anche per le importazioni. Dovrebbe inoltre ridurre l'impatto ambientale di trasporto e deposito, emanare prescrizioni sulla dichiarazione, contrastare lo spreco alimentare e promuovere i prodotti regionali e stagionali."
+    },
+    "6220": {
+      "de": "Die Initiative will die Agrarpolitik auf eine kleinbäuerliche, vielfältige und gentechfreie Landwirtschaft ausrichten. Der Bund soll für gerechte Produzentenpreise und höhere Einkommen in der Landwirtschaft sorgen. Importierte Produkte müssen die in der Schweiz geltenden sozialen und ökologischen Normen erfüllen, wofür der Bund Zölle erheben oder Einfuhren verbieten kann.",
+      "fr": "L'initiative veut réorienter la politique agricole vers une agriculture paysanne, diversifiée et sans génie génétique. La Confédération doit veiller à des prix équitables pour les producteurs et à des revenus plus élevés dans l'agriculture. Les produits importés doivent respecter les normes sociales et écologiques suisses, la Confédération pouvant prélever des droits de douane ou en interdire l'importation.",
+      "it": "L'iniziativa chiede di orientare la politica agricola verso un'agricoltura contadina, diversificata e senza ingegneria genetica. La Confederazione deve garantire prezzi equi alla produzione e redditi più elevati nell'agricoltura. I prodotti importati devono rispettare le norme sociali e ambientali svizzere; a tal fine la Confederazione può riscuotere dazi o vietarne l'importazione."
+    },
+    "6230": {
+      "de": "Die Initiative will, dass der Bund Halterinnen und Halter mit einem Beitrag unterstützt, solange ihre ausgewachsenen Kühe, Zuchtstiere, Ziegen und Zuchtziegenböcke Hörner tragen. So soll es wieder mehr Kühe und Ziegen mit Hörnern geben. Das Enthornen von Jungtieren unter lokaler Betäubung bliebe erlaubt.",
+      "fr": "L'initiative veut que la Confédération verse une contribution aux détenteurs de vaches, de taureaux reproducteurs, de chèvres et de boucs reproducteurs tant que ces animaux adultes portent leurs cornes, afin qu'il y ait de nouveau plus de vaches et de chèvres à cornes. L'écornage des jeunes animaux sous anesthésie locale resterait autorisé.",
+      "it": "L'iniziativa chiede che la Confederazione versi un contributo ai detentori di vacche, tori riproduttori, capre e becchi riproduttori adulti che portano le corna, affinché vi siano di nuovo più vacche e capre con le corna. La decornazione degli animali giovani con anestesia locale resterebbe permessa."
+    },
+    "6240": {
+      "de": "Die Initiative will in der Verfassung festlegen, wie die Schweiz bei einem Widerspruch zwischen Verfassung und einem internationalen Vertrag vorgeht. Die Verfassung hätte Vorrang: Ein solcher Vertrag dürfte nicht mehr angewendet werden, ausser er unterstand dem Referendum, und die Schweiz müsste ihn neu verhandeln und nötigenfalls kündigen.",
+      "fr": "L'initiative veut inscrire dans la Constitution la marche à suivre en cas de conflit entre la Constitution et un traité international. La Constitution primerait: la Suisse cesserait d'appliquer le traité, sauf s'il a été sujet ou soumis au référendum, devrait le renégocier avec les États concernés et, au besoin, le dénoncer.",
+      "it": "L'iniziativa chiede di stabilire nella Costituzione come procedere in caso di contraddizione tra la Costituzione e un trattato internazionale. La Costituzione avrebbe rango superiore: la Svizzera non potrebbe più applicare il trattato, a meno che non sia stato assoggettato a referendum, e dovrebbe rinegoziarlo e, se necessario, denunciarlo."
+    },
+    "6250": {
+      "de": "Die Gesetzesänderung erlaubt den Sozialversicherungen, Versicherte verdeckt zu beobachten, wenn konkrete Anhaltspunkte für einen unrechtmässigen Leistungsbezug vorliegen und andere Abklärungen aussichtslos wären. Erlaubt sind Bild- und Tonaufnahmen an frei einsehbaren Orten, nicht in Wohnräumen; Ortungsgeräte nur mit richterlicher Genehmigung. Beobachtete Personen werden informiert.",
+      "fr": "La modification de la loi permet aux assurances sociales d'observer secrètement un assuré si des indices concrets de perception indue de prestations existent et que d'autres vérifications seraient vaines. Les enregistrements visuels et sonores sont admis dans les lieux librement visibles, pas dans un logement; la géolocalisation exige l'autorisation d'un juge. La personne observée en est informée.",
+      "it": "La modifica di legge consente alle assicurazioni sociali di osservare segretamente un assicurato se vi sono indizi concreti di riscossione indebita e altri accertamenti sarebbero vani. Sono ammesse registrazioni visive e sonore in luoghi liberamente visibili, non nelle abitazioni; gli strumenti di localizzazione solo con l'autorizzazione di un giudice. La persona osservata ne è informata."
+    },
+    "6260": {
+      "de": "Die Initiative will die Gesamtfläche der Bauzonen in der Schweiz einfrieren: Eine neue Bauzone wäre nur erlaubt, wenn anderswo eine mindestens gleich grosse Fläche ausgezont wird. Die Verfassung soll zudem festlegen, was ausserhalb der Bauzonen gebaut werden darf, und Bund, Kantone und Gemeinden sollen nachhaltige Formen des Wohnens und Arbeitens fördern.",
+      "fr": "L'initiative veut geler la surface totale des zones à bâtir en Suisse: toute nouvelle zone à bâtir devrait être compensée par le déclassement d'une surface au moins équivalente. La Constitution fixerait aussi les constructions admises hors des zones à bâtir, et la Confédération, les cantons et les communes devraient promouvoir des formes d'habitat et de travail durables.",
+      "it": "L'iniziativa chiede di congelare la superficie complessiva delle zone edificabili in Svizzera: una nuova zona edificabile sarebbe ammessa solo se altrove una superficie almeno equivalente fosse tolta dalla zona edificabile. La Costituzione stabilirebbe inoltre quali costruzioni sono ammesse fuori delle zone edificabili, e Confederazione, Cantoni e Comuni promuoverebbero forme abitative e lavorative sostenibili."
+    },
+    "6270": {
+      "de": "Das Gesetz schafft die Steuerprivilegien für überwiegend international tätige Unternehmen ab, fördert Forschung und Entwicklung steuerlich, etwa mit einer Patentbox, und erhöht den Anteil der Kantone an der direkten Bundessteuer von 17,0 auf 21,2 Prozent. Die AHV erhält ab 2020 rund 2 Milliarden Franken pro Jahr mehr, unter anderem durch um 0,3 Prozentpunkte höhere AHV-Beiträge.",
+      "fr": "La loi supprime les privilèges fiscaux des entreprises actives surtout à l'international, encourage fiscalement la recherche et le développement, par exemple par une «patent box», et fait passer de 17,0 % à 21,2 % la part des cantons à l'impôt fédéral direct. Dès 2020, l'AVS reçoit quelque 2 milliards de francs de plus par an, notamment par des cotisations AVS relevées de 0,3 point.",
+      "it": "La legge abolisce i privilegi fiscali delle imprese attive prevalentemente a livello internazionale, incentiva fiscalmente la ricerca e lo sviluppo, ad esempio con il patent box, e aumenta dal 17,0 al 21,2 per cento la quota dei Cantoni all'imposta federale diretta. Dal 2020 l'AVS riceve circa 2 miliardi di franchi in più all'anno, tra l'altro con contributi AVS aumentati di 0,3 punti percentuali."
+    },
+    "6280": {
+      "de": "Die Vorlage setzt die geänderte EU-Waffenrichtlinie im Schweizer Waffengesetz um. Alle wesentlichen Bestandteile einer Waffe müssen markiert werden, und der Informationsaustausch mit den Schengen-Staaten wird ausgebaut. Halbautomatische Waffen mit grossem Magazin werden zu verbotenen Waffen, die mit einer Ausnahmebewilligung erworben werden können; Sturmgewehre können weiter von der Armee übernommen werden.",
+      "fr": "Le projet transpose dans la loi suisse sur les armes la modification de la directive de l'UE. Tous les éléments essentiels d'une arme doivent être marqués et l'échange d'informations avec les États Schengen est renforcé. Les armes semi-automatiques munies d'un chargeur de grande capacité deviennent des armes interdites, acquises sur autorisation exceptionnelle; le fusil d'assaut peut toujours être repris de l'armée.",
+      "it": "Il progetto traspone nella legge svizzera sulle armi la modifica della direttiva UE. Tutte le parti essenziali di un'arma devono essere contrassegnate e lo scambio di informazioni con gli Stati Schengen è migliorato. Le armi semiautomatiche con caricatore ad alta capacità rientrano tra le armi vietate e si acquistano con un'autorizzazione eccezionale; il fucile d'assalto può ancora essere ripreso dall'esercito."
+    },
+    "6290": {
+      "de": "Die Initiative will, dass Bund und Kantone das Angebot an preisgünstigen Mietwohnungen stärker fördern. Schweizweit sollen mindestens zehn Prozent der neuen Wohnungen gemeinnützigen Bauträgern gehören. Kantone und Gemeinden sollen ein Vorkaufsrecht einführen können und erhalten eines für Grundstücke des Bundes und bundesnaher Betriebe.",
+      "fr": "L'initiative veut que la Confédération et les cantons encouragent davantage les logements à loyer modéré. Au moins 10 % des logements neufs construits en Suisse doivent appartenir à des maîtres d'ouvrage d'utilité publique. Les cantons et les communes peuvent introduire un droit de préemption et en obtiennent un sur les biens-fonds de la Confédération et des entreprises qui lui sont liées.",
+      "it": "L'iniziativa chiede che la Confederazione e i Cantoni promuovano maggiormente gli alloggi in locazione a prezzi moderati. Almeno il 10 per cento delle nuove abitazioni costruite in Svizzera deve appartenere a committenti di utilità pubblica. Cantoni e Comuni possono introdurre un diritto di prelazione e lo ottengono sui terreni della Confederazione e delle aziende ad essa vicine."
+    },
+    "6300": {
+      "de": "Die Änderung erweitert die Anti-Rassismus-Strafnorm auf die sexuelle Orientierung. Strafbar wird, wer eine Person wegen ihrer Homo-, Hetero- oder Bisexualität öffentlich in ihrer Menschenwürde herabsetzt oder ihr deswegen eine öffentlich angebotene Leistung verweigert. Äusserungen im Familien- und Freundeskreis sowie sachliche Diskussionen bleiben straflos.",
+      "fr": "La modification étend la norme pénale antiracisme à l'orientation sexuelle. Devient punissable quiconque porte publiquement atteinte à la dignité humaine d'une personne en raison de son homosexualité, hétérosexualité ou bisexualité, ou lui refuse pour ce motif une prestation destinée à l'usage public. Les propos tenus en famille ou entre amis et les débats raisonnés ne sont pas concernés.",
+      "it": "La modifica estende la norma penale antirazzismo all'orientamento sessuale. È punibile chi lede pubblicamente la dignità umana di una persona a causa della sua omo-, etero- o bisessualità o le rifiuta per questo motivo un servizio destinato al pubblico. Non sono toccate le dichiarazioni nella cerchia familiare o degli amici né i dibattiti obiettivi in pubblico."
+    },
+    "6310": {
+      "de": "Die Initiative will die Personenfreizügigkeit mit der EU beenden. Der Bundesrat müsste das Freizügigkeitsabkommen innert zwölf Monaten auf dem Verhandlungsweg ausser Kraft setzen oder es sonst innert 30 weiteren Tagen kündigen, womit auch die übrigen sechs Abkommen der Bilateralen I wegfallen. Neue völkerrechtliche Verpflichtungen zur Personenfreizügigkeit wären verboten.",
+      "fr": "L'initiative veut mettre fin à la libre circulation des personnes avec l'UE. Le Conseil fédéral devrait faire cesser l'ALCP par la négociation dans les douze mois, ou à défaut le dénoncer dans les 30 jours suivants, ce qui entraînerait aussi la fin des six autres accords des Bilatérales I. La Suisse ne pourrait plus conclure de nouveaux engagements internationaux accordant la libre circulation.",
+      "it": "L'iniziativa vuole porre fine alla libera circolazione delle persone con l'UE. Il Consiglio federale dovrebbe far cessare l'ALC entro dodici mesi tramite negoziati oppure, in caso contrario, denunciarlo nei 30 giorni successivi, con la conseguente caduta degli altri sei accordi dei Bilaterali I. Alla Svizzera sarebbe vietato assumere nuovi obblighi internazionali sulla libera circolazione."
+    },
+    "6320": {
+      "de": "Das revidierte Jagdgesetz erlaubt den Kantonen, Wolfsbestände vorausschauend zu regulieren; der Wolf bleibt eine geschützte Art. Zudem schützt es verschiedene Wildtierarten wie Wasservögel besser und vernetzt die Lebensräume der Wildtiere.",
+      "fr": "La loi révisée sur la chasse permet aux cantons de réguler les populations de loups à titre préventif; le loup reste une espèce protégée. Elle améliore en outre la protection de plusieurs espèces sauvages, comme les oiseaux d'eau, et relie mieux entre eux les biotopes de la faune sauvage.",
+      "it": "La legge sulla caccia riveduta consente ai Cantoni di regolare in via preventiva gli effettivi di lupi, che rimangono una specie protetta. Migliora inoltre la protezione di varie specie selvatiche, ad esempio degli uccelli acquatici, e collega meglio fra loro gli spazi vitali della fauna selvatica."
+    },
+    "6330": {
+      "de": "Die Änderung erhöht bei der direkten Bundessteuer den maximalen Abzug für die Betreuung von Kindern durch Dritte, etwa in einer Kita, von 10 100 auf 25 000 Franken pro Kind. Zudem steigt der allgemeine Kinderabzug von 6500 auf 10 000 Franken.",
+      "fr": "La modification fait passer de 10 100 à 25 000 francs par enfant la déduction maximale pour les frais de garde par des tiers, par exemple en crèche, dans l'impôt fédéral direct. La déduction générale pour enfant passe en outre de 6500 à 10 000 francs.",
+      "it": "La modifica porta da 10 100 a 25 000 franchi per figlio la deduzione massima per la cura prestata da terzi, ad esempio in un asilo nido, nell'imposta federale diretta. Inoltre la deduzione generale per i figli passa da 6500 a 10 000 franchi."
+    },
+    "6340": {
+      "de": "Die Vorlage führt einen bezahlten Vaterschaftsurlaub von zwei Wochen ein, der innert sechs Monaten nach der Geburt zu beziehen ist. Wie beim Mutterschaftsurlaub beträgt die Entschädigung aus der Erwerbsersatzordnung 80 Prozent des Einkommens, höchstens 196 Franken pro Tag. Sie ist der indirekte Gegenvorschlag des Parlaments zur Initiative für vier Wochen.",
+      "fr": "Le projet introduit un congé de paternité payé de deux semaines, à prendre dans les six mois suivant la naissance. Comme pour le congé de maternité, l'allocation pour perte de gain s'élève à 80 % du revenu, mais au plus à 196 francs par jour. C'est le contre-projet indirect du Parlement à l'initiative qui demandait quatre semaines.",
+      "it": "Il progetto introduce un congedo di paternità retribuito di due settimane, da prendere entro sei mesi dalla nascita. Come per la maternità, l'indennità di perdita di guadagno corrisponde all'80 per cento del reddito, al massimo 196 franchi al giorno. È il controprogetto indiretto del Parlamento all'iniziativa che chiedeva quattro settimane."
+    },
+    "6350": {
+      "de": "Der Bundesbeschluss sieht vor, dass die Schweiz bis 2030 neue Kampfflugzeuge für höchstens 6 Milliarden Franken beschafft. Der Hersteller muss Aufträge im Wert von 60 Prozent des Kaufpreises an Unternehmen in der Schweiz vergeben, verteilt auf die Sprachregionen. Typ und Anzahl der Flugzeuge bestimmt der Bundesrat.",
+      "fr": "L'arrêté fédéral prévoit que la Suisse acquière de nouveaux avions de combat d'ici 2030, pour 6 milliards de francs au plus. Le constructeur retenu doit confier en Suisse des mandats équivalant à 60 % du prix d'achat, répartis entre les régions linguistiques. Le Conseil fédéral choisit le type et le nombre d'appareils.",
+      "it": "Il decreto federale prevede che la Svizzera acquisti nuovi aerei da combattimento entro il 2030, per un massimo di 6 miliardi di franchi. Il costruttore deve assegnare in Svizzera commesse pari al 60 per cento del prezzo d'acquisto, ripartite tra le regioni linguistiche. Il modello e il numero di aerei li decide il Consiglio federale."
+    },
+    "6360": {
+      "de": "Die Initiative verlangt, dass Schweizer Unternehmen prüfen, ob bei ihrer Tätigkeit im Ausland die international anerkannten Menschenrechte und Umweltstandards eingehalten werden, auch bei Tochterfirmen, Zulieferern und Geschäftspartnern. Sie müssen nötigenfalls handeln und Bericht erstatten. Für Schäden kontrollierter Unternehmen haften sie, ausser sie belegen ihre Sorgfalt.",
+      "fr": "L'initiative demande que les entreprises suisses vérifient le respect à l'étranger des droits de l'homme et des normes environnementales internationalement reconnus, y compris chez leurs filiales, fournisseurs et partenaires commerciaux, prennent si nécessaire des mesures et en rendent compte. Elles répondent des dommages causés par les entreprises qu'elles contrôlent, sauf si elles prouvent leur diligence.",
+      "it": "L'iniziativa chiede che le imprese svizzere verifichino il rispetto all'estero dei diritti umani e delle norme ambientali riconosciuti a livello internazionale, anche presso filiali, fornitori e partner commerciali, adottino se del caso misure e ne rendano conto. Rispondono dei danni causati dalle imprese che controllano, salvo se dimostrano di aver usato la dovuta diligenza."
+    },
+    "6370": {
+      "de": "Die Initiative will die Finanzierung sämtlichen Kriegsmaterials verbieten, nicht nur jene von verbotenen Waffen. Kredite an Kriegsmaterialproduzenten sowie der Besitz ihrer Aktien und von Fonds mit solchen Aktien wären der Nationalbank, Stiftungen, der AHV/IV und den Pensionskassen untersagt. Die Schweiz soll sich zudem für ein solches Verbot für Banken und Versicherungen einsetzen.",
+      "fr": "L'initiative veut étendre l'interdiction de financement à tout le matériel de guerre. La Banque nationale suisse, les fondations, l'AVS/AI et les caisses de pension ne pourraient plus accorder de crédits aux producteurs, ni détenir leurs actions ou des fonds en contenant. La Suisse devrait aussi s'engager pour que cette interdiction s'applique aux banques et aux assurances dans le monde entier.",
+      "it": "L'iniziativa vuole estendere il divieto di finanziamento a tutto il materiale bellico. La Banca nazionale svizzera, le fondazioni, l'AVS/AI e le casse pensioni non potrebbero più concedere crediti ai produttori né detenerne le azioni o fondi che le contengono. La Svizzera dovrebbe inoltre adoperarsi affinché il divieto valga in tutto il mondo anche per banche e assicurazioni."
+    },
+    "6380": {
+      "de": "Die Initiative will verbieten, dass jemand in der Schweiz sein Gesicht verhüllt, an allen öffentlich zugänglichen Orten wie Strassen, Amtsstellen, öffentlichem Verkehr, Läden oder in der Natur. Ausnahmen gäbe es nur in Sakralstätten sowie aus Gründen der Sicherheit, der Gesundheit, des Klimas und des einheimischen Brauchtums.",
+      "fr": "L'initiative veut interdire de se dissimuler le visage en Suisse dans tous les lieux accessibles au public, comme la rue, les services administratifs, les transports publics, les magasins ou la nature. Des exceptions ne seraient possibles que dans les lieux de culte et pour des raisons de sécurité, de santé, de climat ou de coutumes locales.",
+      "it": "L'iniziativa chiede che in Svizzera nessuno possa dissimulare il proprio viso in tutti i luoghi accessibili al pubblico, come strade, uffici amministrativi, trasporti pubblici, negozi o la natura. Le eccezioni sarebbero possibili soltanto nei luoghi di culto e per motivi di sicurezza, salute, condizioni climatiche e usanze locali."
+    },
+    "6390": {
+      "de": "Das Gesetz schafft eine vom Bund anerkannte elektronische Identität, die E-ID, mit der man sich im Internet eindeutig ausweisen kann. Sie ist freiwillig und wird bei einer vom Bund anerkannten Anbieterin beantragt; der Bund prüft die Identität und gibt die Ausstellung frei. Anbieterinnen können Unternehmen, Kantone oder Gemeinden sein und stehen unter Aufsicht des Bundes.",
+      "fr": "La loi crée une identité électronique reconnue par la Confédération, l'e-ID, qui permet de s'identifier de façon univoque sur Internet. Facultative, elle se demande auprès d'un fournisseur reconnu; la Confédération vérifie l'identité puis autorise l'émission. Les fournisseurs, entreprises, cantons ou communes, assurent la mise en œuvre technique sous la surveillance de la Confédération.",
+      "it": "La legge istituisce un'identità elettronica riconosciuta dalla Confederazione, l'Ie, con cui identificarsi con certezza in Internet. Non è obbligatoria e si richiede a un fornitore riconosciuto; la Confederazione verifica l'identità e dà il via libera al rilascio. I fornitori, che possono essere aziende, Cantoni o Comuni, ne curano la realizzazione tecnica sotto il controllo della Confederazione."
+    },
+    "6400": {
+      "de": "Mit dem Abkommen können alle wichtigen Schweizer Güter zollfrei nach Indonesien exportiert werden. Die Schweiz schafft die Zölle auf indonesischen Industrieprodukten ab und senkt jene auf Agrarprodukten teilweise. Für eine beschränkte Menge Palmöl gelten tiefere Zölle, sofern dessen Produktion die vereinbarten Umwelt- und Sozialauflagen erfüllt.",
+      "fr": "L'accord permet d'exporter en franchise douanière vers l'Indonésie toutes les marchandises suisses importantes. La Suisse supprime les droits de douane sur les produits industriels indonésiens et ne les réduit qu'en partie sur les produits agricoles. Un quota limité d'huile de palme bénéficie de réductions douanières si elle respecte les exigences environnementales et sociales de l'accord.",
+      "it": "L'Accordo consente di esportare in Indonesia senza dazi tutti i principali prodotti svizzeri. La Svizzera abolisce i dazi sui prodotti industriali indonesiani e li riduce solo in parte su quelli agricoli. Per un quantitativo limitato di olio di palma i dazi sono ridotti, purché la produzione rispetti i requisiti ambientali e sociali convenuti."
+    },
+    "6410": {
+      "de": "Die Initiative will Direktzahlungen nur noch Landwirtschaftsbetrieben ausrichten, die ohne Pestizide produzieren, in der Tierhaltung keine Antibiotika vorbeugend oder regelmässig einsetzen und ihre Tiere mit selbst produziertem Futter ernähren können. Auch Forschung, Beratung und Ausbildung in der Landwirtschaft sollen sich danach richten.",
+      "fr": "L'initiative veut réserver les paiements directs aux exploitations agricoles qui produisent sans pesticides, n'utilisent pas d'antibiotiques de manière préventive ou régulière dans l'élevage et peuvent nourrir leurs animaux avec le fourrage qu'elles produisent elles-mêmes. La recherche, la vulgarisation et la formation agricoles devraient suivre ces objectifs.",
+      "it": "L'iniziativa chiede di versare i pagamenti diretti solo alle aziende agricole che producono senza pesticidi, non usano antibiotici in modo profilattico o regolare negli allevamenti e possono nutrire i loro animali con foraggio di produzione propria. Anche la ricerca, la consulenza e la formazione agricole dovrebbero perseguire questi scopi."
+    },
+    "6420": {
+      "de": "Die Initiative will synthetische Pestizide in der Schweiz verbieten: in der Landwirtschaft, bei der Herstellung und Verarbeitung von Lebensmitteln, in Grünanlagen und Gärten sowie beim Schutz von Infrastrukturen. Auch Lebensmittel, die mit synthetischen Pestiziden hergestellt wurden oder solche enthalten, dürften nicht mehr eingeführt werden. Das Verbot gälte spätestens nach zehn Jahren vollständig.",
+      "fr": "L'initiative veut interdire les pesticides de synthèse en Suisse: dans l'agriculture, la production et la transformation des denrées alimentaires, l'entretien des espaces verts et des jardins et la protection d'infrastructures. L'importation de denrées produites avec de tels pesticides ou en contenant serait aussi interdite. L'interdiction devrait être pleinement appliquée dans un délai de dix ans.",
+      "it": "L'iniziativa vuole vietare i pesticidi sintetici in Svizzera: nell'agricoltura, nella produzione e trasformazione di derrate alimentari, nella cura di aree verdi e giardini e nella protezione di infrastrutture. Sarebbe vietata anche l'importazione di derrate prodotte con tali pesticidi o che li contengono. Il divieto dovrebbe essere pienamente in vigore entro dieci anni."
+    },
+    "6430": {
+      "de": "Das befristete Covid-19-Gesetz gibt dem Bundesrat zusätzliche Befugnisse, um die Pandemie zu bekämpfen und ihre Folgen für Gesellschaft und Wirtschaft zu mildern. Es regelt namentlich Finanzhilfen für Menschen und Unternehmen: Kurzarbeitsentschädigung, Erwerbsersatz, Härtefallhilfen sowie Unterstützung für Kultur und Sport.",
+      "fr": "La loi COVID-19, de durée limitée, donne au Conseil fédéral des compétences supplémentaires pour lutter contre la pandémie et en atténuer les conséquences sur la société et l'économie. Elle règle en particulier des aides financières aux personnes et aux entreprises: indemnités en cas de réduction de l'horaire de travail, allocations pour perte de gain, aides pour les cas de rigueur, soutien à la culture et au sport.",
+      "it": "La legge COVID-19, di durata limitata, attribuisce al Consiglio federale competenze supplementari per combattere la pandemia e attenuarne l'impatto sulla società e sull'economia. Disciplina in particolare aiuti finanziari a persone e imprese: indennità per lavoro ridotto, indennità per perdita di guadagno, contributi per i casi di rigore e aiuti a cultura e sport."
+    },
+    "6440": {
+      "de": "Das revidierte CO2-Gesetz soll den Treibhausgas-Ausstoss der Schweiz bis 2030 gegenüber 1990 halbieren. Die Obergrenze der CO2-Abgabe auf Brennstoffen steigt von 120 auf 210 Franken pro Tonne CO2, und auf Flügen ab der Schweiz kommt eine Flugticketabgabe von 30 bis 120 Franken hinzu. Gefördert werden zudem Gebäudesanierungen, Ladestationen und sparsamere Fahrzeuge.",
+      "fr": "La loi sur le CO2 révisée vise à réduire de moitié d'ici 2030, par rapport à 1990, les émissions de gaz à effet de serre de la Suisse. Le plafond de la taxe sur le CO2 passe de 120 à 210 francs par tonne, et une taxe de 30 à 120 francs est perçue sur les billets d'avion au départ de la Suisse. La loi soutient aussi l'assainissement des bâtiments, les bornes de recharge et les véhicules plus sobres.",
+      "it": "La legge sul CO2 riveduta prevede di dimezzare entro il 2030, rispetto al 1990, le emissioni di gas a effetto serra della Svizzera. Il limite massimo della tassa sul CO2 passa da 120 a 210 franchi per tonnellata e sui voli in partenza dalla Svizzera è riscossa una tassa sui biglietti aerei da 30 a 120 franchi. Sono promossi inoltre il risanamento di edifici, le stazioni di ricarica e i veicoli che consumano meno."
+    },
+    "6450": {
+      "de": "Das Gesetz erlaubt den Behörden, gegen Personen vorzugehen, von denen eine terroristische Gefahr ausgeht, etwa mit einer Meldepflicht, einem Kontakt- oder Ausreiseverbot und im äussersten Fall mit Hausarrest, den ein Gericht bewilligen muss. Kantone, der NDB oder Gemeinden beantragen die Massnahmen bei fedpol; Beschwerde ist beim Bundesverwaltungsgericht möglich.",
+      "fr": "La loi permet aux autorités d'agir contre les personnes représentant une menace terroriste, par exemple par une obligation de se présenter, une interdiction de contact ou de quitter la Suisse et, en dernier recours, une assignation à résidence approuvée par un tribunal. Un canton, le SRC ou une commune demande les mesures à fedpol; elles peuvent être contestées devant le Tribunal administratif fédéral.",
+      "it": "La legge consente alle autorità di intervenire contro persone che rappresentano una minaccia terroristica, ad esempio con l'obbligo di presentarsi, il divieto di avere contatti o di lasciare il Paese e, nel caso estremo, gli arresti domiciliari autorizzati da un giudice. Cantoni, SIC o Comuni chiedono le misure a fedpol; contro di esse si può ricorrere al Tribunale amministrativo federale."
+    },
+    "6460": {
+      "de": "Die Initiative will hohe Kapitaleinkommen stärker besteuern: Oberhalb eines vom Parlament festgelegten Betrags sollen sie bei der Steuerberechnung anderthalbfach zählen, jeder Franken also wie Fr. 1.50. Die Mehreinnahmen sollen für Steuerermässigungen bei tiefen und mittleren Arbeitseinkommen oder für die soziale Wohlfahrt verwendet werden.",
+      "fr": "L'initiative veut imposer plus fortement les revenus élevés du capital: au-delà d'un montant fixé par le Parlement, ils compteraient une fois et demie dans le calcul de l'impôt, chaque franc comme 1 fr. 50. Les recettes supplémentaires serviraient à réduire l'impôt des personnes aux revenus du travail petits ou moyens ou à la prospérité sociale.",
+      "it": "L'iniziativa chiede di tassare maggiormente i redditi da capitale elevati: oltre un importo fissato dal Parlamento, nel calcolo dell'imposta conterebbero una volta e mezzo, ogni franco come 1.50 franchi. Il gettito supplementare servirebbe a ridurre le imposte delle persone con redditi da lavoro bassi o medi oppure a favore del benessere sociale."
+    },
+    "6470": {
+      "de": "Die Änderung des Zivilgesetzbuches öffnet die zivile Ehe für gleichgeschlechtliche Paare und stellt sie rechtlich den anderen Ehepaaren gleich, etwa bei der erleichterten Einbürgerung und der gemeinsamen Adoption. Verheiratete Frauenpaare erhalten Zugang zur gesetzlich geregelten Samenspende. Neue eingetragene Partnerschaften sind nicht mehr möglich, bestehende können umgewandelt werden.",
+      "fr": "La modification du Code civil ouvre le mariage civil aux couples de même sexe et les place sur un pied d'égalité avec les autres couples mariés, par exemple pour la naturalisation facilitée et l'adoption conjointe. Les couples de femmes mariées ont accès au don de sperme réglé par la loi. On ne peut plus conclure de partenariat enregistré, mais les partenariats existants peuvent être convertis en mariage.",
+      "it": "La modifica del Codice civile apre il matrimonio civile alle coppie omosessuali e le equipara alle altre coppie coniugate, ad esempio per la naturalizzazione agevolata e l'adozione congiunta. Le coppie di donne sposate hanno accesso alla donazione di sperma disciplinata dalla legge. Non si possono più registrare nuove unioni domestiche, ma quelle esistenti possono essere convertite in matrimonio."
+    },
+    "6480": {
+      "de": "Die Initiative will, dass Bund und Kantone die Pflege fördern und für eine ausreichende, allen zugängliche Pflege von hoher Qualität sorgen, mit genügend diplomierten Pflegefachpersonen. Der Bund soll die Arbeitsbedingungen in der Pflege regeln und eine angemessene Abgeltung der Pflegeleistungen sichern. Pflegefachpersonen sollen gewisse Leistungen direkt zulasten der Krankenkasse abrechnen können.",
+      "fr": "L'initiative veut que la Confédération et les cantons soutiennent les soins infirmiers et veillent à ce qu'ils soient suffisants, accessibles à tous et de qualité, avec assez d'infirmiers diplômés. La Confédération doit réglementer les conditions de travail et garantir une rémunération appropriée des prestations de soin. Les infirmiers peuvent facturer certaines prestations directement aux caisses-maladie.",
+      "it": "L'iniziativa chiede che la Confederazione e i Cantoni promuovano le cure infermieristiche e ne garantiscano la qualità, l'accessibilità per tutti e una quantità sufficiente, con abbastanza infermieri diplomati. La Confederazione deve disciplinare le condizioni di lavoro e assicurare una remunerazione adeguata delle prestazioni di cura. Gli infermieri possono fatturare determinate prestazioni direttamente alle casse malati."
+    },
+    "6490": {
+      "de": "Die Initiative will, dass die Bundesrichterinnen und Bundesrichter nicht mehr vom Parlament gewählt, sondern durch das Los bestimmt werden. Zum Losverfahren lässt eine Fachkommission nur fachlich und persönlich geeignete Personen zu. Sie blieben bis fünf Jahre über das ordentliche Rentenalter hinaus im Amt, ohne Wiederwahl; das Parlament könnte sie nur bei schwerer Amtspflichtverletzung oder dauerhafter Amtsunfähigkeit abberufen.",
+      "fr": "L'initiative veut que les juges fédéraux ne soient plus élus par le Parlement, mais désignés par tirage au sort. Une commission spécialisée n'admet au tirage que les candidats aptes sur le plan professionnel et personnel. Les juges restent en fonction jusqu'à cinq ans après l'âge ordinaire de la retraite, sans réélection; le Parlement ne peut les révoquer qu'en cas de violation grave de leurs devoirs ou d'incapacité durable.",
+      "it": "L'iniziativa chiede che i giudici federali non siano più eletti dal Parlamento, ma designati mediante sorteggio. Una commissione peritale ammette al sorteggio solo i candidati idonei dal profilo professionale e personale. I giudici restano in carica fino a cinque anni dopo l'età ordinaria di pensionamento, senza rielezione; il Parlamento può destituirli solo per grave violazione dei doveri d'ufficio o incapacità durevole."
+    },
+    "6500": {
+      "de": "Die Änderung vom März 2021 dehnt die Finanzhilfen des Covid-19-Gesetzes auf Betroffene aus, die bisher nicht oder zu wenig unterstützt wurden. Sie baut das Contact-Tracing aus, lässt den Bund Covid-Tests fördern und deren Kosten übernehmen und schafft die gesetzliche Grundlage für das Covid-Zertifikat für Geimpfte, Genesene und negativ Getestete.",
+      "fr": "La modification de mars 2021 étend les aides financières de la loi COVID-19 aux personnes qui n'étaient pas ou pas assez soutenues jusque-là. Elle améliore le traçage des contacts, prévoit que la Confédération encourage le dépistage et peut en prendre en charge les coûts, et crée la base légale du certificat COVID pour les personnes vaccinées, guéries ou testées négatives.",
+      "it": "La modifica del marzo 2021 estende gli aiuti finanziari della legge COVID-19 a chi finora non aveva ricevuto alcun sostegno o uno troppo limitato. Sviluppa il tracciamento dei contatti, prevede che la Confederazione promuova i test COVID-19 e possa assumerne i costi e crea la base legale per il certificato COVID per le persone vaccinate, guarite o risultate negative al test."
+    },
+    "6510": {
+      "de": "Die Initiative will Tierversuche und Versuche am Menschen verbieten. Produkte, die mit Tierversuchen entwickelt wurden, dürften nicht mehr eingeführt werden; dazu gehören neue Medikamente und Impfstoffe für Menschen und Tiere. Forschung ohne Tierversuche soll mindestens so viel staatliche Unterstützung erhalten wie heute die Forschung mit Tierversuchen.",
+      "fr": "L'initiative veut interdire l'expérimentation animale et l'expérimentation humaine. Les produits développés à l'aide d'expériences sur les animaux, dont de nouveaux médicaments et vaccins pour les humains et les animaux, ne pourraient plus être importés. La recherche sans expérimentation animale doit recevoir au moins autant d'aides publiques que la recherche avec expérimentation animale aujourd'hui.",
+      "it": "L'iniziativa chiede di vietare gli esperimenti sugli animali e quelli sugli esseri umani. Non si potrebbero più importare prodotti sviluppati con la sperimentazione animale, tra cui nuovi farmaci e vaccini ad uso umano e veterinario. La ricerca senza animali deve ricevere almeno lo stesso sostegno statale accordato oggi alla ricerca che ricorre agli esperimenti sugli animali."
+    },
+    "6520": {
+      "de": "Die Initiative will Werbung für Tabakprodukte überall dort verbieten, wo Kinder und Jugendliche sie sehen können, etwa in der Presse, auf Plakaten, im Internet, im Kino, an Kiosken und an Veranstaltungen. Dieselben Regeln gelten für elektronische Zigaretten. Erlaubt bleibt Werbung, die sich nur an Erwachsene richtet oder an Orten ohne Zugang für Minderjährige steht.",
+      "fr": "L'initiative veut interdire la publicité pour le tabac partout où des enfants et des adolescents peuvent la voir, par exemple dans la presse, sur les affiches, sur Internet, au cinéma, dans les kiosques et lors de manifestations. Les mêmes règles valent pour la cigarette électronique. La publicité qui ne vise que les adultes ou qui se trouve dans des lieux inaccessibles aux mineurs reste admise.",
+      "it": "L'iniziativa chiede di vietare la pubblicità per il tabacco ovunque fanciulli e adolescenti possano vederla, ad esempio nella stampa, sui manifesti, su Internet, nei cinema, nei chioschi e alle manifestazioni. Le stesse regole valgono per le sigarette elettroniche. Resta ammessa la pubblicità rivolta solo agli adulti o collocata in luoghi non accessibili ai minorenni."
+    },
+    "6530": {
+      "de": "Die Änderung schafft die Emissionsabgabe ab. Diese Steuer von einem Prozent erhebt der Bund heute, wenn ein Unternehmen durch die Ausgabe von Aktien oder dergleichen mehr als eine Million Franken Eigenkapital aufnimmt. Unternehmen könnten neues Eigenkapital künftig ohne diese Abgabe beschaffen.",
+      "fr": "La modification supprime le droit de timbre d'émission. La Confédération perçoit aujourd'hui cet impôt de 1 % lorsqu'une entreprise lève plus d'un million de francs de fonds propres en émettant des actions ou des titres semblables. Les entreprises pourront désormais lever de nouveaux fonds propres sans payer ce droit.",
+      "it": "La modifica abolisce la tassa d'emissione. Oggi la Confederazione riscuote questa imposta dell'uno per cento quando un'impresa acquisisce oltre un milione di franchi di capitale proprio emettendo azioni o titoli analoghi. In futuro le imprese potranno procurarsi nuovo capitale proprio senza pagare questa tassa."
+    },
+    "6540": {
+      "de": "Das Gesetz dehnt die Vergünstigung des Bundes für die Zustellung abonnierter Zeitungen auf Zeitungen mit grösserer Auflage und auf die Frühzustellung aus. Neu werden Online-Medien gefördert, und Lokalradios und Regionalfernsehen können mehr Unterstützung erhalten, wenn sie sich vorwiegend an ein Schweizer Publikum richten. Die Förderung von Zeitungen und Online-Medien endet nach sieben Jahren.",
+      "fr": "La loi étend le rabais de la Confédération sur la distribution des journaux en abonnement aux titres à plus grand tirage et à la distribution tôt le matin. Les médias en ligne sont désormais soutenus, et les radios locales et télévisions régionales peuvent recevoir davantage d'aide si elles s'adressent surtout à un public suisse. Les mesures pour les journaux et les médias en ligne prennent fin après sept ans.",
+      "it": "La legge estende la riduzione dei costi di distribuzione dei giornali in abbonamento ai giornali a tiratura più elevata e alla distribuzione mattutina. I media in linea vengono promossi, e le radio locali e le televisioni regionali possono ricevere un sostegno maggiore se si rivolgono soprattutto a un pubblico svizzero. Le misure per i giornali e i media in linea terminano dopo sette anni."
+    },
+    "6550": {
+      "de": "Die Änderung verpflichtet Streamingdienste, wie bereits die inländischen Fernsehsender 4 Prozent ihres in der Schweiz erzielten Umsatzes in das Schweizer Filmschaffen zu investieren, direkt in Produktionen oder über eine Ersatzabgabe an die Filmförderung. Zudem müssen mindestens 30 Prozent ihres Angebots in Europa produzierte Filme oder Serien sein.",
+      "fr": "La modification oblige les services de streaming, comme déjà les chaînes de télévision suisses, à investir 4 % du chiffre d'affaires réalisé en Suisse dans la création cinématographique suisse, soit en participant à des productions, soit en payant une taxe de remplacement. Ils doivent en outre réserver 30 % de leur catalogue à des films ou séries produits en Europe.",
+      "it": "La modifica obbliga i servizi di streaming, come già le emittenti televisive svizzere, a investire il quattro per cento della cifra d'affari realizzata in Svizzera nella creazione cinematografica nazionale, partecipando a produzioni o versando una tassa sostitutiva. Devono inoltre riservare il 30 per cento del loro catalogo a film e serie prodotti in Europa."
+    },
+    "6560": {
+      "de": "Das Gesetz führt bei der Organspende die Widerspruchslösung ein: Wer seine Organe nicht spenden will, muss dies zu Lebzeiten festhalten, sonst gilt die Person als Spenderin oder Spender. Die Angehörigen werden einbezogen und können eine Spende ablehnen, wenn sie annehmen, dass die Person dagegen gewesen wäre; ist niemand erreichbar, werden keine Organe entnommen.",
+      "fr": "La loi introduit le principe du consentement présumé pour le don d'organes: qui ne veut pas donner ses organes doit le faire savoir de son vivant, faute de quoi il devient un donneur potentiel. Les proches sont consultés et peuvent refuser le don s'ils savent ou supposent que la personne s'y serait opposée; si aucun proche ne peut être joint, aucun organe n'est prélevé.",
+      "it": "La legge introduce il principio del consenso presunto per la donazione di organi: chi non vuole donare i propri organi deve dichiararlo in vita, altrimenti è considerato donatore. I congiunti sono coinvolti e possono rifiutare la donazione se sanno o ritengono che la persona sarebbe stata contraria; se non è possibile contattarli, nessun organo viene prelevato."
+    },
+    "6570": {
+      "de": "Die Schweiz übernimmt als Schengen-Staat die EU-Verordnung zum Ausbau der Europäischen Agentur für die Grenz- und Küstenwache (Frontex). Frontex erhält mehr Geld und Personal, neue Aufgaben bei der Rückkehr ausreisepflichtiger Personen und eine aufgestockte Stelle für Grundrechte. Die Schweiz erhöht ihren Beitrag an Frontex schrittweise und stellt mehr Personal und Material zur Verfügung.",
+      "fr": "La Suisse, membre de l'espace Schengen, reprend le règlement de l'UE qui renforce Frontex, l'Agence européenne de garde-frontières et de garde-côtes. Frontex reçoit plus de fonds et de personnel, de nouvelles tâches liées au retour des personnes tenues de partir et un officier aux droits fondamentaux mieux doté. La Suisse augmente sa contribution par étapes et fournit plus de personnel et de matériel.",
+      "it": "La Svizzera, quale Stato Schengen, recepisce il regolamento UE che potenzia Frontex, l'Agenzia europea della guardia di frontiera e costiera. Frontex dispone di più mezzi finanziari e personale, di nuovi compiti nei rimpatri e di un Ufficio per i diritti fondamentali con più personale. La Svizzera aumenta gradualmente il suo contributo a Frontex e mette a disposizione più personale e materiale."
+    },
+    "6580": {
+      "de": "Die Initiative will den Schutz der Würde von Nutztieren in die Verfassung aufnehmen und die Massentierhaltung verbieten. Der Bund müsste strengere Mindestanforderungen an Unterbringung, Pflege, Zugang ins Freie, Schlachtung und Gruppengrösse festlegen, mindestens nach den Bio-Suisse-Richtlinien von 2018. Diese Anforderungen gälten auch für importierte Tiere, Tierprodukte und Lebensmittel mit tierischen Zutaten.",
+      "fr": "L'initiative veut inscrire dans la Constitution la protection de la dignité des animaux de rente et interdire l'élevage intensif. La Confédération devrait fixer des exigences minimales plus strictes pour l'hébergement, les soins, l'accès à l'extérieur, l'abattage et la taille des groupes, au moins celles du Cahier des charges 2018 de Bio Suisse. Elles vaudraient aussi pour l'importation d'animaux et de produits d'origine animale.",
+      "it": "L'iniziativa chiede di sancire nella Costituzione la tutela della dignità degli animali da reddito e di vietare l'allevamento intensivo. La Confederazione dovrebbe stabilire requisiti minimi più severi per ricovero, cura, accesso all'esterno, macellazione e dimensioni dei gruppi, almeno pari alle direttive Bio Suisse 2018. Varrebbero anche per l'importazione di animali, prodotti animali e derrate con ingredienti di origine animale."
+    },
+    "6590": {
+      "de": "Der Beschluss erhöht die Mehrwertsteuer zugunsten der AHV: den Normalsatz von 7,7 auf 8,1 Prozent, den reduzierten Satz von 2,5 auf 2,6 Prozent und den Sondersatz für die Beherbergung von 3,7 auf 3,8 Prozent. Er ist Teil der Reform AHV 21 und mit der Änderung des AHV-Gesetzes verknüpft.",
+      "fr": "L'arrêté relève la TVA en faveur de l'AVS: le taux normal passe de 7,7 à 8,1 %, le taux réduit de 2,5 à 2,6 % et le taux spécial pour l'hébergement de 3,7 à 3,8 %. Il fait partie de la réforme AVS 21 et est lié à la modification de la loi sur l'AVS.",
+      "it": "Il decreto aumenta l'imposta sul valore aggiunto a favore dell'AVS: l'aliquota normale passa dal 7,7 all'8,1 per cento, quella ridotta dal 2,5 al 2,6 per cento e quella speciale per il settore alberghiero dal 3,7 al 3,8 per cento. Fa parte della riforma AVS 21 ed è collegato alla modifica della legge sull'AVS."
+    },
+    "6600": {
+      "de": "Die Reform AHV 21 erhöht das Rentenalter der Frauen schrittweise von 64 auf 65 Jahre, wie für Männer. Frauen der Jahrgänge 1961 bis 1969 erhalten als Ausgleich bessere Bedingungen beim Vorbezug oder einen Rentenzuschlag. Der Übergang in den Ruhestand wird zwischen 63 und 70 frei wählbar, auch mit Teilrenten, und wer über 65 arbeitet, kann Beitragslücken schliessen.",
+      "fr": "La réforme AVS 21 relève progressivement l'âge de la retraite des femmes de 64 à 65 ans, comme pour les hommes. Les femmes nées entre 1961 et 1969 bénéficient en compensation de meilleures conditions de retraite anticipée ou d'un supplément de rente. Le départ à la retraite peut être choisi librement entre 63 et 70 ans, aussi avec une rente partielle, et qui travaille après 65 ans peut combler ses lacunes de cotisation.",
+      "it": "La riforma AVS 21 porta gradualmente l'età di pensionamento delle donne da 64 a 65 anni, come per gli uomini. Le donne nate tra il 1961 e il 1969 ricevono come compensazione condizioni migliori per il pensionamento anticipato o un supplemento di rendita. Il pensionamento si può scegliere liberamente tra i 63 e i 70 anni, anche con rendite parziali, e chi lavora dopo i 65 anni può colmare lacune contributive."
+    },
+    "6610": {
+      "de": "Die Änderung befreit Zinsen auf in der Schweiz ausgegebenen Obligationen von der Verrechnungssteuer von 35 Prozent. Zudem fällt die Umsatzabgabe, die heute beim Kauf und Verkauf von Wertpapieren anfällt, für inländische Obligationen und weitere Wertpapiere weg.",
+      "fr": "La modification exonère de l'impôt anticipé de 35 % les intérêts des obligations émises en Suisse. Elle supprime en outre le droit de timbre de négociation, dû aujourd'hui à l'achat et à la vente de titres, sur les obligations suisses et d'autres titres.",
+      "it": "La modifica esenta dall'imposta preventiva del 35 per cento gli interessi delle obbligazioni emesse in Svizzera. Abolisce inoltre la tassa di negoziazione, oggi dovuta sulla compravendita di titoli, per le obbligazioni svizzere e altri titoli."
+    },
+    "6620": {
+      "de": "Der Beschluss erlaubt dem Bund, für grosse international tätige Unternehmensgruppen eine Mindestbesteuerung von 15 Prozent nach dem Projekt der OECD und der G20 einzuführen, mit einer Ergänzungssteuer. Für alle anderen Unternehmen ändert sich nichts. Die Einnahmen aus der Ergänzungssteuer gehen zu 75 Prozent an die Kantone und zu 25 Prozent an den Bund.",
+      "fr": "L'arrêté permet d'introduire, selon le projet de l'OCDE et du G20, une imposition minimale de 15 % pour les grands groupes d'entreprises actifs à l'échelle internationale, au moyen d'un impôt complémentaire. Rien ne change pour les autres entreprises. Les recettes de l'impôt complémentaire reviennent pour 75 % aux cantons et pour 25 % à la Confédération.",
+      "it": "Il decreto consente di introdurre, secondo il progetto dell'OCSE e del G20, un'imposizione minima del 15 per cento per i grandi gruppi di imprese attivi a livello internazionale, mediante un'imposta integrativa. Per le altre imprese non cambia nulla. Il 75 per cento delle entrate dell'imposta integrativa va ai Cantoni e il 25 per cento alla Confederazione."
+    },
+    "6630": {
+      "de": "Das Gesetz legt fest, dass die Schweiz den Verbrauch von Erdöl und Erdgas schrittweise senkt und bis 2050 klimaneutral wird. Wer eine Öl-, Gas- oder Elektroheizung ersetzt, wird finanziell unterstützt, ebenso Unternehmen, die in klimafreundliche Technologien investieren. Es ist der indirekte Gegenvorschlag zur Gletscher-Initiative.",
+      "fr": "La loi prévoit que la Suisse réduise progressivement sa consommation de pétrole et de gaz naturel et atteigne la neutralité climatique d'ici à 2050. Le remplacement d'un chauffage au mazout, au gaz ou électrique est soutenu financièrement, de même que les entreprises qui investissent dans des technologies respectueuses du climat. Elle est le contre-projet indirect à l'initiative pour les glaciers.",
+      "it": "La legge prevede che la Svizzera riduca progressivamente il consumo di petrolio e gas naturale e raggiunga la neutralità climatica entro il 2050. Chi sostituisce un riscaldamento a olio, a gas o elettrico riceve un contributo finanziario, così come le imprese che investono in tecnologie rispettose del clima. È il controprogetto indiretto all'iniziativa per i ghiacciai."
+    },
+    "6640": {
+      "de": "Die Änderung verlängert bestimmte Bestimmungen des Covid-19-Gesetzes bis Mitte 2024. Damit dürfen in der Schweiz nicht zugelassene Medikamente gegen schwere Covid-Erkrankungen weiter eingeführt werden, der Bund kann weiterhin Covid-Zertifikate ausstellen und Arbeitgeber zum Schutz besonders gefährdeter Personen verpflichten, und die SwissCovid-App kann reaktiviert werden.",
+      "fr": "La modification prolonge certaines dispositions de la loi COVID-19 jusqu'au 30 juin 2024. Des médicaments contre les formes graves de COVID-19 non autorisés en Suisse peuvent encore être importés, la Confédération peut continuer à établir des certificats COVID et obliger les employeurs à protéger les personnes vulnérables, et l'application SwissCovid peut être réactivée.",
+      "it": "La modifica proroga fino a fine giugno 2024 alcune disposizioni della legge COVID-19. Restano possibili l'importazione e l'impiego di medicamenti contro i decorsi gravi non ancora omologati in Svizzera; la Confederazione può continuare a rilasciare certificati COVID e obbligare i datori di lavoro a proteggere le persone particolarmente a rischio, e l'app SwissCovid può essere riattivata."
+    },
+    "6650": {
+      "de": "Die Initiative will die Altersrenten der AHV um eine 13. Monatsrente pro Jahr erhöhen. Die höchste Altersrente steigt damit für Einzelpersonen um 2450 auf 31 850 Franken im Jahr, für Ehepaare um 3675 auf 47 775 Franken. Die Ergänzungsleistungen dürfen wegen der 13. Rente nicht gekürzt werden.",
+      "fr": "L'initiative veut ajouter chaque année une 13e rente mensuelle aux rentes de vieillesse de l'AVS. La rente annuelle maximale augmente ainsi de 2450 francs, à 31 850 francs, pour une personne seule et de 3675 francs, à 47 775 francs, pour un couple marié. La 13e rente ne doit pas entraîner de réduction des prestations complémentaires.",
+      "it": "L'iniziativa chiede di aggiungere ogni anno una tredicesima mensilità alle rendite di vecchiaia AVS. La rendita annua massima aumenta così di 2450 franchi, fino a 31 850 franchi, per le persone sole e di 3675 franchi, fino a 47 775 franchi, per le coppie sposate. La tredicesima non deve comportare una riduzione delle prestazioni complementari."
+    },
+    "6660": {
+      "de": "Die Initiative will das Rentenalter für Frauen und Männer bis 2033 schrittweise auf 66 Jahre erhöhen. Danach soll es an die durchschnittliche Lebenserwartung gekoppelt werden: Steigt diese, steigt das Rentenalter automatisch um 80 Prozent der gewonnenen Lebenszeit, in Schritten von höchstens zwei Monaten pro Jahr.",
+      "fr": "L'initiative veut relever progressivement l'âge de la retraite des hommes et des femmes à 66 ans d'ici 2033. Il serait ensuite lié à l'espérance de vie moyenne: lorsque celle-ci augmente, l'âge de la retraite s'élève automatiquement de 80 % de la durée de vie gagnée, par étapes de deux mois par an au plus.",
+      "it": "L'iniziativa chiede di portare progressivamente l'età di pensionamento di uomini e donne a 66 anni entro il 2033. In seguito l'età sarebbe legata alla speranza di vita media: se questa aumenta, l'età di pensionamento sale automaticamente dell'80 per cento dell'aumento, con scatti di due mesi al massimo all'anno."
+    },
+    "6670": {
+      "de": "Die Initiative will, dass die Versicherten höchstens 10 Prozent ihres verfügbaren Einkommens für die Krankenkassenprämien bezahlen müssen. Bund und Kantone sollen dafür die Prämienverbilligung erhöhen, wobei der Bund mindestens zwei Drittel der Verbilligung übernimmt.",
+      "fr": "L'initiative veut que les assurés ne consacrent pas plus de 10 % de leur revenu disponible aux primes d'assurance-maladie. La Confédération et les cantons doivent pour cela augmenter les réductions de primes, dont la Confédération finance au moins deux tiers.",
+      "it": "L'iniziativa chiede che i premi delle casse malati a carico degli assicurati non superino il 10 per cento del reddito disponibile. A tal fine Confederazione e Cantoni aumentano le riduzioni dei premi, di cui la Confederazione assume almeno i due terzi."
+    },
+    "6680": {
+      "de": "Die Initiative will eine Kostenbremse in der obligatorischen Krankenversicherung: Deren Kosten dürfen höchstens so stark steigen, wie es die Lohnentwicklung und das Wirtschaftswachstum vorgeben. Damit dieser Rahmen eingehalten wird, ergreift der Bund mit den Kantonen, den Krankenversicherern und den Leistungserbringern Massnahmen, die das Parlament im Gesetz festlegt.",
+      "fr": "L'initiative veut un frein aux coûts dans l'assurance-maladie obligatoire: ses coûts ne pourront pas augmenter davantage que ne le permettent l'évolution des salaires et la croissance économique. Pour respecter cette limite, la Confédération prend des mesures avec les cantons, les assureurs-maladie et les prestataires, que le Parlement fixe dans la loi.",
+      "it": "L'iniziativa chiede un freno ai costi nell'assicurazione obbligatoria delle cure medico-sanitarie: i costi possono aumentare al massimo nella misura data dall'evoluzione dei salari e dalla crescita economica. Per rispettare questo limite la Confederazione adotta misure con i Cantoni, gli assicuratori e i fornitori di prestazioni, che il Parlamento stabilisce nella legge."
+    },
+    "6690": {
+      "de": "Die Initiative will in der Verfassung festhalten, dass Eingriffe in die körperliche oder geistige Unversehrtheit die Zustimmung der betroffenen Person brauchen. Wer die Zustimmung verweigert, darf weder bestraft noch benachteiligt werden. Das gilt nicht nur für Impfungen, sondern für jedes Handeln von Bund, Kantonen und Gemeinden, das auf den Körper einwirkt.",
+      "fr": "L'initiative veut inscrire dans la Constitution que les atteintes à l'intégrité physique ou psychique requièrent le consentement de la personne concernée. Celui qui refuse son consentement ne peut être ni puni ni prétérité. La règle ne vise pas seulement les vaccinations, mais toute action de la Confédération, des cantons et des communes qui a une incidence sur le corps.",
+      "it": "L'iniziativa chiede di sancire nella Costituzione che gli interventi nell'integrità fisica o psichica richiedano il consenso della persona interessata. Chi rifiuta il consenso non può essere punito né penalizzato. La regola non riguarda solo le vaccinazioni, ma qualsiasi atto della Confederazione, dei Cantoni e dei Comuni che incide sul corpo umano."
+    },
+    "6700": {
+      "de": "Das Gesetz schafft die Grundlagen, damit in der Schweiz rasch mehr Strom aus Wasser, Sonne, Wind und Biomasse produziert wird, und macht die Wasserkraftreserve obligatorisch. Solarstrom soll vor allem auf Gebäuden entstehen. Für Wind- und grosse Solaranlagen in geeigneten Gebieten sowie für 16 im Gesetz genannte Wasserkraftwerke gelten erleichterte Planungsbedingungen.",
+      "fr": "La loi pose les bases pour produire rapidement davantage d'électricité en Suisse à partir de l'eau, du soleil, du vent et de la biomasse, et rend obligatoire la réserve hydroélectrique. Le solaire se développe avant tout sur les bâtiments. La planification est facilitée pour les éoliennes et les grandes installations solaires dans les régions qui s'y prêtent et pour seize centrales hydroélectriques citées dans la loi.",
+      "it": "La legge crea le basi per produrre in tempi brevi più elettricità in Svizzera da acqua, sole, vento e biomassa e rende obbligatoria la riserva idroelettrica. Il solare va sviluppato soprattutto sugli edifici. Gli impianti eolici e i grandi impianti solari nei territori adeguati, come pure 16 centrali idroelettriche menzionate nella legge, beneficiano di condizioni di pianificazione agevolate."
+    },
+    "6710": {
+      "de": "Die Initiative will Natur, Landschaft und baukulturelles Erbe stärker schützen. Sie verlangt mehr Geld und mehr Schutzflächen für die Biodiversität und nimmt die Kantone beim Erhalt von Landschaften und Ortsbildern stärker in die Pflicht. Die prägenden Elemente schützenswerter Biotope, Landschaften und Ortsbilder sollen ungeschmälert erhalten bleiben, und auch ausserhalb der Schutzgebiete sind sie zu schonen.",
+      "fr": "L'initiative veut mieux protéger la nature, le paysage et le patrimoine bâti. Elle demande davantage de moyens et de surfaces protégées pour la biodiversité et charge plus fortement les cantons de préserver les paysages et la physionomie des localités. Les éléments caractéristiques des biotopes, paysages et localités dignes de protection doivent rester intacts, et la nature doit être ménagée aussi en dehors des zones protégées.",
+      "it": "L'iniziativa chiede di proteggere maggiormente la natura, il paesaggio e il patrimonio architettonico. Prevede più fondi e più superfici protette per la biodiversità e un maggiore impegno dei Cantoni nella salvaguardia di paesaggi e siti caratteristici. Gli elementi distintivi di biotopi, paesaggi e siti degni di protezione vanno mantenuti intatti e la natura va tutelata anche fuori dalle zone protette."
+    },
+    "6720": {
+      "de": "Die Reform senkt den Umwandlungssatz in der obligatorischen beruflichen Vorsorge von 6,8 auf 6,0 Prozent. Neu sind 80 Prozent des Lohns versichert statt des Lohns abzüglich eines festen Koordinationsabzugs, und die Eintrittsschwelle sinkt von 22 050 auf 19 845 Franken. Wer in den 15 Jahren nach Inkrafttreten pensioniert wird, erhält einen Rentenzuschlag von höchstens 200 Franken im Monat.",
+      "fr": "La réforme abaisse le taux de conversion de la prévoyance professionnelle obligatoire de 6,8 % à 6,0 %. La déduction de coordination fixe est remplacée par une déduction de 20 % du salaire, qui est donc assuré à 80 %, et le seuil d'accès passe de 22 050 à 19 845 francs. Les personnes qui partent à la retraite dans les 15 ans suivant l'entrée en vigueur reçoivent un supplément de rente de 200 francs par mois au plus.",
+      "it": "La riforma abbassa dal 6,8 al 6,0 per cento l'aliquota di conversione nella parte obbligatoria della previdenza professionale. Al posto della deduzione di coordinamento fissa è assicurato l'80 per cento del salario, e la soglia d'entrata scende da 22 050 a 19 845 franchi. Chi va in pensione nei 15 anni dopo l'entrata in vigore riceve un supplemento di rendita di al massimo 200 franchi al mese."
+    },
+    "6730": {
+      "de": "Der Bundesbeschluss gibt den Ausbau von sechs Abschnitten der Nationalstrassen frei: der A1 zwischen Le Vengeron und Nyon, zwischen Bern-Wankdorf und Schönbühl und zwischen Schönbühl und Kirchberg, ein neuer Rheintunnel der A2 bei Basel sowie eine weitere Röhre des Fäsenstaubtunnels in Schaffhausen und des Rosenbergtunnels in St. Gallen. Dafür sind 4,9 Milliarden Franken vorgesehen.",
+      "fr": "L'arrêté fédéral approuve l'aménagement de six tronçons des routes nationales: l'A1 entre Le Vengeron et Nyon, entre Berne-Wankdorf et Schönbühl et entre Schönbühl et Kirchberg, un nouveau tunnel du Rhin sur l'A2 à Bâle ainsi qu'un tube supplémentaire aux tunnels de Fäsenstaub à Schaffhouse et du Rosenberg à Saint-Gall. Un montant de 4,9 milliards de francs est prévu à cet effet.",
+      "it": "Il decreto federale approva il potenziamento di sei tratti delle strade nazionali: la A1 tra Le Vengeron e Nyon, tra Berna-Wankdorf e Schönbühl e tra Schönbühl e Kirchberg, una nuova galleria sotto il Reno sulla A2 a Basilea e una canna supplementare per le gallerie Fäsenstaub a Sciaffusa e del Rosenberg a San Gallo. Per questi progetti sono previsti 4,9 miliardi di franchi."
+    },
+    "6740": {
+      "de": "Die Änderung des Mietrechts verlangt, dass Mieterinnen und Mieter eine Untermiete schriftlich beantragen und die schriftliche Zustimmung der Vermieterin oder des Vermieters einholen. Diese können eine Untermiete von mehr als zwei Jahren ablehnen. Verletzt die Mieterin oder der Mieter die Pflichten bei der Untermiete trotz schriftlicher Mahnung, kann der Mietvertrag mit einer Frist von 30 Tagen gekündigt werden.",
+      "fr": "La modification du droit du bail oblige le locataire qui veut sous-louer à demander et à obtenir par écrit l'autorisation du bailleur. Celui-ci peut notamment refuser une sous-location prévue pour plus de deux ans. Si le locataire ne respecte pas ses obligations liées à la sous-location malgré une protestation écrite, le bailleur peut résilier le bail dans un délai de 30 jours.",
+      "it": "La modifica del diritto di locazione obbliga chi intende sublocare a chiedere per scritto il consenso del locatore e a ottenerlo per scritto. Il locatore può rifiutare in particolare una sublocazione di durata superiore a due anni. Se il locatario viola gli obblighi connessi alla sublocazione nonostante una diffida scritta, il locatore può disdire il contratto con un preavviso di 30 giorni."
+    },
+    "6750": {
+      "de": "Die Änderung des Mietrechts erleichtert die Kündigung wegen Eigenbedarfs: Der Eigenbedarf der Eigentümerin oder des Eigentümers muss nicht mehr dringend sein, es genügt, wenn er bedeutend und aktuell ist. Zudem führt die neue Regelung zu kürzeren Erstreckungen des Mietverhältnisses.",
+      "fr": "La modification du droit du bail facilite la résiliation pour besoin propre: le besoin du propriétaire ne doit plus être «urgent», il suffit qu'il soit «important et actuel». La nouvelle réglementation conduit en outre à des prolongations de bail plus courtes.",
+      "it": "La modifica del diritto di locazione agevola la disdetta per bisogno personale: il bisogno del proprietario non deve più essere urgente, basta che sia importante e attuale. La nuova regola comporta inoltre protrazioni più brevi dei rapporti di locazione."
+    },
+    "6760": {
+      "de": "Die Änderung des Krankenversicherungsgesetzes lässt alle Leistungen der obligatorischen Krankenversicherung von Krankenkassen und Kantonen gemeinsam und nach demselben Verteilschlüssel finanzieren, ob ambulant oder stationär. Die Kantone übernehmen bei allen Leistungen mindestens 26,9 Prozent der Kosten, die Krankenkassen höchstens 73,1 Prozent.",
+      "fr": "La modification de la LAMal prévoit que toutes les prestations de l'assurance obligatoire des soins sont financées conjointement par les cantons et les caisses-maladie, selon la même clé de répartition, qu'elles soient ambulatoires ou stationnaires. Les cantons prennent en charge au moins 26,9 % des coûts de toutes les prestations, les caisses-maladie au plus 73,1 %.",
+      "it": "La modifica della LAMal prevede che tutte le prestazioni dell'assicurazione malattie obbligatoria siano finanziate congiuntamente da casse malati e Cantoni secondo la stessa chiave di ripartizione, siano esse ambulatoriali o stazionarie. I Cantoni coprono almeno il 26,9 per cento dei costi di tutte le prestazioni, le casse malati al massimo il 73,1 per cento."
+    },
+    "6770": {
+      "de": "Die Initiative will, dass die Wirtschaft nur so viele Ressourcen verbraucht und Schadstoffe freisetzt, wie es der Erhalt der natürlichen Lebensgrundlagen erlaubt. Innert zehn Jahren darf die Umweltbelastung durch den Konsum in der Schweiz die Belastbarkeit der Erde, gemessen am Anteil der Schweiz an der Weltbevölkerung, nicht mehr überschreiten. Die Massnahmen sollen im In- und Ausland sozialverträglich sein.",
+      "fr": "L'initiative veut que les activités économiques n'utilisent des ressources et n'émettent des polluants que dans la mesure où les bases naturelles de la vie sont conservées. Dans un délai de dix ans, l'impact environnemental de la consommation en Suisse ne devra plus dépasser les limites planétaires, rapportées à la part de la Suisse dans la population mondiale. Les mesures doivent être socialement acceptables en Suisse et à l'étranger.",
+      "it": "L'iniziativa chiede che le attività economiche consumino risorse ed emettano sostanze nocive solo nella misura in cui le basi naturali della vita sono conservate. Entro dieci anni l'impatto ambientale dei consumi in Svizzera non dovrà superare i limiti del pianeta, in proporzione alla quota svizzera della popolazione mondiale. Le misure devono essere socialmente sostenibili in Svizzera e all'estero."
+    },
+    "6780": {
+      "de": "Der Bundesbeschluss erlaubt den Kantonen, eine besondere Liegenschaftssteuer auf überwiegend selbstgenutzten Zweitliegenschaften zu erheben. Er ist mit einer Gesetzesänderung verknüpft, welche die Besteuerung des Eigenmietwerts auf Erst- und Zweitliegenschaften abschafft und die Abzüge für Schuldzinsen und Unterhalt einschränkt.",
+      "fr": "L'arrêté fédéral permet aux cantons de percevoir un impôt immobilier spécial sur les résidences secondaires essentiellement à usage personnel. Il est lié à une modification de loi qui abolit l'imposition de la valeur locative des résidences principales et secondaires et limite les déductions des intérêts passifs et des frais d'entretien.",
+      "it": "Il decreto federale permette ai Cantoni di introdurre un'imposta immobiliare speciale sulle abitazioni secondarie prevalentemente a uso proprio. È legato a una modifica di legge che sopprime l'imposizione del valore locativo delle abitazioni primarie e secondarie e limita la deduzione degli interessi passivi e delle spese di manutenzione."
+    },
+    "6790": {
+      "de": "Das Gesetz schafft eine staatliche E-ID, mit der man sich gegenüber Behörden und Unternehmen elektronisch ausweisen kann, etwa um das Alter nachzuweisen. Der Bund gibt die E-ID heraus und betreibt die technische Infrastruktur; die Nutzung ist freiwillig und kostenlos. Andere Behörden und Unternehmen können über diese Infrastruktur eigene elektronische Nachweise ausstellen, etwa eine Wohnsitzbestätigung.",
+      "fr": "La loi crée une e-ID étatique, qui permet de prouver son identité aux autorités et aux entreprises, par exemple pour prouver son âge. La Confédération émet l'e-ID et exploite l'infrastructure technique; son utilisation est facultative et gratuite. Les autres autorités et les entreprises peuvent utiliser cette infrastructure pour proposer leurs propres moyens de preuves électroniques, comme une attestation de domicile.",
+      "it": "La legge istituisce un Id-e statale, con cui identificarsi elettronicamente nei confronti di autorità e imprese, ad esempio per comprovare la propria età. L'Id-e è emesso dalla Confederazione, che gestisce anche l'infrastruttura tecnica; il suo utilizzo è facoltativo e gratuito. Altre autorità e imprese possono usare questa infrastruttura per offrire propri mezzi elettronici, come l'attestato di domicilio."
+    },
+    "6800": {
+      "de": "Die Initiative will, dass alle Schweizer Bürgerinnen und Bürger, auch die Frauen, einen Dienst zugunsten der Allgemeinheit und der Umwelt leisten. Dieser «Service citoyen» wird im Militär, im Zivilschutz oder in einem gleichwertigen Milizdienst erbracht, etwa im Klimaschutz oder in der Betreuung, wobei der Sollbestand von Armee und Zivilschutz garantiert bleibt. Wer keinen Dienst leistet, bezahlt wie heute eine Abgabe.",
+      "fr": "L'initiative veut que tous les citoyens suisses, femmes comprises, accomplissent un service en faveur de la collectivité et de l'environnement. Ce service citoyen s'effectue dans l'armée, la protection civile ou un service de milice équivalent, par exemple pour le climat ou l'assistance, l'effectif réglementaire de l'armée et de la protection civile restant garanti. Qui n'effectue pas de service paie une taxe, comme aujourd'hui.",
+      "it": "L'iniziativa chiede che tutte le persone con cittadinanza svizzera, donne comprese, prestino un servizio a beneficio della collettività e dell'ambiente. Il Servizio civico si presta nell'esercito, nella protezione civile o in un servizio di milizia equivalente, ad esempio per il clima o l'assistenza, garantendo l'effettivo regolamentare di esercito e protezione civile. Chi non presta servizio paga una tassa, come oggi."
+    },
+    "6810": {
+      "de": "Die Initiative will eine Erbschafts- und Schenkungssteuer des Bundes einführen: 50 Prozent auf Nachlässe und Schenkungen einer Person, wobei die ersten 50 Millionen Franken steuerfrei bleiben. Zwei Drittel der Einnahmen gehen an den Bund, ein Drittel an die Kantone. Das Geld ist für die sozial gerechte Bekämpfung der Klimakrise und den dafür nötigen Umbau der Wirtschaft zu verwenden.",
+      "fr": "L'initiative veut introduire un impôt fédéral de 50 % sur les successions et les donations d'une personne, les 50 premiers millions de francs n'étant pas imposés. Deux tiers des recettes reviennent à la Confédération et un tiers aux cantons. Elles doivent servir à lutter contre la crise climatique de manière socialement juste et à transformer l'économie en conséquence.",
+      "it": "L'iniziativa chiede di introdurre un'imposta federale del 50 per cento sulle successioni e sulle donazioni delle persone fisiche, per la parte che eccede i 50 milioni di franchi. Il gettito va per due terzi alla Confederazione e per un terzo ai Cantoni e serve a combattere la crisi climatica in modo socialmente equo e a trasformare di conseguenza l'economia."
+    },
+    "6821": {
+      "de": "Die Initiative will in der Verfassung verankern, dass der Bund dafür sorgt, dass Münzen oder Banknoten immer in genügender Menge zur Verfügung stehen. Zudem soll der Schweizerfranken nur mit Zustimmung von Volk und Ständen durch eine andere Währung ersetzt werden können.",
+      "fr": "L'initiative veut inscrire dans la Constitution que la Confédération veille à ce que pièces de monnaie ou billets de banque soient toujours disponibles en quantité suffisante. En outre, le franc suisse ne pourra être remplacé par une autre monnaie qu'avec l'accord du peuple et des cantons.",
+      "it": "L'iniziativa chiede di sancire nella Costituzione che la Confederazione garantisca che monete e banconote siano sempre disponibili in quantità sufficiente. Inoltre il franco svizzero potrebbe essere sostituito da un'altra unità monetaria solo con il consenso del Popolo e dei Cantoni."
+    },
+    "6822": {
+      "de": "Der Gegenentwurf von Bundesrat und Parlament zur Bargeldinitiative verankert die Bargeldversorgung und den Franken ebenfalls in der Verfassung. Er übernimmt dafür zwei bestehende Gesetzesbestimmungen weitgehend unverändert: Die Nationalbank gewährleistet die Bargeldversorgung, und die schweizerische Währung ist der Franken.",
+      "fr": "Le contre-projet du Conseil fédéral et du Parlement à l'initiative pour l'argent liquide inscrit lui aussi l'approvisionnement en numéraire et le franc dans la Constitution. Il y reprend à cet effet, sans changement majeur, deux dispositions de loi existantes: la BNS assure l'approvisionnement en numéraire, et la monnaie suisse est le franc.",
+      "it": "Il controprogetto del Consiglio federale e del Parlamento all'iniziativa sul denaro contante iscrive anch'esso nella Costituzione l'approvvigionamento in numerario e il franco. A tal fine vi riprende, sostanzialmente invariate, due disposizioni di legge esistenti: la BNS garantisce l'approvvigionamento in numerario e l'unità monetaria svizzera è il franco."
+    },
+    "6823": {
+      "de": "Die Stichfrage entscheidet, ob die Bargeldinitiative oder der Gegenentwurf in Kraft tritt, falls Volk und Stände beiden zustimmen. Beantworten darf sie auch, wer die ersten beiden Fragen mit Nein beantwortet oder leer gelassen hat.",
+      "fr": "La question subsidiaire détermine si l'initiative pour l'argent liquide ou le contre-projet entre en vigueur au cas où le peuple et les cantons acceptent les deux textes. On peut y répondre même si l'on a répondu non aux deux premières questions ou si on les a laissées en blanc.",
+      "it": "La domanda risolutiva stabilisce se entra in vigore l'iniziativa denaro contante oppure il controprogetto, qualora Popolo e Cantoni accettino entrambi. Si può rispondere anche se si è risposto no alle prime due domande o le si è lasciate in bianco."
+    },
+    "6830": {
+      "de": "Die Initiative will die Radio- und Fernsehabgabe für Privathaushalte auf 200 Franken pro Jahr begrenzen (heute 335 Franken) und alle Unternehmen von der Abgabe befreien. Die SRG soll sich auf einen «unerlässlichen Dienst für die Allgemeinheit» beschränken. Lokalradios und Regionalfernsehen, die Geld aus der Abgabe erhalten, sind nicht betroffen.",
+      "fr": "L'initiative veut limiter à 200 francs par an (aujourd'hui 335 francs) la redevance de radio-télévision des ménages privés et en exonérer toutes les entreprises. La SSR devra se limiter à un «service indispensable à la collectivité». Les radios locales et les télévisions régionales qui reçoivent des fonds de la redevance ne sont pas touchées.",
+      "it": "L'iniziativa chiede di ridurre a 200 franchi all'anno (oggi 335 franchi) il canone radiotelevisivo delle economie domestiche e di esentare tutte le imprese dall'obbligo di pagarlo. La SSR dovrebbe limitarsi a fornire «un servizio indispensabile alla collettività». Le radio locali e le televisioni regionali finanziate dal canone non sono toccate."
+    },
+    "6840": {
+      "de": "Die Initiative will, dass der Bund einen Klimafonds einrichtet und jährlich 0,5 bis 1 Prozent der Schweizer Wirtschaftsleistung einzahlt, ungefähr 4 bis 8 Milliarden Franken. Damit unterstützt er die Verminderung der Treibhausgasemissionen, einen sparsamen Energieverbrauch, den Ausbau der erneuerbaren Energien, die CO2-Entnahme und -Speicherung, die Biodiversität und die Ausbildung der nötigen Fachkräfte.",
+      "fr": "L'initiative veut que la Confédération crée un fonds climat et l'alimente chaque année à hauteur de 0,5 à 1 % de la performance économique de la Suisse, soit 4 à 8 milliards de francs environ. Le fonds soutient la réduction des émissions de gaz à effet de serre, une utilisation économe de l'énergie, les énergies renouvelables, l'extraction et le stockage du CO2, la biodiversité et la formation du personnel qualifié.",
+      "it": "L'iniziativa chiede alla Confederazione di istituire un fondo per il clima alimentato ogni anno con lo 0,5–1 per cento della prestazione economica svizzera, circa 4−8 miliardi di franchi. Il fondo sostiene la riduzione delle emissioni di gas serra, l'impiego efficiente dell'energia, le energie rinnovabili, la rimozione e il sequestro del CO2, la biodiversità e la formazione del personale necessario."
+    },
+    "6850": {
+      "de": "Das Gesetz führt die Individualbesteuerung auch für Verheiratete ein: Jede Person versteuert ihr eigenes Einkommen und Vermögen, und für alle gilt derselbe Tarif. Bei der direkten Bundessteuer steigt der Kinderabzug von 6800 auf 12 000 Franken. Auch die Kantone müssen die Individualbesteuerung einführen, legen Tarif und Kinderabzüge aber weiterhin selbst fest.",
+      "fr": "La loi étend l'imposition individuelle aux personnes mariées: chacun déclare son propre revenu et sa propre fortune, et le même barème s'applique à tous. Dans l'impôt fédéral direct, la déduction pour enfants passe de 6800 à 12 000 francs. Les cantons doivent aussi introduire l'imposition individuelle, mais continuent de fixer eux-mêmes leur barème et leurs déductions pour enfants.",
+      "it": "La legge estende l'imposizione individuale ai coniugi: ogni persona è tassata sul proprio reddito e sulla propria sostanza, e a tutti si applica la stessa tariffa. Nell'imposta federale diretta la deduzione per i figli passa da 6 800 a 12 000 franchi. Anche i Cantoni devono introdurre l'imposizione individuale, ma continuano a stabilire autonomamente tariffa e deduzioni per i figli."
+    },
+    "6860": {
+      "de": "Die Initiative will, dass die ständige Wohnbevölkerung der Schweiz vor 2050 unter 10 Millionen bleibt. Überschreitet sie 9,5 Millionen, müssen Bundesrat und Parlament Massnahmen ergreifen, namentlich im Asylbereich und beim Familiennachzug. Wird die Grenze von 10 Millionen überschritten, muss die Schweiz internationale Abkommen kündigen, die zum Bevölkerungswachstum beitragen, nach zwei Jahren auch die Personenfreizügigkeit mit der EU.",
+      "fr": "L'initiative veut que la population résidante permanente reste sous 10 millions avant 2050. Au-delà de 9,5 millions, le Conseil fédéral et le Parlement doivent prendre des mesures, notamment en matière d'asile et de regroupement familial. Si la limite de 10 millions est franchie, la Suisse doit dénoncer les accords internationaux qui favorisent la croissance démographique, après deux ans aussi la libre circulation des personnes avec l'UE.",
+      "it": "L'iniziativa chiede che la popolazione residente permanente resti sotto i dieci milioni prima del 2050. Oltre i 9,5 milioni, Consiglio federale e Parlamento devono adottare provvedimenti, in particolare in materia di asilo e di ricongiungimento familiare. Superati i dieci milioni, la Svizzera deve denunciare gli accordi internazionali che favoriscono la crescita demografica e, dopo due anni, anche la libera circolazione delle persone con l'UE."
+    },
+    "6870": {
+      "de": "Die Änderung des Zivildienstgesetzes soll bewirken, dass weniger Personen vom Militär in den Zivildienst wechseln, vor allem solche, die schon einen grossen Teil ihres Armeedienstes geleistet haben. Neu müssen alle Zivildienstpflichtigen mindestens 150 Diensttage leisten. Zudem gelten strengere Vorgaben für die Planung der Zivildiensteinsätze.",
+      "fr": "La modification de la loi sur le service civil doit réduire le nombre de personnes qui passent de l'armée au service civil, surtout parmi celles qui ont déjà accompli une grande partie de leur service militaire. Toutes les personnes astreintes au service civil devront accomplir au moins 150 jours de service. La planification des affectations est en outre soumise à des exigences plus strictes.",
+      "it": "La modifica della legge sul servizio civile mira a ridurre il numero di persone che passano dall'esercito al servizio civile, in particolare tra chi ha già prestato buona parte del servizio militare. In futuro andranno prestati in ogni caso almeno 150 giorni di servizio civile. La pianificazione degli impieghi dei civilisti è inoltre soggetta a condizioni più rigorose."
+    },
+    "6880": {
+      "de": "Die Initiative will in der Verfassung festschreiben, dass die Neutralität der Schweiz immerwährend und bewaffnet ist. Die Schweiz tritt keinem Militär- oder Verteidigungsbündnis bei und arbeitet mit keinem zusammen, ausser bei einem militärischen Angriff auf sie. Sie beteiligt sich nicht an Konflikten zwischen Drittstaaten und ergreift keine Sanktionen gegen kriegführende Staaten, ausser solchen der UNO.",
+      "fr": "L'initiative veut inscrire dans la Constitution que la neutralité suisse est perpétuelle et armée. La Suisse n'adhère à aucune alliance militaire ou défensive et ne coopère avec aucune, sauf en cas d'attaque militaire contre elle. Elle ne participe pas aux conflits entre États tiers et ne prend pas de sanctions contre des États belligérants, sous réserve de celles de l'ONU.",
+      "it": "L'iniziativa chiede di iscrivere nella Costituzione che la neutralità della Svizzera è permanente e armata. La Svizzera non aderisce ad alleanze militari o difensive né collabora con esse, salvo in caso di aggressione militare. Non partecipa a conflitti tra Stati terzi e non adotta sanzioni contro Stati belligeranti, eccetto quelle dell'ONU."
+    },
+    "6890": {
+      "de": "Die Initiative will, dass innert zehn Jahren mindestens 70 Prozent der in der Schweiz konsumierten Lebensmittel im Inland produziert werden. Die Landwirtschaft soll dafür weniger tierische und mehr pflanzliche Lebensmittel herstellen sowie weniger Pflanzenschutzmittel und Dünger einsetzen. Zudem sollen Trinkwasser, Bodenfruchtbarkeit und Biodiversität besser geschützt werden.",
+      "fr": "L'initiative veut qu'au moins 70 % des aliments consommés en Suisse soient produits dans le pays, dans un délai de dix ans. L'agriculture doit pour cela produire moins d'aliments d'origine animale et davantage d'aliments végétaux, et utiliser moins de produits phytosanitaires et d'engrais. L'eau potable, la fertilité des sols et la biodiversité doivent en outre être mieux protégées.",
+      "it": "L'iniziativa chiede che entro dieci anni almeno il 70 per cento delle derrate consumate in Svizzera sia di produzione indigena. A tal fine l'agricoltura deve produrre meno alimenti di origine animale e più alimenti vegetali e utilizzare meno prodotti fitosanitari e concimi. Vanno inoltre protetti meglio l'acqua potabile, la fertilità del suolo e la biodiversità."
+    }
+  }
+}
