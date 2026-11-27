@@ -406,3 +406,54 @@ test('the bars of a result with nothing left: no yes share and no segment', () =
   expect(nothing.yesPercent).toBeNull();
   expect(nothing.segments).toEqual([]);
 });
+
+// The summaries (spec vote-summaries): the texts of pipeline/vote-summaries.json, as the update
+// writes them into votes.json, and the addresses of investigations/vote-summaries.md.
+test("a vote's summary and the link to its day's explanations", () => {
+  const summary = page(5960).summary;
+  expect(summary.text).toMatch(/^Die Initiative will in der Verfassung festhalten, dass Ehepaare/);
+  expect(summary.href).toBe(
+    'https://www.admin.ch/dam/de/sd-web/kOH6nJzClyOD/Erlaeuterungen_DE_bf.pdf',
+  );
+  expect(summary.label).toBe('Erläuterungen des Bundesrates (PDF)');
+});
+
+test('a French page that links a German booklet, an Italian one that links a French copy', () => {
+  const french = votePage(voteOf(5960), fileOf.get(5960), fr).summary;
+  expect(french.text).toMatch(/^L'initiative veut inscrire dans la Constitution/);
+  expect(french.href).toBe(
+    'https://www.admin.ch/dam/fr/sd-web/kOH6nJzClyOD/Erlaeuterungen_DE_bf.pdf',
+  );
+  expect(french.label).toBe('Explications du Conseil fédéral (PDF, en allemand)');
+  const italian = votePage(voteOf(5800), fileOf.get(5800), it).summary;
+  expect(italian.href).toBe('https://swissvotes.ch/vote/578.00/brochure-fr.pdf');
+  expect(italian.label).toBe('Spiegazioni del Consiglio federale (PDF, in francese)');
+  expect(votePage(voteOf(5960), fileOf.get(5960), it).summary.label).toBe(
+    'Spiegazioni del Consiglio federale (PDF)',
+  );
+});
+
+test('every vote has a summary of 120 to 450 characters in each language', () => {
+  for (const vote of listing.votes) {
+    for (const t of [de, fr, it]) {
+      const { text } = votePage(vote, fileOf.get(vote.id), t).summary;
+      expect(text.length, `${String(vote.id)} ${t.LANGUAGE}`).toBeGreaterThanOrEqual(120);
+      expect(text.length, `${String(vote.id)} ${t.LANGUAGE}`).toBeLessThanOrEqual(450);
+    }
+  }
+});
+
+test('a summary missing in one language is an error that names the vote and the language', () => {
+  const vote = voteOf(5960);
+  const without = { ...vote, summary: { ...vote.summary, fr: '' } };
+  expect(() => votePage(without, fileOf.get(5960), fr)).toThrow(
+    'vote 5960 has no summary in French',
+  );
+  const noLink = {
+    ...vote,
+    explanations: { ...vote.explanations, it: { address: '', language: 'it' as const } },
+  };
+  expect(() => votePage(noLink, fileOf.get(5960), it)).toThrow(
+    'vote 5960 has no explanations in Italian',
+  );
+});

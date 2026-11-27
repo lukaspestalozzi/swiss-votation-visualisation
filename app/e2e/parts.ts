@@ -148,6 +148,14 @@ export const countBarFilled = (page: Page): Promise<{ width: number; filled: num
 export const abroadSwitch = (page: Page): Locator =>
   page.getByRole('checkbox', { name: /Auslandschweizerinnen und Auslandschweizer mitzählen/ });
 
+// A vote's summary and the link to its explanations (spec vote-summaries), within `scope`: the
+// page, or one vote of the comparison.
+export const summaryOf = (scope: Page | Locator): Locator => scope.locator('.summary').first();
+export const summaryText = (scope: Page | Locator): Locator =>
+  summaryOf(scope).locator('p').first();
+export const explanationsLink = (scope: Page | Locator): Locator =>
+  summaryOf(scope).locator('.explanations a');
+
 /** The result of the vote itself, on its page. */
 export const ownResult = (page: Page): Locator =>
   page.locator('.results > .result:not(.selection)');

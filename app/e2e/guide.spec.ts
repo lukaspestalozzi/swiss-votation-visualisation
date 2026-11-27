@@ -286,3 +286,30 @@ test('the sentence at the limits, with its link to the guide', async ({ page }) 
   await expect(page).toHaveURL(/\/de\/guide\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
 });
+
+// Spec reading-guide, "The sources": the summaries are the site's own (spec vote-summaries).
+test("the summaries of the votes named as the site's own, in three languages", async ({ page }) => {
+  const expected = {
+    de: [
+      'Kurzbeschreibungen der Vorlagen',
+      '«Erläuterungen des Bundesrates»',
+      'kein amtlicher Text',
+    ],
+    fr: [
+      'Descriptions des objets',
+      '«Explications du Conseil fédéral»',
+      'pas des textes officiels',
+    ],
+    it: [
+      'Descrizioni degli oggetti',
+      '«Spiegazioni del Consiglio federale»',
+      'non sono testi ufficiali',
+    ],
+  };
+  const headings = { de: 'Quellen', fr: 'Sources', it: 'Fonti' };
+  for (const [language, parts] of Object.entries(expected)) {
+    await page.goto(`${language}/guide/`);
+    const sources = section(page, headings[language as keyof typeof headings]);
+    for (const part of parts) await expect(sources).toContainText(part);
+  }
+});

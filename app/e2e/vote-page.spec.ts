@@ -6,11 +6,14 @@ import {
   cantonBar,
   cantonRow,
   cantonsBarOf,
+  explanationsLink,
   figuresOf,
   majoritiesOf,
   majorityHeadingsOf,
   outcomeOf,
   ownResult,
+  summaryOf,
+  summaryText,
   verdictFiguresOf,
   verdictWordsOf,
   votersBarOf,
@@ -257,4 +260,57 @@ test("a canton's bar for a share far from half: ZH with 70.20%", async ({ page }
   const zurich = await cantonBar(page, 'ZH');
   expect(Math.abs(zurich.from - zurich.width / 2)).toBeLessThanOrEqual(1);
   expect(Math.abs(zurich.to - zurich.from - zurich.width * 0.202)).toBeLessThanOrEqual(1);
+});
+
+// The summary of a vote (spec vote-summaries, "The summary on a vote's page").
+test("a vote's summary stands below its head and above its result, with its link", async ({
+  page,
+}) => {
+  await page.goto('de/votes/5960/');
+  await expect(summaryText(page)).toHaveText(
+    /^Die Initiative will in der Verfassung festhalten, dass Ehepaare/,
+  );
+  await expect(explanationsLink(page)).toHaveText('Erläuterungen des Bundesrates (PDF)');
+  await expect(explanationsLink(page)).toHaveAttribute(
+    'href',
+    'https://www.admin.ch/dam/de/sd-web/kOH6nJzClyOD/Erlaeuterungen_DE_bf.pdf',
+  );
+  const majorities = await page
+    .getByText('Braucht das Volksmehr und das Ständemehr.', { exact: true })
+    .boundingBox();
+  const summary = await summaryOf(page).boundingBox();
+  const result = await ownResult(page).boundingBox();
+  expect(majorities && summary && result).toBeTruthy();
+  if (majorities && summary && result) {
+    expect(summary.y).toBeGreaterThanOrEqual(majorities.y + majorities.height);
+    expect(result.y).toBeGreaterThanOrEqual(summary.y + summary.height);
+  }
+});
+
+test('the summary and its link in French and Italian, naming a document of another language', async ({
+  page,
+}) => {
+  await page.goto('fr/votes/5960/');
+  await expect(summaryText(page)).toHaveText(/^L'initiative veut inscrire dans la Constitution/);
+  await expect(explanationsLink(page)).toHaveText(
+    'Explications du Conseil fédéral (PDF, en allemand)',
+  );
+  await page.goto('it/votes/5960/');
+  await expect(explanationsLink(page)).toHaveText('Spiegazioni del Consiglio federale (PDF)');
+  await page.goto('it/votes/5800/');
+  await expect(explanationsLink(page)).toHaveText(
+    'Spiegazioni del Consiglio federale (PDF, in francese)',
+  );
+  await expect(explanationsLink(page)).toHaveAttribute(
+    'href',
+    'https://swissvotes.ch/vote/578.00/brochure-fr.pdf',
+  );
+});
+
+test("the tie-break question's summary and link", async ({ page }) => {
+  await page.goto('de/votes/6823/');
+  await expect(summaryText(page)).toHaveText(
+    /^Die Stichfrage entscheidet, ob die Bargeldinitiative/,
+  );
+  await expect(explanationsLink(page)).toHaveText('Erläuterungen des Bundesrates (PDF)');
 });
