@@ -43,9 +43,9 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 4. Claude's small findings
 
-- [ ] 4.1 "Ihre Stimmen" in `de.ts`, `result-map.test.ts` and `result-map.spec.ts`. Verify: both
+- [x] 4.1 "Ihre Stimmen" in `de.ts`, `result-map.test.ts` and `result-map.spec.ts`. Verify: both
   pass.
-- [ ] 4.2 The comparison's lists: block, the page's width, 1rem apart, the second disabled with
+- [x] 4.2 The comparison's lists: block, the page's width, 1rem apart, the second disabled with
   no option; the sentence before a vote is chosen in three languages. Browser tests in
   `compare.spec.ts`: the scenarios "Before a vote is chosen", "The sentence in French and
   Italian" and "Once a first vote is chosen". Verify: `compare.spec.ts` passes.

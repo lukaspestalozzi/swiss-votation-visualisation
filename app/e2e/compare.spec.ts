@@ -69,6 +69,69 @@ test('The head of the comparison', async ({ page }) => {
   await expect(page.locator('.result')).toHaveCount(0);
 });
 
+// Spec vote-comparison, "Before a vote is chosen".
+test('Before a vote is chosen', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('de/compare/');
+  const first = page.getByLabel('Erste Abstimmung');
+  const second = page.getByLabel('Zweite Abstimmung');
+  const column = await page.getByRole('heading', { level: 1 }).evaluate((heading) => {
+    // The heading is a block: as wide as the page's column.
+    const box = heading.getBoundingClientRect();
+    return { left: box.left, width: box.width };
+  });
+  const boxes = await Promise.all(
+    [first, second].map((list) =>
+      list.evaluate((element) => {
+        const box = element.getBoundingClientRect();
+        const label = element.closest('label')?.getBoundingClientRect();
+        return { x: box.x, y: box.y, width: box.width, height: box.height, labelTop: label?.top };
+      }),
+    ),
+  );
+  const [one, two] = boxes;
+  expect(one && two).toBeTruthy();
+  if (one && two) {
+    for (const list of [one, two]) {
+      expect(Math.abs(list.x - column.left)).toBeLessThanOrEqual(1);
+      expect(Math.abs(list.width - column.width)).toBeLessThanOrEqual(1);
+    }
+    // The second label at least 1rem below the first list, and its list below it.
+    expect(two.labelTop ?? 0).toBeGreaterThanOrEqual(one.y + one.height + 16);
+    expect(two.y).toBeGreaterThan(two.labelTop ?? Infinity);
+  }
+  await expect(second).toBeDisabled();
+  await expect(
+    page.getByText(
+      'Wählen Sie zwei Abstimmungen. Die Gemeinden, die Sie danach auswählen, zählen in beiden.',
+      { exact: true },
+    ),
+  ).toBeVisible();
+});
+
+test('The sentence before a vote is chosen, in French and Italian', async ({ page }) => {
+  await page.goto('fr/compare/');
+  await expect(
+    page.getByText(
+      'Choisissez deux votations. Les communes que vous choisirez ensuite comptent dans les deux.',
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.goto('it/compare/');
+  await expect(
+    page.getByText('Scelga due votazioni. I Comuni che sceglierà in seguito contano in entrambe.', {
+      exact: true,
+    }),
+  ).toBeVisible();
+});
+
+test('Once a first vote is chosen', async ({ page }) => {
+  await page.goto('de/compare/');
+  await page.getByLabel('Erste Abstimmung').selectOption('5960');
+  await expect(page.getByText('Wählen Sie zwei Abstimmungen.', { exact: false })).toHaveCount(0);
+  await expect(page.getByLabel('Zweite Abstimmung')).toBeEnabled();
+});
+
 /** The ids a list offers, without its empty choice. */
 const offered = (page: Page, list: string) =>
   page

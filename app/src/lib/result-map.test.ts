@@ -94,7 +94,7 @@ test('a name that already ends with its canton keeps it once', () => {
 test('a municipality without a result says why it has no figures', () => {
   expect(detailsOf('Meienried', 'BE', null, de)).toEqual({
     name: 'Meienried (BE)',
-    lines: ['Kein eigenes Ergebnis: Seine Stimmen sind mit denen einer anderen Gemeinde gezählt.'],
+    lines: ['Kein eigenes Ergebnis: Ihre Stimmen sind mit denen einer anderen Gemeinde gezählt.'],
     yesPercent: null,
   });
 });
