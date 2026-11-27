@@ -297,3 +297,17 @@ def test_a_record_names_its_query(tmp_path: Path) -> None:
         (address, '{"query": "a"}'),
         (address, '{"query": "b"}'),
     ]
+
+
+def test_a_stat_tab_answer_says_whether_it_came_from_the_cache(tmp_path: Path) -> None:
+    # Spec characteristics, "The record names the cached answers"; a source that is no STAT-TAB
+    # answer has no such field.
+    address = "https://example.org/table.px"
+    sources = [
+        Source(address, b"{}", None, '{"query": "a"}', cached=True),
+        Source(address, b"[]", None, '{"query": "b"}', cached=False),
+        Source("https://example.org/a.csv", b"a,b\n", None),
+    ]
+    write_data(tmp_path, dataclasses.replace(data(), sources=sources))
+    records = json.loads((tmp_path / "sources.json").read_text(encoding="utf-8"))["sources"]
+    assert [r.get("cached", "none") for r in records] == ["none", True, False]

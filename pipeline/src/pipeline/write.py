@@ -43,6 +43,8 @@ class Source:
     content: bytes
     stated: str | None
     query: str | None = None
+    # For a STAT-TAB answer, whether it came from the cache of final figures; none for others.
+    cached: bool | None = None
 
 
 @dataclass(frozen=True, eq=False)
@@ -240,6 +242,8 @@ def _sources_json(data: Data) -> str:
             "sha256": hashlib.sha256(source.content).hexdigest(),
             "stated": source.stated,
             "query": source.query,
+            # A STAT-TAB answer says whether it came from the cache (spec characteristics).
+            **({} if source.cached is None else {"cached": source.cached}),
         }
         for source in sorted(data.sources, key=lambda source: (source.address, source.query or ""))
     ]
