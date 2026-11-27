@@ -43,7 +43,7 @@
 
 ## 3. The summaries
 
-- [ ] 3.1 `pipeline/vote-summaries.json`: the addresses of task 1.1 and a summary of each of the
+- [x] 3.1 `pipeline/vote-summaries.json`: the addresses of task 1.1 and a summary of each of the
   125 votes in German, French and Italian, each written from the booklet in its own language
   by the rules of decision 8, by vote day; the German ones through the `humanizer` pass.
   Verify: the reader of task 2.1 accepts the file (a test that reads the real file, or the
