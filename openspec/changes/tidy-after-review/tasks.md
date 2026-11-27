@@ -71,7 +71,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   checks would refuse; Q reads the diff of 6730 and a sample of five French summaries.
 - [x] 5.3 `pipeline/README.md`, "The summaries": how numbers and French spaces are written, and
   that the update checks them. Verify: read.
-- [ ] 5.4 Run the update: `uv run --directory pipeline --locked python -m pipeline update`. Verify:
+- [x] 5.4 Run the update: `uv run --directory pipeline --locked python -m pipeline update`. Verify:
   it ends without an error, `votes.json` has no `validated`, and `git diff --stat
   app/static/data/` shows `votes.json` and `sources.json`; the app's unit tests that read the
   summaries (`vote-page.test.ts`) pass with the new texts.
