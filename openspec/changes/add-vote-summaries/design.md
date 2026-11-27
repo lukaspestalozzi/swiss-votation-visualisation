@@ -96,8 +96,8 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
    chosen vote's head (`ComparedVote.svelte`). The start page keeps one line per vote, and its
    search keeps looking at titles only.
 
-7. **A vote without a summary stops the update** (proposed in the exploration of 2026-11-27, Q
-   did not object; to be confirmed in the review of this change). Considered: building the page
+7. **A vote without a summary stops the update** (Q, 2026-11-27, in the review of this
+   change). Considered: building the page
    without a summary and listing the missing ones in the update's report, which would let a
    vote day's results go online sooner but could leave a vote without a summary unnoticed. The
    booklet is published about six weeks before a vote day, so the summaries can be written
