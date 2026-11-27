@@ -13,6 +13,11 @@
 </div>
 
 <style>
+  /* Below it, the room of a paragraph: on a vote's page the part that stays in the window
+     reaches 1rem above itself with the page's ground, which would cover the link. */
+  .summary {
+    margin-bottom: 1rem;
+  }
   .summary p {
     margin: 0.5rem 0 0;
   }
