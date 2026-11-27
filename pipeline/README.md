@@ -68,9 +68,9 @@ downloading them again; for development only, since the sources change.
 
 `stat-tab-cache/` keeps, gzipped and committed, the STAT-TAB answers of figures that no longer
 change: the census of 2000, every National Council election but the newest, and the population
-by age of every year but the newest the BFS gives (53 of the 61 queries in 2026). A normal update
+by age of every year but the newest the BFS gives (49 of the 62 answers in 2026). A normal update
 takes these from the cache, each only for the same query (`index.json` names the query and the
-checksum of each), and asks STAT-TAB for the rest, so it waits for about 8 queries instead of 61.
+checksum of each), and asks STAT-TAB for the rest, so it waits for 13 answers instead of 62.
 `sources.json` says of each STAT-TAB answer whether it came from the cache. The cache is written
 by the pipeline only: a file without its entry in `index.json`, or an entry without its file,
 stops the update.
