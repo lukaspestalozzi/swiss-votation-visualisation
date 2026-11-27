@@ -60,7 +60,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 5. The summaries: numbers, French spaces and 6730
 
-- [ ] 5.1 `summaries.py`: the checks of decision 9 (numbers) and 10 (French spaces), each error
+- [x] 5.1 `summaries.py`: the checks of decision 9 (numbers) and 10 (French spaces), each error
   naming the vote and the language. Tests in `test_summaries.py`: one per scenario of
   `vote-summaries` ("A decimal comma", "Digits parted by a space", "A colon without its space"),
   and the made-up summaries of `made_up.py` pass them. Verify: `uv run --directory pipeline
