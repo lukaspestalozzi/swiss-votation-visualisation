@@ -9,7 +9,7 @@
   how they were found, the answer to each request (status, content type), and the language of
   each document, read from its first page. Verify: the script prints 132 addresses, each
   answering 200 with `application/pdf`, and each document is in the language the file names.
-- [ ] 1.2 In the same file: the names the Federal Chancellery gives the document in French and
+- [x] 1.2 In the same file: the names the Federal Chancellery gives the document in French and
   Italian (design, decision 3), and what the Copyright Act, art. 5, says of the explanations,
   with the source of each. Verify: each statement cites its source; the link texts of the spec
   match, or the spec is corrected with Q before task 4.
