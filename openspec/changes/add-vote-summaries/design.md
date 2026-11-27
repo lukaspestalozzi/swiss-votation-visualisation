@@ -109,9 +109,14 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
 7. **A vote without a summary stops the update** (Q, 2026-11-27, in the review of this
    change). Considered: building the page
    without a summary and listing the missing ones in the update's report, which would let a
-   vote day's results go online sooner but could leave a vote without a summary unnoticed. The
-   booklet is published about six weeks before a vote day, so the summaries can be written
-   before its results exist. `pipeline/README.md`'s procedure of a vote day gains the step.
+   vote day's results go online sooner but could leave a vote without a summary unnoticed.
+   A summary of a vote the update does not write stops it too, so the summaries of a vote day
+   are written after it, once its results exist (Q, 2026-11-27, when applying the change found
+   that summaries written ahead would stop every update until the vote day). Considered:
+   grouping the summaries by vote day and accepting those of a coming day, which would let them
+   be written from the booklet ahead, at the cost of a second shape of the file and a rule that
+   depends on the day of the run. The procedure of a vote day (`pipeline/README.md`): run the
+   update, which stops naming the new votes without a summary; write them; run it again.
 
 8. **Q reviews a sample** (Q): at least 15 votes, chosen in `investigations/vote-summaries.md`
    to cover every year and kind and the most disputed votes (among them 5800, against mass

@@ -20,7 +20,7 @@
 
 ## 2. The pipeline: reading and checking the file of the summaries
 
-- [ ] 2.1 Made-up sources (`pipeline/tests/made_up.py`): a file of the summaries for the
+- [x] 2.1 Made-up sources (`pipeline/tests/made_up.py`): a file of the summaries for the
   made-up votes and days. A reader and its checks (a module of its own, called from
   `update.py`): every vote has a summary in three languages of 120 to 450 characters, plain
   text, no line break; no summary without a vote; every vote day has three addresses on
@@ -28,16 +28,16 @@
   "The length and form of a summary" and "Every vote has a summary, and every summary a vote".
   Verify: `uv run --directory pipeline --locked pytest` passes; each new test failed before
   its check existed.
-- [ ] 2.2 `download.py`: request each address (`HEAD`, `GET` where refused) within the retries;
+- [x] 2.2 `download.py`: request each address (`HEAD`, `GET` where refused) within the retries;
   stop naming the vote day, language and address on a status other than 200, a content type
   other than `application/pdf`, or another host, which is not requested. Tests with a fake
   opener for the scenarios of "The link to the explanations". Verify: `pytest` passes.
-- [ ] 2.3 `write.py`: `summary` and `explanations` after `note` for each vote; the record of the
+- [x] 2.3 `write.py`: `summary` and `explanations` after `note` for each vote; the record of the
   sources names `pipeline/vote-summaries.json` with its size and checksum. Tests: the scenarios
   of `vote-data` ("A vote's summary and explanations", "Three votes of one day share their
   explanations", "The record names the file of the summaries"), and the same bytes for the
   same inputs. Verify: `pytest`, `ruff format --check .`, `ruff check .` and `mypy` pass.
-- [ ] 2.4 `pipeline/README.md`: the file of the summaries, its rules, and the step in the
+- [x] 2.4 `pipeline/README.md`: the file of the summaries, its rules, and the step in the
   procedure of a new vote day (write the summaries from the booklet before the update).
   Verify: the procedure names the file and the step.
 
