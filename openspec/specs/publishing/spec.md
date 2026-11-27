@@ -26,7 +26,7 @@ checks. The addresses the specs name, such as `/votes/5960/`, are under this add
 ### Requirement: Nothing is published unless every check passed
 
 A push to `main` with a failing check SHALL publish nothing, and the published site SHALL stay as
-it was. A pull request SHALL publish nothing, whatever its checks, and gets no preview.
+it was. A pull request SHALL publish nothing, whatever its checks.
 
 #### Scenario: A push with a failing check
 
