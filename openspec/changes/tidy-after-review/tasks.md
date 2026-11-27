@@ -69,7 +69,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   spaces of every French summary, and 6730 without its cost in three languages; each summary still
   120 to 450 characters. Verify: a script run by hand on the file reports no summary that the new
   checks would refuse; Q reads the diff of 6730 and a sample of five French summaries.
-- [ ] 5.3 `pipeline/README.md`, "The summaries": how numbers and French spaces are written, and
+- [x] 5.3 `pipeline/README.md`, "The summaries": how numbers and French spaces are written, and
   that the update checks them. Verify: read.
 - [ ] 5.4 Run the update: `uv run --directory pipeline --locked python -m pipeline update`. Verify:
   it ends without an error, `votes.json` has no `validated`, and `git diff --stat
