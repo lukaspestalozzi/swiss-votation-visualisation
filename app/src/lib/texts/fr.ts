@@ -221,8 +221,7 @@ export const fr: Texts = {
   LIMITS_HEADING: 'Choisir des communes',
   THOUGHT_EXPERIMENT:
     "Une expérience de pensée: voici l'issue qu'aurait eue la votation si seules les communes " +
-    "choisies avaient voté. Elle ne montre pas comment chaque personne a voté et n'est pas une " +
-    'prévision.',
+    'choisies avaient voté.',
   ADD_LIMIT: 'Ajouter une caractéristique',
   CHOOSE: '–',
   REMOVE_LIMIT,

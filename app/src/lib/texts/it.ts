@@ -221,7 +221,7 @@ export const it: Texts = {
   LIMITS_HEADING: 'Scegliere i Comuni',
   THOUGHT_EXPERIMENT:
     'Un esperimento mentale: ecco come sarebbe andata la votazione se avessero votato soltanto ' +
-    'i Comuni scelti. Non mostra come hanno votato le singole persone e non è una previsione.',
+    'i Comuni scelti.',
   ADD_LIMIT: 'Aggiungere una caratteristica',
   CHOOSE: '–',
   REMOVE_LIMIT,

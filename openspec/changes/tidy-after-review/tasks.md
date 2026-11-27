@@ -25,7 +25,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 2. The sentence at the limits
 
-- [ ] 2.1 `THOUGHT_EXPERIMENT` keeps its first sentence in three languages. The browser test of
+- [x] 2.1 `THOUGHT_EXPERIMENT` keeps its first sentence in three languages. The browser test of
   the guide's link from the limits (`guide.spec.ts`) asserts the sentence and that "Es zeigt
   nicht" is absent. Verify: `guide.spec.ts` and `limits.spec.ts` pass.
 
