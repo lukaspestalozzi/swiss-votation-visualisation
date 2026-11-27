@@ -191,10 +191,11 @@ the one taken.
 
 ### Requirement: The vote's texts in the page's language
 
-Every page SHALL show a vote's title, reference and note in the page's language. They come from
-the list of votes (`vote-data`: the BFS's titles and the Chancellery's references and notes, on
-the list of 2026-01-01, written by the pipeline's `update`). A text missing in the page's
-language SHALL fail the build, naming the vote and the language.
+Every page SHALL show a vote's title, reference, note, summary and the address of
+its explanations in the page's language. They come from the list of votes (`vote-data`: the
+BFS's titles, the Chancellery's references and notes, and the summaries and addresses of
+`vote-summaries`, on the list of 2026-01-01, written by the pipeline's `update`). A text missing in the page's language SHALL
+fail the build, naming the vote and the language.
 
 #### Scenario: The annulled vote in French
 
@@ -221,6 +222,12 @@ language SHALL fail the build, naming the vote and the language.
 - **GIVEN** a list of votes whose vote 5960 has no Italian title
 - **WHEN** the site is built
 - **THEN** the build fails and names the vote 5960 and Italian
+
+#### Scenario: A summary of what a vote is about missing in one language
+
+- **GIVEN** a list of votes whose vote 5960 has no French summary of what it is about
+- **WHEN** the site is built
+- **THEN** the build fails and names the vote 5960 and French
 
 ### Requirement: Places keep their names
 
