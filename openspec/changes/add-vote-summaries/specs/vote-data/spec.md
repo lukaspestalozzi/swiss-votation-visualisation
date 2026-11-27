@@ -9,7 +9,8 @@ each vote it SHALL hold: the id the BFS gives it, the number the Federal Chancel
 the date, the kind, the title in German, French and Italian as the BFS gives it, whether the
 vote is validated, the result, the Chancellery's reference and note, the sums of the
 vote's entries, and its summary of what it is about and the address of its vote day's
-explanations, each in German, French and Italian, from the file of the summaries
+explanations with that document's language, each for German, French and Italian, from the file
+of the summaries
 (`vote-summaries`). A title that is missing or empty in one of the three languages SHALL stop
 the update.
 

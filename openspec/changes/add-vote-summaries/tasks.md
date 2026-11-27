@@ -4,10 +4,11 @@
 
 - [ ] 1.1 `investigations/vote-summaries.md` with a script in `investigations/vote-summaries/`
   (Python, standard library only): for each of the 44 vote days of `votes.json`, the address of
-  the Federal Council's explanations as a PDF on `https://www.admin.ch` in German, French and
-  Italian, how they were found, and the answer to a `HEAD` (status, content type). Verify: the
-  script prints 132 addresses, each answering 200 with `application/pdf`; if any is missing,
-  stop and ask Q (design, "Risks").
+  the Federal Council's explanations as a PDF in German, French and Italian, on
+  `https://www.admin.ch` from 2015-06-14 and Swissvotes' copies before (design, decision 14),
+  how they were found, the answer to each request (status, content type), and the language of
+  each document, read from its first page. Verify: the script prints 132 addresses, each
+  answering 200 with `application/pdf`, and each document is in the language the file names.
 - [ ] 1.2 In the same file: the names the Federal Chancellery gives the document in French and
   Italian (design, decision 3), and what the Copyright Act, art. 5, says of the explanations,
   with the source of each. Verify: each statement cites its source; the link texts of the spec
