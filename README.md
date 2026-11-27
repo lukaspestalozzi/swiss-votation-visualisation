@@ -20,9 +20,9 @@ and Italian:
   of the data in each language; places keep their one official name;
 - the start page asks the question the site answers and lists the national votes since 2013 by
   year and vote day, each a row with its title, kind, a bar of its official yes share and its
-  result, marked where the Federal Chancellery adds a note or the result is not validated yet.
-  A search by title, three buttons for the result and links to the years stay at the top of the
-  window;
+  result, marked where the Federal Chancellery adds a note. A search by title, four buttons for
+  the result (all, accepted, rejected, and the close results from 47% to 53% yes) and links to
+  the years stay at the top of the window;
 - each vote has its page (`/de/votes/<id>/`): its result as a row, the outcome, the majority of
   voters with a bar of the yes share and the yes and no votes, and the majority of cantons with
   a bar of one segment per canton and the turnout; below, a table of the 26 cantons with a bar

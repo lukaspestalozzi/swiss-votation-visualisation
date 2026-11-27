@@ -91,7 +91,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 7. Docs and the whole
 
-- [ ] 7.1 `CLAUDE.md` (the start page's buttons, the comparison's lists, the code map's lines of
+- [x] 7.1 `CLAUDE.md` (the start page's buttons, the comparison's lists, the code map's lines of
   the files changed), `README.md` where it names the mark, `docs/roadmap.md` (a row for this
   change, off-roadmap). Verify: `grep -rn "vorläufig\|validated" CLAUDE.md README.md` names no
   mark of the screen or field of the data.
