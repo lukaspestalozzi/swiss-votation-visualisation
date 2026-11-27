@@ -39,7 +39,8 @@ each canton, and is tested against seven official votes; the pipeline writes the
 counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
-after every push to `main` whose checks pass. Changes #1 to #16, 7a, 9a and 10a of `docs/roadmap.md`,
+after every push to `main` whose checks pass; a branch's preview is published, on Q's request, as
+one private Claude Artifact ("The preview"). Changes #1 to #17, 7a, 9a and 10a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
 `publish-site`, `add-result-map`, `add-characteristics`, `tighten-map-budget` (the look at
 performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`,
@@ -51,7 +52,8 @@ jobs by sector; the farms and the organic farmland) and `redesign-site` (#14: a 
 look for every page, and, added after its merge, the limits above the map in a narrow window and
 frame budgets that hold on a slower machine: at least nine frames in ten of a step within 16 ms
 and none over 50 ms), `reword-site-texts` (#15: the wording of eight texts in three
-languages) and `clarify-phone-window` (#16: what the verification of #14 and #15 found), are
+languages) `clarify-phone-window` (#16: what the verification of #14 and #15 found) and
+`add-pull-request-site` (#17: the preview of a branch as a Claude Artifact), are
 archived, and
 `openspec/specs/` holds their specs.
 Twelve investigations are done: `investigations/data-sources.md`, `investigations/map-data.md`,
@@ -61,8 +63,8 @@ Twelve investigations are done: `investigations/data-sources.md`, `investigation
 `investigations/vote-comparison.md`, `investigations/more-characteristics.md` and
 `investigations/redesign.md`.
 v1, changes #1 to #10a, is complete, and #11, `add-share-link`, #12, `add-vote-comparison`,
-#13, `add-more-characteristics`, #14, `redesign-site`, #15, `reword-site-texts`, and #16,
-`clarify-phone-window`, the changes after v1, are archived. No change is in flight.
+#13, `add-more-characteristics`, #14, `redesign-site`, #15, `reword-site-texts`, #16,
+`clarify-phone-window`, and #17, `add-pull-request-site`, the changes after v1, are archived. No change is in flight.
 `docs/roadmap.md`
 names income per municipality and a limit on categories as open.
 `README.md` is the human-facing overview.

@@ -10,7 +10,7 @@
   write the lists of files to publish, each of at most 250. Verify: it runs; the pack served under
   a deep path and entered through the launcher's links shows the start page, a vote's map, a limit
   and "Mit Ihrer Auswahl" without a failed request but the font's preload.
-- [ ] 1.3 Publish it to the preview Artifact, https://claude.ai/artifact/4orzLS5WyndrhghV2vFWnQ,
+- [x] 1.3 Publish it to the preview Artifact, https://claude.ai/artifact/4orzLS5WyndrhghV2vFWnQ,
   removing the files of the earlier preview it no longer has. Verify: the Artifact's file list
   is the pack's; Q opens it on the phone.
 
