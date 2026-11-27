@@ -83,7 +83,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   French text with made-up figures and finds none of these signs without its space (except the
   cantonal votes' " : "). Verify: the test fails before the edit and passes after; `pnpm run
   test` passes.
-- [ ] 6.2 The French assertions of the unit and browser tests take the spaces (`languages.spec.ts`,
+- [x] 6.2 The French assertions of the unit and browser tests take the spaces (`languages.spec.ts`,
   `guide.spec.ts`, `compare.spec.ts`, `limits.spec.ts`, `share-link.spec.ts`, `vote-page.spec.ts`,
   `small-screens.spec.ts` and the unit tests that compare French texts). Verify: `pnpm run
   test:e2e` passes in full; at 360 pixels no French page is wider than its window
