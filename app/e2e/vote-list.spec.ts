@@ -398,12 +398,15 @@ test('the fourth button in French and Italian', async ({ page }) => {
 test("the line between two rows ends with the vote day's line", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('de/');
+  // The second row of the first vote day, and that day.
   const ends = await page
     .locator('.day')
     .first()
-    .evaluate((day) => {
-      const second = day.querySelectorAll('.vote-row')[1];
-      if (second === undefined) throw new Error('the first vote day has fewer than two rows');
+    .locator('.vote-row')
+    .nth(1)
+    .evaluate((second) => {
+      const day = second.closest('.day');
+      if (day === null) throw new Error('a row outside a vote day');
       // The line is the row's ::before where it has one, else its top border.
       const line = getComputedStyle(second, '::before');
       const drawn = line.content !== 'none';
