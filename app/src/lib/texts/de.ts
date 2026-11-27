@@ -118,7 +118,7 @@ export const de: Texts = {
   LEGEND_TIE: 'Gleich viele Ja wie Nein',
   LEGEND_WITHOUT_RESULT: 'Kein eigenes Ergebnis',
   WITHOUT_RESULT:
-    'Kein eigenes Ergebnis: Seine Stimmen sind mit denen einer anderen Gemeinde gezählt.',
+    'Kein eigenes Ergebnis: Ihre Stimmen sind mit denen einer anderen Gemeinde gezählt.',
   MAP_HEADING: 'Karte der Gemeinden',
   mapSource: (date, lakesSet) =>
     `Kartengrundlage: © BFS, Gemeinden und Kantone am ${date}, Seen: ThemaKart ${String(lakesSet)}`,
@@ -210,6 +210,8 @@ export const de: Texts = {
     'Die Gemeinden werden nach den Zahlen der ersten Abstimmung ausgewählt; in beiden ' +
     'Abstimmungen zählen dieselben Gemeinden.',
   COMPARE_LINK: 'Mit einer anderen Abstimmung vergleichen',
+  COMPARE_PROMPT:
+    'Wählen Sie zwei Abstimmungen. Die Gemeinden, die Sie danach auswählen, zählen in beiden.',
 
   // The limits (spec limits).
   populationDate: (year) => `Ende ${String(year)}`,

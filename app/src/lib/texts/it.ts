@@ -214,6 +214,7 @@ export const it: Texts = {
     'I Comuni sono scelti secondo le cifre della prima votazione; nelle due votazioni ' +
     'contano gli stessi Comuni.',
   COMPARE_LINK: "Confrontare con un'altra votazione",
+  COMPARE_PROMPT: 'Scelga due votazioni. I Comuni che sceglierà in seguito contano in entrambe.',
 
   // The limits (spec limits).
   populationDate: (year) => `fine ${String(year)}`,

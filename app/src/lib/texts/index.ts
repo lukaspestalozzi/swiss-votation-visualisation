@@ -208,6 +208,8 @@ export interface Texts {
   readonly VOTE_FAILED: string;
   readonly SAME_MUNICIPALITIES: string;
   readonly COMPARE_LINK: string;
+  // What to do on the comparison before a vote is chosen.
+  readonly COMPARE_PROMPT: string;
 
   // The limits (spec limits).
   readonly populationDate: (year: number) => string;

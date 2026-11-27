@@ -264,6 +264,7 @@
   <label>
     {t.SECOND_VOTE}
     <select
+      disabled={first === null}
       value={second === null ? '' : String(second)}
       onchange={(event) => {
         second = voteOf(event.currentTarget.value);
@@ -276,6 +277,9 @@
     </select>
   </label>
 </div>
+{#if first === null}
+  <p>{t.COMPARE_PROMPT}</p>
+{/if}
 {#if unusable.length > 0}
   <p>{t.unusableParts(unusable)}</p>
 {/if}
@@ -309,13 +313,20 @@
 <ComparisonBar {outcomes} results={observed} />
 
 <style>
+  /* Each list below its label and as wide as the page's column, the second below the first (spec
+     vote-comparison, "The comparison page"); a vote's title of some 2,000 pixels shows its
+     beginning. */
+  .choices {
+    display: grid;
+    gap: 1rem;
+  }
   .choices label {
     display: block;
   }
-  /* A list is as wide as its longest option, a vote's title of some 2,000 pixels: it takes at most
-     the page's width, and shows the chosen vote's beginning. */
   .choices select {
-    max-width: 100%;
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
   }
   /* On a touch screen, a list a finger can hit, as "Merkmal hinzufügen" is (spec small-screens). */
   @media (pointer: coarse) {
