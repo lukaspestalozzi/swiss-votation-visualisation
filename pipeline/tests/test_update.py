@@ -705,3 +705,13 @@ def test_a_changed_query_is_asked_anew(tmp_path: Path) -> None:
 def test_refresh_and_reuse_downloads_together_are_refused(tmp_path: Path) -> None:
     with pytest.raises(SourceError, match=r"--refresh .* --reuse-downloads .* not both"):
         update(project(tmp_path), tmp_path / "data", Sources(), TODAY, True, refresh=True)
+
+
+def test_the_report_names_the_answers_from_the_cache(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    assert main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data) == 0
+    assert "STAT-TAB answers from the cache: 0 of " in capsys.readouterr().out
+    assert main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data) == 0
+    assert f"STAT-TAB answers from the cache: {kept(directory)} of " in capsys.readouterr().out

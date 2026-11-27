@@ -32,13 +32,13 @@ Each task runs its tests one at a time, as it writes them, and reports "Ran <tes
 - [x] 3.1 Run `update --refresh` once: it fills `pipeline/stat-tab-cache/` and writes the data
   files. Verify: `git status` shows the cache (about 60 files, about 5.5 MB) and only
   `sources.json` changed among the data files, its new flags all `false`.
-- [ ] 3.2 Run `update` once more. Verify: it ends in a few minutes, the report or a log line
+- [x] 3.2 Run `update` once more. Verify: it ends in a few minutes, the report or a log line
   names the answers taken from the cache (49), `git status` shows `sources.json` changed only in
   those flags and nothing else, and the app's unit tests pass.
 
 ## 4. Docs and the whole
 
-- [ ] 4.1 `pipeline/README.md` (the cache, when to refresh, `--refresh`), `CLAUDE.md` (the code
+- [x] 4.1 `pipeline/README.md` (the cache, when to refresh, `--refresh`), `CLAUDE.md` (the code
   map, the update's time in "Build and verify", `pipeline/stat-tab-cache/` in "Where things
   are"), `docs/roadmap.md` (a row, off-roadmap). Verify: read.
 - [ ] 4.2 `./scripts/verify-local.sh` passes in full, 11 steps. Verify: its last line.

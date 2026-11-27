@@ -85,6 +85,9 @@ class Report:
     added: list[str]
     newly_validated: list[str]
     left_out: list[str]
+    # STAT-TAB's answers taken from the cache, and all its answers.
+    cached: int = 0
+    stat_tab: int = 0
 
 
 def _list(path: Path) -> list[dict[str, Any]]:
@@ -353,6 +356,8 @@ def update(
             and not previous[vote.vote.id][1]
         ],
         left_out=[_named(vote.id, vote.date) for day in days for vote in day.left_out],
+        cached=sum(source.cached is True for source in downloads.sources),
+        stat_tab=sum(source.cached is not None for source in downloads.sources),
     )
 
 

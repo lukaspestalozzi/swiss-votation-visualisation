@@ -287,7 +287,7 @@ the root.
 | `pnpm run build` | The static site, written to `app/build/swiss-votation-visualisation`. |
 | `pnpm run test:e2e` | The browser tests (Playwright) against `app/build`, under the site's path, one at a time; build first. |
 | `node scripts/preview.mjs` | The preview of the branch, packed for its Claude Artifact ("The preview"). |
-| `uv run --directory pipeline --locked python -m pipeline update` | Download the sources, check them and write the data files (`pipeline/README.md`). About 190 MB and a quarter of an hour to 25 minutes, most of it waiting for STAT-TAB, which answers 50 queries in 15 seconds at most and some days one in half a minute. |
+| `uv run --directory pipeline --locked python -m pipeline update` | Download the sources, check them and write the data files (`pipeline/README.md`). About 190 MB. STAT-TAB's answers of final figures come from `pipeline/stat-tab-cache/`, so it asks 13 of 62 answers: 10.5 minutes on 2026-11-27, when STAT-TAB answered one query in about 25 seconds. With `--refresh`, which asks all 62 and writes the cache anew, 26 minutes that evening and up to 40 on a slow day; STAT-TAB answers 50 queries in 15 seconds at most on a good one. |
 | `uv run --directory pipeline --locked ruff format --check .` | The pipeline's formatting; `ruff format .` formats. |
 | `uv run --directory pipeline --locked ruff check .` | The pipeline's lint. |
 | `uv run --directory pipeline --locked mypy` | The pipeline's static analysis, strict. |
