@@ -22,6 +22,7 @@ Python 3.13 with polars, run by [uv](https://docs.astral.sh/uv/), which installs
 | BFS register of municipalities, lists and correspondences | `.../api/communes/snapshot?date=<dd-mm-yyyy>` and `.../api/communes/correspondances?startPeriod=<dd-mm-yyyy>&endPeriod=<dd-mm-yyyy>` | The list each STAT-TAB table gives (`LIST_DATES` in `download.py`: 2000-12-05 for the census, 2023-01-01 for the elections, 2024-01-01 for the jobs, 2025-04-06 for the population, the place of birth and the farms), and what each of its municipalities is part of on the reference date. |
 | swisstopo, swissBOUNDARIES3D of 2026-01 | `https://data.geo.admin.ch/ch.swisstopo.swissboundaries3d/swissboundaries3d_2026-01/swissboundaries3d_2026-01_2056_5728.shp.zip` | The area of each municipality, its part in a lake included. |
 | The Federal Council's circulars to the cantons on the National Council elections | Federal Gazette; their days are `ELECTION_DAYS` in `download.py` | The day of each election, which decides the election that applies to a vote. |
+| `vote-summaries.json`, written by hand | This directory | A summary of each vote in German, French and Italian, and the address of each vote day's explanations of the Federal Council (the voting booklet), for `votes.json`. Each address is asked, not read: it must answer with a PDF. |
 
 `investigations/data-sources.md` describes the sources and what was found in them,
 `investigations/map-data.md` those of the map, `investigations/characteristics.md` those of the
@@ -35,7 +36,10 @@ After a vote day, when the BFS's file has the complete results (usually the even
 day), and again when the Federal Chancellery has validated them (some weeks later):
 
 1. Start a branch from an updated `main`.
-2. From the repository's root, run:
+2. For a new vote day, once its results are complete: add its summaries and the addresses of
+   its explanations to `vote-summaries.json` (see "The summaries" below). Run the update first
+   if you want it to name the new votes: it stops on each vote without a summary.
+3. From the repository's root, run:
 
    ```sh
    uv run --directory pipeline --locked python -m pipeline update
@@ -48,17 +52,35 @@ day), and again when the Federal Chancellery has validated them (some weeks late
    prints the reference date of the list of municipalities, the number of votes and how many
    are validated, the votes added, the votes validated since the last run, and the votes left
    out because their result is not complete yet.
-3. Review the diff of `app/static/data/`: the new vote files, the changed lines of
+4. Review the diff of `app/static/data/`: the new vote files, the changed lines of
    `votes.json`, and `sources.json`. `map.json` changes only with a new list of
    municipalities. `characteristics.json` gains lines when the BFS publishes a new year of a
    table or a new election (the population in August or September, the farms in spring), and
    changes lines when it revises the figures of a year.
-4. Run `./scripts/verify-local.sh`: among its steps, a test runs the calculation over every
+5. Run `./scripts/verify-local.sh`: among its steps, a test runs the calculation over every
    vote of the data files.
-5. Commit the data files and open a pull request.
+6. Commit the data files and open a pull request.
 
 `--reuse-downloads` uses the files in `pipeline/downloads/` where they are there instead of
 downloading them again; for development only, since the sources change.
+
+## The summaries
+
+`vote-summaries.json` holds, under `votes`, each vote's summary by its id in `de`, `fr` and `it`,
+and under `days`, for each vote day, the address of the Federal Council's explanations for each
+of the three languages with the language the document is in (spec `vote-summaries`; design of
+`add-vote-summaries`). The summaries are written after the vote day, once its results exist
+(decision 7), and reviewed in the pull request like the data files.
+
+- **A summary** says in two or three sentences what the proposal changes, from the explanations'
+  "In Kürze" ("En bref", "In breve") in the same language: not the result, not an argument, not
+  a recommendation or a party's position, and not the cost or the funding where these were the
+  campaign's arguments. 120 to 450 characters, plain text: no line break, markup or link.
+- **The address** of a vote day's explanations is the PDF that www.admin.ch's page of the day
+  links in each language (`https://www.admin.ch/<lang>/volksabstimmung-vom-<d>-<month>-<yyyy>`
+  and its French and Italian forms); `investigations/vote-summaries/find_explanations.py` finds
+  and checks them. Before 2015-06-14, Swissvotes' copies; where admin.ch has none in a language,
+  the one its page links, with that document's language (2016-02-28: German for French).
 
 ## When the update stops
 
@@ -119,6 +141,15 @@ the file, the vote and, where there is one, the entry.
 - **A vote of the data files is missing from the sources.** The update never removes a vote;
   a vote that the sources no longer give means an incomplete answer, usually the Federal
   Chancellery's. Run the update again later, and look at `pipeline/downloads/chancellery.json`.
+- **A vote without a summary, or a summary without a vote.** Write the new votes' summaries
+  (see "The summaries"); remove a summary whose vote the sources no longer give only after
+  looking why. A summary too short or too long, or with a line break, markup or a link, is named
+  with its vote and language.
+- **The explanations of a vote day do not answer.** The message names the day, the language,
+  the address and the answer. www.admin.ch moves its files now and then: find the new address
+  with `investigations/vote-summaries/find_explanations.py` and change it in
+  `vote-summaries.json`. A 403 is tried again by the update; one that persists is a block, not a
+  missing file.
 - **A value the reader does not understand** (a missing count, a text where a number belongs,
   an unknown kind of vote, an unknown municipality). Look at the source file in
   `pipeline/downloads/`. The source has changed or is wrong; the reader is not to be loosened
@@ -131,16 +162,18 @@ the file, the vote and, where there is one, the entry.
 | `pyproject.toml`, `uv.lock`, `.python-version` | The project, its dependencies and the pinned versions; the settings of ruff, mypy and pytest. |
 | `known-differences.json` | The differences between the entries and the official result that are written down. |
 | `canton-changes.json` | The municipalities that changed canton, with their earlier canton and their last day there. |
+| `vote-summaries.json` | The summaries of the votes and the addresses of the explanations, written by hand ("The summaries"). |
 | `src/pipeline/__init__.py` | The package; it holds only its description. |
 | `src/pipeline/__main__.py` | The command line: `update`. |
 | `src/pipeline/update.py` | The steps of a run: download, read, check, write; and the two lists above. |
-| `src/pipeline/download.py` | The addresses of the sources, the Federal Chancellery's and STAT-TAB's queries, the lists the STAT-TAB tables give, the election days, and the download. |
+| `src/pipeline/download.py` | The addresses of the sources, the Federal Chancellery's and STAT-TAB's queries, the lists the STAT-TAB tables give, the election days, the download, and the probe of an address of the explanations. |
 | `src/pipeline/counts.py` | The one function every count passes: a whole number from zero, or the run stops. |
 | `src/pipeline/feed.py` | The reader of the BFS vote-day files, with its checks. |
 | `src/pipeline/chancellery.py` | The reader of the Federal Chancellery's answer. |
 | `src/pipeline/register.py` | The reader of the BFS register. |
 | `src/pipeline/boundaries.py` | The reader of the map's sources: the register's boundaries, checked against the list, and the ThemaKart set's lakes. |
 | `src/pipeline/characteristics.py` | The reader of the characteristics' sources: STAT-TAB's answers in json-stat2, the register's correspondences and swisstopo's areas, with their checks, the counts a table withholds, and the adding up onto the list. |
+| `src/pipeline/summaries.py` | The reader of `vote-summaries.json`, with its checks: the form of each summary and address, a summary for every vote and none more. |
 | `src/pipeline/checks.py` | The checks between the sources: entries against the list, the sums, the official result. |
 | `src/pipeline/write.py` | The data files. |
 | `tests/` | The unit tests (pytest); `made_up.py` builds made-up sources in the shape of the real ones. |

@@ -1,3 +1,4 @@
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -168,8 +169,17 @@ def test_a_new_vote_day_is_added_and_named(
     data, directory = tmp_path / "data", project(tmp_path)
     earlier = made_up.chancellery()
     earlier["results"]["bindings"].remove(made_up.official_of(earlier, 6850))
+    # The summaries of a vote day are written once its results exist (design, decision 7).
+    summaries = made_up.summaries()
+    del summaries["votes"]["6850"], summaries["days"]["2026-03-08"]
+    (directory / "vote-summaries.json").write_text(json.dumps(summaries), encoding="utf-8")
     update(directory, data, Sources(earlier), TODAY)
     assert not (data / "votes" / "6850.json").exists()
+    assert main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data) == 1
+    assert "no summary of the votes 6850 (2026-03-08)" in capsys.readouterr().err
+    (directory / "vote-summaries.json").write_text(
+        json.dumps(made_up.summaries()), encoding="utf-8"
+    )
     assert main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data) == 0
     assert "added: 6850 (2026-03-08)\n" in capsys.readouterr().out
     assert (data / "votes" / "6850.json").exists()
@@ -579,4 +589,40 @@ def test_farms_of_other_years_than_the_cattle_stop_the_update(
     status = main(["update"], fetch=sources, today=TODAY, project=directory, data=data)
     assert status == 1
     assert "farms.json: no figures of the years [2025]" in capsys.readouterr().err
+    assert snapshot(data) == before
+
+
+def test_the_record_names_the_file_of_the_summaries(
+    tmp_path: Path, no_explanations_asked: list[str]
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    records = json.loads((data / "sources.json").read_text(encoding="utf-8"))["sources"]
+    named = [r for r in records if r["address"] == "pipeline/vote-summaries.json"]
+    content = (directory / "vote-summaries.json").read_bytes()
+    assert [(r["bytes"], r["sha256"]) for r in named] == [
+        (len(content), hashlib.sha256(content).hexdigest())
+    ]
+    # The explanations are asked, not read: none of them is a source.
+    assert len(no_explanations_asked) == 6
+    assert not any("sd-web" in r["address"] for r in records)
+    votes = json.loads((data / "votes.json").read_text(encoding="utf-8"))["votes"]
+    assert votes[0]["summary"]["it"] == made_up.summary_text(5960, "it")
+
+
+def test_an_explanation_that_no_longer_answers_stops_the_update(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    before = snapshot(data)
+    address = made_up.explanation_address("2016-02-28", "it")
+
+    def probe(asked: str) -> str | None:
+        return "answers with status 404" if asked == address else None
+
+    monkeypatch.setattr("pipeline.download.probe_pdf", probe)
+    status = main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data)
+    assert status == 1
+    assert f"2016-02-28, Italian: {address} answers with status 404" in capsys.readouterr().err
     assert snapshot(data) == before
