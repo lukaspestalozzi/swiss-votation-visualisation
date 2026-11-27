@@ -8,6 +8,7 @@ import {
   addLimit,
   barDrawn,
   cantonsBarOf,
+  explanationsLink,
   keptButton,
   limitList,
   listEntries,
@@ -148,6 +149,8 @@ test.describe('on a phone', () => {
       }),
       // The switch by its label, which a tap on its text toggles too.
       switch: page.locator('label').filter({ has: page.getByRole('checkbox') }),
+      // The link below the summary (spec vote-summaries).
+      'Erläuterungen des Bundesrates (PDF)': explanationsLink(page),
     };
     const sizes = await Promise.all(
       Object.entries(controls).map(async ([name, control]) => {

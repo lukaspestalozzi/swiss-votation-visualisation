@@ -8,11 +8,14 @@ import {
   addButton,
   addLimit,
   barDrawn,
+  explanationsLink,
   figuresOf,
   languageSwitch,
   limitList,
   outcomeOf,
   pageHead,
+  summaryOf,
+  summaryText,
   verdictFiguresOf,
   verdictWordsOf,
   votersBarOf,
@@ -680,4 +683,31 @@ test.describe(() => {
     expect(frames.filter((f) => f.type === 'change').length).toBeGreaterThanOrEqual(3);
     expect(frames.filter((f) => f.work > 50)).toEqual([]);
   });
+});
+
+// Spec vote-summaries, "The summary on the comparison".
+test("Each vote's summary below its head and above its results", async ({ page }) => {
+  await page.goto('de/compare/#votes=5960,5970');
+  for (const [id, start] of [
+    [5960, /^Die Initiative will in der Verfassung festhalten/],
+    [5970, /^Die Initiative will/],
+  ] as const) {
+    const vote = page.locator(`[data-vote="${String(id)}"]`);
+    await expect(summaryText(vote)).toHaveText(start);
+    await expect(explanationsLink(vote)).toHaveText('Erläuterungen des Bundesrates (PDF)');
+    await expect(explanationsLink(vote)).toHaveAttribute(
+      'href',
+      'https://www.admin.ch/dam/de/sd-web/kOH6nJzClyOD/Erlaeuterungen_DE_bf.pdf',
+    );
+    const summary = await summaryOf(vote).boundingBox();
+    const results = await vote.getByRole('heading', { name: 'Echtes Ergebnis' }).boundingBox();
+    expect(summary && results).toBeTruthy();
+    if (summary && results) expect(results.y).toBeGreaterThanOrEqual(summary.y + summary.height);
+  }
+});
+
+test('No summary without a vote chosen', async ({ page }) => {
+  await page.goto('de/compare/');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(summaryOf(page)).toHaveCount(0);
 });

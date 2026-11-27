@@ -27,7 +27,7 @@
 <section class="vote" data-vote={vote.id}>
   <h2>{vote.title}</h2>
   <p class="secondary">{vote.dateAndKind}</p>
-  <div class="summary"><VoteSummary summary={vote.summary} /></div>
+  <div class="about"><VoteSummary summary={vote.summary} /></div>
   {#if results === 'loading'}
     <p>{t.VOTE_LOADING}</p>
   {:else if results === 'failed'}
@@ -72,7 +72,7 @@
   .count {
     margin: 0.875rem 0 0;
   }
-  .summary {
+  .about {
     margin-bottom: 1rem;
   }
 </style>
