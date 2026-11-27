@@ -280,7 +280,7 @@ export const fr: Texts = {
       heading: 'Ce que la sélection ne montre pas',
       paragraphs: [
         'La sélection garde ou écarte des communes entières avec toutes leurs voix. Une ' +
-          'commune comptant beaucoup de personnes de plus de 65 ans compte avec toutes ses ' +
+          'commune où vivent beaucoup de personnes de plus de 65 ans compte avec toutes ses ' +
           'voix, y compris celles des plus jeunes.',
         'Elle ne montre donc pas comment les personnes ayant une caractéristique ont voté, ni ' +
           "comment une autre votation se terminerait. La sélection n'est pas une prévision.",
