@@ -18,6 +18,8 @@ import {
   searchField,
   selectionResult,
   votersBarOf,
+  yearHeadings,
+  yearLinks,
   type Language,
 } from './parts.ts';
 
@@ -181,6 +183,30 @@ test.describe('on a phone', () => {
     // A tap on a button presses it.
     await keptButton(page, 'Angenommen').tap();
     await expect(keptButton(page, 'Angenommen')).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  // Spec vote-list, "Every year in a phone's window".
+  test('every year of the start page lies within the window, and "2013" leads to its heading', async ({
+    page,
+  }) => {
+    await page.goto('fr/');
+    const width = page.viewportSize()?.width ?? 0;
+    const links = yearLinks(page);
+    await expect(links).toHaveCount(14);
+    const boxes = await links.evaluateAll((all) =>
+      all.map((link) => {
+        const box = link.getBoundingClientRect();
+        return [link.textContent, box.left >= 0 && box.right <= window.innerWidth] as const;
+      }),
+    );
+    expect(width).toBeGreaterThan(0);
+    expect(boxes.filter(([, within]) => !within)).toEqual([]);
+    await links.getByText('2013', { exact: true }).tap();
+    const heading = yearHeadings(page).getByText('2013', { exact: true });
+    const finder = await page.locator('.finder').boundingBox();
+    const box = await heading.boundingBox();
+    expect(finder && box).toBeTruthy();
+    if (finder && box) expect(box.y).toBeGreaterThanOrEqual(finder.y + finder.height - 1);
   });
 
   test('the list of characteristics: each entry and "Schliessen" at least 44 × 44 pixels', async ({
