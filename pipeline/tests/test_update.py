@@ -715,3 +715,48 @@ def test_the_report_names_the_answers_from_the_cache(
     assert "STAT-TAB answers from the cache: 0 of " in capsys.readouterr().out
     assert main(["update"], fetch=Sources(), today=TODAY, project=directory, data=data) == 0
     assert f"STAT-TAB answers from the cache: {kept(directory)} of " in capsys.readouterr().out
+
+
+def test_a_year_missing_from_the_cache_is_kept_once_asked(tmp_path: Path) -> None:
+    # Spec characteristics, "A year that becomes final": the cache lacks a final year, as when
+    # the BFS's newest year moves on; the next run asks it and keeps it, and keeps not the newest.
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    cache = directory / "stat-tab-cache"
+    index = cache / "index.json"
+    entries = json.loads(index.read_text(encoding="utf-8"))
+    newest = max(made_up.POPULATION_YEARS)
+    year = newest - 1
+    for name in [n for n in entries if n.startswith(f"population_ages_{year}_")]:
+        (cache / f"{name}.gz").unlink()
+        del entries[name]
+    index.write_text(json.dumps(entries), encoding="utf-8")
+    update(directory, data, Sources(), TODAY)
+    kept_now = json.loads(index.read_text(encoding="utf-8"))
+    assert sum(n.startswith(f"population_ages_{year}_") for n in kept_now) == 3
+    assert not any(n.startswith(f"population_ages_{newest}_") for n in kept_now)
+
+
+def test_a_refresh_keeps_a_revised_answer(tmp_path: Path) -> None:
+    # Spec characteristics, "A revised past year": the BFS gives another answer to a final
+    # query; a normal run keeps the cached one, a refresh takes the new one into the cache.
+    data, directory = tmp_path / "data", project(tmp_path)
+    update(directory, data, Sources(), TODAY)
+    index = directory / "stat-tab-cache" / "index.json"
+    name = min(
+        n for n in json.loads(index.read_text(encoding="utf-8")) if n.startswith("election_")
+    )
+    year = int(name.removeprefix("election_").removesuffix(".json"))
+    revised = Sources()
+    request = download.election(year)
+    assert request.body is not None
+    former = revised.queries[(request.address, request.body)]
+    revised.queries[(request.address, request.body)] = json.dumps(
+        json.loads(former), indent=1
+    ).encode()
+    before = json.loads(index.read_text(encoding="utf-8"))[name]["sha256"]
+    update(directory, data, revised, TODAY)
+    assert json.loads(index.read_text(encoding="utf-8"))[name]["sha256"] == before
+    update(directory, data, revised, TODAY, refresh=True)
+    after = json.loads(index.read_text(encoding="utf-8"))[name]["sha256"]
+    assert after == hashlib.sha256(revised.queries[(request.address, request.body)]).hexdigest()
