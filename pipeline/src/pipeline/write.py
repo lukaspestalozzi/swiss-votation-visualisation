@@ -3,7 +3,8 @@
 In the directory given (the app's `static/data/`), as UTF-8 JSON, the same bytes for the same
 sources: no time of the run is written.
 
-- `votes.json`: the list of votes, one vote per line.
+- `votes.json`: the list of votes, one vote per line, each with its summary and the addresses
+  of its vote day's explanations (design of add-vote-summaries, decision 2).
 - `votes/<id>.json`: the entries of one vote, one canton per line.
 - `municipalities.json`: the list of municipalities and the Swiss abroad, one canton per line.
 - `map.json`: the map's shapes, one municipality, canton or lake per line.
@@ -30,6 +31,7 @@ from pipeline.characteristics import CharacteristicsData
 from pipeline.download import ELECTION_DAYS
 from pipeline.feed import CANTONS, Vote
 from pipeline.register import Municipality
+from pipeline.summaries import Summaries
 
 
 @dataclass(frozen=True)
@@ -66,6 +68,7 @@ class Data:
     sources: list[Source]
     map: MapData
     characteristics: CharacteristicsData
+    summaries: Summaries
 
 
 def _dumps(value: Any) -> str:
@@ -96,8 +99,9 @@ def _result(data: VoteData) -> dict[str, Any]:
     }
 
 
-def _listing(data: VoteData) -> dict[str, Any]:
+def _listing(data: VoteData, summaries: Summaries) -> dict[str, Any]:
     vote, official, entries = data.vote, data.official, data.entries
+    explanations = summaries.days[vote.date]
     return {
         "id": vote.id,
         "number": official.number,
@@ -108,6 +112,11 @@ def _listing(data: VoteData) -> dict[str, Any]:
         "result": _result(data),
         "reference": official.reference if official.validated else None,
         "note": official.note if official.validated else None,
+        "summary": summaries.votes[vote.id],
+        "explanations": {
+            language: {"address": found.address, "language": found.language}
+            for language, found in explanations.items()
+        },
         "sums": {
             "registered": int(entries["registered"].sum()),
             "cast": int(entries["cast"].sum()),
@@ -120,7 +129,7 @@ def _listing(data: VoteData) -> dict[str, Any]:
 
 def _votes_json(data: Data) -> str:
     votes = sorted(data.votes, key=lambda vote: (vote.vote.date, vote.vote.id))
-    lines = ",\n".join(f"    {_dumps(_listing(vote))}" for vote in votes)
+    lines = ",\n".join(f"    {_dumps(_listing(vote, data.summaries))}" for vote in votes)
     return (
         f'{{\n  "referenceDate": {_dumps(data.reference_date)},\n  "votes": [\n{lines}\n  ]\n}}\n'
     )

@@ -167,5 +167,9 @@ their length in characters:
 
 For 6650 the booklet's "In Kürze" also names the cost (about 4.1 billion francs in the first
 year) and that the initiative leaves its funding open; the samples leave both out, as they
-were the opponents' main arguments (asked of Q). A first French draft of 6650 said the
+were the opponents' main arguments. A first French draft of 6650 said the
 maximum pension went "de 2450 à 31 850 francs"; it rises by 2450 to 31 850, corrected.
+
+**Q's answer, 2026-11-27:** the three samples, their rules and tone are approved; a summary
+keeps to what the proposal changes and leaves out costs and funding where they were the
+campaign's arguments, even when the booklet's "In Kürze" names them.

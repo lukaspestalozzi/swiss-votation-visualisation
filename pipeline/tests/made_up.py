@@ -1091,3 +1091,41 @@ def swissboundaries(rows: list[list[Any]] | None = None) -> bytes:
         (row, [_square(2_600_000 + 1_000 * i, 1_200_000, 1_000)]) for i, row in enumerate(given)
     ]
     return _zip(_shapefile("swissBOUNDARIES3D_1_5_TLM_HOHEITSGEBIET", AREA_FIELDS, shapes))
+
+
+# The file of the summaries (pipeline/vote-summaries.json) for the votes the made-up sources
+# write: 5960 and 5990 of 2016-02-28 and 6850 of 2026-03-08.
+SUMMARY_VOTES = {5960: "2016-02-28", 5990: "2016-02-28", 6850: "2026-03-08"}
+
+
+def summary_text(vote_id: int, language: str) -> str:
+    """A summary of 150 characters, plain text."""
+    start = f"Made-up summary of vote {vote_id} in {language}."
+    return (start + " It says what the proposal changes" * 5)[:149] + "."
+
+
+def explanation_address(date: str, language: str) -> str:
+    return f"https://www.admin.ch/dam/{language}/sd-web/made-up/{date}.pdf"
+
+
+def summaries() -> dict[str, Any]:
+    return {
+        "days": {
+            date: {
+                "explanations": {
+                    language: {
+                        "address": explanation_address(date, language),
+                        "language": language,
+                    }
+                    for language in ("de", "fr", "it")
+                }
+            }
+            for date in sorted(set(SUMMARY_VOTES.values()))
+        },
+        "votes": {
+            str(vote_id): {
+                language: summary_text(vote_id, language) for language in ("de", "fr", "it")
+            }
+            for vote_id in SUMMARY_VOTES
+        },
+    }
