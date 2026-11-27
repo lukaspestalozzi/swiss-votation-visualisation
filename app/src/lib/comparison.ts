@@ -25,7 +25,7 @@ export interface Comparable {
   // Its summary and the link to its day's explanations, as its page shows them.
   readonly summary: Summary;
   readonly majorities: Majorities;
-  // The notes its page has below its result: a known difference, a provisional result.
+  // The notes its page has below its result: a known difference.
   readonly notes: readonly string[];
 }
 
@@ -54,7 +54,7 @@ export function comparableVotes(
           dateAndKind: `${page.date} · ${page.kind}`,
           summary: page.summary,
           majorities,
-          notes: [...page.differences, ...(page.provisional === null ? [] : [page.provisional])],
+          notes: page.differences,
         },
       ];
     });

@@ -63,7 +63,6 @@ export const it: Texts = {
   listShare: (yesShare) => `${yesShare} di sì`,
   listTieBreak: (initiativeShare) => `${initiativeShare} per l'iniziativa`,
   MARK_NOTE: 'Nota',
-  MARK_PROVISIONAL: 'provvisorio',
 
   // A vote's page: the figures.
   YES: 'Sì',
@@ -109,7 +108,6 @@ export const it: Texts = {
     documentLanguage === null
       ? 'Spiegazioni del Consiglio federale (PDF)'
       : `Spiegazioni del Consiglio federale (PDF, ${{ de: 'in tedesco', fr: 'in francese', it: 'in italiano' }[documentLanguage]})`,
-  PROVISIONAL: 'Risultato provvisorio: non ancora accertato dal Consiglio federale.',
   NOTE_HEADING: 'Nota della Cancelleria federale',
   knownDifference: (official, count, reference, difference, more) =>
     `Il risultato accertato conta ${official} ${count === 'yes' ? 'sì' : 'no'} (${reference}); ` +

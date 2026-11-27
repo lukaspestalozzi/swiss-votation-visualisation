@@ -107,7 +107,6 @@ export interface Texts {
   readonly listShare: (yesShare: string) => string;
   readonly listTieBreak: (initiativeShare: string) => string;
   readonly MARK_NOTE: string;
-  readonly MARK_PROVISIONAL: string;
 
   // A vote's page: the figures.
   /** The two sides, as a result's row names their votes below its bar. */
@@ -149,7 +148,6 @@ export interface Texts {
   // The link below a vote's summary to its day's explanations (spec vote-summaries), naming the
   // document's language when it is not the page's.
   readonly explanationsLink: (documentLanguage: Language | null) => string;
-  readonly PROVISIONAL: string;
   readonly NOTE_HEADING: string;
   readonly knownDifference: (
     official: string,

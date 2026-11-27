@@ -61,10 +61,7 @@ function entryOf(vote: Vote, t: Texts): ListEntry {
     title: voteText(vote, 'title', t.LANGUAGE),
     kind: t.KINDS[vote.kind],
     ...resultOf(vote, t),
-    marks: [
-      ...(vote.note === null ? [] : [t.MARK_NOTE]),
-      ...(vote.validated ? [] : [t.MARK_PROVISIONAL]),
-    ],
+    marks: vote.note === null ? [] : [t.MARK_NOTE],
   };
 }
 

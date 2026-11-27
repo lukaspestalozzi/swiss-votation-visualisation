@@ -24,11 +24,12 @@ context: |
      official federal result: the yes votes, the valid votes and the yes share of the voters, and
      the number of cantonal votes in favour. The official result is the one the Federal Council
      validated, as the Federal Chancellery publishes it; until a vote is validated, it is the
-     Federal Statistical Office's, marked as not validated. Where the municipal data does not
-     reproduce the official result, the difference is named in the pipeline's list of known
-     differences and the data holds both figures; any other difference stops the pipeline. One
-     is named: the vote of 2024-03-03 on a 13th AHV pension, 200 no votes. Registered voters and
-     ballots cast are the Federal Statistical Office's figures and are not compared.
+     Federal Statistical Office's, without a reference and without a mark. Where the municipal
+     data does not reproduce the official result, the difference is named in the pipeline's list
+     of known differences and the data holds both figures; any other difference stops the
+     pipeline. One is named: the vote of 2024-03-03 on a 13th AHV pension, 200 no votes.
+     Registered voters and ballots cast are the Federal Statistical Office's figures and are not
+     compared.
   2. Follows the real voting rules. The majority of voters is more than half of the valid votes.
      Each canton has one cantonal vote, except Obwalden, Nidwalden, Basel-Stadt,
      Basel-Landschaft, Appenzell Ausserrhoden and Appenzell Innerrhoden with half a vote each (23
@@ -155,8 +156,9 @@ context: |
     of cantons.
   - Official result: the federal result of a vote as the Federal Council validated it and the
     Federal Chancellery publishes it (Erwahrung); see hard constraint 1.
-  - Validated: said of a vote whose official result is published. Until then the data holds
-    the Federal Statistical Office's result, marked as not validated.
+  - Validated: said of a vote whose official result is published, which the data shows by its
+    reference to the publication. Until then the data holds the Federal Statistical Office's
+    result, without a reference; neither the data nor the screen marks it otherwise.
   - Municipality (Gemeinde): the unit the results are published for, and the unit that is
     filtered. Municipalities merge every year, so a list of municipalities is valid only with
     its reference date. All data uses one list, the one the Federal Statistical Office's files

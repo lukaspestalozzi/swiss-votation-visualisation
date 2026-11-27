@@ -326,9 +326,6 @@
 {#if data.source !== null}
   <p class="secondary">{data.source}</p>
 {/if}
-{#if data.provisional !== null}
-  <p class="secondary">{data.provisional}</p>
-{/if}
 {#if data.note !== null}
   <section>
     <h2>{t.NOTE_HEADING}</h2>

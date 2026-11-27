@@ -59,7 +59,6 @@ export const de: Texts = {
   listShare: (yesShare) => `${yesShare} Ja`,
   listTieBreak: (initiativeShare) => `${initiativeShare} für die Initiative`,
   MARK_NOTE: 'Hinweis',
-  MARK_PROVISIONAL: 'vorläufig',
 
   // A vote's page: the figures.
   YES: 'Ja',
@@ -105,7 +104,6 @@ export const de: Texts = {
     documentLanguage === null
       ? 'Erläuterungen des Bundesrates (PDF)'
       : `Erläuterungen des Bundesrates (PDF, ${{ de: 'auf Deutsch', fr: 'auf Französisch', it: 'auf Italienisch' }[documentLanguage]})`,
-  PROVISIONAL: 'Vorläufiges Ergebnis: vom Bundesrat noch nicht erwahrt.',
   NOTE_HEADING: 'Hinweis der Bundeskanzlei',
   knownDifference: (official, count, reference, difference, more) =>
     `Das erwahrte Ergebnis zählt ${official} ${count === 'yes' ? 'Ja' : 'Nein'}-Stimmen ` +

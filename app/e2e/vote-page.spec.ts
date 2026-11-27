@@ -55,6 +55,15 @@ test('the page of a vote: head, figures, verdicts, cantons and note', async ({ p
   ).toBeVisible();
 });
 
+// Spec verdicts, "What the sources say about the result": vote 6850, of 2026-03-08, is not
+// validated yet, and its page says nothing of it.
+test('a result not validated yet: no source and no note in its place', async ({ page }) => {
+  await page.goto('de/votes/6850/');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByText(/Quelle: /)).toHaveCount(0);
+  await expect(page.getByText(/Vorläufiges Ergebnis|erwahrt/)).toHaveCount(0);
+});
+
 test("a vote's page without the final slash", async ({ page }) => {
   const failures: string[] = [];
   page.on('response', (response) => {
