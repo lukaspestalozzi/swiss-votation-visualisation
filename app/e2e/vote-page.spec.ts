@@ -287,6 +287,22 @@ test("a vote's summary stands below its head and above its result, with its link
   }
 });
 
+// In a window at least 1,024 by 700 pixels the part that stays in the window reaches above
+// itself with the page's ground; the link must stay uncovered.
+test('nothing covers the link to the explanations in a wide window', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('de/votes/6880/');
+  const covered = await explanationsLink(page).evaluate((link) => {
+    const box = link.getBoundingClientRect();
+    for (const y of [box.top + 2, box.top + box.height / 2, box.bottom - 2]) {
+      const top = document.elementFromPoint(box.left + box.width / 2, y);
+      if (top === null || !link.contains(top)) return true;
+    }
+    return false;
+  });
+  expect(covered).toBe(false);
+});
+
 test('the summary and its link in French and Italian, naming a document of another language', async ({
   page,
 }) => {
