@@ -32,8 +32,13 @@ The experiment of 2026-11-27 (a scratch copy of `main`, nothing committed) showe
 
 1. **A setting of the build, `PREVIEW=1`, not a second configuration.** It switches the base to
    `''`, the paths to relative and the output to `app/build/preview/`; without it the build is
-   as before, byte for byte. Rejected: relative paths for the live site too, which would change
-   what the browser tests and the live site get.
+   as before, byte for byte but for SvelteKit's stamp of each build. The app has no Node types,
+   so `vite.config.ts` declares the one global it reads, `process`, for itself alone (Q,
+   2026-11-27). Rejected: relative paths for the live site too, which would change what the
+   browser tests and the live site get; Vite's mode (`--mode preview`), which reaches only the
+   first of the three times SvelteKit loads the configuration in a build (the other two are in
+   the mode `production`, measured), so the prerendering asked for the live site's paths; Node's
+   types for the whole app (`@types/node`), which would let browser code name `process`.
 2. **The address line is added by the script, to the preview only.** It is the experiment's line;
    the app itself keeps no code for a host that serves `index.html` by name.
 3. **German only, every vote, the comparison's entries for the ten newest votes:** 314 files, in

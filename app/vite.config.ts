@@ -8,9 +8,14 @@ import { defineConfig } from 'vitest/config';
 // path for the browser tests, and CI publishes `app/build/swiss-votation-visualisation`.
 const path = '/swiss-votation-visualisation';
 
-// The preview of a branch (`PREVIEW=1`, run by scripts/preview.mjs; CLAUDE.md, "The preview"):
+// Vite reads this file under Node, but the app has no Node types (it runs in the browser): the one
+// global it uses is declared here, for this file only.
+declare const process: { env: Record<string, string | undefined> };
+
+// The preview of a branch (`PREVIEW=1`, set by scripts/preview.mjs; CLAUDE.md, "The preview"):
 // relative addresses, so that the site runs below any address, as in a Claude Artifact, written
-// to `build/preview`. Without it the build is the live site's.
+// to `build/preview`. Without it the build is the live site's. A variable of the environment, not
+// Vite's mode: SvelteKit loads this file again for its own builds, in the mode `production`.
 const preview = process.env.PREVIEW === '1';
 
 export default defineConfig({
