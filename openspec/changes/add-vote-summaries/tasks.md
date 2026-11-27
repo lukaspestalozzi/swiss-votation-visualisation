@@ -52,7 +52,7 @@
   Verify: it passes every check and requests the 132 addresses; `git diff` of
   `app/static/data/` shows only the two new fields in `votes.json` and the new entry in
   `sources.json`; a second run changes nothing.
-- [ ] 3.3 Q reviews the sample of task 1.3 in the file. Verify: Q approves, or the summaries
+- [x] 3.3 Q reviews the sample of task 1.3 in the file. Verify: Q approves, or the summaries
   are corrected and reviewed again (scenario "A sample is reviewed").
 
 ## 4. The app
