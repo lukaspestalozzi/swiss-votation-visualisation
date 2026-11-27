@@ -90,7 +90,8 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
    pattern for every vote, but no Italian and not the official source; no link, which leaves a
    summary uncheckable. The link names the document, "Erläuterungen des Bundesrates (PDF)",
    "Explications du Conseil fédéral (PDF)", "Spiegazioni del Consiglio federale (PDF)", the
-   names the Federal Chancellery uses (to be confirmed in task 1 for French and Italian). Before
+   names the Federal Chancellery uses, as the documents' own first pages and file names confirm
+   (`investigations/vote-summaries.md`, 2). Before
    2015-06-14 the link goes to a copy on Swissvotes (decision 14).
 
 4. **The guide says that the summaries are the site's own** (Q). Considered: a line under each
@@ -203,4 +204,4 @@ Rollback is a revert of the change's commits, data files included.
 
 ## Open Questions
 
-- Which 15 or more votes Q reviews, and in which languages: chosen in task 1, before drafting.
+None left: the sample Q reviewed is in `investigations/vote-summaries.md`, 3 and 5.

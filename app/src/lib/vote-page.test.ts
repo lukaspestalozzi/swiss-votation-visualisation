@@ -457,3 +457,12 @@ test('a summary missing in one language is an error that names the vote and the 
     'vote 5960 has no explanations in Italian',
   );
 });
+
+test('the three votes of 2026-03-08 share their explanations, each with its own summary', () => {
+  const [initiative, counterProposal, tieBreak] = [6821, 6822, 6823].map(voteOf);
+  expect(counterProposal.explanations).toEqual(initiative.explanations);
+  expect(tieBreak.explanations).toEqual(initiative.explanations);
+  expect(initiative.explanations.de.address).toMatch(/^https:\/\/www\.admin\.ch\//);
+  const summaries = new Set([initiative, counterProposal, tieBreak].map((vote) => vote.summary.de));
+  expect(summaries.size).toBe(3);
+});
