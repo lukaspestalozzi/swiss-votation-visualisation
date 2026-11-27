@@ -3,6 +3,7 @@ import socket
 import threading
 from collections.abc import Iterator
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from typing import ClassVar
 
 import pytest
 
@@ -217,3 +218,86 @@ def test_the_query_of_the_buildings() -> None:
         "Jahr": ("item", ["2000"]),
     }
     assert download.LIST_DATES[download.BUILDINGS_2000] == "2000-12-05"
+
+
+class PdfHandler(BaseHTTPRequestHandler):
+    """Answers as www.admin.ch and swissvotes.ch do (investigations/vote-summaries.md, 1)."""
+
+    refused: ClassVar[dict[str, int]] = {}
+
+    def answer(self, with_body: bool) -> None:
+        if self.path == "/booklet.pdf" or (self.path == "/copy.pdf" and with_body):
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pdf")
+            self.end_headers()
+            if with_body:
+                self.wfile.write(b"%PDF-1.6")
+        elif self.path == "/copy.pdf":
+            self.send_error(405)
+        elif self.path == "/page.html":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.end_headers()
+        elif self.path == "/busy.pdf" and self.refused.setdefault(self.path, 0) < 2:
+            self.refused[self.path] += 1
+            self.send_error(403)
+        elif self.path == "/busy.pdf":
+            self.path = "/booklet.pdf"
+            self.answer(with_body)
+        else:
+            self.send_error(404)
+
+    def do_HEAD(self) -> None:
+        self.answer(with_body=False)
+
+    def do_GET(self) -> None:
+        self.answer(with_body=True)
+
+    def log_message(self, format: str, *args: object) -> None:
+        pass
+
+
+@pytest.fixture
+def pdf_server() -> Iterator[str]:
+    PdfHandler.refused = {}
+    httpd = HTTPServer(("127.0.0.1", 0), PdfHandler)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    yield f"http://127.0.0.1:{httpd.server_address[1]}"
+    httpd.shutdown()
+    httpd.server_close()
+
+
+@pytest.fixture
+def pauses(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    slept: list[float] = []
+    monkeypatch.setattr("pipeline.download.time.sleep", slept.append)
+    return slept
+
+
+def test_a_pdf_answers_after_a_pause(pdf_server: str, pauses: list[float]) -> None:
+    assert download.probe_pdf(f"{pdf_server}/booklet.pdf") is None
+    assert pauses == [download.EXPLANATIONS_PAUSE]
+
+
+def test_a_server_that_refuses_head_is_asked_with_get(pdf_server: str, pauses: list[float]) -> None:
+    assert download.probe_pdf(f"{pdf_server}/copy.pdf") is None
+
+
+def test_a_403_is_tried_again(pdf_server: str, pauses: list[float]) -> None:
+    assert download.probe_pdf(f"{pdf_server}/busy.pdf") is None
+    assert pauses == [download.EXPLANATIONS_PAUSE, 3, 6]
+
+
+def test_what_is_wrong_with_an_address(pdf_server: str, pauses: list[float]) -> None:
+    assert download.probe_pdf(f"{pdf_server}/missing.pdf") == "answers with status 404"
+    assert download.probe_pdf(f"{pdf_server}/page.html") == "answers with text/html, not a PDF"
+
+
+def test_an_address_that_cannot_be_reached(pauses: list[float]) -> None:
+    with socket.socket() as closed:
+        closed.bind(("127.0.0.1", 0))
+        port = closed.getsockname()[1]
+    problem = download.probe_pdf(f"http://127.0.0.1:{port}/booklet.pdf")
+    assert problem is not None and problem.startswith("cannot be reached: ")
+    assert pauses == [download.EXPLANATIONS_PAUSE, 3, 6, 9, 12, 15]

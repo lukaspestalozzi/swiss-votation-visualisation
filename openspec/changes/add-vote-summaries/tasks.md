@@ -13,7 +13,7 @@
   Italian (design, decision 3), and what the Copyright Act, art. 5, says of the explanations,
   with the source of each. Verify: each statement cites its source; the link texts of the spec
   match, or the spec is corrected with Q before task 4.
-- [ ] 1.3 In the same file: the sample Q reviews, at least 15 votes from every year and of every
+- [x] 1.3 In the same file: the sample Q reviews, at least 15 votes from every year and of every
   kind, 5800 and 6650 among them, and three sample summaries (5960, 6650, 6823) in three
   languages, written by the rules of decision 8. Verify: Q approves the three, or the rules
   are changed with Q before task 3.

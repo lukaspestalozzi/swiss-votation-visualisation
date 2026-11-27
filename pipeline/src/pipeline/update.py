@@ -67,6 +67,7 @@ from pipeline.download import (
 )
 from pipeline.feed import CANTONS, Day, read_day
 from pipeline.register import Municipality, read_register
+from pipeline.summaries import Probe, check_coverage, check_explanations, read_summaries
 from pipeline.write import Data, Source, VoteData, write_data
 
 DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
@@ -223,14 +224,29 @@ def _replace(data: Path, built: Data) -> None:
     shutil.rmtree(old, ignore_errors=True)
 
 
+SUMMARIES = "vote-summaries.json"
+
+
 def update(
-    project: Path, data: Path, fetch: Fetch, today: str, reuse_downloads: bool = False
+    project: Path,
+    data: Path,
+    fetch: Fetch,
+    today: str,
+    reuse_downloads: bool = False,
+    probe: Probe | None = None,
 ) -> Report:
-    """Bring the data files in `data` up to date; `project` holds the lists and the downloads."""
+    """Bring the data files in `data` up to date; `project` holds the lists and the downloads.
+    `probe` asks each address of the explanations (`download.probe_pdf` unless given)."""
     _put_back(data)
     known = read_known_differences(project / "known-differences.json")
     changes = read_canton_changes(project / "canton-changes.json")
+    try:
+        summaries_file = (project / SUMMARIES).read_bytes()
+    except OSError as error:
+        raise SourceError(f"{SUMMARIES}: {error}") from error
+    summaries = read_summaries(summaries_file, SUMMARIES)
     downloads = _Downloads(project / "downloads", fetch, reuse_downloads)
+    downloads.record(f"pipeline/{SUMMARIES}", summaries_file, None)
 
     request = chancellery_request()
     answer = downloads.answer(
@@ -286,9 +302,14 @@ def update(
         raise SourceError(
             f"the sources no longer give these votes of the data files: {', '.join(lost)}"
         )
+    # Before the characteristics, whose sources take a quarter of an hour.
+    check_coverage(summaries, [(vote.vote.id, vote.vote.date) for vote in votes], SUMMARIES)
+    check_explanations(summaries, probe or download.probe_pdf)
     first_vote_day = min(vote.vote.date for vote in votes)
     found = _characteristics(downloads, reference, municipalities, first_vote_day)
-    built = Data(reference, votes, municipalities, swiss_abroad, downloads.sources, shapes, found)
+    built = Data(
+        reference, votes, municipalities, swiss_abroad, downloads.sources, shapes, found, summaries
+    )
     _replace(data, built)
     return Report(
         reference_date=reference,

@@ -11,8 +11,10 @@ from pipeline.characteristics import CharacteristicsData
 from pipeline.checks import CantonChange, check_entries, counted_for
 from pipeline.feed import CANTONS, read_day
 from pipeline.register import read_register
+from pipeline.summaries import read_summaries
 from pipeline.write import Data, Source, VoteData, write_data
 
+LANGUAGES = ("de", "fr", "it")
 MOUTIER = CantonChange(6831, "BE", "2025-12-31")
 SOURCES = [
     Source("https://example.org/b.json", b'{"b": 1}', "2016-02-28T18:00:00"),
@@ -47,8 +49,16 @@ def data() -> Data:
         listed=[m.number for m in municipalities],
         lakes_set=2026,
     )
+    summaries = read_summaries(json.dumps(made_up.summaries()).encode(), "vote-summaries.json")
     return Data(
-        "2026-01-01", votes, municipalities, swiss_abroad, SOURCES, shapes, characteristics()
+        "2026-01-01",
+        votes,
+        municipalities,
+        swiss_abroad,
+        SOURCES,
+        shapes,
+        characteristics(),
+        summaries,
     )
 
 
@@ -102,6 +112,14 @@ def test_the_list_of_votes(tmp_path: Path) -> None:
             "de": "Das Bundesgericht hat … aufgehoben.",
             "fr": "Le Tribunal fédéral …",
             "it": "Il Tribunale …",
+        },
+        "summary": {language: made_up.summary_text(5960, language) for language in LANGUAGES},
+        "explanations": {
+            language: {
+                "address": made_up.explanation_address("2016-02-28", language),
+                "language": language,
+            }
+            for language in LANGUAGES
         },
         "sums": {
             "registered": 136283,

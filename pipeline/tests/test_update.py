@@ -84,9 +84,24 @@ class Sources:
         return self.files.get(request.address)
 
 
+@pytest.fixture(autouse=True)
+def no_explanations_asked(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    """Every address of the explanations answers with a PDF, and nothing goes to the network."""
+    asked: list[str] = []
+
+    def probe(address: str) -> str | None:
+        asked.append(address)
+        return None
+
+    monkeypatch.setattr("pipeline.download.probe_pdf", probe)
+    return asked
+
+
 def project(tmp_path: Path, canton_changes: list[dict[str, Any]] | None = None) -> Path:
     directory = tmp_path / "pipeline"
     directory.mkdir()
+    summaries = json.dumps(made_up.summaries(), ensure_ascii=False)
+    (directory / "vote-summaries.json").write_text(summaries, encoding="utf-8")
     changes = [MOUTIER] if canton_changes is None else canton_changes
     (directory / "canton-changes.json").write_text(json.dumps(changes), encoding="utf-8")
     (directory / "known-differences.json").write_text("[]", encoding="utf-8")

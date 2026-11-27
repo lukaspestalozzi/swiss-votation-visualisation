@@ -287,6 +287,38 @@ def buildings() -> Request:
     )
 
 
+# The pause before each request for the Federal Council's explanations: www.admin.ch answers
+# some requests of a quick series with 403 (investigations/vote-summaries.md, 1).
+EXPLANATIONS_PAUSE = 1.0
+
+
+def probe_pdf(address: str) -> str | None:
+    """None when `address` answers 200 with a PDF, else what is wrong with it. Asked with HEAD,
+    or GET where the server refuses HEAD (swissvotes.ch); a 403, a 429, a server's error or a
+    failed connection is tried again, five times, after a growing pause."""
+    method, failure = "HEAD", ""
+    for attempt in range(6):
+        time.sleep(EXPLANATIONS_PAUSE if attempt == 0 else 3 * attempt)
+        for _ in range(2):
+            try:
+                with urllib.request.urlopen(
+                    urllib.request.Request(address, method=method), timeout=120
+                ) as answer:
+                    kind = answer.headers.get_content_type()
+                return None if kind == "application/pdf" else f"answers with {kind}, not a PDF"
+            except urllib.error.HTTPError as error:
+                if error.code == 405 and method == "HEAD":
+                    method = "GET"
+                    continue
+                if error.code not in (403, 429) and error.code < 500:
+                    return f"answers with status {error.code}"
+                failure = f"answers with status {error.code}"
+            except OSError as error:
+                failure = f"cannot be reached: {error}"
+            break
+    return failure
+
+
 def fetch_url(request: Request) -> bytes | None:
     """Download over HTTPS. HTTP 403 and 404 mean that there is no such file; other failures
     are tried again, then stop the run with the address."""
