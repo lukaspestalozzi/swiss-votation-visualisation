@@ -217,8 +217,7 @@ export const de: Texts = {
   LIMITS_HEADING: 'Gemeinden auswählen',
   THOUGHT_EXPERIMENT:
     'Ein Gedankenexperiment: So wäre die Abstimmung ausgegangen, wenn nur die ausgewählten ' +
-    'Gemeinden abgestimmt hätten. Es zeigt nicht, wie einzelne Menschen gestimmt haben, und ist ' +
-    'keine Prognose.',
+    'Gemeinden abgestimmt hätten.',
   ADD_LIMIT: 'Merkmal hinzufügen',
   CHOOSE: '–',
   REMOVE_LIMIT,

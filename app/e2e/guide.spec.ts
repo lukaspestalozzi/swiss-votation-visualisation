@@ -275,16 +275,35 @@ test('from a vote\'s page: "Lesehilfe" in its head', async ({ page }) => {
 });
 
 test('the sentence at the limits, with its link to the guide', async ({ page }) => {
+  // Spec reading-guide, "The sentence at the limits": its first sentence only.
   await page.goto('de/votes/5960/');
   const limits = page.locator('.limits');
   await expect(limits.locator('p').first()).toHaveText(
     'Ein Gedankenexperiment: So wäre die Abstimmung ausgegangen, wenn nur die ausgewählten ' +
-      'Gemeinden abgestimmt hätten. Es zeigt nicht, wie einzelne Menschen gestimmt haben, und ist ' +
-      'keine Prognose. Lesehilfe und Quellen',
+      'Gemeinden abgestimmt hätten. Lesehilfe und Quellen',
   );
+  await expect(limits.getByText('Es zeigt nicht')).toHaveCount(0);
   await limits.getByRole('link', { name: 'Lesehilfe und Quellen' }).click();
   await expect(page).toHaveURL(/\/de\/guide\/?$/);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lesehilfe');
+});
+
+test('the sentence at the limits in French and Italian', async ({ page }) => {
+  for (const [language, sentence] of [
+    [
+      'fr',
+      "Une expérience de pensée: voici l'issue qu'aurait eue la votation si seules les communes " +
+        'choisies avaient voté. Guide de lecture et sources',
+    ],
+    [
+      'it',
+      'Un esperimento mentale: ecco come sarebbe andata la votazione se avessero votato soltanto ' +
+        'i Comuni scelti. Guida alla lettura e fonti',
+    ],
+  ] as const) {
+    await page.goto(`${language}/votes/5960/`);
+    await expect(page.locator('.limits p').first()).toHaveText(sentence);
+  }
 });
 
 // Spec reading-guide, "The sources": the summaries are the site's own (spec vote-summaries).
