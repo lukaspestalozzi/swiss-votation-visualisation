@@ -22,6 +22,16 @@ ADMIN, SWISSVOTES = "https://www.admin.ch/", "https://swissvotes.ch/"
 DATE = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}")
 # A line break, markup, a link or a double space: a summary is one paragraph of plain text.
 NOT_PLAIN = re.compile(r"[\n\r\t<>]|https?:|www\.|  ")
+# Numbers as the screen writes them (spec vote-summaries, "How a summary writes numbers").
+NOT_AS_ON_SCREEN = {
+    "a decimal comma": re.compile(r"[0-9],[0-9]"),
+    "digits parted by a space": re.compile(r"[0-9][ \u00a0\u202f][0-9]{3}(?![0-9])"),
+    "five digits or more in a row": re.compile(r"[0-9]{5}"),
+}
+# A French sign without the space the Confederation puts beside it (spec vote-summaries, "The
+# spaces of a French summary"): a no-break space before ":" and "»" and after "«", a narrow one
+# before ";", "?" and "!".
+FRENCH_SIGN = re.compile(r"(?<!\u00a0)[:»]|(?<!\u202f)[;?!]|«(?!\u00a0)")
 
 # Answers None when an address answers with a PDF, else what is wrong with it.
 Probe = Callable[[str], str | None]
@@ -73,6 +83,11 @@ def _summary(vote: str, language: str, text: Any, name: str) -> str:
         raise SourceError(f"{where}: {len(text)} characters, not {SHORTEST} to {LONGEST}")
     if NOT_PLAIN.search(text) or text != text.strip():
         raise SourceError(f"{where}: not plain text")
+    for problem, pattern in NOT_AS_ON_SCREEN.items():
+        if found := pattern.search(text):
+            raise SourceError(f"{where}: {problem}, {found.group()!r}")
+    if language == "fr" and (found := FRENCH_SIGN.search(text)):
+        raise SourceError(f"{where}: {found.group()!r} without its space")
     return text
 
 

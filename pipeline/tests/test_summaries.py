@@ -61,6 +61,69 @@ def test_a_summary_with_markup_a_link_or_a_double_space(piece: str) -> None:
         read(document)
 
 
+# Spec vote-summaries, "How a summary writes numbers": as the screen does.
+@pytest.mark.parametrize(
+    ("language", "piece", "problem"),
+    [
+        ("de", " 9,5 Millionen ", "a decimal comma"),
+        ("it", " 10 100 franchi ", "digits parted by a space"),
+        ("it", " 10\u00a0100 franchi ", "digits parted by a space"),
+        ("fr", " 31\u202f850 francs ", "digits parted by a space"),
+        ("de", " 10100 Franken ", "five digits or more in a row"),
+    ],
+)
+def test_a_number_not_written_as_the_screen_writes_it(
+    language: str, piece: str, problem: str
+) -> None:
+    document = made_up.summaries()
+    text = made_up.summary_text(5960, language)
+    document["votes"]["5960"][language] = text[:60] + piece + text[60:]
+    name = {"de": "German", "fr": "French", "it": "Italian"}[language]
+    with pytest.raises(SourceError, match=rf"vote 5960, {name}: {problem}"):
+        read(document)
+
+
+def test_numbers_as_the_screen_writes_them() -> None:
+    document = made_up.summaries()
+    text = made_up.summary_text(5960, "de")
+    document["votes"]["5960"]["de"] = (
+        text[:40] + " 9.5 Millionen, 10'100 Franken bis 2050 " + text[40:]
+    )
+    assert "10'100 Franken" in read(document).votes[5960]["de"]
+
+
+# Spec vote-summaries, "The spaces of a French summary".
+@pytest.mark.parametrize(
+    "piece",
+    [
+        " besoin propre: le besoin ",
+        " «urgent» ",
+        " « urgent» ",
+        " un vote ? ",
+        " un vote? ",
+        " oui ; non ",
+    ],
+)
+def test_a_french_sign_without_its_space(piece: str) -> None:
+    document = made_up.summaries()
+    text = made_up.summary_text(5960, "fr")
+    document["votes"]["5960"]["fr"] = text[:60] + piece + text[60:]
+    with pytest.raises(SourceError, match=r"vote 5960, French: .* without its space"):
+        read(document)
+
+
+def test_french_signs_with_their_spaces() -> None:
+    document = made_up.summaries()
+    text = made_up.summary_text(5960, "fr")
+    piece = " besoin propre\u00a0: le besoin «\u00a0urgent\u00a0» ; un vote\u202f? "
+    piece = piece.replace(" ;", "\u202f;")
+    document["votes"]["5960"]["fr"] = text[:40] + piece + text[40:]
+    assert "\u00a0urgent\u00a0" in read(document).votes[5960]["fr"]
+    # German and Italian take no such space.
+    document["votes"]["5960"]["it"] = text[:40] + " un esempio: «urgente» " + text[40:]
+    assert "«urgente»" in read(document).votes[5960]["it"]
+
+
 def test_an_address_on_another_server() -> None:
     document = made_up.summaries()
     address = "https://swissvotes.ch/vote/596.00/brochure-de.pdf"
