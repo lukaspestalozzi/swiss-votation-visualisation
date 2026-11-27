@@ -262,8 +262,16 @@
     margin: 0 -0.5rem;
     padding: 0.5rem;
   }
-  .vote-row + .vote-row {
-    border-top: 1px solid var(--hairline);
+  /* The line between two rows starts and ends where their text does, not at the edges of the
+     ground a row pointed at reaches (design of tidy-after-review, decision 6). */
+  .vote-row + .vote-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0.5rem;
+    left: 0.5rem;
+    height: 1px;
+    background: var(--hairline);
   }
   .vote-row:hover {
     background: var(--hover);

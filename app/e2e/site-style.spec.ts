@@ -707,11 +707,16 @@ test('nothing stored: no switch of the scheme, no cookie, no local storage', asy
     await page.emulateMedia({ colorScheme });
     await page.goto('de/');
     await expect(page.locator('h1')).toBeVisible();
-    // The start page's controls are its search field and its three buttons: none switches the
+    // The start page's controls are its search field and its four buttons: none switches the
     // scheme.
     await expect(page.locator('input, select')).toHaveCount(1);
     await expect(searchField(page)).toBeVisible();
-    await expect(page.getByRole('button')).toHaveText(['Alle', 'Angenommen', 'Abgelehnt']);
+    await expect(page.getByRole('button')).toHaveText([
+      'Alle',
+      'Angenommen',
+      'Abgelehnt',
+      'Knappes Ergebnis',
+    ]);
     // Nothing typed is stored either (spec vote-list, "Finding a vote by its title").
     await searchField(page).fill('ahv');
     await keptButton(page, 'Angenommen').click();

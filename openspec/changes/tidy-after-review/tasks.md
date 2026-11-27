@@ -49,7 +49,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   no option; the sentence before a vote is chosen in three languages. Browser tests in
   `compare.spec.ts`: the scenarios "Before a vote is chosen", "The sentence in French and
   Italian" and "Once a first vote is chosen". Verify: `compare.spec.ts` passes.
-- [ ] 4.3 The row's line as a `::before` inset by 0.5rem. Browser test in `site-style.spec.ts` or
+- [x] 4.3 The row's line as a `::before` inset by 0.5rem. Browser test in `site-style.spec.ts` or
   `vote-list.spec.ts`: at 1,280 pixels the right end of a line between two rows equals that of
   the line above its vote day, within 1 pixel. Verify: the test fails before the change and passes
   after.
