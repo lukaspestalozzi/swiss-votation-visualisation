@@ -138,7 +138,9 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
     `download.py`; each must answer 200 with `application/pdf`, from 2015-06-14 on
     `https://www.admin.ch`, before on `https://swissvotes.ch` (decision 14). A
     moved booklet then stops the update with its vote day, language and address, as an
-    unreachable source does. Considered: no check (links rot unseen); a check in CI (CI would
+    unreachable source does. admin.ch answered 6 of 132 requests in a row of task 1.1 with 403 and
+    each of them with 200 a moment later, so the check waits a second between requests to it and
+    retries a 403 like a failed connection. Considered: no check (links rot unseen); a check in CI (CI would
     fail on the Confederation's server, on pushes that change nothing of it). The answers are
     not read and not recorded in `sources.json`, which records files the data is made from; the
     file of the summaries is recorded there, with its size and checksum, so that the record
@@ -163,6 +165,10 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
     checked from the page); searching web archives for the original Italian booklets (unknown
     result, and an archive's host). French over German for Italian readers, as it is the closer
     language for most of them; a judgement, not measured.
+
+    On 2016-02-28 every French page of admin.ch links the German booklet, and admin.ch has no
+    French one. Q chose that German booklet, marked "(PDF, en allemand)", over Swissvotes'
+    French copy, keeping every link from 2015-06-14 on the Confederation's server.
 
 ## Risks / Trade-offs
 

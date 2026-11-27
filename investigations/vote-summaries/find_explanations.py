@@ -21,6 +21,7 @@ import json
 import re
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -29,6 +30,9 @@ ROOT = Path(__file__).resolve().parents[2]
 VOTES = ROOT / "app" / "static" / "data" / "votes.json"
 LANGUAGES = ("de", "fr", "it")
 FIRST_ON_ADMIN = "2015-06-14"
+# admin.ch has no French booklet of 2016-02-28: its French pages link the German one, which Q
+# chose to keep (design of add-vote-summaries, decision 14).
+OTHER_LANGUAGE = {("2016-02-28", "fr"): "de"}
 
 MONTHS = {
     "de": "januar februar maerz april mai juni juli august september oktober november dezember",
@@ -50,12 +54,20 @@ PDF_LINK = re.compile(r'href="(https://www\.admin\.ch/dam/[^"]+\.pdf)"')
 
 
 def fetch(address: str) -> tuple[int, str, str, bytes]:
-    """Status, final address, content type and body of a GET (redirects followed)."""
-    try:
-        with urllib.request.urlopen(address, timeout=120) as answer:
-            return answer.status, answer.geturl(), answer.headers.get_content_type(), answer.read()
-    except urllib.error.HTTPError as error:
-        return error.code, address, "", b""
+    """Status, final address, content type and body of a GET (redirects followed).
+
+    admin.ch answers some requests of a quick series with 403 and the same request a moment later
+    with 200, so a 403 is tried again, up to three times, after a pause.
+    """
+    for attempt in range(4):
+        time.sleep(1 if attempt == 0 else 5)
+        try:
+            with urllib.request.urlopen(address, timeout=120) as answer:
+                return answer.status, answer.geturl(), answer.headers.get_content_type(), answer.read()
+        except urllib.error.HTTPError as error:
+            if error.code != 403 or attempt == 3:
+                return error.code, address, "", b""
+    raise AssertionError("unreachable")
 
 
 def admin_pages(day: str, language: str) -> list[str]:
@@ -109,7 +121,7 @@ def main() -> None:
         for language in LANGUAGES:
             if day >= FIRST_ON_ADMIN:
                 address, found = admin_booklet(day, language)
-                wanted = language
+                wanted = OTHER_LANGUAGE.get((day, language), language)
             else:
                 copy = "fr" if language == "it" else language
                 address = f"https://swissvotes.ch/vote/{min(numbers[day])}.00/brochure-{copy}.pdf"
