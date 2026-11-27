@@ -67,6 +67,7 @@ from pipeline.download import (
 )
 from pipeline.feed import CANTONS, Day, read_day
 from pipeline.register import Municipality, read_register
+from pipeline.stat_tab_cache import Cache, final_years
 from pipeline.summaries import Probe, check_coverage, check_explanations, read_summaries
 from pipeline.write import Data, Source, VoteData, write_data
 
@@ -150,10 +151,15 @@ def _json(content: bytes, name: str) -> Any:
 
 
 class _Downloads:
-    """Gets each source file, keeps it in the downloads directory, and records it."""
+    """Gets each source file, keeps it in the downloads directory, and records it. A STAT-TAB
+    answer of final figures comes from the cache unless the run refreshes it (design of
+    cache-stat-tab-answers)."""
 
-    def __init__(self, directory: Path, fetch: Fetch, reuse: bool) -> None:
+    def __init__(
+        self, directory: Path, fetch: Fetch, reuse: bool, cache: Cache, refresh: bool
+    ) -> None:
         self.directory, self.fetch, self.reuse = directory, fetch, reuse
+        self.cache, self.refresh = cache, refresh
         self.sources: list[Source] = []
 
     def get(self, request: Request, name: str) -> bytes | None:
@@ -170,17 +176,31 @@ class _Downloads:
         return content
 
     def record(
-        self, address: str, content: bytes, stated: str | None, query: str | None = None
+        self,
+        address: str,
+        content: bytes,
+        stated: str | None,
+        query: str | None = None,
+        cached: bool | None = None,
     ) -> None:
-        self.sources.append(Source(address, content, stated, query))
+        self.sources.append(Source(address, content, stated, query, cached))
 
-    def answer(self, request: Request, name: str, what: str) -> bytes:
-        """A source that must be there, recorded with the query it answers."""
+    def answer(self, request: Request, name: str, what: str, final: bool = False) -> bytes:
+        """A source that must be there, recorded with the query it answers; a STAT-TAB answer
+        of final figures from the cache, or kept in it once asked."""
+        query = request.body.decode("utf-8") if request.body is not None else None
+        stat_tab = request.address.startswith(download.STAT_TAB.split("{", 1)[0])
+        if final and query is not None and not self.refresh:
+            kept = self.cache.read(name, query)
+            if kept is not None:
+                self.record(request.address, kept, None, query, cached=True)
+                return kept
         content = self.get(request, name)
         if content is None:
             raise SourceError(f"{request.address}: {what}")
-        query = request.body.decode("utf-8") if request.body is not None else None
-        self.record(request.address, content, None, query)
+        if final and query is not None:
+            self.cache.write(name, query, content)
+        self.record(request.address, content, None, query, cached=False if stat_tab else None)
         return content
 
 
@@ -226,6 +246,8 @@ def _replace(data: Path, built: Data) -> None:
 
 
 SUMMARIES = "vote-summaries.json"
+# The STAT-TAB answers of final figures, in the project (design of cache-stat-tab-answers).
+CACHE = "stat-tab-cache"
 
 
 def update(
@@ -235,6 +257,7 @@ def update(
     today: str,
     reuse_downloads: bool = False,
     probe: Probe | None = None,
+    refresh: bool = False,
 ) -> Report:
     """Bring the data files in `data` up to date; `project` holds the lists and the downloads.
     `probe` asks each address of the explanations (`download.probe_pdf` unless given)."""
@@ -246,7 +269,10 @@ def update(
     except OSError as error:
         raise SourceError(f"{SUMMARIES}: {error}") from error
     summaries = read_summaries(summaries_file, SUMMARIES)
-    downloads = _Downloads(project / "downloads", fetch, reuse_downloads)
+    if refresh and reuse_downloads:
+        raise SourceError("--refresh asks every answer anew, --reuse-downloads asks none: not both")
+    cache = Cache(project / CACHE)
+    downloads = _Downloads(project / "downloads", fetch, reuse_downloads, cache, refresh)
     downloads.record(f"pipeline/{SUMMARIES}", summaries_file, None)
 
     request = chancellery_request()
@@ -394,8 +420,8 @@ def _characteristics(
         content = downloads.answer(Request(address), name, f"no correspondences from {date}")
         successors[date] = read_correspondences(content.decode("utf-8-sig"), name)
 
-    def cube(request: Request, name: str, table: str) -> Cube:
-        found = read_cube(downloads.answer(request, name, f"STAT-TAB gives no {name}"), name)
+    def cube(request: Request, name: str, table: str, final: bool = False) -> Cube:
+        found = read_cube(downloads.answer(request, name, f"STAT-TAB gives no {name}", final), name)
         date = download.LIST_DATES[table]
         places = PLACE_DIMENSIONS.get(table, PLACE)
         numbers = [n for n in found.municipalities(places).values() if n < NOT_A_MUNICIPALITY]
@@ -416,9 +442,10 @@ def _characteristics(
     totals = cube(download.population_totals(), "population_totals.json", download.POPULATION)
     given = [int(year) for year in totals.codes_of("Jahr")]
     years = required_years(given, first_year, "population_totals.json")
+    final = final_years(given)
     ages = [
         cube(download.population_ages(year, first, last), f"population_ages_{year}_{first}.json",
-             download.POPULATION)
+             download.POPULATION, year in final)
         for year in years
         for first, last in download.AGE_PARTS
     ]  # fmt: skip
@@ -458,8 +485,14 @@ def _characteristics(
     name = "elections_description.json"
     content = downloads.answer(download.description(download.ELECTIONS), name, "no description")
     elections: dict[int, dict[int, Counts]] = {}
-    for year in election_years(_description_years(content, name), first_vote_day, name):
-        found = cube(download.election(year), f"election_{year}.json", download.ELECTIONS)
+    held = election_years(_description_years(content, name), first_vote_day, name)
+    for year in held:
+        found = cube(
+            download.election(year),
+            f"election_{year}.json",
+            download.ELECTIONS,
+            year in final_years(held),
+        )
         rows: dict[int, Counts] = {
             n: None if votes is None else group_parties(votes)
             for n, votes in read_elections(found)[year].items()
@@ -485,20 +518,26 @@ def _characteristics(
         for year, by_number in surveyed.items()
     }
 
-    census = read_languages(cube(download.census(), "census_2000.json", download.CENSUS_2000))
+    census = read_languages(cube(download.census(), "census_2000.json", download.CENSUS_2000, True))
     languages = whole(download.CENSUS_2000, census, "the languages of 2000")
     table, name = download.RELIGION_2000, "religion_2000.json"
-    religion = whole(table, read_religions(cube(download.religion(), name, table)), "religion")
+    religion = whole(
+        table, read_religions(cube(download.religion(), name, table, True)), "religion"
+    )
     table, name = download.EDUCATION_2000, "education_2000.json"
-    education = whole(table, read_education(cube(download.education(), name, table)), "education")
+    education = whole(
+        table, read_education(cube(download.education(), name, table, True)), "education"
+    )
     table = download.DWELLINGS_2000
     answers = [
-        cube(download.dwellings(rooms), f"dwellings_2000_{rooms[0]}.json", table)
+        cube(download.dwellings(rooms), f"dwellings_2000_{rooms[0]}.json", table, True)
         for rooms in download.ROOM_PARTS
     ]
     dwellings = whole(table, read_dwellings(answers), "the dwellings of 2000")
     table, name = download.BUILDINGS_2000, "buildings_2000.json"
-    buildings = whole(table, read_buildings(cube(download.buildings(), name, table)), "buildings")
+    buildings = whole(
+        table, read_buildings(cube(download.buildings(), name, table, True)), "buildings"
+    )
 
     name = "swissboundaries3d_2026-01.zip"
     content = downloads.answer(Request(download.SWISSBOUNDARIES), name, "swisstopo gives no areas")

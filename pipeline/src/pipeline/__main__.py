@@ -34,6 +34,12 @@ def main(
         action="store_true",
         help="use the files in pipeline/downloads/ where they are there (for development)",
     )
+    command.add_argument(
+        "--refresh",
+        action="store_true",
+        help="ask STAT-TAB for every answer, those in pipeline/stat-tab-cache/ too, and keep "
+        "the new ones (once a year, and when the BFS revises past figures)",
+    )
     arguments = parser.parse_args(argv)
     try:
         report = update(
@@ -42,6 +48,7 @@ def main(
             fetch,
             today or datetime.date.today().isoformat(),
             reuse_downloads=arguments.reuse_downloads,
+            refresh=arguments.refresh,
         )
     except SourceError as error:
         print(f"update stopped, the data files are unchanged: {error}", file=sys.stderr)

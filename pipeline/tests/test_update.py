@@ -626,3 +626,82 @@ def test_an_explanation_that_no_longer_answers_stops_the_update(
     assert status == 1
     assert f"2016-02-28, Italian: {address} answers with status 404" in capsys.readouterr().err
     assert snapshot(data) == before
+
+
+# The cache of STAT-TAB's answers of final figures (spec characteristics, "The answers of final
+# figures are kept" and "The refresh").
+STAT_TAB_PREFIX = download.STAT_TAB.split("{", 1)[0]
+
+
+def kept(directory: Path) -> int:
+    """How many answers the cache of the project holds."""
+    index = directory / "stat-tab-cache" / "index.json"
+    return len(json.loads(index.read_text(encoding="utf-8")))
+
+
+def stat_tab_asked(sources: Sources) -> int:
+    return sum(1 for address in sources.requested if address.startswith(STAT_TAB_PREFIX))
+
+
+def data_files(data: Path) -> dict[str, bytes]:
+    """Every data file but the record of the sources, by its path."""
+    return {
+        str(path.relative_to(data)): path.read_bytes()
+        for path in sorted(data.rglob("*"))
+        if path.is_file() and path.name != "sources.json"
+    }
+
+
+def stat_tab_records(data: Path) -> list[dict[str, Any]]:
+    records = json.loads((data / "sources.json").read_text(encoding="utf-8"))["sources"]
+    return [r for r in records if r["address"].startswith(STAT_TAB_PREFIX) and r["query"]]
+
+
+def test_a_second_run_takes_the_final_answers_from_the_cache(tmp_path: Path) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    first = Sources()
+    update(directory, data, first, TODAY)
+    before = data_files(data)
+    assert all(record["cached"] is False for record in stat_tab_records(data))
+    # The census of 2000 (8 answers), every election but the newest and every year but the newest.
+    final = kept(directory)
+    assert final > 8
+    second = Sources()
+    update(directory, data, second, TODAY)
+    assert stat_tab_asked(second) == stat_tab_asked(first) - final
+    assert data_files(data) == before
+    records = stat_tab_records(data)
+    assert sum(record["cached"] for record in records) == final
+    newest = max(made_up.POPULATION_YEARS)
+    assert not any(record["cached"] for record in records if f'"{newest}"' in record["query"])
+
+
+def test_a_refresh_asks_every_answer(tmp_path: Path) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    first = Sources()
+    update(directory, data, first, TODAY)
+    again = Sources()
+    update(directory, data, again, TODAY, refresh=True)
+    assert stat_tab_asked(again) == stat_tab_asked(first)
+    assert not any(record["cached"] for record in stat_tab_records(data))
+
+
+def test_a_changed_query_is_asked_anew(tmp_path: Path) -> None:
+    data, directory = tmp_path / "data", project(tmp_path)
+    first = Sources()
+    update(directory, data, first, TODAY)
+    index = directory / "stat-tab-cache" / "index.json"
+    entries = json.loads(index.read_text(encoding="utf-8"))
+    name = sorted(n for n in entries if n.startswith("population_ages_"))[0]
+    entries[name]["query"] = "a query the pipeline no longer sends"
+    index.write_text(json.dumps(entries), encoding="utf-8")
+    second = Sources()
+    update(directory, data, second, TODAY)
+    assert stat_tab_asked(second) == stat_tab_asked(first) - kept(directory) + 1
+    now = json.loads(index.read_text(encoding="utf-8"))[name]["query"]
+    assert now != "a query the pipeline no longer sends"
+
+
+def test_refresh_and_reuse_downloads_together_are_refused(tmp_path: Path) -> None:
+    with pytest.raises(SourceError, match=r"--refresh .* --reuse-downloads .* not both"):
+        update(project(tmp_path), tmp_path / "data", Sources(), TODAY, True, refresh=True)
