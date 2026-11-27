@@ -80,7 +80,7 @@
 
 ## 5. Docs and checks
 
-- [ ] 5.1 `CLAUDE.md`: the status, the file of the summaries in "Where things are" and the code
+- [x] 5.1 `CLAUDE.md`: the status, the file of the summaries in "Where things are" and the code
   map (the pipeline's new module, the changed app files, the investigation);
   `docs/roadmap.md`: row 18; `README.md`: the summaries. Verify: `openspec validate --all
   --strict` passes.
