@@ -108,7 +108,6 @@ def _listing(data: VoteData, summaries: Summaries) -> dict[str, Any]:
         "date": vote.date,
         "kind": vote.kind,
         "title": vote.title,
-        "validated": official.validated,
         "result": _result(data),
         "reference": official.reference if official.validated else None,
         "note": official.note if official.validated else None,

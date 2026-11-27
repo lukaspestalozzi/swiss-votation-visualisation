@@ -67,7 +67,8 @@ test("a vote's notes, as its page writes them", () => {
     "Das erwahrte Ergebnis zählt 1'350'325 Nein-Stimmen (BBl 2024 996); die Zahlen der " +
       'Gemeinden, aus denen hier gerechnet wird, ergeben 200 mehr.',
   ]);
-  expect(notesOf(6860)).toEqual(['Vorläufiges Ergebnis: vom Bundesrat noch nicht erwahrt.']);
+  // A result not validated yet has no note (spec verdicts).
+  expect(notesOf(6860)).toEqual([]);
   expect(notesOf(5960)).toEqual([]);
 });
 

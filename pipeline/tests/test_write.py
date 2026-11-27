@@ -99,7 +99,6 @@ def test_the_list_of_votes(tmp_path: Path) -> None:
         "date": "2016-02-28",
         "kind": "popular-initiative",
         "title": {"de": "Vorlage 5960 (de)", "fr": "Vorlage 5960 (fr)", "it": "Vorlage 5960 (it)"},
-        "validated": True,
         "result": {
             "yes": 40830,
             "no": 39314,
@@ -133,13 +132,14 @@ def test_the_list_of_votes(tmp_path: Path) -> None:
     assert referendum["result"]["cantonalVotesInFavour"] is None
     assert referendum["result"]["cantonalVotesAgainst"] is None
     assert referendum["note"] is None
-    # Not validated: the BFS's result, no reference, no note.
-    assert not_validated["validated"] is False
+    # Not validated: the BFS's result, no reference, no note, and no field that says so (spec
+    # vote-data, "The list of votes").
     assert not_validated["result"]["yes"] == not_validated["sums"]["yes"]
     assert not_validated["result"]["cantonalVotesInFavour"] is not None
     assert (not_validated["reference"], not_validated["note"]) == (None, None)
     for vote in listing["votes"]:
         assert set(vote) == set(initiative)
+        assert "validated" not in vote
         assert set(vote["result"]) == set(initiative["result"])
 
 

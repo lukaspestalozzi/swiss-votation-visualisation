@@ -39,8 +39,8 @@ export interface Vote {
   readonly date: string;
   readonly kind: Kind;
   readonly title: Texts;
-  // The result is the Federal Chancellery's once validated, the BFS's until then.
-  readonly validated: boolean;
+  // The result is the Federal Chancellery's once validated, the BFS's until then; a validated
+  // vote is the one with a reference to the official publication.
   readonly result: Result;
   readonly reference: Texts | null;
   readonly note: Texts | null;

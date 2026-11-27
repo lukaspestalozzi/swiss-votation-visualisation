@@ -185,12 +185,13 @@ class _Downloads:
 
 
 def _previous(data: Path) -> dict[int, tuple[str, bool]]:
-    """The votes of the data files as they are: each one's date, and whether it is validated."""
+    """The votes of the data files as they are: each one's date, and whether it is validated,
+    which a vote is when it has a reference (spec vote-data, "The list of votes")."""
     path = data / "votes.json"
     if not path.exists():
         return {}
     votes = json.loads(path.read_text(encoding="utf-8"))["votes"]
-    return {vote["id"]: (vote["date"], vote["validated"]) for vote in votes}
+    return {vote["id"]: (vote["date"], vote["reference"] is not None) for vote in votes}
 
 
 def _put_back(data: Path) -> None:

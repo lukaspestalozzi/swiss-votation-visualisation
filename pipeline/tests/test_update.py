@@ -195,7 +195,7 @@ def test_a_vote_the_chancellery_now_validates_becomes_validated(
     assert "validated since the last run: 6850 (2026-03-08)\n" in capsys.readouterr().out
     votes = json.loads((data / "votes.json").read_text(encoding="utf-8"))["votes"]
     vote = next(vote for vote in votes if vote["id"] == 6850)
-    assert vote["validated"] is True
+    assert "validated" not in vote
     assert vote["reference"]["de"] == "BBl 2026 1999"
 
 

@@ -323,19 +323,13 @@ test("the list's verdicts in French and Italian", async ({ page }) => {
 });
 
 test('a result not validated yet, in French and Italian', async ({ page }) => {
-  // The data files of 2026-11-14: vote 6850 is not validated yet.
+  // Vote 6850 is not validated yet: its pages say nothing of it (spec interface-languages).
   await page.goto('fr/votes/6850/');
-  await expect(
-    page.getByText('Résultat provisoire: pas encore validé par le Conseil fédéral.', {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await expect(page.getByText('Résultat provisoire')).toHaveCount(0);
+  await expect(page.getByText(/^Source/)).toHaveCount(0);
   await page.goto('it/votes/6850/');
-  await expect(
-    page.getByText('Risultato provvisorio: non ancora accertato dal Consiglio federale.', {
-      exact: true,
-    }),
-  ).toBeVisible();
+  await expect(page.getByText('Risultato provvisorio')).toHaveCount(0);
+  await expect(page.getByText(/^Fonte/)).toHaveCount(0);
 });
 
 test('the parties in French and Italian, in the panel', async ({ page }) => {

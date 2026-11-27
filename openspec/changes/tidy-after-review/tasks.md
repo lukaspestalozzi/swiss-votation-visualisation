@@ -5,21 +5,21 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 1. No mark of validation, on the screen and in the data
 
-- [ ] 1.1 Pipeline: `write.py` writes no `validated` in the list of votes; the pipeline keeps
+- [x] 1.1 Pipeline: `write.py` writes no `validated` in the list of votes; the pipeline keeps
   choosing the Chancellery's result and every check that needs a validated vote. Test in
   `test_write.py`: no vote of the written list has the key `validated`; the existing tests of
   `test_update.py` on a vote that becomes validated assert its reference instead. Verify:
   `uv run --directory pipeline --locked pytest` passes.
-- [ ] 1.2 App: `vote-data.ts` loses `validated`; `vote-list.ts` loses the mark "vorläufig",
+- [x] 1.2 App: `vote-data.ts` loses `validated`; `vote-list.ts` loses the mark "vorläufig",
   `vote-page.ts` and `comparison.ts` the note; `texts/` loses `MARK_PROVISIONAL` and
   `PROVISIONAL` in three languages. Unit tests in `vote-list.test.ts` and `vote-page.test.ts`:
   no entry carries a mark other than "Hinweis", 6850 has no note and no source (the scenarios of
   `vote-list` and `verdicts`). Verify: `pnpm run check` and `pnpm run test` pass.
-- [ ] 1.3 Browser tests in `vote-list.spec.ts`, `vote-page.spec.ts` and `languages.spec.ts`: no
+- [x] 1.3 Browser tests in `vote-list.spec.ts`, `vote-page.spec.ts` and `languages.spec.ts`: no
   "vorläufig", "Vorläufiges Ergebnis", "Résultat provisoire" or "Risultato provvisorio" on `/`,
   `/votes/6850/`, `/fr/votes/6850/` and `/it/votes/6850/`; `parts.ts` loses what reached the mark.
   Verify: those three files pass with `pnpm --filter app exec playwright test <file> --trace off`.
-- [ ] 1.4 `openspec/config.yaml`: hard constraint 1 and the glossary's "Validated" say that until
+- [x] 1.4 `openspec/config.yaml`: hard constraint 1 and the glossary's "Validated" say that until
   a vote is validated the data holds the BFS's result without a reference, with no mark. Verify:
   `openspec validate --all --strict` passes.
 

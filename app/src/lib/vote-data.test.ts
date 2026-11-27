@@ -68,7 +68,7 @@ test('the calculation gives the result of every vote it judges', () => {
 });
 
 test('a validated vote has cantonal votes exactly when its kind needs both majorities', () => {
-  for (const vote of listing.votes.filter((vote) => vote.validated)) {
+  for (const vote of listing.votes.filter((vote) => vote.reference !== null)) {
     const majorities = majoritiesNeeded(vote.kind);
     if (majorities === 'not-calculated') continue;
     const name = `vote ${String(vote.id)}, ${vote.kind}`;

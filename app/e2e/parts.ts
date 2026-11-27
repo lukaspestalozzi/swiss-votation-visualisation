@@ -339,7 +339,7 @@ export const shareOf = (row: Locator): Locator => row.locator('.vote-share');
 /** A row's official result: "angenommen" or "abgelehnt". */
 export const verdictOf = (row: Locator): Locator => row.locator('.vote-verdict');
 
-/** A row's marks: "Hinweis", "vorläufig". */
+/** A row's marks: "Hinweis". */
 export const marksOf = (row: Locator): Locator => row.locator('.mark');
 
 /** The words of the start page's search field, in each language. */

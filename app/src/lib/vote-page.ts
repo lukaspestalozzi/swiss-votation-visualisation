@@ -102,8 +102,6 @@ export interface VotePage {
   readonly tieBreak: TieBreak | null;
   // "Quelle: " and the reference to the official publication, for a validated vote.
   readonly source: string | null;
-  // The sentence of a result that is not validated yet.
-  readonly provisional: string | null;
   // The Federal Chancellery's note on the vote.
   readonly note: string | null;
   // For a validated vote, a note for each count that differs from the sum of its entries.
@@ -151,9 +149,8 @@ export function votePage(vote: Vote, file: VoteFile | undefined, t: Texts): Vote
     judged: majorities === 'not-calculated' ? null : judgedOfRows(name, rows, majorities, t),
     tieBreak: vote.kind === 'tie-break-question' ? tieBreakOf(vote, t) : null,
     source: vote.reference === null ? null : t.SOURCE + voteText(vote, 'reference', t.LANGUAGE),
-    provisional: vote.validated ? null : t.PROVISIONAL,
     note: vote.note === null ? null : voteText(vote, 'note', t.LANGUAGE),
-    differences: vote.validated ? differencesOf(vote, rows, t) : [],
+    differences: vote.reference !== null ? differencesOf(vote, rows, t) : [],
   };
 }
 

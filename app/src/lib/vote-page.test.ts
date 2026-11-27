@@ -186,7 +186,6 @@ test("the tie-break question's bar: the initiative's share of the two", () => {
 test('a validated vote shows its reference', () => {
   expect(page(5670)).toMatchObject({
     source: 'Quelle: BBl 2013 3129',
-    provisional: null,
     note: null,
   });
 });
@@ -198,11 +197,9 @@ test('the annulled vote shows its reference and the note of the Federal Chancell
   expect(annulled.note).toBe(voteOf(5960).note?.de);
 });
 
-test('a result not validated yet says so and has no reference', () => {
-  expect(page(6850)).toMatchObject({
-    source: null,
-    provisional: 'Vorläufiges Ergebnis: vom Bundesrat noch nicht erwahrt.',
-  });
+test('a result not validated yet has no reference and nothing in its place', () => {
+  // Spec verdicts, "What the sources say about the result".
+  expect(page(6850)).toMatchObject({ source: null, note: null, differences: [] });
 });
 
 test('the calculated figures, with a note where they differ from the validated result', () => {
@@ -301,14 +298,11 @@ test('the verdicts of 5960 in French and Italian, with the terms of the Confeder
   });
 });
 
-test('a result not validated yet, in French and Italian: "validé" and "accertato"', () => {
-  // Spec interface-languages, "A result not validated yet"; the data files of 2026-11-14.
-  expect(votePage(voteOf(6850), fileOf.get(6850), fr).provisional).toBe(
-    'Résultat provisoire: pas encore validé par le Conseil fédéral.',
-  );
-  expect(votePage(voteOf(6850), fileOf.get(6850), it).provisional).toBe(
-    'Risultato provvisorio: non ancora accertato dal Consiglio federale.',
-  );
+test('a result not validated yet, in French and Italian: no source and no note', () => {
+  // Spec interface-languages, "A result not validated yet".
+  for (const t of [fr, it]) {
+    expect(votePage(voteOf(6850), fileOf.get(6850), t)).toMatchObject({ source: null, note: null });
+  }
 });
 
 test("a vote's result from its file, as its page gives it, for every judged vote", () => {

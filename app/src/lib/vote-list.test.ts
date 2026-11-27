@@ -134,16 +134,13 @@ test('the entry shows the official result where the municipal figures differ', (
 });
 
 test('the marks of the entries', () => {
+  // Spec vote-list, "The marks of an entry": a note's mark only, none for a result not validated
+  // yet (6850, of 2026-03-08).
   expect(entry(5960).marks).toEqual(['Hinweis']);
-  // The 8 votes of 2026-03-08 and 2026-06-14.
-  const provisional = entriesOf(years)
-    .filter((entry) => entry.marks.includes('vorläufig'))
-    .map((entry) => entry.id);
-  expect(provisional.sort((a, b) => a - b)).toEqual([
-    6821, 6822, 6823, 6830, 6840, 6850, 6860, 6870,
-  ]);
-  expect(entry(6850).marks).toEqual(['vorläufig']);
+  expect(entry(6850).marks).toEqual([]);
   expect(entry(5670).marks).toEqual([]);
+  const marks = new Set(entriesOf(years).flatMap((entry) => entry.marks));
+  expect([...marks]).toEqual(['Hinweis']);
 });
 
 test('a list of votes that holds no vote is an error that names it', () => {

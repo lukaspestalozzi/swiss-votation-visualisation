@@ -29,7 +29,7 @@ interface ListedVote {
   readonly id: number;
   readonly date: string;
   readonly kind: string;
-  readonly validated: boolean;
+  readonly note: unknown;
   readonly title: { readonly de: string };
   readonly result: { readonly passed: boolean | null };
 }
@@ -187,12 +187,12 @@ test('the marks of the rows', async ({ page, request }) => {
   await expect(marksOf(voteRow(page, 5960))).toHaveText(['Hinweis']);
   // The first vote of the list, of 2013-03-03: "Bundesbeschluss über die Familienpolitik".
   await expect(marksOf(voteRow(page, 5670))).toHaveCount(0);
-  // The 8 votes of 2026-03-08 and 2026-06-14 in the data of 2026-11-14.
-  const provisional = votes.filter((vote) => !vote.validated).map((vote) => vote.title.de);
-  const marked = voteRows(page)
-    .filter({ has: page.locator('.mark').getByText('vorläufig', { exact: true }) })
-    .getByRole('link');
-  expect((await marked.allTextContents()).sort()).toEqual(provisional.sort());
+  // A result not validated yet (6850, of 2026-03-08, without a reference) carries no mark, and
+  // only the votes with a note carry one (spec vote-list, "The marks of an entry").
+  await expect(marksOf(voteRow(page, 6850))).toHaveCount(0);
+  const noted = votes.filter((vote) => vote.note !== null).length;
+  await expect(marksOf(voteRows(page))).toHaveCount(noted);
+  await expect(page.getByText('vorläufig')).toHaveCount(0);
 });
 
 test('from the list to a vote and back', async ({ page }) => {

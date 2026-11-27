@@ -65,7 +65,6 @@ export const fr: Texts = {
   listShare: (yesShare) => `${yesShare} de oui`,
   listTieBreak: (initiativeShare) => `${initiativeShare} pour l'initiative`,
   MARK_NOTE: 'Note',
-  MARK_PROVISIONAL: 'provisoire',
 
   // A vote's page: the figures.
   YES: 'Oui',
@@ -110,7 +109,6 @@ export const fr: Texts = {
     documentLanguage === null
       ? 'Explications du Conseil fédéral (PDF)'
       : `Explications du Conseil fédéral (PDF, ${{ de: 'en allemand', fr: 'en français', it: 'en italien' }[documentLanguage]})`,
-  PROVISIONAL: 'Résultat provisoire: pas encore validé par le Conseil fédéral.',
   NOTE_HEADING: 'Note de la Chancellerie fédérale',
   knownDifference: (official, count, reference, difference, more) =>
     `Le résultat validé compte ${official} ${count === 'yes' ? 'oui' : 'non'} (${reference}); ` +
