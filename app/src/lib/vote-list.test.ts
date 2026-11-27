@@ -4,7 +4,7 @@ import { expect, test } from 'vitest';
 import votesFile from '../../static/data/votes.json';
 import { textsOf } from './texts/index.ts';
 import type { Votes } from './vote-data.ts';
-import { listShown, voteList, type ListYear } from './vote-list.ts';
+import { isClose, listShown, voteList, type ListYear } from './vote-list.ts';
 
 const listing = votesFile as Votes;
 const de = textsOf('de');
@@ -245,4 +245,27 @@ test('a word and a result apply together', () => {
   // Spec vote-list, "With a word".
   expect(idsOf(listShown(years, 'energie', 'all'))).toHaveLength(6);
   expect(idsOf(listShown(years, 'energie', 'yes'))).toEqual([6700, 6630, 6120]);
+});
+
+test('a close result: a yes share from 47.00% to 53.00%, as the row writes it', () => {
+  // Spec vote-list, "A close result at the edges".
+  expect(isClose(4699, 5301)).toBe(false);
+  expect(isClose(4700, 5300)).toBe(true);
+  expect(isClose(5300, 4700)).toBe(true);
+  expect(isClose(5301, 4699)).toBe(false);
+  // 46.995% is written 47.00%, so it is close.
+  expect(isClose(46995, 53005)).toBe(true);
+  expect(isClose(53005, 46995)).toBe(false);
+});
+
+test('the close results, whatever their verdict, the tie-break question never', () => {
+  // Spec vote-list, "Close results"; the data files of 2026-11-27.
+  const close = idsOf(listShown(years, '', 'close'));
+  expect(close).toHaveLength(17);
+  expect(close).toEqual(expect.arrayContaining([6360, 6150, 6870]));
+  for (const id of [5840, 6760, 6823]) expect(close).not.toContain(id);
+  expect(entry(6360)).toMatchObject({ share: '50.73% Ja', verdict: 'abgelehnt' });
+  expect(idsOf(listShown(years, 'initiative', 'close'))).toEqual(
+    close.filter((id) => entry(id).title.toLowerCase().includes('initiative')),
+  );
 });

@@ -85,6 +85,9 @@ them.
 Alternatives: a toggle that applies together with "Angenommen" or "Abgelehnt" (more states, a
 second kind of control; Q chose the button); a range other than 47 to 53 (Q named it).
 
+Found while applying: with four buttons the row no longer fits a window 360 pixels wide (the
+start page measured 400), so the buttons wrap onto a second line where one does not hold them.
+
 Budget: the list is filtered in `listShown` as the other buttons are, so the start page's budget
 of 50 ms for a press holds (`vote-list`, "The budget of the list"); its browser test runs with
 the new button too.

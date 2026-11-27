@@ -31,11 +31,11 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 3. "Knappes Ergebnis"
 
-- [ ] 3.1 `vote-list.ts`: `kept` takes `close`, a share from 4700 to 5300 hundredths, both
+- [x] 3.1 `vote-list.ts`: `kept` takes `close`, a share from 4700 to 5300 hundredths, both
   included, the tie-break question never. Unit tests: the edges 46.99, 47.00, 53.00, 53.01 with
   made-up rows, and 17 votes on the data files with 6360, 6150 and 6870 among them and 5840,
   6760 and 6823 not. Verify: `pnpm run test` passes.
-- [ ] 3.2 The start page's fourth button and its texts "Knappes Ergebnis", "Résultat serré",
+- [x] 3.2 The start page's fourth button and its texts "Knappes Ergebnis", "Résultat serré",
   "Esito risicato"; on a touch screen at least 44 pixels high, as the others are. Browser tests in
   `vote-list.spec.ts`: the press shows 17 rows and leaves only that button pressed; the French
   and Italian labels; with a word typed. The budget test of a press runs with this button too

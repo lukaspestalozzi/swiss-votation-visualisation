@@ -18,6 +18,7 @@
     ['all', t.KEEP_ALL],
     ['yes', t.KEEP_ACCEPTED],
     ['no', t.KEEP_REJECTED],
+    ['close', t.KEEP_CLOSE],
   ]);
 
   // The height of the part that stays at the top of the window, as the browser lays it out: a
@@ -127,7 +128,7 @@
     color: var(--text-secondary);
   }
 
-  /* The search field, the three buttons and the years stay at the top of the window, over the
+  /* The search field, the four buttons and the years stay at the top of the window, over the
      rows that pass below them, whose ground reaches half a rem beyond the list on each side. */
   .finder {
     position: sticky;
@@ -159,8 +160,10 @@
     color: var(--text-secondary);
     opacity: 1;
   }
+  /* The four buttons wrap where one line does not hold them, as on a phone. */
   .kept {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.375rem;
   }
   button {

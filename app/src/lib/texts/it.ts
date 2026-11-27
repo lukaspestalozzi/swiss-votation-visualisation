@@ -57,6 +57,7 @@ export const it: Texts = {
   KEEP_ALL: 'Tutti',
   KEEP_ACCEPTED: 'Accettati',
   KEEP_REJECTED: 'Respinti',
+  KEEP_CLOSE: 'Esito risicato',
   YEARS: 'Anni',
   LIST_PASSED: 'accettato',
   LIST_FAILED: 'respinto',

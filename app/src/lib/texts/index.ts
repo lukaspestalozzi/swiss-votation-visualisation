@@ -100,6 +100,7 @@ export interface Texts {
   readonly KEEP_ALL: string;
   readonly KEEP_ACCEPTED: string;
   readonly KEEP_REJECTED: string;
+  readonly KEEP_CLOSE: string;
   /** The name of the links to the years of the list. */
   readonly YEARS: string;
   readonly LIST_PASSED: string;

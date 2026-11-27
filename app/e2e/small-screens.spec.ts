@@ -169,6 +169,7 @@ test.describe('on a phone', () => {
       Alle: keptButton(page, 'Alle'),
       Angenommen: keptButton(page, 'Angenommen'),
       Abgelehnt: keptButton(page, 'Abgelehnt'),
+      'Knappes Ergebnis': keptButton(page, 'Knappes Ergebnis'),
     };
     const sizes = await Promise.all(
       Object.entries(controls).map(async ([name, control]) => {

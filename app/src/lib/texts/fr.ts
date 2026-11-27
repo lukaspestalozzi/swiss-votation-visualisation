@@ -59,6 +59,7 @@ export const fr: Texts = {
   KEEP_ALL: 'Tous',
   KEEP_ACCEPTED: 'Acceptés',
   KEEP_REJECTED: 'Rejetés',
+  KEEP_CLOSE: 'Résultat serré',
   YEARS: 'Années',
   LIST_PASSED: 'accepté',
   LIST_FAILED: 'rejeté',
