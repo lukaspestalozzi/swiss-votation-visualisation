@@ -171,7 +171,8 @@ export function labelOf(track: Track, lower: number, upper: number, t: Texts): s
 /**
  * A limit's label in the three parts the section writes apart (design of redesign-site, decision
  * 20): its characteristic's name, the date of its figures in brackets, and its bounds. Together,
- * with a colon after the date, they are `labelOf`'s text, in every language.
+ * with a colon after the date (in French with a no-break space before it), they are `labelOf`'s
+ * text, in every language.
  */
 export function labelPartsOf(
   track: Track,
@@ -182,11 +183,12 @@ export function labelPartsOf(
   const name = nameOf(track.definition, t);
   const date = `(${dateOf(track.definition, track.year, t)})`;
   const label = labelOf(track, lower, upper, t);
-  const head = `${name} ${date}: `;
-  if (!label.startsWith(head)) {
+  // The colon after the date, in French with its no-break space before it.
+  const head = new RegExp(`^${escaped(`${name} ${date}`)}\u00a0?: `, 'u').exec(label);
+  if (head === null) {
     throw new Error(`the label "${label}" does not begin with its name and date`);
   }
-  return { name, date, bounds: label.slice(head.length) };
+  return { name, date, bounds: label.slice(head[0].length) };
 }
 
 /** A limit as the page holds it: its track, and the steps of its lower and upper bound. */
@@ -243,4 +245,9 @@ export function remainingOf(withEntry: readonly number[], remaining: ReadonlySet
   let left = 0;
   for (const number of withEntry) if (remaining.has(number)) left += 1;
   return left;
+}
+
+/** A text as a regular expression that matches it literally. */
+function escaped(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/gu, '\\$&');
 }

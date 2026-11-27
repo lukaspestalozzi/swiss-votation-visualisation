@@ -47,9 +47,9 @@ export const fr: Texts = {
   // A word joiner after the hyphen, so that a line never parts "aurait-elle".
   START_HEADING:
     'Comment la Suisse aurait-\u2060elle voté si seule une partie des communes ' +
-    "s'était rendue aux urnes?",
+    "s'était rendue aux urnes\u202f?",
   startLead: (furtherCharacteristics) =>
-    "Choisissez une votation et délimitez les communes: selon le nombre d'habitants, l'âge, la " +
+    "Choisissez une votation et délimitez les communes\u00a0: selon le nombre d'habitants, l'âge, la " +
     `force des partis et ${String(furtherCharacteristics)} autres caractéristiques. La carte et ` +
     'le résultat sont recalculés aussitôt. Une expérience de pensée, pas une prévision.',
   SEARCH_TITLES: 'Rechercher un titre',
@@ -90,51 +90,52 @@ export const fr: Texts = {
   CANTONS_HEADING: 'Cantons',
   CANTON_BARS: 'Chaque barre va de 50% au pourcentage de oui du canton.',
   CANTON_BARS_SELECTION:
-    'Chaque barre va de 50% au pourcentage de oui du canton; le trait indique son vrai résultat.',
+    'Chaque barre va de 50% au pourcentage de oui du canton\u202f; le trait indique son vrai résultat.',
   CANTON: 'Canton',
   CANTONAL_VOTES: 'Voix des cantons',
   SIDE: 'Résultat',
 
   // A vote's page: the tie-break question.
-  forTheInitiative: (count, share) => `Pour l'initiative: ${count} (${share})`,
-  forTheCounterProposal: (count, share) => `Pour le contre-projet: ${count} (${share})`,
+  forTheInitiative: (count, share) => `Pour l'initiative\u00a0: ${count} (${share})`,
+  forTheCounterProposal: (count, share) => `Pour le contre-projet\u00a0: ${count} (${share})`,
   tieBreakCantons: (initiative, counterProposal) =>
-    `Cantons: ${initiative} pour l'initiative, ${counterProposal} pour le contre-projet`,
+    `Cantons\u00a0: ${initiative} pour l'initiative, ${counterProposal} pour le contre-projet`,
   TIE_BREAK_NOT_JUDGED:
     "La question subsidiaire ne compte que si l'initiative et le contre-projet sont tous deux " +
-    "acceptés; elle n'est pas évaluée ici.",
+    "acceptés\u202f; elle n'est pas évaluée ici.",
 
   // A vote's page: what the sources say.
-  SOURCE: 'Source: ',
+  SOURCE: 'Source\u00a0: ',
   explanationsLink: (documentLanguage) =>
     documentLanguage === null
       ? 'Explications du Conseil fédéral (PDF)'
       : `Explications du Conseil fédéral (PDF, ${{ de: 'en allemand', fr: 'en français', it: 'en italien' }[documentLanguage]})`,
   NOTE_HEADING: 'Note de la Chancellerie fédérale',
   knownDifference: (official, count, reference, difference, more) =>
-    `Le résultat validé compte ${official} ${count === 'yes' ? 'oui' : 'non'} (${reference}); ` +
+    `Le résultat validé compte ${official} ${count === 'yes' ? 'oui' : 'non'} (${reference})\u202f; ` +
     'les chiffres des communes sur lesquels se fonde le calcul donnent ' +
     `${difference} de ${more ? 'plus' : 'moins'}.`,
 
   // A vote's page: the map (spec result-map).
   legendClass: (yes, from) =>
-    `${yes ? 'Oui' : 'Non'}: ${from === 80 ? '80% et plus' : `${String(from)}–${String(from + 10)}%`}`,
+    `${yes ? 'Oui' : 'Non'}\u00a0: ${from === 80 ? '80% et plus' : `${String(from)}–${String(from + 10)}%`}`,
   LEGEND_SCALE: 'Pourcentage de oui',
   LEGEND_TIE: 'Autant de oui que de non',
   LEGEND_WITHOUT_RESULT: 'Pas de résultat propre',
-  WITHOUT_RESULT: "Pas de résultat propre: ses voix sont comptées avec celles d'une autre commune.",
+  WITHOUT_RESULT:
+    "Pas de résultat propre\u00a0: ses voix sont comptées avec celles d'une autre commune.",
   MAP_HEADING: 'Carte des communes',
   mapSource: (date, lakesSet) =>
-    `Fond de carte: © OFS, communes et cantons au ${date}, lacs: ThemaKart ${String(lakesSet)}`,
+    `Fond de carte\u00a0: © OFS, communes et cantons au ${date}, lacs\u00a0: ThemaKart ${String(lakesSet)}`,
   swissAbroadNotOnTheMap: (cantons) =>
-    "Pas sur la carte: les voix des Suissesses et Suisses de l'étranger, " +
+    "Pas sur la carte\u00a0: les voix des Suissesses et Suisses de l'étranger, " +
     `que ${String(cantons)} cantons comptent séparément.`,
   ZOOM_IN: 'Agrandir',
   ZOOM_OUT: 'Réduire',
   WHOLE_SWITZERLAND: 'Toute la Suisse',
   MAP_FAILED: 'La carte ne peut pas être chargée.',
   mapLabel: (title) =>
-    `Carte des communes: ${title}. Les chiffres des cantons figurent dans le tableau sous la carte.`,
+    `Carte des communes\u00a0: ${title}. Les chiffres des cantons figurent dans le tableau sous la carte.`,
 
   // A vote's page: the characteristics of a municipality (specs characteristics and result-map).
   CHARACTERISTIC: {
@@ -197,10 +198,10 @@ export const fr: Texts = {
     land: 'Surface et agriculture',
   },
   ofDate: (name, date) => `${name} (${date})`,
-  characteristic: (name, value) => `${name}: ${value}`,
+  characteristic: (name, value) => `${name}\u00a0: ${value}`,
   CHARACTERISTICS_SOURCES:
-    'Sources: OFS (STATPOP, STATENT, élections au Conseil national, recensement fédéral de la ' +
-    'population 2000, relevé des structures agricoles); swisstopo (swissBOUNDARIES3D 2026).',
+    'Sources\u00a0: OFS (STATPOP, STATENT, élections au Conseil national, recensement fédéral de la ' +
+    'population 2000, relevé des structures agricoles)\u202f; swisstopo (swissBOUNDARIES3D 2026).',
 
   // The comparison of two votes (spec vote-comparison).
   COMPARE_HEADING: 'Comparer deux votations',
@@ -211,7 +212,7 @@ export const fr: Texts = {
   VOTE_LOADING: 'Les résultats sont en cours de chargement.',
   VOTE_FAILED: 'Les résultats de cette votation ne peuvent pas être chargés.',
   SAME_MUNICIPALITIES:
-    'Les communes sont choisies selon les chiffres de la première votation; les mêmes ' +
+    'Les communes sont choisies selon les chiffres de la première votation\u202f; les mêmes ' +
     'communes comptent dans les deux votations.',
   COMPARE_LINK: 'Comparer avec une autre votation',
   COMPARE_PROMPT:
@@ -220,23 +221,23 @@ export const fr: Texts = {
   // The limits (spec limits).
   populationDate: (year) => `fin ${String(year)}`,
   censusDate: (year) => `recensement ${String(year)}`,
-  limitLabel: (name, date, lower, upper) => `${name} (${date}): de ${lower} à ${upper}`,
+  limitLabel: (name, date, lower, upper) => `${name} (${date})\u00a0: de ${lower} à ${upper}`,
   LIMITS_HEADING: 'Choisir des communes',
   THOUGHT_EXPERIMENT:
-    "Une expérience de pensée: voici l'issue qu'aurait eue la votation si seules les communes " +
+    "Une expérience de pensée\u00a0: voici l'issue qu'aurait eue la votation si seules les communes " +
     'choisies avaient voté.',
   ADD_LIMIT: 'Ajouter une caractéristique',
   CHOOSE: '–',
   REMOVE_LIMIT,
-  lowerBound: (name) => `Limite inférieure: ${name}`,
-  upperBound: (name) => `Limite supérieure: ${name}`,
+  lowerBound: (name) => `Limite inférieure\u00a0: ${name}`,
+  upperBound: (name) => `Limite supérieure\u00a0: ${name}`,
   ABROAD_SWITCH:
     "Compter les Suissesses et Suisses de l'étranger (dans chaque canton où il reste une " +
     'commune)',
   LIMITS_FAILED: 'Sans les caractéristiques, aucune commune ne peut être choisie.',
   unusableParts: (parts) =>
-    `Ces indications de l'adresse n'ont pas pu être appliquées: ${parts.map((part) => `«${part}»`).join(', ')}.`,
-  removeLimit: (name) => `${REMOVE_LIMIT}: ${name}`,
+    `Ces indications de l'adresse n'ont pas pu être appliquées\u00a0: ${parts.map((part) => `«\u00a0${part}\u00a0»`).join(', ')}.`,
+  removeLimit: (name) => `${REMOVE_LIMIT}\u00a0: ${name}`,
   WITH_SELECTION,
   SELECTION_PLACE:
     'Dès que vous fixez une limite pour une caractéristique, le résultat des communes ' +
@@ -244,7 +245,7 @@ export const fr: Texts = {
   LEGEND_SET_ASIDE: 'Pas dans la sélection',
   SET_ASIDE: 'Pas dans la sélection.',
   remainingCount: (remaining, all) =>
-    `Dans la sélection: ${remaining} des ${all} communes avec un résultat propre.`,
+    `Dans la sélection\u00a0: ${remaining} des ${all} communes avec un résultat propre.`,
   NOTHING_REMAINS: 'Il ne reste aucune commune avec un résultat propre.',
   BACK_TO_REAL: 'Retour au vrai résultat',
   CLOSE_LIST: 'Fermer',
@@ -257,10 +258,10 @@ export const fr: Texts = {
       heading: 'Le vrai résultat',
       paragraphs: [
         "En haut de la page d'une votation figure son résultat officiel. Il est calculé à " +
-          'partir des chiffres des communes selon les règles de la Constitution fédérale: la ' +
+          'partir des chiffres des communes selon les règles de la Constitution fédérale\u00a0: la ' +
           "majorité du peuple et, là où l'objet le requiert, la majorité des cantons.",
         "Ce n'est que lorsque vous choisissez des communes qu'un second résultat, recalculé, " +
-          'apparaît au-dessous: «Avec votre sélection». Le vrai résultat reste affiché.',
+          'apparaît au-dessous\u00a0: «\u00a0Avec votre sélection\u00a0». Le vrai résultat reste affiché.',
       ],
     },
     {
@@ -273,7 +274,7 @@ export const fr: Texts = {
           "les mêmes règles que le vrai. Un canton dans lequel il ne reste aucune commune n'a " +
           'pas de voix. La majorité des cantons requiert alors moins de voix des cantons. ' +
           "S'il ne reste aucune commune, l'objet est rejeté.",
-        "L'adresse de la page retient votre sélection: qui l'ouvre voit la même sélection.",
+        "L'adresse de la page retient votre sélection\u00a0: qui l'ouvre voit la même sélection.",
       ],
     },
     {
@@ -292,7 +293,7 @@ export const fr: Texts = {
         '11 ou 12 cantons comptent séparément les voix de leurs Suissesses et Suisses de ' +
           "l'étranger, soit 1.0% à 1.6% des voix valables. Ils n'habitent dans aucune commune, ne " +
           "figurent pas sur la carte et n'ont pas de caractéristiques.",
-        "Le commutateur «Compter les Suissesses et Suisses de l'étranger» détermine si leurs " +
+        "Le commutateur «\u00a0Compter les Suissesses et Suisses de l'étranger\u00a0» détermine si leurs " +
           'voix entrent dans la sélection. Elles ne comptent que dans un canton où il reste ' +
           'encore une commune.',
       ],
@@ -300,7 +301,7 @@ export const fr: Texts = {
     {
       heading: 'Communes sans résultat propre ou sans données',
       paragraphs: [
-        "Quelques rares communes n'ont pas de résultat propre: leurs voix sont comptées avec " +
+        "Quelques rares communes n'ont pas de résultat propre\u00a0: leurs voix sont comptées avec " +
           "celles d'une autre commune. Elles sont hachurées sur la carte. Que la sélection les " +
           'garde ou les écarte ne change rien au résultat.',
         'Pour quelques petites communes du canton de Berne, la force des partis manque. Pour ' +
@@ -322,8 +323,8 @@ export const fr: Texts = {
           'personnes qui les occupent. Pour la langue principale, la religion, la formation et ' +
           "le logement, il n'existe pas de chiffres plus récents pour chaque commune.",
         "Une limite compare les valeurs telles qu'elles figurent pour la commune. Les limites " +
-          'de «Habitants», «Habitants par km²», «Emplois pour 100 habitants», «Surface», ' +
-          "«Bovins par habitant» et «Exploitations agricoles pour 1'000 habitants» croissent " +
+          'de «\u00a0Habitants\u00a0», «\u00a0Habitants par km²\u00a0», «\u00a0Emplois pour 100 habitants\u00a0», «\u00a0Surface\u00a0», ' +
+          "«\u00a0Bovins par habitant\u00a0» et «\u00a0Exploitations agricoles pour 1'000 habitants\u00a0» croissent " +
           "d'un pas à l'autre du même facteur, parce que leurs valeurs s'étendent sur plusieurs " +
           'ordres de grandeur.',
       ],
@@ -331,20 +332,20 @@ export const fr: Texts = {
   ],
   SOURCES_HEADING: 'Sources',
   SOURCE_VOTES:
-    'Résultats des votations: Office fédéral de la statistique (OFS), votations populaires ' +
-    'fédérales, résultats par commune; Chancellerie fédérale, résultats validés dans la Feuille ' +
+    'Résultats des votations\u00a0: Office fédéral de la statistique (OFS), votations populaires ' +
+    'fédérales, résultats par commune\u202f; Chancellerie fédérale, résultats validés dans la Feuille ' +
     'fédérale.',
   sourceMap: (date, lakesSet) =>
-    'Communes et carte: OFS, Répertoire officiel des communes de Suisse et limites communales ' +
-    `généralisées, état au ${date}; OFS, ThemaKart ${String(lakesSet)} (lacs).`,
+    'Communes et carte\u00a0: OFS, Répertoire officiel des communes de Suisse et limites communales ' +
+    `généralisées, état au ${date}\u202f; OFS, ThemaKart ${String(lakesSet)} (lacs).`,
   SOURCE_CHARACTERISTICS:
-    'Caractéristiques: OFS, STATPOP; OFS, STATENT; OFS, élections au Conseil national; OFS, ' +
-    'recensement fédéral de la population 2000; OFS, relevé des structures agricoles; ' +
+    'Caractéristiques\u00a0: OFS, STATPOP\u202f; OFS, STATENT\u202f; OFS, élections au Conseil national\u202f; OFS, ' +
+    'recensement fédéral de la population 2000\u202f; OFS, relevé des structures agricoles\u202f; ' +
     'swisstopo, swissBOUNDARIES3D 2026.',
   SOURCE_SUMMARIES:
-    "Descriptions des objets: rédigées par ce site d'après les «Explications du Conseil " +
-    'fédéral»; ce ne sont pas des textes officiels. Un lien sous chaque description mène aux ' +
+    "Descriptions des objets\u00a0: rédigées par ce site d'après les «\u00a0Explications du Conseil " +
+    'fédéral\u00a0»\u202f; ce ne sont pas des textes officiels. Un lien sous chaque description mène aux ' +
     "explications, pour les votations jusqu'en mars 2015 aux copies de Swissvotes (Université " +
     'de Berne).',
-  SOURCES_FILE: 'Tous les fichiers lus et leurs requêtes:',
+  SOURCES_FILE: 'Tous les fichiers lus et leurs requêtes\u00a0:',
 };

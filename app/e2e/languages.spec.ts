@@ -170,7 +170,7 @@ test('the start page and the guide in each language: the same working title', as
   const questions = {
     fr:
       'Comment la Suisse aurait-\u2060elle voté si seule une partie des communes ' +
-      "s'était rendue aux urnes?",
+      "s'était rendue aux urnes\u202f?",
     it: 'Come avrebbe votato la Svizzera se solo una parte dei Comuni si fosse recata alle urne?',
   };
   for (const [language, question] of Object.entries(questions)) {
@@ -222,8 +222,9 @@ async function upperTo(
   step: number,
 ): Promise<void> {
   await addLimit(page, name, language);
-  const upper = { de: 'Obere Grenze', fr: 'Limite supérieure' }[language];
-  await page.getByRole('slider', { name: `${upper}: ${name}`, exact: true }).fill(String(step));
+  // In French a no-break space stands before the colon (spec interface-languages).
+  const upper = { de: 'Obere Grenze: ', fr: 'Limite supérieure\u00a0: ' }[language];
+  await page.getByRole('slider', { name: `${upper}${name}`, exact: true }).fill(String(step));
 }
 
 /** What a selection shows: the count, the dark grey municipalities, the selection's figures. */
@@ -246,7 +247,9 @@ test('a selection in French: the same municipalities and result as in German', a
   await expect(selectionHeading(page)).toHaveText('Avec votre sélection');
   const french = await selectionShown(page);
   expect(german.count).toBe("In der Auswahl: 1'455 von 2'103 Gemeinden mit eigenem Ergebnis.");
-  expect(french.count).toBe("Dans la sélection: 1'455 des 2'103 communes avec un résultat propre.");
+  expect(french.count).toBe(
+    "Dans la sélection\u00a0: 1'455 des 2'103 communes avec un résultat propre.",
+  );
   expect(french.aside).toBe(german.aside);
   expect(french.aside).toBeGreaterThan(0);
   expect(french.figures).toEqual(german.figures);
@@ -360,7 +363,8 @@ test('the parties in French and Italian, in the panel', async ({ page }) => {
     await page.mouse.click(point.x, point.y);
     const panel = page.locator('.panel');
     await expect(panel.locator('.name')).toHaveText('Zürich (ZH)');
-    for (const name of names) await expect(panel).toContainText(`${name}: `);
+    const colon = language === 'fr' ? '\u00a0: ' : ': ';
+    for (const name of names) await expect(panel).toContainText(`${name}${colon}`);
   }
 });
 
@@ -406,7 +410,7 @@ test('the annulled vote in French: its reference and the note of the Chancellery
   page,
 }) => {
   await page.goto('fr/votes/5960/');
-  await expect(page.getByText('Source: FF 2019 4421', { exact: true })).toBeVisible();
+  await expect(page.getByText('Source\u00a0: FF 2019 4421', { exact: true })).toBeVisible();
   await expect(sectionOf(page, 'Note de la Chancellerie fédérale').locator('p')).toHaveText(
     /^Par arrêts du 10 avril 2019/,
   );
@@ -491,7 +495,7 @@ test('the page of a vote in French: its title, date and kind', async ({ page }) 
 test('a validated vote in French and Italian: its reference in each', async ({ page }) => {
   // Spec verdicts, "A validated vote in French and Italian", by the address without its slash.
   await page.goto('fr/votes/5670');
-  await expect(page.getByText('Source: FF 2013 2759', { exact: true })).toBeVisible();
+  await expect(page.getByText('Source\u00a0: FF 2013 2759', { exact: true })).toBeVisible();
   await page.goto('it/votes/5670');
   await expect(page.getByText('Fonte: FF 2013 2619', { exact: true })).toBeVisible();
 });

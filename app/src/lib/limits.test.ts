@@ -396,7 +396,9 @@ test("a label's three parts: its name, its date in brackets and its bounds, in e
   });
   for (const t of [de, textsOf('fr'), textsOf('it')]) {
     const { name, date, bounds } = labelPartsOf(track, 0, 327, t);
-    expect(`${name} ${date}: ${bounds}`).toBe(labelOf(track, 0, 327, t));
+    // In French a no-break space stands before the colon.
+    const colon = t.LANGUAGE === 'fr' ? '\u00a0: ' : ': ';
+    expect(`${name} ${date}${colon}${bounds}`).toBe(labelOf(track, 0, 327, t));
   }
   expect(labelPartsOf(track, 0, 327, textsOf('fr')).bounds).toBe('de 0.00% à 19.98%');
   expect(labelPartsOf(track, 0, 327, textsOf('it')).bounds).toBe('da 0.00% a 19.98%');

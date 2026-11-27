@@ -502,7 +502,7 @@ test.describe('on a touch screen 360 pixels wide', () => {
 // (investigations/redesign.md, "Found after the merge").
 const PHONE_LIMIT = {
   de: ['Einwohner', 'Untere Grenze: Einwohner'],
-  fr: ['Habitants', 'Limite inférieure: Habitants'],
+  fr: ['Habitants', 'Limite inférieure\u00a0: Habitants'],
   it: ['Abitanti', 'Limite inferiore: Abitanti'],
 } as const;
 
