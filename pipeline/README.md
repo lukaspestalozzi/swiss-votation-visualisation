@@ -76,6 +76,14 @@ of the three languages with the language the document is in (spec `vote-summarie
   "In Kürze" ("En bref", "In breve") in the same language: not the result, not an argument, not
   a recommendation or a party's position, and not the cost or the funding where these were the
   campaign's arguments. 120 to 450 characters, plain text: no line break, markup or link.
+- **Numbers** are written as the screen writes them, in all three languages: a decimal point
+  ("9.5 Millionen", "17.0%"), and whole numbers grouped by three with an apostrophe ("10'100
+  Franken", "4'000 francs"); a year is not grouped ("2050"). The update stops on a decimal comma,
+  on three digits parted by a space, and on five digits or more in a row. A four-digit amount it
+  cannot tell from a year, so the review checks that one.
+- **French** takes the Confederation's spaces: a no-break space (U+00A0) before ":" and inside
+  « », a narrow no-break space (U+202F) before ";", "?" and "!". The update stops on a French
+  summary in which one of these signs lacks its space. German and Italian take none.
 - **The address** of a vote day's explanations is the PDF that www.admin.ch's page of the day
   links in each language (`https://www.admin.ch/<lang>/volksabstimmung-vom-<d>-<month>-<yyyy>`
   and its French and Italian forms); `investigations/vote-summaries/find_explanations.py` finds
@@ -143,8 +151,9 @@ the file, the vote and, where there is one, the entry.
   Chancellery's. Run the update again later, and look at `pipeline/downloads/chancellery.json`.
 - **A vote without a summary, or a summary without a vote.** Write the new votes' summaries
   (see "The summaries"); remove a summary whose vote the sources no longer give only after
-  looking why. A summary too short or too long, or with a line break, markup or a link, is named
-  with its vote and language.
+  looking why. A summary too short or too long, with a line break, markup or a link, with a
+  number not written as the screen writes it, or in French with a sign without its space, is
+  named with its vote, its language and what is wrong.
 - **The explanations of a vote day do not answer.** The message names the day, the language,
   the address and the answer. www.admin.ch moves its files now and then: find the new address
   with `investigations/vote-summaries/find_explanations.py` and change it in
@@ -173,7 +182,7 @@ the file, the vote and, where there is one, the entry.
 | `src/pipeline/register.py` | The reader of the BFS register. |
 | `src/pipeline/boundaries.py` | The reader of the map's sources: the register's boundaries, checked against the list, and the ThemaKart set's lakes. |
 | `src/pipeline/characteristics.py` | The reader of the characteristics' sources: STAT-TAB's answers in json-stat2, the register's correspondences and swisstopo's areas, with their checks, the counts a table withholds, and the adding up onto the list. |
-| `src/pipeline/summaries.py` | The reader of `vote-summaries.json`, with its checks: the form of each summary and address, a summary for every vote and none more. |
+| `src/pipeline/summaries.py` | The reader of `vote-summaries.json`, with its checks: the form of each summary and address, its numbers and its French spaces, a summary for every vote and none more. |
 | `src/pipeline/checks.py` | The checks between the sources: entries against the list, the sums, the official result. |
 | `src/pipeline/write.py` | The data files. |
 | `tests/` | The unit tests (pytest); `made_up.py` builds made-up sources in the shape of the real ones. |
