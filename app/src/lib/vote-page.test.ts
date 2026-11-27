@@ -460,3 +460,22 @@ test('the three votes of 2026-03-08 share their explanations, each with its own 
   const summaries = new Set([initiative, counterProposal, tieBreak].map((vote) => vote.summary.de));
   expect(summaries.size).toBe(3);
 });
+
+// Spec vote-summaries, "How a summary writes numbers", "The spaces of a French summary" and "The
+// motorways without their cost": the summaries as the data files hold them.
+test('the summaries write numbers as the screen does, French with its spaces, 6730 no cost', () => {
+  expect(voteOf(6860).summary.de).toContain('9.5 Millionen');
+  expect(voteOf(6330).summary.de).toContain("10'100");
+  const motorways = voteOf(6730).summary;
+  for (const text of [motorways.de, motorways.fr, motorways.it]) {
+    expect(text).not.toMatch(/Milliarde|milliard|miliard/u);
+  }
+  const french = voteOf(6750).summary.fr;
+  expect(french).toContain('besoin propre : le besoin');
+  expect(french).toContain('« urgent »');
+  for (const vote of listing.votes) {
+    for (const text of [vote.summary.de, vote.summary.fr, vote.summary.it]) {
+      expect(text, String(vote.id)).not.toMatch(/[0-9],[0-9]|[0-9]{5}/u);
+    }
+  }
+});

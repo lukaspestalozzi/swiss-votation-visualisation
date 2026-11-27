@@ -259,3 +259,15 @@ test('the counts of the new tables: a row per municipality, and each yearly set 
   expect(characteristics.dwellings2000[0]).toHaveLength(2);
   expect(characteristics.buildings2000[0]).toHaveLength(2);
 });
+
+// Spec vote-data, "The validated and the other votes": a validated vote is the one with a
+// reference, and no vote holds a field that says so.
+test('117 votes hold a reference and 8 do not, those of 2026-03-08 and 2026-06-14', () => {
+  const without = listing.votes.filter((vote) => vote.reference === null);
+  expect(listing.votes.length - without.length).toBe(117);
+  expect(without.map((vote) => vote.date)).toEqual([
+    ...Array<string>(6).fill('2026-03-08'),
+    ...Array<string>(2).fill('2026-06-14'),
+  ]);
+  for (const vote of listing.votes) expect(Object.keys(vote)).not.toContain('validated');
+});
