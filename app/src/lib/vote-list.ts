@@ -1,5 +1,5 @@
 // The start page's list of votes (spec vote-list): what each entry shows, grouped by year.
-import { formatDay, formatShare } from './format.ts';
+import { formatDay, formatShare, shareHundredths } from './format.ts';
 import type { Texts } from './texts/index.ts';
 import { voteText, type Vote, type Votes } from './vote-data.ts';
 import type { Side } from './vote-page.ts';
@@ -18,6 +18,9 @@ export interface ListEntry {
   // The side of its verdict, whose colour the verdict takes; none for a tie-break question
   // (spec site-style, "The verdicts in the map's colours").
   readonly side: Side;
+  // Whether its yes share, as the row writes it, is from 47.00% to 53.00%; never for a tie-break
+  // question (spec vote-list, "The votes by their result").
+  readonly close: boolean;
   readonly marks: readonly string[];
 }
 
@@ -68,11 +71,17 @@ function entryOf(vote: Vote, t: Texts): ListEntry {
 function resultOf(
   vote: Vote,
   t: Texts,
-): Pick<ListEntry, 'share' | 'yesPercent' | 'verdict' | 'side'> {
+): Pick<ListEntry, 'share' | 'yesPercent' | 'verdict' | 'side' | 'close'> {
   const { yes, no, passed } = vote.result;
   const yesShare = formatShare(yes, yes + no);
   if (vote.kind === 'tie-break-question') {
-    return { share: t.listTieBreak(yesShare), yesPercent: null, verdict: null, side: null };
+    return {
+      share: t.listTieBreak(yesShare),
+      yesPercent: null,
+      verdict: null,
+      side: null,
+      close: false,
+    };
   }
   if (passed === null) throw new Error(`vote ${String(vote.id)} has no verdict`);
   return {
@@ -80,11 +89,18 @@ function resultOf(
     yesPercent: (yes / (yes + no)) * 100,
     verdict: passed ? t.LIST_PASSED : t.LIST_FAILED,
     side: passed ? 'yes' : 'no',
+    close: isClose(yes, no),
   };
 }
 
-// The votes a button of the list keeps: every vote, the accepted or the rejected ones.
-export type Kept = 'all' | 'yes' | 'no';
+/** Whether a result is close: its yes share, rounded to two decimals, from 47.00% to 53.00%. */
+export function isClose(yes: number, no: number): boolean {
+  const hundredths = shareHundredths(yes, yes + no);
+  return hundredths >= 4700 && hundredths <= 5300;
+}
+
+// The votes a button of the list keeps: every vote, the accepted, the rejected or the close ones.
+export type Kept = 'all' | 'yes' | 'no' | 'close';
 
 /**
  * The list a search and a button leave (spec vote-list, "Finding a vote by its title" and "The
@@ -94,7 +110,7 @@ export type Kept = 'all' | 'yes' | 'no';
 export function listShown(years: readonly ListYear[], typed: string, kept: Kept): ListYear[] {
   const words = typed.toLowerCase().split(/\s+/).filter(Boolean);
   const shows = (entry: ListEntry): boolean => {
-    if (kept !== 'all' && entry.side !== kept) return false;
+    if (kept === 'close' ? !entry.close : kept !== 'all' && entry.side !== kept) return false;
     const title = entry.title.toLowerCase();
     return words.every((word) => title.includes(word));
   };

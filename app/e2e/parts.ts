@@ -353,8 +353,8 @@ const SEARCH: Record<Language, string> = {
 export const searchField = (page: Page, language: Language = 'de'): Locator =>
   page.getByRole('searchbox', { name: SEARCH[language], exact: true });
 
-/** One of the start page's three buttons, by its German name. */
-export const keptButton = (page: Page, name: 'Alle' | 'Angenommen' | 'Abgelehnt'): Locator =>
+/** One of the start page's four buttons, by its name. */
+export const keptButton = (page: Page, name: string): Locator =>
   page.getByRole('button', { name, exact: true });
 
 /** The start page's links to the years of its list. */

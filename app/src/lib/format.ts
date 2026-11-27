@@ -11,6 +11,11 @@ export function formatCount(count: number): string {
   return String(count).replace(/\B(?=(\d{3})+(?!\d))/g, "'");
 }
 
+/** A share in hundredths of a percent, rounded half away from zero, as `formatShare` writes it. */
+export function shareHundredths(part: number, whole: number): number {
+  return Math.floor((2 * part * 10000 + whole) / (2 * whole));
+}
+
 /**
  * The share of `part` in `whole` as percent with two decimals: 49.16%. It is rounded half away
  * from zero, in whole numbers, so that no binary fraction tips it. Without a whole there is no
@@ -25,7 +30,7 @@ export function formatShare(part: number, whole: number): string {
   if (whole === 0) {
     return '–';
   }
-  const hundredths = Math.floor((2 * part * 10000 + whole) / (2 * whole));
+  const hundredths = shareHundredths(part, whole);
   return `${String(Math.floor(hundredths / 100))}.${String(hundredths % 100).padStart(2, '0')}%`;
 }
 

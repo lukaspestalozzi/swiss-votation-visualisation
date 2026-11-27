@@ -31,7 +31,7 @@ interface ListedVote {
   readonly kind: string;
   readonly note: unknown;
   readonly title: { readonly de: string };
-  readonly result: { readonly passed: boolean | null };
+  readonly result: { readonly yes: number; readonly no: number; readonly passed: boolean | null };
 }
 
 async function listedVotes(request: APIRequestContext): Promise<ListedVote[]> {
@@ -354,6 +354,45 @@ test('"Angenommen", "Abgelehnt" and "Alle" keep the votes with that result', asy
   expect(idsOf(votes, (vote) => until(vote) && judged(false)(vote))).toHaveLength(72);
 });
 
+// Spec vote-list, "Close results": an official yes share from 47.00% to 53.00%, as the row
+// writes it, whatever the verdict; 17 votes in the data of 2026-11-27.
+test('"Knappes Ergebnis" keeps the votes with a close result', async ({ page, request }) => {
+  const votes = await listedVotes(request);
+  const hundredths = (vote: ListedVote) =>
+    Math.floor(
+      (2 * vote.result.yes * 10000 + vote.result.yes + vote.result.no) /
+        (2 * (vote.result.yes + vote.result.no)),
+    );
+  const close = (vote: ListedVote) =>
+    vote.kind !== 'tie-break-question' && hundredths(vote) >= 4700 && hundredths(vote) <= 5300;
+  await page.goto('de/');
+  const button = keptButton(page, 'Knappes Ergebnis');
+  await button.click();
+  await expect(button).toHaveAttribute('aria-pressed', 'true');
+  for (const name of ['Alle', 'Angenommen', 'Abgelehnt']) {
+    await expect(keptButton(page, name)).toHaveAttribute('aria-pressed', 'false');
+  }
+  expect(await votesShown(page)).toEqual(idsOf(votes, close));
+  for (const id of [6360, 6150, 6870]) await expect(voteRow(page, id)).toBeVisible();
+  for (const id of [5840, 6760, 6823]) await expect(voteRow(page, id)).toHaveCount(0);
+  await expect(voteRow(page, 6360)).toContainText('50.73% Ja');
+  await expect(voteRow(page, 6360)).toContainText('abgelehnt');
+  const until = (vote: ListedVote) => vote.date <= '2026-09-27';
+  expect(idsOf(votes, (vote) => until(vote) && close(vote))).toHaveLength(17);
+  // With a word, as the other buttons.
+  await searchField(page).fill('initiative');
+  expect(await votesShown(page)).toEqual(
+    idsOf(votes, (vote) => close(vote) && holds(vote, 'initiative')),
+  );
+});
+
+test('the fourth button in French and Italian', async ({ page }) => {
+  await page.goto('fr/');
+  await expect(page.getByRole('button', { name: 'Résultat serré', exact: true })).toBeVisible();
+  await page.goto('it/');
+  await expect(page.getByRole('button', { name: 'Esito risicato', exact: true })).toBeVisible();
+});
+
 test('a word and a button apply together', async ({ page, request }) => {
   const votes = await listedVotes(request);
   await page.goto('de/');
@@ -422,6 +461,8 @@ test.describe(() => {
     await press(keptButton(page, 'Angenommen'));
     await expect(voteRow(page, 6120)).toBeVisible();
     await expect(voteRow(page, 6080)).toHaveCount(0);
+    await press(keptButton(page, 'Knappes Ergebnis'));
+    await expect(voteRow(page, 6120)).toHaveCount(0);
     await press(keptButton(page, 'Alle'));
     await expect(voteRow(page, 6080)).toBeVisible();
     await page.waitForTimeout(50);
