@@ -14,7 +14,9 @@ on 2026-11-27 (`pipeline/downloads/`):
 | census of 2000: languages, religion, education, dwellings (3), buildings | 7 | 1.8 MB | all |
 | population totals, place of birth, jobs (2), cattle, farms, farmland, organic farmland | 9 | 2.8 MB | no: one query holds every year, the newest among them |
 
-The first three rows are 53 of 61 queries and 18 MB, about 5.5 MB gzipped. On a slow day
+The first three rows are 53 of 61 queries and 18 MB, about 5.5 MB gzipped. Found while applying:
+the update asks the population only from 2012 on, so a refresh keeps 49 answers (39 of the
+population, 3 elections, 7 of the census) of the 62 it records, 5.4 MB, and a normal run asks 13. On a slow day
 (20 to 45 s an answer) they are 20 to 35 minutes of a run. Cloud sessions start with an empty
 `pipeline/downloads/`, so a cache that is not in the repository would rarely be there.
 
@@ -22,7 +24,7 @@ The first three rows are 53 of 61 queries and 18 MB, about 5.5 MB gzipped. On a 
 
 **Goals:**
 
-- A normal update asks STAT-TAB about 8 to 12 queries instead of 61, with the same data files.
+- A normal update asks STAT-TAB 13 queries instead of 62, with the same data files.
 - The cache is correct by construction: a changed query is never served from it, and a refresh
   rebuilds it from the sources.
 
