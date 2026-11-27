@@ -197,3 +197,14 @@ On 2026-11-27 Q approved the 19 summaries of section 3 with two edits Claude pro
 all three languages: 5970 keeps only "unabhängig von der Höhe der Strafe" (the initiative's own
 words) and drops "der Schwere der Tat", the opponents' framing; 6822 drops "weitgehend
 unverändert", which read as "it changes almost nothing".
+
+## 6. The German summaries through the humanizer (design, decision 8)
+
+Found by the verification of the change: only the three samples had gone through the
+`humanizer` pass. A detect pass over all 125 German summaries on 2026-11-27 (the skill's rule
+library is English and Spanish; for German its general principles, by a scan for its signs and a
+reading of each hit) found no dash, no inflated or promotional word and no generic closer. One
+pattern stood out: 17 summaries opened their last sentence with "Zudem", the same connector each
+time. It was taken out of all 17, the sentence starting with its subject (5700, 5830, 5880,
+5980, 6170, 6210, 6260, 6320, 6330, 6370, 6440, 6550, 6610, 6750, 6821, 6870, 6890); no fact
+changed. Seven sentences of over 32 words are lists taken from the booklets and stay.

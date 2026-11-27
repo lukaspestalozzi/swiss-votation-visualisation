@@ -85,7 +85,7 @@
   `docs/roadmap.md`: row 18; `README.md`: the summaries. Verify: `openspec validate --all
   --strict` passes.
 - [x] 5.2 Verify: `./scripts/verify-local.sh` passes all 11 steps.
-- [ ] 5.3 On Q's request, the preview of the branch (`CLAUDE.md`, "The preview"). Verify: Q opens
+- [x] 5.3 On Q's request, the preview of the branch (`CLAUDE.md`, "The preview"). Verify: Q opens
   a vote's page with its summary on the phone.
 
 ## Workflow follow-up
