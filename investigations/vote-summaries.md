@@ -190,3 +190,10 @@ then `gzip -9`):
 
 The design estimated about 50 KB and 15 to 20 KB with gzip; the task's bound was 25 KB with gzip.
 A vote's page holds its own summary only, some 300 to 450 bytes.
+
+## 5. Q's review of the sample (task 3.3)
+
+On 2026-11-27 Q approved the 19 summaries of section 3 with two edits Claude proposed, made in
+all three languages: 5970 keeps only "unabhängig von der Höhe der Strafe" (the initiative's own
+words) and drops "der Schwere der Tat", the opponents' framing; 6822 drops "weitgehend
+unverändert", which read as "it changes almost nothing".
