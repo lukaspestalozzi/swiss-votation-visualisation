@@ -41,7 +41,7 @@ Each task runs its tests one at a time, as it writes them, and reports "Ran <tes
 - [x] 4.1 `pipeline/README.md` (the cache, when to refresh, `--refresh`), `CLAUDE.md` (the code
   map, the update's time in "Build and verify", `pipeline/stat-tab-cache/` in "Where things
   are"), `docs/roadmap.md` (a row, off-roadmap). Verify: read.
-- [ ] 4.2 `./scripts/verify-local.sh` passes in full, 11 steps. Verify: its last line.
+- [x] 4.2 `./scripts/verify-local.sh` passes in full, 11 steps. Verify: its last line.
 
 ## Workflow follow-up
 
