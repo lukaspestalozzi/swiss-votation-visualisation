@@ -78,7 +78,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
 
 ## 6. The site's French texts
 
-- [ ] 6.1 `fr.ts`: U+00A0 before ":" and inside « », U+202F before ";", "?" and "!", in every
+- [x] 6.1 `fr.ts`: U+00A0 before ":" and inside « », U+202F before ";", "?" and "!", in every
   text, the functions that write «…» among them. A unit test in `texts.test.ts` writes every
   French text with made-up figures and finds none of these signs without its space (except the
   cantonal votes' " : "). Verify: the test fails before the edit and passes after; `pnpm run

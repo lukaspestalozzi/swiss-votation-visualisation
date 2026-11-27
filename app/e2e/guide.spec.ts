@@ -44,7 +44,7 @@ test("Where the selection's result stands: below the real one, in three language
     fr: [
       'Le vrai résultat',
       "Ce n'est que lorsque vous choisissez des communes qu'un second résultat, recalculé, " +
-        'apparaît au-dessous: «Avec votre sélection».',
+        'apparaît au-dessous\u00a0: «\u00a0Avec votre sélection\u00a0».',
     ],
     it: [
       'Il risultato reale',
@@ -292,7 +292,7 @@ test('the sentence at the limits in French and Italian', async ({ page }) => {
   for (const [language, sentence] of [
     [
       'fr',
-      "Une expérience de pensée: voici l'issue qu'aurait eue la votation si seules les communes " +
+      "Une expérience de pensée\u00a0: voici l'issue qu'aurait eue la votation si seules les communes " +
         'choisies avaient voté. Guide de lecture et sources',
     ],
     [
@@ -316,7 +316,7 @@ test("the summaries of the votes named as the site's own, in three languages", a
     ],
     fr: [
       'Descriptions des objets',
-      '«Explications du Conseil fédéral»',
+      '«\u00a0Explications du Conseil fédéral\u00a0»',
       'pas des textes officiels',
     ],
     it: [

@@ -259,7 +259,7 @@ test('the annulled vote in French and Italian: its title, reference and note in 
   expect(inFrench.title).toBe(
     'Initiative populaire «Pour le couple et la famille - Non à la pénalisation du mariage»',
   );
-  expect(inFrench.source).toBe('Source: FF 2019 4421');
+  expect(inFrench.source).toBe('Source\u00a0: FF 2019 4421');
   expect(inFrench.note).toMatch(/^Par arrêts du 10 avril 2019/);
   const inItalian = votePage(voteOf(5960), fileOf.get(5960), it);
   expect(inItalian.title).toBe(
