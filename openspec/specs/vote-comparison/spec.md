@@ -17,10 +17,11 @@ characteristics of the `characteristics` capability. The figures in the scenario
 
 ### Requirement: The comparison page
 
-The build SHALL write a comparison page in each language, at `/de/compare/`, `/fr/compare/` and
-`/it/compare/`, with the head of every page (the `site-style` capability) and the heading "Zwei
-Abstimmungen vergleichen", "Comparer deux votations" or "Confrontare due votazioni". Until a first
-vote is chosen, it SHALL show the two lists of votes and no limit and no result.
+The build SHALL write a comparison page at `/de/compare/`, `/fr/compare/` and `/it/compare/`,
+with the head of every page (the `site-style` capability) and the heading "Zwei Abstimmungen
+vergleichen" in its language. Its two lists SHALL take the column's width, each below its label,
+at least 1rem apart. Until a first vote is chosen it SHALL show the lists, the second disabled,
+below them the sentence that says what to do, and no limit and no result.
 
 #### Scenario: A page in each language
 
@@ -37,6 +38,26 @@ vote is chosen, it SHALL show the two lists of votes and no limit and no result.
   two linked to `/fr/compare/` and `/it/compare/`
 - **AND** the page shows the lists "Erste Abstimmung" and "Zweite Abstimmung", no limit and no
   result
+
+#### Scenario: Before a vote is chosen
+
+- **WHEN** a visitor opens `/de/compare/` in a window 1,280 pixels wide
+- **THEN** both lists are as wide as the page's column, "Zweite Abstimmung" stands below the first
+  list and its list below its label, and that list is disabled
+- **AND** below the lists stands "Wählen Sie zwei Abstimmungen. Die Gemeinden, die Sie danach
+  auswählen, zählen in beiden."
+
+#### Scenario: The sentence in French and Italian
+
+- **WHEN** a visitor opens `/fr/compare/` and `/it/compare/`
+- **THEN** below the lists stands "Choisissez deux votations. Les communes que vous choisirez
+  ensuite comptent dans les deux." and "Scelga due votazioni. I Comuni che sceglierà in seguito
+  contano in entrambe."
+
+#### Scenario: Once a first vote is chosen
+
+- **WHEN** a visitor on `/de/compare/` chooses 5960 as the first vote
+- **THEN** the sentence is gone, and "Zweite Abstimmung" can be chosen
 
 ### Requirement: Choosing the votes
 
