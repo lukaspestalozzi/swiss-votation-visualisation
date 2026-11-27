@@ -106,6 +106,10 @@ export const fr: Texts = {
 
   // A vote's page: what the sources say.
   SOURCE: 'Source: ',
+  explanationsLink: (documentLanguage) =>
+    documentLanguage === null
+      ? 'Explications du Conseil fédéral (PDF)'
+      : `Explications du Conseil fédéral (PDF, ${{ de: 'en allemand', fr: 'en français', it: 'en italien' }[documentLanguage]})`,
   PROVISIONAL: 'Résultat provisoire: pas encore validé par le Conseil fédéral.',
   NOTE_HEADING: 'Note de la Chancellerie fédérale',
   knownDifference: (official, count, reference, difference, more) =>
@@ -337,5 +341,10 @@ export const fr: Texts = {
     'Caractéristiques: OFS, STATPOP; OFS, STATENT; OFS, élections au Conseil national; OFS, ' +
     'recensement fédéral de la population 2000; OFS, relevé des structures agricoles; ' +
     'swisstopo, swissBOUNDARIES3D 2026.',
+  SOURCE_SUMMARIES:
+    "Descriptions des objets: rédigées par ce site d'après les «Explications du Conseil " +
+    'fédéral»; ce ne sont pas des textes officiels. Un lien sous chaque description mène aux ' +
+    "explications, pour les votations jusqu'en mars 2015 aux copies de Swissvotes (Université " +
+    'de Berne).',
   SOURCES_FILE: 'Tous les fichiers lus et leurs requêtes:',
 };

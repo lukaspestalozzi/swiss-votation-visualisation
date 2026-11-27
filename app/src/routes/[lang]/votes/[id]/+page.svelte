@@ -29,6 +29,7 @@
   import ResultRow from './ResultRow.svelte';
   import ShareBar from '../../ShareBar.svelte';
   import SelectionBar from './SelectionBar.svelte';
+  import VoteSummary from './VoteSummary.svelte';
 
   let { data }: PageProps = $props();
   const t = $derived(textsOf(data.lang));
@@ -187,6 +188,7 @@
 {#if data.majoritiesNeeded !== null}
   <p>{data.majoritiesNeeded}</p>
 {/if}
+<VoteSummary summary={data.summary} />
 
 {#if data.judged !== null}
   {@const judged = data.judged}

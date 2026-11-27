@@ -2,6 +2,7 @@
   import type { Comparable, VoteResults } from '../../../lib/comparison.ts';
   import type { Texts } from '../../../lib/texts/index.ts';
   import ResultRow from '../votes/[id]/ResultRow.svelte';
+  import VoteSummary from '../votes/[id]/VoteSummary.svelte';
 
   // A chosen vote of the comparison (spec vote-comparison, "The results of a vote"; design of
   // redesign-site, decision 26): its title, date and kind, its results as its page draws them,
@@ -26,6 +27,7 @@
 <section class="vote" data-vote={vote.id}>
   <h2>{vote.title}</h2>
   <p class="secondary">{vote.dateAndKind}</p>
+  <div class="summary"><VoteSummary summary={vote.summary} /></div>
   {#if results === 'loading'}
     <p>{t.VOTE_LOADING}</p>
   {:else if results === 'failed'}
@@ -69,5 +71,8 @@
   }
   .count {
     margin: 0.875rem 0 0;
+  }
+  .summary {
+    margin-bottom: 1rem;
   }
 </style>
