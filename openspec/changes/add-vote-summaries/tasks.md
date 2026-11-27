@@ -48,7 +48,7 @@
   by the rules of decision 8, by vote day; the German ones through the `humanizer` pass.
   Verify: the reader of task 2.1 accepts the file (a test that reads the real file, or the
   update in 3.2).
-- [ ] 3.2 Run the update: `uv run --directory pipeline --locked python -m pipeline update`.
+- [x] 3.2 Run the update: `uv run --directory pipeline --locked python -m pipeline update`.
   Verify: it passes every check and requests the 132 addresses; `git diff` of
   `app/static/data/` shows only the two new fields in `votes.json` and the new entry in
   `sources.json`; a second run changes nothing.
@@ -57,11 +57,11 @@
 
 ## 4. The app
 
-- [ ] 4.1 `vote-data.ts`: `summary` and `explanations` in the type of a vote; `voteText` reads
+- [x] 4.1 `vote-data.ts`: `summary` and `explanations` in the type of a vote; `voteText` reads
   them, an error naming the vote and the language when one is missing. Unit test for the
   scenario "A summary of what a vote is about missing in one language". Verify: `pnpm run
   test` and `pnpm run check` pass.
-- [ ] 4.2 `texts/`: the link's text in three languages (task 1.2) and the guide's sentence on
+- [x] 4.2 `texts/`: the link's text in three languages (task 1.2) and the guide's sentence on
   the summaries; `texts.test.ts` still finds no French or Italian text equal to the German.
   Verify: `pnpm run test` passes.
 - [ ] 4.3 A vote's page: the summary and the link below the sentence on the majorities, above
