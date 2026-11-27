@@ -692,7 +692,7 @@ def test_a_changed_query_is_asked_anew(tmp_path: Path) -> None:
     update(directory, data, first, TODAY)
     index = directory / "stat-tab-cache" / "index.json"
     entries = json.loads(index.read_text(encoding="utf-8"))
-    name = sorted(n for n in entries if n.startswith("population_ages_"))[0]
+    name = min(n for n in entries if n.startswith("population_ages_"))
     entries[name]["query"] = "a query the pipeline no longer sends"
     index.write_text(json.dumps(entries), encoding="utf-8")
     second = Sources()
