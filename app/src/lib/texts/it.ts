@@ -105,6 +105,10 @@ export const it: Texts = {
 
   // A vote's page: what the sources say.
   SOURCE: 'Fonte: ',
+  explanationsLink: (documentLanguage) =>
+    documentLanguage === null
+      ? 'Spiegazioni del Consiglio federale (PDF)'
+      : `Spiegazioni del Consiglio federale (PDF, ${{ de: 'in tedesco', fr: 'in francese', it: 'in italiano' }[documentLanguage]})`,
   PROVISIONAL: 'Risultato provvisorio: non ancora accertato dal Consiglio federale.',
   NOTE_HEADING: 'Nota della Cancelleria federale',
   knownDifference: (official, count, reference, difference, more) =>
@@ -332,5 +336,10 @@ export const it: Texts = {
     'Caratteristiche: UST, STATPOP; UST, STATENT; UST, elezioni del Consiglio nazionale; UST, ' +
     'censimento federale della popolazione 2000; UST, rilevazione delle strutture agricole; ' +
     'swisstopo, swissBOUNDARIES3D 2026.',
+  SOURCE_SUMMARIES:
+    'Descrizioni degli oggetti: redatte da questo sito sulla base delle «Spiegazioni del ' +
+    'Consiglio federale»; non sono testi ufficiali. Un link sotto ogni descrizione porta alle ' +
+    'spiegazioni, per le votazioni fino a marzo 2015 alle copie di Swissvotes (Università di ' +
+    'Berna).',
   SOURCES_FILE: 'Tutti i file letti e le loro interrogazioni:',
 };

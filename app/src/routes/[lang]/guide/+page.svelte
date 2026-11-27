@@ -30,6 +30,7 @@
     <p>{t.SOURCE_VOTES}</p>
     <p>{t.sourceMap(data.mapDate, data.lakesSet)}</p>
     <p>{t.SOURCE_CHARACTERISTICS}</p>
+    <p>{t.SOURCE_SUMMARIES}</p>
     <p>{t.SOURCES_FILE} <a href={asset('data/sources.json')}>data/sources.json</a></p>
   </section>
 </div>

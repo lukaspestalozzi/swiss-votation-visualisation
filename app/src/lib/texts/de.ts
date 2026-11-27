@@ -101,6 +101,10 @@ export const de: Texts = {
 
   // A vote's page: what the sources say.
   SOURCE: 'Quelle: ',
+  explanationsLink: (documentLanguage) =>
+    documentLanguage === null
+      ? 'Erläuterungen des Bundesrates (PDF)'
+      : `Erläuterungen des Bundesrates (PDF, ${{ de: 'auf Deutsch', fr: 'auf Französisch', it: 'auf Italienisch' }[documentLanguage]})`,
   PROVISIONAL: 'Vorläufiges Ergebnis: vom Bundesrat noch nicht erwahrt.',
   NOTE_HEADING: 'Hinweis der Bundeskanzlei',
   knownDifference: (official, count, reference, difference, more) =>
@@ -332,5 +336,10 @@ export const de: Texts = {
   SOURCE_CHARACTERISTICS:
     'Merkmale: BFS, STATPOP; BFS, STATENT; BFS, Nationalratswahlen; BFS, Volkszählung 2000; ' +
     'BFS, Landwirtschaftliche Strukturerhebung; swisstopo, swissBOUNDARIES3D 2026.',
+  SOURCE_SUMMARIES:
+    'Kurzbeschreibungen der Vorlagen: von dieser Website selbst geschrieben, nach den ' +
+    '«Erläuterungen des Bundesrates», und kein amtlicher Text. Ein Link unter jeder ' +
+    'Beschreibung führt zu den Erläuterungen, für die Abstimmungen bis März 2015 zu den ' +
+    'Kopien von Swissvotes (Universität Bern).',
   SOURCES_FILE: 'Alle gelesenen Dateien und ihre Abfragen:',
 };

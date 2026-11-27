@@ -9,7 +9,7 @@ import {
 } from 'calculation';
 import { formatCantonalVotes, formatCount, formatDate, formatShare } from './format.ts';
 import type { Texts } from './texts/index.ts';
-import { voteText, type Row, type Vote, type VoteFile } from './vote-data.ts';
+import { explanationOf, voteText, type Row, type Vote, type VoteFile } from './vote-data.ts';
 
 // The side a verdict's word stands for, which the page writes in the map's colour of that side
 // (spec site-style, "The verdicts in the map's colours"); none for "nicht nötig" or "–".
@@ -74,10 +74,28 @@ export interface TieBreak {
   readonly notJudged: string;
 }
 
+// A vote's summary and the link to its day's explanations (spec vote-summaries).
+export interface Summary {
+  readonly text: string;
+  readonly href: string;
+  readonly label: string;
+}
+
+/** The summary of a vote and its link, in the language of `t`. */
+export function summaryOf(vote: Vote, t: Texts): Summary {
+  const explanation = explanationOf(vote, t.LANGUAGE);
+  return {
+    text: voteText(vote, 'summary', t.LANGUAGE),
+    href: explanation.address,
+    label: t.explanationsLink(explanation.language === t.LANGUAGE ? null : explanation.language),
+  };
+}
+
 export interface VotePage {
   readonly title: string;
   readonly date: string;
   readonly kind: string;
+  readonly summary: Summary;
   // Null for a tie-break question, which the calculation does not judge.
   readonly majoritiesNeeded: string | null;
   readonly judged: Judged | null;
@@ -128,6 +146,7 @@ export function votePage(vote: Vote, file: VoteFile | undefined, t: Texts): Vote
     title: voteText(vote, 'title', t.LANGUAGE),
     date: formatDate(vote.date, t),
     kind: t.KINDS[vote.kind],
+    summary: summaryOf(vote, t),
     majoritiesNeeded: majorities === 'not-calculated' ? null : t.MAJORITIES_NEEDED[majorities],
     judged: majorities === 'not-calculated' ? null : judgedOfRows(name, rows, majorities, t),
     tieBreak: vote.kind === 'tie-break-question' ? tieBreakOf(vote, t) : null,

@@ -146,6 +146,9 @@ export interface Texts {
 
   // A vote's page: what the sources say.
   readonly SOURCE: string;
+  // The link below a vote's summary to its day's explanations (spec vote-summaries), naming the
+  // document's language when it is not the page's.
+  readonly explanationsLink: (documentLanguage: Language | null) => string;
   readonly PROVISIONAL: string;
   readonly NOTE_HEADING: string;
   readonly knownDifference: (
@@ -242,6 +245,7 @@ export interface Texts {
   readonly SOURCE_VOTES: string;
   readonly sourceMap: (date: string, lakesSet: number) => string;
   readonly SOURCE_CHARACTERISTICS: string;
+  readonly SOURCE_SUMMARIES: string;
   readonly SOURCES_FILE: string;
 }
 

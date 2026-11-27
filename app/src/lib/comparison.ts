@@ -10,7 +10,7 @@ import type { VoteEntries } from './result-map.ts';
 import { linkOf, selectionOf, type Selection } from './share-link.ts';
 import type { Texts } from './texts/index.ts';
 import type { VoteFile, Votes } from './vote-data.ts';
-import { judgedOf, votePage, type Judged, type ResultShown } from './vote-page.ts';
+import { judgedOf, votePage, type Judged, type ResultShown, type Summary } from './vote-page.ts';
 
 /** A vote the comparison offers: one the calculation judges, in the language of its texts. */
 export interface Comparable {
@@ -22,6 +22,8 @@ export interface Comparable {
   // How its table's head writes it, as its page does.
   readonly title: string;
   readonly dateAndKind: string;
+  // Its summary and the link to its day's explanations, as its page shows them.
+  readonly summary: Summary;
   readonly majorities: Majorities;
   // The notes its page has below its result: a known difference, a provisional result.
   readonly notes: readonly string[];
@@ -50,6 +52,7 @@ export function comparableVotes(
           choice: `${page.date} · ${page.title}`,
           title: page.title,
           dateAndKind: `${page.date} · ${page.kind}`,
+          summary: page.summary,
           majorities,
           notes: [...page.differences, ...(page.provisional === null ? [] : [page.provisional])],
         },

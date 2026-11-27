@@ -24,6 +24,13 @@ export interface Sums {
   readonly no: number;
 }
 
+// Where a vote day's explanations of the Federal Council are for one language of the page, and
+// the language the document is in (spec vote-summaries, "The link to the explanations").
+export interface Explanation {
+  readonly address: string;
+  readonly language: Language;
+}
+
 export interface Vote {
   // The BFS's id, the key of the vote's file.
   readonly id: number;
@@ -37,6 +44,9 @@ export interface Vote {
   readonly result: Result;
   readonly reference: Texts | null;
   readonly note: Texts | null;
+  // The site's summary of what the vote is about, and its vote day's explanations.
+  readonly summary: Texts;
+  readonly explanations: Readonly<Record<Language, Explanation>>;
   readonly sums: Sums;
 }
 
@@ -54,14 +64,14 @@ const LANGUAGE_NAMES: Readonly<Record<Language, string>> = {
 };
 
 /**
- * A vote's title, reference or note in a language (spec interface-languages, "The vote's texts
- * in the page's language"). A text missing or empty in that language is an error that names the
+ * A vote's title, reference, note or summary in a language (spec interface-languages, "The vote's
+ * texts in the page's language"). A text missing or empty in that language is an error that names the
  * vote and the language, so that the build fails; the caller asks for a reference or a note only
  * where the vote has one.
  */
 export function voteText(
   vote: Vote,
-  field: 'title' | 'reference' | 'note',
+  field: 'title' | 'reference' | 'note' | 'summary',
   language: Language,
 ): string {
   const text = vote[field]?.[language];
@@ -69,6 +79,18 @@ export function voteText(
     throw new Error(`vote ${String(vote.id)} has no ${field} in ${LANGUAGE_NAMES[language]}`);
   }
   return text;
+}
+
+/**
+ * The explanations of a vote's day for a language of the page (spec vote-summaries): an error
+ * that names the vote and the language when they are missing, so that the build fails.
+ */
+export function explanationOf(vote: Vote, language: Language): Explanation {
+  const explanation = vote.explanations[language] as Explanation | undefined;
+  if (explanation === undefined || explanation.address === '') {
+    throw new Error(`vote ${String(vote.id)} has no explanations in ${LANGUAGE_NAMES[language]}`);
+  }
+  return explanation;
 }
 
 // One entry: [number, registered voters, ballots cast, valid ballots, yes votes, no votes].
