@@ -56,7 +56,55 @@ the "days" object of `pipeline/vote-summaries.json`.
   ten common words of each language: every document is in the language its page names, except
   the French one of 2016-02-28 (German) and the Italian ones before 2015-06-14 (the French copy).
 
-RESULTS
+The second run (paced, a 403 tried again): **132 addresses, 0 problems**. The addresses are in
+the output file and, as decided, become the "days" of `pipeline/vote-summaries.json`.
+
+| Vote day | Server | Document's language for de / fr / it | Status, type |
+|---|---|---|---|
+| 2013-03-03 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2013-06-09 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2013-09-22 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2013-11-24 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2014-02-09 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2014-05-18 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2014-09-28 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2014-11-30 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2015-03-08 | swissvotes.ch | de / fr / fr | all 200, application/pdf |
+| 2015-06-14 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2016-02-28 | www.admin.ch | de / de / it | all 200, application/pdf |
+| 2016-06-05 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2016-09-25 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2016-11-27 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2017-02-12 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2017-05-21 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2017-09-24 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2018-03-04 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2018-06-10 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2018-09-23 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2018-11-25 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2019-02-10 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2019-05-19 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2020-02-09 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2020-09-27 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2020-11-29 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2021-03-07 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2021-06-13 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2021-09-26 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2021-11-28 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2022-02-13 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2022-05-15 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2022-09-25 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2023-06-18 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2024-03-03 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2024-06-09 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2024-09-22 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2024-11-24 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2025-02-09 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2025-09-28 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2025-11-30 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2026-03-08 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2026-06-14 | www.admin.ch | de / fr / it | all 200, application/pdf |
+| 2026-09-27 | www.admin.ch | de / fr / it | all 200, application/pdf |
 
 ## 2. The document's names, and the law
 
@@ -99,4 +147,25 @@ vote, the two vote days on Swissvotes' copies (5670, 5800) and the most disputed
 **Three samples**, the German ones after the humanizer pass (one passive turned active), with
 their length in characters:
 
-SAMPLES
+**5960, «Für Ehe und Familie – gegen die Heiratsstrafe» (2016-02-28)**
+
+- de (361): Die Initiative will in der Verfassung festhalten, dass Ehepaare gegenüber anderen Lebensformen nicht benachteiligt werden dürfen, namentlich bei den Steuern und den Sozialversicherungen. Sie definiert die Ehe als die auf Dauer angelegte, gesetzlich geregelte Lebensgemeinschaft von Mann und Frau. Ein Ehepaar soll steuerlich eine Wirtschaftsgemeinschaft bilden.
+- fr (360): L’initiative veut inscrire dans la Constitution que les couples mariés ne peuvent pas être pénalisés par rapport à d’autres modes de vie, notamment en matière d’impôts et d’assurances sociales. Elle définit le mariage comme l’union durable et réglementée par la loi d’un homme et d’une femme. Le couple marié forme une communauté économique sur le plan fiscal.
+- it (367): L’iniziativa vuole sancire nella Costituzione che il matrimonio non sia svantaggiato rispetto ad altri modi di vita, segnatamente sotto il profilo fiscale e delle assicurazioni sociali. Definisce il matrimonio come la durevole convivenza, disciplinata dalla legge, di un uomo e di una donna. Dal punto di vista fiscale i coniugi costituiscono una comunione economica.
+
+**6650, «Für ein besseres Leben im Alter (Initiative für eine 13. AHV-Rente)» (2024-03-03)**
+
+- de (293): Die Initiative will die Altersrenten der AHV um eine 13. Monatsrente pro Jahr erhöhen. Die höchste Altersrente steigt damit für Einzelpersonen um 2450 auf 31 850 Franken im Jahr, für Ehepaare um 3675 auf 47 775 Franken. Die Ergänzungsleistungen dürfen wegen der 13. Rente nicht gekürzt werden.
+- fr (335): L’initiative veut ajouter chaque année une 13e rente mensuelle aux rentes de vieillesse de l’AVS. La rente annuelle maximale augmente ainsi de 2450 francs, à 31 850 francs, pour une personne seule et de 3675 francs, à 47 775 francs, pour un couple marié. La 13e rente ne doit pas entraîner de réduction des prestations complémentaires.
+- it (345): L’iniziativa chiede di aggiungere ogni anno una tredicesima mensilità alle rendite di vecchiaia AVS. La rendita annua massima aumenta così di 2450 franchi, fino a 31 850 franchi, per le persone sole e di 3675 franchi, fino a 47 775 franchi, per le coppie sposate. La tredicesima non deve comportare una riduzione delle prestazioni complementari.
+
+**6823, the tie-break question of 2026-03-08**
+
+- de (231): Die Stichfrage entscheidet, ob die Bargeldinitiative oder der Gegenentwurf in Kraft tritt, falls Volk und Stände beiden zustimmen. Beantworten darf sie auch, wer die ersten beiden Fragen mit Nein beantwortet oder leer gelassen hat.
+- fr (279): La question subsidiaire détermine si l’initiative pour l’argent liquide ou le contre-projet entre en vigueur au cas où le peuple et les cantons acceptent les deux textes. On peut y répondre même si l’on a répondu non aux deux premières questions ou si on les a laissées en blanc.
+- it (248): La domanda risolutiva stabilisce se entra in vigore l’iniziativa denaro contante oppure il controprogetto, qualora Popolo e Cantoni accettino entrambi. Si può rispondere anche se si è risposto no alle prime due domande o le si è lasciate in bianco.
+
+For 6650 the booklet's "In Kürze" also names the cost (about 4.1 billion francs in the first
+year) and that the initiative leaves its funding open; the samples leave both out, as they
+were the opponents' main arguments (asked of Q). A first French draft of 6650 said the
+maximum pension went "de 2450 à 31 850 francs"; it rises by 2450 to 31 850, corrected.

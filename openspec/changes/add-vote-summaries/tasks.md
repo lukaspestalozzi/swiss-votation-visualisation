@@ -2,7 +2,7 @@
 
 ## 1. Investigation: the booklets, before any summary is written
 
-- [ ] 1.1 `investigations/vote-summaries.md` with a script in `investigations/vote-summaries/`
+- [x] 1.1 `investigations/vote-summaries.md` with a script in `investigations/vote-summaries/`
   (Python, standard library only): for each of the 44 vote days of `votes.json`, the address of
   the Federal Council's explanations as a PDF in German, French and Italian, on
   `https://www.admin.ch` from 2015-06-14 and Swissvotes' copies before (design, decision 14),
