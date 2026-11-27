@@ -393,6 +393,31 @@ test('the fourth button in French and Italian', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Esito risicato', exact: true })).toBeVisible();
 });
 
+// The line between two rows ends where the line above their vote day ends (design of
+// tidy-after-review, decision 6).
+test("the line between two rows ends with the vote day's line", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('de/');
+  const ends = await page
+    .locator('.day')
+    .first()
+    .evaluate((day) => {
+      const second = day.querySelectorAll('.vote-row')[1];
+      if (second === undefined) throw new Error('the first vote day has fewer than two rows');
+      // The line is the row's ::before where it has one, else its top border.
+      const line = getComputedStyle(second, '::before');
+      const drawn = line.content !== 'none';
+      const row = second.getBoundingClientRect();
+      return {
+        day: day.getBoundingClientRect().right,
+        row: row.right - (drawn ? parseFloat(line.right) : 0),
+        top: parseFloat(drawn ? line.height : getComputedStyle(second).borderTopWidth),
+      };
+    });
+  expect(ends.top).toBe(1);
+  expect(Math.abs(ends.row - ends.day)).toBeLessThanOrEqual(1);
+});
+
 test('a word and a button apply together', async ({ page, request }) => {
   const votes = await listedVotes(request);
   await page.goto('de/');
