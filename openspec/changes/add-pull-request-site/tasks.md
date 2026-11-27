@@ -18,4 +18,4 @@
 
 - [x] 2.1 `CLAUDE.md`: the preview, its command and the procedure of publishing it; the code map
   of `scripts/`. `docs/roadmap.md`: row 17. Verify: `openspec validate --all --strict` passes.
-- [ ] 2.2 Verify: `./scripts/verify-local.sh` passes all 11 steps.
+- [x] 2.2 Verify: `./scripts/verify-local.sh` passes all 11 steps.
