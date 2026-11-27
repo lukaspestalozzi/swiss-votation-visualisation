@@ -84,8 +84,8 @@ id.
 
 Each vote day SHALL have in the file of the summaries, for German, French and Italian, an
 `https` address of the Federal Council's explanations and the language of that document: from
-2015-06-14 on `www.admin.ch` in that language; before, a copy on `swissvotes.ch`, for Italian the
-French one. The update SHALL request each and stop, naming day, language and address, when one
+2015-06-14 on `www.admin.ch`, in that language where it has one; before, a copy on
+`swissvotes.ch`, for Italian the French one. The update SHALL request each and stop, naming day, language and address, when one
 is missing, on another server or does not answer with a PDF.
 
 #### Scenario: An address that no longer answers
@@ -107,6 +107,12 @@ is missing, on another server or does not answer with a PDF.
 - **WHEN** the addresses of 2014-02-09 are read from the file of the summaries
 - **THEN** the German one is Swissvotes' German copy, the French and the Italian one its French
   copy, and the Italian one's language is French
+
+#### Scenario: A day without a French booklet on admin.ch
+
+- **WHEN** the addresses of 2016-02-28 are read from the file of the summaries
+- **THEN** the French one is the German booklet on `www.admin.ch`, the one its French pages link,
+  and its language is German
 
 #### Scenario: An address on a server of neither kind
 
@@ -134,15 +140,20 @@ site (`site-style`).
 #### Scenario: The summary in French and Italian
 
 - **WHEN** a visitor opens `/fr/votes/5960/` and `/it/votes/5960/`
-- **THEN** each shows the summary of 5960 in its language, and the link "Explications du Conseil
-  fédéral (PDF)" or "Spiegazioni del Consiglio federale (PDF)" to the address of 2016-02-28 in
-  its language
+- **THEN** each shows the summary of 5960 in its language, and the Italian one the link
+  "Spiegazioni del Consiglio federale (PDF)" to the Italian explanations of 2016-02-28
 
 #### Scenario: An early vote in Italian
 
 - **WHEN** a visitor opens `/it/votes/5800/`
 - **THEN** below its summary stands the link "Spiegazioni del Consiglio federale (PDF, in
   francese)" to Swissvotes' French copy of the explanations of 2014-02-09
+
+#### Scenario: A French page linking a German booklet
+
+- **WHEN** a visitor opens `/fr/votes/5960/`
+- **THEN** below its summary stands the link "Explications du Conseil fédéral (PDF, en
+  allemand)" to admin.ch's German explanations of 2016-02-28
 
 #### Scenario: The tie-break question's page
 
