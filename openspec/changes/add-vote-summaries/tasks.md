@@ -64,18 +64,18 @@
 - [x] 4.2 `texts/`: the link's text in three languages (task 1.2) and the guide's sentence on
   the summaries; `texts.test.ts` still finds no French or Italian text equal to the German.
   Verify: `pnpm run test` passes.
-- [ ] 4.3 A vote's page: the summary and the link below the sentence on the majorities, above
+- [x] 4.3 A vote's page: the summary and the link below the sentence on the majorities, above
   the workbench, as a paragraph of the site; the link in the text's colour and at least 44
   pixels high on a touch screen. Browser tests for the scenarios of "The summary on a vote's
   page", one at a time. Verify: `pnpm run build` and those tests pass.
-- [ ] 4.4 The comparison: `comparison.ts` gives each comparable vote its summary and address in
+- [x] 4.4 The comparison: `comparison.ts` gives each comparable vote its summary and address in
   the page's language, `ComparedVote.svelte` shows them under its head. Unit test and browser
   tests for "The summary on the comparison". Measure the comparison's page data before and
   after, with and without gzip, and record it in `investigations/vote-summaries.md`. Verify:
   the tests pass; the growth is within 25 KB with gzip, or Q is told the figure.
-- [ ] 4.5 The guide: the sentence of the requirement "The sources" in three languages. Browser
+- [x] 4.5 The guide: the sentence of the requirement "The sources" in three languages. Browser
   test of the scenario "The summaries of the votes". Verify: the test passes.
-- [ ] 4.6 Verify the budgets: the budget tests of the limits, the map and the comparison pass
+- [x] 4.6 Verify the budgets: the budget tests of the limits, the map and the comparison pass
   unchanged (`pnpm run test:e2e`).
 
 ## 5. Docs and checks
