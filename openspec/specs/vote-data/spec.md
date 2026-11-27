@@ -62,8 +62,8 @@ The pipeline SHALL write one list of all covered votes, ordered by date and then
 each vote it SHALL hold: the id the BFS gives it, the number the Federal Chancellery gives it,
 the date, the kind, the title in German, French and Italian as the BFS gives it, whether the
 vote is validated, the result, the Chancellery's reference and note, and the sums of the
-vote's entries. A title that is missing or empty in one of the three languages SHALL stop the
-update.
+vote's entries. A title that is missing or empty in one of the three languages SHALL stop
+the update.
 
 #### Scenario: A vote in the list
 
@@ -81,6 +81,25 @@ update.
 - **GIVEN** a BFS file in which a vote has no Italian title
 - **WHEN** the update command runs
 - **THEN** it stops with an error that names the vote and the language, and writes no data file
+
+### Requirement: The summary and explanations of a vote
+
+For each vote the list of votes SHALL hold its summary and the address of its vote day's
+explanations with that document's language, each for German, French and Italian, from the file
+of the summaries (`vote-summaries`).
+
+#### Scenario: A vote's summary and explanations
+
+- **WHEN** the vote with id 5960 is read from the list of votes
+- **THEN** its summary in each of the three languages is the one `pipeline/vote-summaries.json`
+  holds for 5960, and the address of its explanations in each language is the one that file
+  holds for 2016-02-28
+
+#### Scenario: Three votes of one day share their explanations
+
+- **WHEN** the votes 6821, 6822 and 6823 are read from the list of votes
+- **THEN** each has a summary of its own, and all three have the same addresses of explanations,
+  those of 2026-03-08
 
 ### Requirement: The kind of a vote
 
@@ -467,8 +486,10 @@ cantonal votes in its result exactly when its kind needs both majorities.
 
 The pipeline SHALL write, with the data files, a record of every source file they were made
 from: its address, its size, its checksum, for a BFS vote-day file the time the file states for
-itself, and for an answer to a query the query it answers. The data files hold no time of the
-run: an update with unchanged sources SHALL leave every data file unchanged, byte for byte.
+itself, and for an answer to a query the query it answers. The record SHALL also name the file
+of the summaries, `pipeline/vote-summaries.json`, with its size and checksum. The data files hold no
+time of the run: an update with unchanged sources SHALL leave every data file unchanged, byte
+for byte.
 
 #### Scenario: The record names every source file
 
@@ -484,6 +505,12 @@ run: an update with unchanged sources SHALL leave every data file unchanged, byt
   and
   swisstopo's swissBOUNDARIES3D of 2026-01, each with its address, size and checksum, and each
   answer of STAT-TAB and of the Federal Chancellery with its query
+
+#### Scenario: The record names the file of the summaries
+
+- **WHEN** the record of the sources is read after an update
+- **THEN** it names `pipeline/vote-summaries.json` with its size and checksum, and does not
+  name the explanations, which the update requests but does not read
 
 #### Scenario: A second run changes nothing
 

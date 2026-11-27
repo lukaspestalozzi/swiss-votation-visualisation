@@ -168,6 +168,18 @@ SHALL link to `data/sources.json`, the record of every file read.
 - **THEN** the section "Quellen" names "STATPOP", "STATENT", "Nationalratswahlen", "Volkszählung
   2000", "Landwirtschaftliche Strukturerhebung" and "swissBOUNDARIES3D 2026"
 
+### Requirement: The summaries named as the site's own
+
+The section "Quellen" SHALL say that the summary of each vote (`vote-summaries`) is the site's
+own summary of the Federal Council's explanations, not an official text.
+
+#### Scenario: The summaries of the votes
+
+- **WHEN** a visitor opens `/de/guide/`, `/fr/guide/` and `/it/guide/`
+- **THEN** the section names the summaries of the votes as the site's own summaries of the
+  "Erläuterungen des Bundesrates" ("Explications du Conseil fédéral", "Spiegazioni del Consiglio
+  federale"), in a sentence that is not the German one in French and Italian
+
 ### Requirement: Every page links to the guide
 
 Every page under `/de/`, `/fr/` and `/it/` SHALL link to the guide from its head, with the
