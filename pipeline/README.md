@@ -64,6 +64,25 @@ day), and again when the Federal Chancellery has validated them (some weeks late
 `--reuse-downloads` uses the files in `pipeline/downloads/` where they are there instead of
 downloading them again; for development only, since the sources change.
 
+### The cache of STAT-TAB's final answers
+
+`stat-tab-cache/` keeps, gzipped and committed, the STAT-TAB answers of figures that no longer
+change: the census of 2000, every National Council election but the newest, and the population
+by age of every year but the newest the BFS gives (53 of the 61 queries in 2026). A normal update
+takes these from the cache, each only for the same query (`index.json` names the query and the
+checksum of each), and asks STAT-TAB for the rest, so it waits for about 8 queries instead of 61.
+`sources.json` says of each STAT-TAB answer whether it came from the cache. The cache is written
+by the pipeline only: a file without its entry in `index.json`, or an entry without its file,
+stops the update.
+
+`update --refresh` asks every answer anew and writes the cache again. Run it:
+
+- once a year, when the BFS's files move to a new list of municipalities, and
+- when the BFS announces a revision of past figures.
+
+A refresh whose answers equal the cache changes only the `cached` flags of `sources.json`. It
+cannot be combined with `--reuse-downloads`.
+
 ## The summaries
 
 `vote-summaries.json` holds, under `votes`, each vote's summary by its id in `de`, `fr` and `it`,
@@ -172,8 +191,10 @@ the file, the vote and, where there is one, the entry.
 | `known-differences.json` | The differences between the entries and the official result that are written down. |
 | `canton-changes.json` | The municipalities that changed canton, with their earlier canton and their last day there. |
 | `vote-summaries.json` | The summaries of the votes and the addresses of the explanations, written by hand ("The summaries"). |
+| `stat-tab-cache/` | STAT-TAB's answers of final figures, gzipped, with `index.json` ("The cache of STAT-TAB's final answers"); written by the pipeline only. |
 | `src/pipeline/__init__.py` | The package; it holds only its description. |
-| `src/pipeline/__main__.py` | The command line: `update`. |
+| `src/pipeline/__main__.py` | The command line: `update`, with `--reuse-downloads` and `--refresh`. |
+| `src/pipeline/stat_tab_cache.py` | The cache of STAT-TAB's final answers: an answer read for the same query, written gzipped without a time, the index checked; and which years are final. |
 | `src/pipeline/update.py` | The steps of a run: download, read, check, write; and the two lists above. |
 | `src/pipeline/download.py` | The addresses of the sources, the Federal Chancellery's and STAT-TAB's queries, the lists the STAT-TAB tables give, the election days, the download, and the probe of an address of the explanations. |
 | `src/pipeline/counts.py` | The one function every count passes: a whole number from zero, or the run stops. |
