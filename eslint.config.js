@@ -29,8 +29,9 @@ export default defineConfig(
   },
   { files: ['app/**'], languageOptions: { globals: globals.browser } },
   {
-    // The root's configuration files belong to no tsconfig.json: linted without type information.
-    files: ['*.js'],
+    // The root's configuration files and scripts belong to no tsconfig.json: linted without type
+    // information.
+    files: ['*.js', 'scripts/*.mjs'],
     extends: [ts.configs.disableTypeChecked],
     languageOptions: { globals: globals.node },
   },

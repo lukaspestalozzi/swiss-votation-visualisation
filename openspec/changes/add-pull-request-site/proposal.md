@@ -2,29 +2,29 @@
 
 ## Why
 
-To look at a change on the site, Q has had to merge it to `main`, which publishes it. GitHub
-gives a repository one Pages site, so a second, preview site of this repository is not possible,
-and GitHub's own preview deployments are "not available to the public" (README of
-`actions/deploy-pages`, 2026-11-27). Q (2026-11-27): each pull request's build shall be kept as
-an artifact that can be downloaded and looked at offline.
+To look at a change on the site, Q has had to merge it to `main`, which publishes it. Q wants to
+check a branch on the phone, easily and quickly, for its design and features; one language and a
+part of the data are enough (2026-11-27).
 
-CI already uploads the tested site from every pull request run, as the artifact `github-pages`.
-That artifact is made for publishing, not for looking at: a `.tar` inside a `.zip`, kept for one
-day, holding the site's files without the folder `swiss-votation-visualisation/` that their
-addresses name, so that a browser finds none of its scripts or data when it is unpacked and
-served.
+GitHub gives a repository one Pages site, and the preview deployments of `actions/deploy-pages`
+are "not available to the public" (its README). An artifact of CI, unzipped on a phone, does not
+run: a browser blocks a page opened from a file from loading its scripts and data (measured,
+`origin 'null'`). A private Claude Artifact does run it: on 2026-11-27 the German site, built
+with relative addresses, published as one, worked on Q's phone (start page, a vote's map, a
+limit and the selection's result).
 
 ## What Changes
 
-- Each CI run of a pull request to `main`, once all its browser tests pass, keeps the build they
-  were run against as a second artifact, `site-pr-<number>`, for 14 days: a `.zip` holding the
-  folder `swiss-votation-visualisation/` and a file `README.txt` that says how to look at it
-  (Python's built-in web server in the unpacked folder, and the address to open) and which
-  commit it is.
-- The site still cannot be opened by a double click on a file: its addresses are absolute, and a
-  browser refuses its data requests from `file://`. The README says so.
-- Nothing changes on `main`: it publishes as before, and keeps no such artifact. A pull request
-  still publishes nothing.
+- A preview build: one setting of the app's build, `PREVIEW=1`, that builds the site with
+  relative addresses into `app/build/preview/`. The live site's build does not change.
+- `scripts/preview.mjs`: builds the preview, packs the German pages with the scripts and data
+  they load (all votes; the comparison's entries for the ten newest) and a short launcher that
+  names the branch and the commit, into `app/build/preview-artifact/`, with the lists of files to
+  publish.
+- On Q's request ("preview this branch") Claude runs the script and publishes the result to the
+  one preview Artifact, which keeps its address; files of an earlier preview that are gone are
+  removed from it. `CLAUDE.md` describes the procedure.
+- A pull request still publishes nothing, and CI does not change.
 
 ## Capabilities
 
@@ -35,13 +35,9 @@ None.
 ### Modified Capabilities
 
 - `publishing`: "Nothing is published unless every check passed" keeps that a pull request
-  publishes nothing, without "and gets no preview"; a new requirement, "The site of a pull
-  request", says what a pull request's run keeps.
+  publishes nothing, without "and gets no preview".
 
 ## Impact
 
-- `.github/workflows/ci.yml`: one step that writes the README and one that uploads the artifact,
-  in the job `build`, on pull requests only.
-- `README.md` and `CLAUDE.md`: how to look at a pull request's site.
-- No code of the app, the calculation or the pipeline; no dependency. About 21 MB per run, kept
-  14 days.
+- `app/vite.config.ts` (the preview setting), `scripts/preview.mjs` (new), `CLAUDE.md`.
+- No change to the pages, the calculation, the pipeline, CI or the live site; no dependency.
