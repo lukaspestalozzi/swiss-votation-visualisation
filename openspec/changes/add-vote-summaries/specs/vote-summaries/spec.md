@@ -7,8 +7,9 @@ Italian, with a link to the Federal Council's explanations of its vote day, so t
 knows what was decided before reading its map.
 
 The summaries are the site's own, written from the Federal Council's explanations ("Erläuterungen
-des Bundesrates", the voting booklet, published by the Federal Chancellery on www.admin.ch for
-each vote day) and kept in `pipeline/vote-summaries.json`, which is written by hand and
+des Bundesrates", the voting booklet, which the Federal Chancellery publishes on www.admin.ch
+from 2015-06-14 on, and of which Swissvotes, a project of the University of Bern, keeps copies
+in German and French for the vote days before) and kept in `pipeline/vote-summaries.json`, which is written by hand and
 reviewed. The pipeline's update command (`pipeline/README.md`) checks them and writes them into
 the list of votes (`vote-data`), on the list of municipalities of 2026-01-01. Where the
 explanations of each vote day are published is in `investigations/vote-summaries.md`.
@@ -81,10 +82,11 @@ id.
 
 ### Requirement: The link to the explanations
 
-Each vote day SHALL have in the file of the summaries the address of the Federal Council's
-explanations in German, French and Italian, each an `https` address on `www.admin.ch`. The
-update SHALL request each address and stop, naming the vote day, the language and the address,
-when one is missing, on another server, or does not answer with a PDF.
+Each vote day SHALL have in the file of the summaries, for German, French and Italian, an
+`https` address of the Federal Council's explanations and the language of that document: from
+2015-06-14 on `www.admin.ch` in that language; before, a copy on `swissvotes.ch`, for Italian the
+French one. The update SHALL request each and stop, naming day, language and address, when one
+is missing, on another server or does not answer with a PDF.
 
 #### Scenario: An address that no longer answers
 
@@ -100,13 +102,27 @@ when one is missing, on another server, or does not answer with a PDF.
 - **THEN** it stops with an error that names 2016-02-28, German and the address, and requests
   nothing from that server
 
+#### Scenario: An early vote day
+
+- **WHEN** the addresses of 2014-02-09 are read from the file of the summaries
+- **THEN** the German one is Swissvotes' German copy, the French and the Italian one its French
+  copy, and the Italian one's language is French
+
+#### Scenario: An address on a server of neither kind
+
+- **GIVEN** a file of the summaries whose German address for 2014-02-09 is on `example.org`
+- **WHEN** the update command runs
+- **THEN** it stops with an error that names 2014-02-09, German and the address, and requests
+  nothing from that server
+
 ### Requirement: The summary on a vote's page
 
 A vote's page SHALL show the vote's summary in the page's language below its head (title, date,
 kind and the majorities it needs) and above its result, and below the summary a link "Erläuterungen
 des Bundesrates (PDF)" ("Explications du Conseil fédéral (PDF)", "Spiegazioni del Consiglio
-federale (PDF)") to the address of its vote day in that language. The summary SHALL be no wider
-than a paragraph of the site (`site-style`).
+federale (PDF)") to the address of its vote day in that language, naming the document's language
+when it is another ("PDF, in francese"). The summary SHALL be no wider than a paragraph of the
+site (`site-style`).
 
 #### Scenario: The summary of a vote
 
@@ -121,6 +137,12 @@ than a paragraph of the site (`site-style`).
 - **THEN** each shows the summary of 5960 in its language, and the link "Explications du Conseil
   fédéral (PDF)" or "Spiegazioni del Consiglio federale (PDF)" to the address of 2016-02-28 in
   its language
+
+#### Scenario: An early vote in Italian
+
+- **WHEN** a visitor opens `/it/votes/5800/`
+- **THEN** below its summary stands the link "Spiegazioni del Consiglio federale (PDF, in
+  francese)" to Swissvotes' French copy of the explanations of 2014-02-09
 
 #### Scenario: The tie-break question's page
 

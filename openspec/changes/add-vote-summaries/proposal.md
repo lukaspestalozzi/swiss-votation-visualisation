@@ -22,7 +22,8 @@ explanations (the voting booklet).
   Council's explanations ("Das Wichtigste in Kürze", "En bref", "In breve"), drafted by Claude
   and reviewed by Q on a sample.
 - Under each note, a link to the Federal Council's explanations of its vote day, the PDF in the
-  page's language.
+  page's language. www.admin.ch has them from 2015-06-14 on; for the 9 vote days before,
+  the link goes to Swissvotes' copies in German and French, Italian pages to the French one.
 - The notes and the links are a reviewed input of the pipeline, `pipeline/vote-summaries.json`,
   like `known-differences.json`. The update checks them (every vote of the list has a note in
   each language, within a length; no note for a vote the list does not hold; every link

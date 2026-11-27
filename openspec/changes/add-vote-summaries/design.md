@@ -16,8 +16,11 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
 - The Federal Council's explanations (the voting booklet) open each vote's part with a short
   text ("Das Wichtigste in Kürze", "En bref", "In breve"). On www.admin.ch a vote day's page
   links its booklet as a PDF under an opaque path (`/dam/de/sd-web/<id>/<name>.pdf` for
-  2024-03-03); the pages of 2013 tried on 2026-11-27 answered 404. Where the booklets of every
-  vote day since 2013 are, in each language, is not known yet (task 1).
+  2024-03-03). Task 1.1 found, on 2026-11-27, a booklet in German, French and Italian for each
+  of the 35 vote days from 2015-06-14 on, and none on www.admin.ch for the 9 days from
+  2013-03-03 to 2015-03-08 (25 votes). Swissvotes keeps copies of those in German and French
+  (`https://swissvotes.ch/vote/<number>.00/brochure-<de|fr>.pdf`), not in Italian; it refuses
+  `HEAD` (405) and answers a `GET` with a redirect to the PDF.
 - The list holds 125 votes on 44 vote days: 61 popular initiatives, 48 optional and 13
   mandatory referendums, and the initiative, counter-proposal and tie-break question of
   2026-03-08.
@@ -63,7 +66,11 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
    {
      "days": {
        "2016-02-28": {
-         "explanations": { "de": "https://www.admin.ch/…", "fr": "…", "it": "…" }
+         "explanations": {
+           "de": { "address": "https://www.admin.ch/…", "language": "de" },
+           "fr": { "address": "…", "language": "fr" },
+           "it": { "address": "…", "language": "it" }
+         }
        }
      },
      "votes": {
@@ -73,15 +80,18 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
    ```
 
    Keys sorted, two spaces, UTF-8, a final newline: the update reads it and never writes it.
-   `votes.json` gains per vote `summary` and `explanations`, each `{de, fr, it}`, after `note`;
-   the explanations are repeated on each vote of a day, so that a page needs its vote only.
+   `votes.json` gains per vote `summary`, `{de, fr, it}`, and `explanations`, `{de, fr, it}` of
+   `{address, language}`, after `note`; the explanations are repeated on each vote of a day, so
+   that a page needs its vote only. `language` is the document's: it differs from the key only
+   for Italian before 2015-06-14 (decision 14).
 
 3. **The link goes to the Federal Council's explanations of the vote day, as a PDF in the page's
    language** (Q). Considered: Swissvotes' page, `https://swissvotes.ch/vote/<number>.00`, one
    pattern for every vote, but no Italian and not the official source; no link, which leaves a
    summary uncheckable. The link names the document, "Erläuterungen des Bundesrates (PDF)",
    "Explications du Conseil fédéral (PDF)", "Spiegazioni del Consiglio federale (PDF)", the
-   names the Federal Chancellery uses (to be confirmed in task 1 for French and Italian).
+   names the Federal Chancellery uses (to be confirmed in task 1 for French and Italian). Before
+   2015-06-14 the link goes to a copy on Swissvotes (decision 14).
 
 4. **The guide says that the summaries are the site's own** (Q). Considered: a line under each
    summary as well, which says it where it is read but repeats itself on 125 pages and on the
@@ -125,7 +135,8 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
 
 11. **The update requests every address of the explanations**. 44 vote days × 3 languages, a
     `HEAD` request each (a `GET` where the server refuses `HEAD`), within the retries of
-    `download.py`; each must answer 200 with `application/pdf`, on `https://www.admin.ch`. A
+    `download.py`; each must answer 200 with `application/pdf`, from 2015-06-14 on
+    `https://www.admin.ch`, before on `https://swissvotes.ch` (decision 14). A
     moved booklet then stops the update with its vote day, language and address, as an
     unreachable source does. Considered: no check (links rot unseen); a check in CI (CI would
     fail on the Confederation's server, on pushes that change nothing of it). The answers are
@@ -137,12 +148,21 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
     summary as text written at build time, and the comparison's page data holds the summary and
     addresses of each of the 124 votes it offers, in its language, so that choosing a vote
     only shows a string it has. The comparison's data grows by about 50 KB (15 to 20 KB with
-    gzip, an estimate; task 6 measures it). The budgets of the limits, the map and the
+    gzip, an estimate; task 4.4 measures it). The budgets of the limits, the map and the
     comparison stay as they are.
 
 13. **No new dependency**. The pipeline's check uses `urllib` through `download.py`; the app
     needs nothing new, and the link is the only thing on the page that leaves the site, on the
     visitor's click.
+
+14. **Swissvotes' copies for the vote days before 2015-06-14** (Q, 2026-11-27, after task 1.1).
+    German and French pages link Swissvotes' copy in their language; Italian pages link the
+    French copy, and the link says so ("Spiegazioni del Consiglio federale (PDF, in francese)").
+    The summaries of those days are written from the German and French copies, the Italian one
+    from the French. Considered: no link for those 25 votes (simplest, but they could not be
+    checked from the page); searching web archives for the original Italian booklets (unknown
+    result, and an archive's host). French over German for Italian readers, as it is the closer
+    language for most of them; a judgement, not measured.
 
 ## Risks / Trade-offs
 
@@ -152,10 +172,9 @@ See proposal.md, "Why". What exists today, verified on 2026-11-27:
   votes in it; the link under each summary lets a reader check it.
 - [The Federal Council's booklet is itself contested as one-sided by some] → The summary takes
   its facts (what the proposal changes), never its arguments or recommendation.
-- [The booklets of the early years or of one language cannot be found on www.admin.ch] → Task 1
-  finds an address for each of the 44 vote days in three languages before any summary is
-  written. If one has none, the work stops there and Q decides (another host of the
-  Confederation, Swissvotes for that day, or no link for it), as that changes the specs.
+- [The booklets of the early years are not on www.admin.ch] → Found in task 1.1; Q chose
+  Swissvotes' copies (decision 14). A copy kept by a university project can move or go; the
+  update stops then as for admin.ch, and Italian readers of those 9 days read French.
 - [admin.ch moves its files again, as its new addresses of 2025 suggest] → The update stops and
   names each address (decision 11); the fix is new addresses in the file of the summaries.
 - [A new vote day waits for its summaries] → Decision 7; the step is in the procedure, and the
