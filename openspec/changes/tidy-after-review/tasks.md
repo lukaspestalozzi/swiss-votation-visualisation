@@ -53,7 +53,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   `vote-list.spec.ts`: at 1,280 pixels the right end of a line between two rows equals that of
   the line above its vote day, within 1 pixel. Verify: the test fails before the change and passes
   after.
-- [ ] 4.4 The years wrap. Browser test in `small-screens.spec.ts`: on the phone of the tests
+- [x] 4.4 The years wrap. Browser test in `small-screens.spec.ts`: on the phone of the tests
   (Pixel 7) every year's link lies within the window, and "2013" leads to its heading below the
   part that stays. Verify: the test fails before the change and passes after; `vote-list.spec.ts`
   "To a year" still passes.

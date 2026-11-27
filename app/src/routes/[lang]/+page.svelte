@@ -178,16 +178,16 @@
     background: var(--text);
     font-weight: 600;
   }
-  /* The years in one line, which a narrow window moves sideways; the room around them is the
-     ring's of a year that has the focus. */
+  /* The years, on further lines where one does not hold them, so that every one lies within the
+     window (spec vote-list, "The years of the list"); the room around them is the ring's of a
+     year that has the focus. */
   .years {
     display: flex;
+    flex-wrap: wrap;
     flex-basis: 100%;
     gap: 0.25rem 1rem;
     margin: -4px;
     padding: 4px;
-    overflow-x: auto;
-    scrollbar-width: none;
     line-height: 1.5rem;
     font-variant-numeric: tabular-nums;
   }
