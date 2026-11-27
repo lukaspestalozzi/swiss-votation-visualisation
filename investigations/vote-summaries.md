@@ -173,3 +173,20 @@ maximum pension went "de 2450 à 31 850 francs"; it rises by 2450 to 31 850, cor
 **Q's answer, 2026-11-27:** the three samples, their rules and tone are approved; a summary
 keeps to what the proposal changes and leaves out costs and funding where they were the
 campaign's arguments, even when the booklet's "In Kürze" names them.
+
+## 4. The comparison's size (task 4.4)
+
+The comparison holds, in each language, the summary, address and link text of the 124 votes it
+offers, in its page and its `__data.json`. Measured on the build of 2026-11-27 (`pnpm run build`,
+then `gzip -9`):
+
+| | Bytes | gzip |
+|---|---|---|
+| `de/compare/index.html`, with the summaries | 128,723 | 29,122 |
+| `de/compare/__data.json`, with the summaries | 97,411 | 27,586 |
+| What the summaries add, German (124 × text, address, label as JSON) | 63,599 | 17,912 |
+| French | 67,059 | 18,018 |
+| Italian | 64,616 | 17,517 |
+
+The design estimated about 50 KB and 15 to 20 KB with gzip; the task's bound was 25 KB with gzip.
+A vote's page holds its own summary only, some 300 to 450 bytes.

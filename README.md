@@ -61,6 +61,11 @@ and Italian:
   above bar, with both majorities and the cantons recalculated by the same rules. A switch decides whether the Swiss abroad
   count, and one button returns to the real result. The page's address holds the selection, so
   that a link, a reload or the language switch keeps it;
+- each vote's page, and each vote on the comparison, has a short summary of what the proposal
+  changes, in German, French and Italian. The site writes these itself from the Federal
+  Council's explanations (the voting booklet), and a link below each one leads to the booklet,
+  for the votes up to March 2015 to the copy Swissvotes keeps. They are kept in
+  `pipeline/vote-summaries.json`, and the pipeline checks them;
 - a page compares two votes (`/de/compare/`): you choose a first and a second vote, and one
   selection, made by the figures of the first, keeps the same municipalities in both. Each vote
   is drawn as on its page, its real result and below it its result with the selection, the
