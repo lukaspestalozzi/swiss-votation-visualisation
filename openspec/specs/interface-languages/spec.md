@@ -159,11 +159,10 @@ the one taken.
 
 #### Scenario: A result not validated yet
 
-- **GIVEN** the data files of 2026-11-14
+- **GIVEN** the data files of 2026-11-27, in which the Federal Chancellery gives no result for
+  the vote 6850
 - **WHEN** a visitor opens `/fr/votes/6850/` and `/it/votes/6850/`
-- **THEN** they show "Résultat provisoire: pas encore validé par le Conseil fédéral." and
-  "Risultato provvisorio: non ancora accertato dal Consiglio federale.", after the Chancellery's
-  "validation" and "accertamento" (`investigations/languages.md`, 1)
+- **THEN** neither shows "Résultat provisoire" or "Risultato provvisorio", nor a source
 
 #### Scenario: The parties
 
@@ -284,3 +283,29 @@ map's view are not carried over.
 - **WHEN** a visitor opens `/de/votes/5960/` in a window 360 pixels wide
 - **THEN** the switch writes "DE", "FR" and "IT"; "FR" is a link named "FR – Français" for
   assistive technology, which leads to `/fr/votes/5960/`; and "DE" is not a link
+
+### Requirement: The spaces of the French texts
+
+The site's own French texts SHALL take a no-break space (U+00A0) before ":", after « and before
+», and a narrow no-break space (U+202F) before ";", "?" and "!", as the official titles of the
+votes and admin.ch write them, so that no line breaks before these signs. The vote's titles and
+the Chancellery's notes SHALL be shown as the sources give them. Numbers keep the way the screen
+writes them in every language ("49.16%").
+
+#### Scenario: The start page's question
+
+- **WHEN** a visitor opens `/fr/`
+- **THEN** its heading ends "s'était rendue aux urnes ?", with a narrow no-break space before
+  the question mark
+
+#### Scenario: A label with a colon and a name in guillemets
+
+- **WHEN** a visitor opens `/fr/guide/`
+- **THEN** it says "apparaît au-dessous : « Avec votre sélection »", each of the three spaces a
+  no-break space
+
+#### Scenario: No French text without its space
+
+- **WHEN** every French text of the screen is written with made-up figures
+- **THEN** none holds ":", ";", "?", "!" or "»" after a character other than its no-break space,
+  nor "«" before one, except in an address, a time or a figure such as "1 : 23"

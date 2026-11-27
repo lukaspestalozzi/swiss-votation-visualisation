@@ -171,15 +171,15 @@ it is not judged here. It SHALL show neither verdicts nor an outcome nor a table
 ### Requirement: What the sources say about the result
 
 For a validated vote the page SHALL show the reference to the official publication in the page's
-language, as "Quelle: " followed by it. For a vote that is not validated it SHALL show
-"Vorläufiges Ergebnis: vom Bundesrat noch nicht erwahrt." When the Federal Chancellery gives a
-note on the vote, the page SHALL show it in full, in the page's language, under the heading
-"Hinweis der Bundeskanzlei".
+language, as "Quelle: " followed by it. For a vote that is not validated it SHALL show no
+reference and no other text in its place. When the Federal Chancellery gives a note on the vote,
+the page SHALL show it in full, in the page's language, under the heading "Hinweis der
+Bundeskanzlei".
 
 #### Scenario: A validated vote
 
 - **WHEN** a visitor opens `/votes/5670`
-- **THEN** it shows "Quelle: BBl 2013 3129", no note and no mark of a provisional result
+- **THEN** it shows "Quelle: BBl 2013 3129" and no note
 
 #### Scenario: A validated vote in French and Italian
 
@@ -194,9 +194,10 @@ note on the vote, the page SHALL show it in full, in the page's language, under 
 
 #### Scenario: A result not validated yet
 
-- **GIVEN** the data files of 2026-11-14
+- **GIVEN** the data files of 2026-11-27, in which the Federal Chancellery gives no result for
+  the vote 6850
 - **WHEN** a visitor opens `/votes/6850`
-- **THEN** it shows "Vorläufiges Ergebnis: vom Bundesrat noch nicht erwahrt." and no "Quelle: "
+- **THEN** it shows no "Quelle: ", no "Vorläufiges Ergebnis" and no "erwahrt"
 
 ### Requirement: Where the municipal figures differ from the validated result
 

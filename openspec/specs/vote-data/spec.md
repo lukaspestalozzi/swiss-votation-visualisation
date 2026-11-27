@@ -58,12 +58,11 @@ result in the BFS file SHALL stop the update.
 
 ### Requirement: The list of votes
 
-The pipeline SHALL write one list of all covered votes, ordered by date and then by id. For
-each vote it SHALL hold: the id the BFS gives it, the number the Federal Chancellery gives it,
-the date, the kind, the title in German, French and Italian as the BFS gives it, whether the
-vote is validated, the result, the Chancellery's reference and note, and the sums of the
-vote's entries. A title that is missing or empty in one of the three languages SHALL stop
-the update.
+The pipeline SHALL write one list of all covered votes, by date and then by id, each with: the
+BFS's id, the Federal Chancellery's number, the date, the kind, the BFS's title in German,
+French and Italian, the result, the Chancellery's reference and note, and the sums of its
+entries. It SHALL NOT hold whether a vote is validated: a validated vote has a reference. A
+title missing or empty in one of the three languages SHALL stop the update.
 
 #### Scenario: A vote in the list
 
@@ -75,6 +74,11 @@ the update.
 
 - **WHEN** the votes of 2026-03-08 are read from the list of votes
 - **THEN** the ids 6821, 6822 and 6823 are three votes, and each has the number 682
+
+#### Scenario: No mark of validation
+
+- **WHEN** the list of votes is read
+- **THEN** no vote in it holds a field that says whether it is validated
 
 #### Scenario: A title is missing
 
@@ -139,16 +143,15 @@ file's own statement on the double majority contradicts the code: needed for eve
 The result of a validated vote SHALL be the Federal Chancellery's: the yes votes, the no votes,
 the cantonal votes in favour and against, and whether the vote passed. A vote is validated when
 the Chancellery gives its yes and its no votes. The result of any other vote SHALL be the one
-of the BFS file, and the vote SHALL be marked as not validated. Cantonal votes SHALL be held as
-the source of the result gives them, and as none where it gives none. A tie-break question
-SHALL have no verdict.
+of the BFS file, without a reference. Cantonal votes SHALL be held as the source of the result
+gives them, and as none where it gives none. A tie-break question SHALL have no verdict.
 
 #### Scenario: A validated vote
 
 - **WHEN** the vote with id 5960 is read from the list of votes
-- **THEN** it is validated, and its result is 1,609,152 yes votes, 1,664,224 no votes, cantonal
+- **THEN** its result is the Chancellery's, 1,609,152 yes votes, 1,664,224 no votes, cantonal
   votes of 16.5 in favour and 6.5 against, and not passed (`investigations/data-sources.md`,
-  "Reference values")
+  "Reference values"), with the reference "BBl 2019 4599"
 
 #### Scenario: A validated optional referendum has no cantonal votes
 
@@ -162,14 +165,14 @@ SHALL have no verdict.
 - **GIVEN** the sources as they were on 2026-11-14
 - **WHEN** the vote with id 6850, the optional referendum of 2026-03-08 "Bundesgesetz über die
   Individualbesteuerung", is read from the list of votes
-- **THEN** it is not validated, and its result is the one of the BFS file: 1,662,477 yes votes,
-  1,401,322 no votes, cantonal votes of 10 in favour and 13 against, and passed
+- **THEN** its result is the one of the BFS file: 1,662,477 yes votes, 1,401,322 no votes,
+  cantonal votes of 10 in favour and 13 against, and passed; and its reference is none
 
 #### Scenario: The validated and the other votes on 2026-11-14
 
 - **GIVEN** the sources as they were on 2026-11-14
 - **WHEN** the list of votes is read
-- **THEN** 117 votes are validated and 8 are not: the six of 2026-03-08 and the two of
+- **THEN** 117 votes hold a reference and 8 do not: the six of 2026-03-08 and the two of
   2026-06-14
 
 #### Scenario: A tie-break question has no verdict
@@ -536,11 +539,10 @@ calculation's check runs with the unit tests; `pipeline/README.md` SHALL give th
 
 #### Scenario: A vote is validated
 
-- **GIVEN** data files in which a vote is not validated, and sources in which the Federal
+- **GIVEN** data files in which a vote has no reference, and sources in which the Federal
   Chancellery now gives its result
 - **WHEN** the update command runs
-- **THEN** the vote is validated in the list of votes, with the Chancellery's result and
-  reference
+- **THEN** the vote in the list of votes holds the Chancellery's result and reference
 
 #### Scenario: A source cannot be reached
 

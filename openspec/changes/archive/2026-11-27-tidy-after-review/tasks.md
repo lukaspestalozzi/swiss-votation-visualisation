@@ -65,7 +65,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   `vote-summaries` ("A decimal comma", "Digits parted by a space", "A colon without its space"),
   and the made-up summaries of `made_up.py` pass them. Verify: `uv run --directory pipeline
   --locked pytest` passes.
-- [ ] 5.2 `pipeline/vote-summaries.json`: the numbers of the 18 summaries per language, the French
+- [x] 5.2 `pipeline/vote-summaries.json`: the numbers of the 18 summaries per language, the French
   spaces of every French summary, and 6730 without its cost in three languages; each summary still
   120 to 450 characters. Verify: a script run by hand on the file reports no summary that the new
   checks would refuse; Q reads the diff of 6730 and a sample of five French summaries.
@@ -95,7 +95,7 @@ The browser tests run against a build made after the task's change (`pnpm run bu
   the files changed), `README.md` where it names the mark, `docs/roadmap.md` (a row for this
   change, off-roadmap). Verify: `grep -rn "vorläufig\|validated" CLAUDE.md README.md` names no
   mark of the screen or field of the data.
-- [ ] 7.2 `./scripts/verify-local.sh` passes in full, 11 steps. Then the preview (CLAUDE.md, "The
+- [x] 7.2 `./scripts/verify-local.sh` passes in full, 11 steps. Then the preview (CLAUDE.md, "The
   preview") for Q to check on the phone: the start page's four buttons and its years, a vote's
   page without a note, the comparison before a vote is chosen. Verify: the script's last line, and
   Q's word on the preview.

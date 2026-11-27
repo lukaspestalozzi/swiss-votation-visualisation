@@ -40,7 +40,7 @@ counts to `app/static/data/`, and
 a test runs the calculation over every one of them; the build, the checks, the module boundaries and CI are in
 place, and CI publishes the site at https://lukaspestalozzi.github.io/swiss-votation-visualisation/
 after every push to `main` whose checks pass; a branch's preview is published, on Q's request, as
-one private Claude Artifact ("The preview"). Changes #1 to #18, 7a, 9a and 10a of `docs/roadmap.md`,
+one private Claude Artifact ("The preview"). Changes #1 to #19, 7a, 9a and 10a of `docs/roadmap.md`,
 `add-project-skeleton`, `add-result-calculation`, `add-vote-data`, `add-vote-list`,
 `publish-site`, `add-result-map`, `add-characteristics`, `tighten-map-budget` (the look at
 performance after #7: one budget of 16 ms per frame for every input of the map), `add-limits`,
@@ -55,7 +55,8 @@ and none over 50 ms), `reword-site-texts` (#15: the wording of eight texts in th
 languages) `clarify-phone-window` (#16: what the verification of #14 and #15 found),
 `add-pull-request-site` (#17: the preview of a branch as a Claude Artifact) and
 `add-vote-summaries` (#18: a summary of each vote in three languages with a link to the Federal
-Council's explanations), are archived, and
+Council's explanations) and `tidy-after-review` (#19: what Q's and Claude's review of the built
+site found), are archived, and
 `openspec/specs/` holds their specs.
 Each vote's page and the comparison show a summary of the vote in three languages, written for
 the site from the Federal Council's explanations, with a link to them (change #18,
@@ -68,7 +69,7 @@ Thirteen investigations are done: `investigations/data-sources.md`, `investigati
 `investigations/redesign.md` and `investigations/vote-summaries.md`.
 v1, changes #1 to #10a, is complete, and #11, `add-share-link`, #12, `add-vote-comparison`,
 #13, `add-more-characteristics`, #14, `redesign-site`, #15, `reword-site-texts`, #16,
-`clarify-phone-window`, #17, `add-pull-request-site`, and #18, `add-vote-summaries`, the changes after v1, are archived. #19, `tidy-after-review` (what Q's and Claude's review of the built site found: no mark of validation, a shorter sentence at the limits, the button "Knappes Ergebnis", the summaries' numbers and the French spaces), is in flight.
+`clarify-phone-window`, #17, `add-pull-request-site`, #18, `add-vote-summaries`, and #19, `tidy-after-review` (what Q's and Claude's review of the built site found: no mark of validation, a shorter sentence at the limits, the button "Knappes Ergebnis", the summaries' numbers and the French spaces), the changes after v1, are archived. No change is in flight.
 `docs/roadmap.md`
 names income per municipality and a limit on categories as open.
 `README.md` is the human-facing overview.
