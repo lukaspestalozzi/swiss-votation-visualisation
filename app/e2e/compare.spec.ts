@@ -1,6 +1,6 @@
 // The comparison of two votes (spec vote-comparison), against the built site. The figures are
 // those of investigations/vote-comparison.md and investigations/limits.md.
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { lowContrast } from './contrast.ts';
 import { phone } from './fingers.ts';
 import { MEASURE_FRAMES, beyondBudget, fontsLoaded, measuredFrames } from './frames.ts';
@@ -80,26 +80,21 @@ test('Before a vote is chosen', async ({ page }) => {
     const box = heading.getBoundingClientRect();
     return { left: box.left, width: box.width };
   });
-  const boxes = await Promise.all(
-    [first, second].map((list) =>
-      list.evaluate((element) => {
-        const box = element.getBoundingClientRect();
-        const label = element.closest('label')?.getBoundingClientRect();
-        return { x: box.x, y: box.y, width: box.width, height: box.height, labelTop: label?.top };
-      }),
-    ),
-  );
-  const [one, two] = boxes;
-  expect(one && two).toBeTruthy();
-  if (one && two) {
-    for (const list of [one, two]) {
-      expect(Math.abs(list.x - column.left)).toBeLessThanOrEqual(1);
-      expect(Math.abs(list.width - column.width)).toBeLessThanOrEqual(1);
-    }
-    // The second label at least 1rem below the first list, and its list below it.
-    expect(two.labelTop ?? 0).toBeGreaterThanOrEqual(one.y + one.height + 16);
-    expect(two.y).toBeGreaterThan(two.labelTop ?? Infinity);
+  const measure = (list: Locator) =>
+    list.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const label = element.closest('label')?.getBoundingClientRect();
+      return { x: box.x, y: box.y, width: box.width, height: box.height, labelTop: label?.top };
+    });
+  const one = await measure(first);
+  const two = await measure(second);
+  for (const list of [one, two]) {
+    expect(Math.abs(list.x - column.left)).toBeLessThanOrEqual(1);
+    expect(Math.abs(list.width - column.width)).toBeLessThanOrEqual(1);
   }
+  // The second label at least 1rem below the first list, and its list below it.
+  expect(two.labelTop ?? 0).toBeGreaterThanOrEqual(one.y + one.height + 16);
+  expect(two.y).toBeGreaterThan(two.labelTop ?? Infinity);
   await expect(second).toBeDisabled();
   await expect(
     page.getByText(
