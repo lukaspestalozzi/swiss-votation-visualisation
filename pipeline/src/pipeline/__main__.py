@@ -61,6 +61,7 @@ def main(
     print(f"added: {', '.join(report.added) or 'none'}")
     print(f"validated since the last run: {', '.join(report.newly_validated) or 'none'}")
     print(f"left out, no complete result yet: {', '.join(report.left_out) or 'none'}")
+    print(f"STAT-TAB answers from the cache: {report.cached} of {report.stat_tab}")
     print(f"data files written to {data}")
     return 0
 
