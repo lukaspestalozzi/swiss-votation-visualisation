@@ -92,6 +92,8 @@ export interface Texts {
   readonly START_HEADING: string;
   /** The sentence below it, with the number of characteristics beyond the three it names. */
   readonly startLead: (furtherCharacteristics: number) => string;
+  // The line of its own below the lead: "Ein Gedankenexperiment."
+  readonly START_NOTE: string;
   /** The search field of the list, and the sentence when no vote is left. */
   readonly SEARCH_TITLES: string;
   readonly NO_MATCH: string;

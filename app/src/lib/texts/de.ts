@@ -46,7 +46,8 @@ export const de: Texts = {
   startLead: (furtherCharacteristics) =>
     'Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden ein: nach Einwohnerzahl, Alter, ' +
     `Parteistärke und ${String(furtherCharacteristics)} weiteren Merkmalen. Karte und Ergebnis ` +
-    'werden sofort neu berechnet. Ein Gedankenexperiment, keine Prognose.',
+    'werden sofort neu berechnet.',
+  START_NOTE: 'Ein Gedankenexperiment.',
   SEARCH_TITLES: 'Titel suchen',
   NO_MATCH: 'Keine Abstimmung passt zu dieser Suche.',
   KEPT: 'Ergebnis',
