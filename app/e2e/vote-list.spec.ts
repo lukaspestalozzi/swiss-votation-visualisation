@@ -45,12 +45,25 @@ test('the heading is the question, with one sentence; the title is the working t
   await page.goto('de/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(QUESTION);
   // 35 characteristics, three of them named (spec characteristics).
-  await expect(page.locator('.lead')).toHaveText(
+  // The two sentences, then "Ein Gedankenexperiment." on a line of its own (change
+  // shorten-start-lead).
+  await expect(page.locator('.lead p')).toHaveText([
     'Wählen Sie eine Abstimmung und grenzen Sie die Gemeinden ein: nach Einwohnerzahl, Alter, ' +
-      'Parteistärke und 32 weiteren Merkmalen. Karte und Ergebnis werden sofort neu berechnet. ' +
-      'Ein Gedankenexperiment, keine Prognose.',
-  );
+      'Parteistärke und 32 weiteren Merkmalen. Karte und Ergebnis werden sofort neu berechnet.',
+    'Ein Gedankenexperiment.',
+  ]);
   await expect(page).toHaveTitle('Popular Vote Explorer');
+});
+
+test('the line of its own in French and Italian', async ({ page }) => {
+  for (const [language, line] of [
+    ['fr', 'Une expérience de pensée.'],
+    ['it', 'Un esperimento mentale.'],
+  ] as const) {
+    await page.goto(`${language}/`);
+    await expect(page.locator('.lead p').last()).toHaveText(line);
+    await expect(page.locator('.lead')).not.toContainText(/prévision|previsione/u);
+  }
 });
 
 test('a heading per year, from the newest to 2013, and a row per vote', async ({

@@ -51,7 +51,8 @@ export const fr: Texts = {
   startLead: (furtherCharacteristics) =>
     "Choisissez une votation et délimitez les communes\u00a0: selon le nombre d'habitants, l'âge, la " +
     `force des partis et ${String(furtherCharacteristics)} autres caractéristiques. La carte et ` +
-    'le résultat sont recalculés aussitôt. Une expérience de pensée, pas une prévision.',
+    'le résultat sont recalculés aussitôt.',
+  START_NOTE: 'Une expérience de pensée.',
   SEARCH_TITLES: 'Rechercher un titre',
   NO_MATCH: 'Aucune votation ne correspond à cette recherche.',
   KEPT: 'Résultat',

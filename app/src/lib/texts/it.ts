@@ -49,7 +49,8 @@ export const it: Texts = {
   startLead: (furtherCharacteristics) =>
     'Scelga una votazione e delimiti i Comuni: per numero di abitanti, età, forza dei partiti e ' +
     `altre ${String(furtherCharacteristics)} caratteristiche. La carta e il risultato vengono ` +
-    'ricalcolati subito. Un esperimento mentale, non una previsione.',
+    'ricalcolati subito.',
+  START_NOTE: 'Un esperimento mentale.',
   SEARCH_TITLES: 'Cercare un titolo',
   NO_MATCH: 'Nessuna votazione corrisponde a questa ricerca.',
   KEPT: 'Risultato',

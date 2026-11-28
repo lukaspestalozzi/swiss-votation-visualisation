@@ -78,6 +78,7 @@ test('no French text has one of these signs without its space', () => {
     date: fr.date(28, 'février', 2016),
     day: fr.day(28, 'février'),
     startLead: fr.startLead(32),
+    START_NOTE: fr.START_NOTE,
     listShare: fr.listShare('49.16%'),
     listTieBreak: fr.listTieBreak('37.36%'),
     forTheInitiative: fr.forTheInitiative("1'098'341", '37.36%'),

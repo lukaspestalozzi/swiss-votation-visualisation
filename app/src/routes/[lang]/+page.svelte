@@ -37,7 +37,10 @@
      by the title alone. Above the list, the search field, the three buttons and a link per year
      stay at the top of the window (decision 25). -->
 <h1>{t.START_HEADING}</h1>
-<p class="lead">{t.startLead(data.furtherCharacteristics)}</p>
+<div class="lead">
+  <p>{t.startLead(data.furtherCharacteristics)}</p>
+  <p>{t.START_NOTE}</p>
+</div>
 
 <div class="finder" bind:offsetHeight={staying}>
   <input
@@ -126,6 +129,10 @@
     font-size: 1.1875rem;
     line-height: 1.45;
     color: var(--text-secondary);
+  }
+  /* "Ein Gedankenexperiment." on the line below the lead, without a paragraph's gap. */
+  .lead p {
+    margin: 0;
   }
 
   /* The search field, the four buttons and the years stay at the top of the window, over the
