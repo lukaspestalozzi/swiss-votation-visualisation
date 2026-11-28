@@ -6,7 +6,7 @@
   the start page writing both in `.lead`. Browser test in `vote-list.spec.ts`: the two lines in
   German, French and Italian. Verify: the test fails before the change and passes after;
   `pnpm run test` passes (the French spaces' test writes the new text).
-- [ ] 1.2 `CLAUDE.md` (the start page's line in the code map), `docs/roadmap.md` (a row,
+- [x] 1.2 `CLAUDE.md` (the start page's line in the code map), `docs/roadmap.md` (a row,
   off-roadmap). Verify: `./scripts/verify-local.sh` passes in full.
 
 ## Workflow follow-up
